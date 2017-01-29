@@ -4,6 +4,8 @@
  * Contacts the a configurable URL via TLS v1.2 and reads a response.
  *
  * Adapted from the "04_https_request" example in esp-idf.
+ * Now includes my ESP port of HISONA's HTTP/HTTPS REST client C library, which has been tweaked for
+ * ESP32 platform stuff, extended to support client certificates, and http basic auth
  *
  * Steve Richardson - steve.richardson@makeitlabs.com
  *
@@ -32,6 +34,7 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
+#include "https.h"
 
 #include "lwip/err.h"
 #include "lwip/sockets.h"
@@ -58,9 +61,11 @@
 #define WEB_BASIC_AUTH_USER CONFIG_WEB_BASIC_AUTH_USER
 #define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
 
-#define CLIENT_PK_PASSPHRASE CONFIG_CLIENT_PK_PASSPHRASE
-
 static const char *TAG = "https_example";
+
+#define ACL_BUF_SIZE (80 * 1024)
+
+char g_acl_buf[ACL_BUF_SIZE];
 
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
@@ -158,254 +163,24 @@ static void initialise_wifi(void)
 static void https_get_task(void *pvParameters)
 {
     char web_url[128];
-    char request[256];
+    int ret;
     
-    char buf[512];
-    int ret, flags, len;
-
-    mbedtls_entropy_context entropy;
-    mbedtls_ctr_drbg_context ctr_drbg;
-    mbedtls_ssl_context ssl;
-
-    extern const uint8_t ca_cert_pem_start[] asm("_binary_cacert_pem_start");
-    extern const uint8_t ca_cert_pem_end[]   asm("_binary_cacert_pem_end");
-    
-    extern const uint8_t client_cert_pem_start[] asm("_binary_client_cert_pem_start");
-    extern const uint8_t client_cert_pem_end[]   asm("_binary_client_cert_pem_end");
-    
-    extern const uint8_t client_key_pem_start[] asm("_binary_client_key_pem_start");
-    extern const uint8_t client_key_pem_end[]   asm("_binary_client_key_pem_end");
-    
-    mbedtls_x509_crt ca_cert;
-    mbedtls_x509_crt client_cert;
-
-    mbedtls_pk_context client_pk;
-    char client_pk_passphrase[32];
-    
-    mbedtls_ssl_config conf;
-    mbedtls_net_context server_fd;
-
     snprintf(web_url, sizeof(web_url), "https://%s/%s", WEB_SERVER, WEB_URL_PATH);
-
-    // build the http request
-    if (strcmp(WEB_BASIC_AUTH_USER, "") != 0) {
-        size_t olen;
-        unsigned char base64[32];
-        char auth[64];
-        
-        snprintf(auth, sizeof(auth), "%s:%s", WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS);
-        if ((ret = mbedtls_base64_encode(base64, 32, &olen, (const unsigned char*)auth, strlen(auth))) != 0) {
-            ESP_LOGE(TAG, "mbedtls_base64_encode returned -0x%x\n\n", -ret);
-            abort();
-        }
-
-        buf[olen] = '\0';
-        snprintf(auth, sizeof(auth), "Authorization: Basic %s", base64);
-
-        // basic auth required
-        snprintf(request, sizeof(request),
-                 "GET %s HTTP/1.1\n"
-                 "Host: %s\n"
-                 "%s\n"
-                 "User-Agent: esp-idf/1.0 esp32\n"
-                 "Connection: close\n"
-                 "\n", web_url, WEB_SERVER, auth);
-    } else {
-        // no basic auth required
-        snprintf(request, sizeof(request),
-                 "GET %s HTTP/1.1\n"
-                 "Host: %s\n"
-                 "User-Agent: esp-idf/1.0 esp32\n"
-                 "Connection: close\n"
-                 "\n", web_url, WEB_SERVER);
-        
-    }
-
-    ESP_LOGI(TAG, "request header:\n%s", request);
-
-    mbedtls_ssl_init(&ssl);
-    mbedtls_x509_crt_init(&ca_cert);
-    mbedtls_x509_crt_init(&client_cert);
-    mbedtls_pk_init(&client_pk);
-    
-    mbedtls_ctr_drbg_init(&ctr_drbg);
-    ESP_LOGI(TAG, "Seeding the random number generator");
-
-    mbedtls_ssl_config_init(&conf);
-
-    mbedtls_entropy_init(&entropy);
-    if((ret = mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy, NULL, 0)) != 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_ctr_drbg_seed returned %d", ret);
-        abort();
-    }
-
-    ESP_LOGI(TAG, "Loading the CA root certificate...");
-    ret = mbedtls_x509_crt_parse(&ca_cert, ca_cert_pem_start, ca_cert_pem_end - ca_cert_pem_start);
-    if(ret < 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_x509_crt_parse returned -0x%x\n\n", -ret);
-        abort();
-    }
-
-    ESP_LOGI(TAG, "Loading the client certificate...");
-    ret = mbedtls_x509_crt_parse(&client_cert, client_cert_pem_start, client_cert_pem_end - client_cert_pem_start);
-    if(ret < 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_x509_crt_parse returned -0x%x\n\n", -ret);
-        abort();
-    }
-
-    ESP_LOGI(TAG, "Loading the client key...");
-    snprintf(client_pk_passphrase, sizeof(client_pk_passphrase) - 1, CLIENT_PK_PASSPHRASE);
-    ret = mbedtls_pk_parse_key(&client_pk, client_key_pem_start, client_key_pem_end - client_key_pem_start, (const unsigned char*) client_pk_passphrase, strlen(client_pk_passphrase));
-    if(ret < 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_pk_parse_key returned -0x%x\n\n", -ret);
-        abort();
-    }
-    
-    ESP_LOGI(TAG, "Setting hostname for TLS session...");
-
-    // Hostname set here should match CN in server certificate
-    if((ret = mbedtls_ssl_set_hostname(&ssl, WEB_SERVER)) != 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_ssl_set_hostname returned -0x%x", -ret);
-        abort();
-    }
-
-    ESP_LOGI(TAG, "Setting up the SSL/TLS structure...");
-
-    if((ret = mbedtls_ssl_config_defaults(&conf,
-                                          MBEDTLS_SSL_IS_CLIENT,
-                                          MBEDTLS_SSL_TRANSPORT_STREAM,
-                                          MBEDTLS_SSL_PRESET_DEFAULT)) != 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_ssl_config_defaults returned %d", ret);
-        goto exit;
-    }
-
-    // MBEDTLS_SSL_VERIFY_REQUIRED means the CA verification must succeed to connect.
-    mbedtls_ssl_conf_authmode(&conf, MBEDTLS_SSL_VERIFY_REQUIRED);
-
-    // set up our own client certificate
-    mbedtls_ssl_conf_own_cert(&conf, &client_cert, &client_pk);
-
-    // set up the CA certificate
-    mbedtls_ssl_conf_ca_chain(&conf, &ca_cert, NULL);
-    
-    mbedtls_ssl_conf_rng(&conf, mbedtls_ctr_drbg_random, &ctr_drbg);
-#ifdef MBEDTLS_DEBUG_C
-    mbedtls_debug_set_threshold(MBEDTLS_DEBUG_LEVEL);
-    mbedtls_ssl_conf_dbg(&conf, mbedtls_debug, NULL);
-#endif
-
-    if ((ret = mbedtls_ssl_setup(&ssl, &conf)) != 0)
-    {
-        ESP_LOGE(TAG, "mbedtls_ssl_setup returned -0x%x\n\n", -ret);
-        goto exit;
-    }
 
     while(1) {
         // Wait for the callback to set the CONNECTED_BIT in the event group.
         xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT,false, true, portMAX_DELAY);
-        ESP_LOGI(TAG, "Connected to AP");
+        ESP_LOGI(TAG, "Connected to AP...");
 
-        mbedtls_net_init(&server_fd);
+        
+        http_init(0);
+        ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, g_acl_buf, sizeof(g_acl_buf));
 
-        ESP_LOGI(TAG, "Connecting to %s:%s...", WEB_SERVER, WEB_PORT);
-
-        if ((ret = mbedtls_net_connect(&server_fd, WEB_SERVER, WEB_PORT, MBEDTLS_NET_PROTO_TCP)) != 0)
-        {
-            ESP_LOGE(TAG, "mbedtls_net_connect returned -%x", -ret);
-            goto exit;
-        }
-
-        ESP_LOGI(TAG, "Connected.");
-        mbedtls_ssl_set_bio(&ssl, &server_fd, mbedtls_net_send, mbedtls_net_recv, NULL);
-
-        ESP_LOGI(TAG, "Performing the SSL/TLS handshake...");
-        while ((ret = mbedtls_ssl_handshake(&ssl)) != 0)
-        {
-            if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
-            {
-                ESP_LOGE(TAG, "mbedtls_ssl_handshake returned -0x%x", -ret);
-                goto exit;
-            }
-        }
-
-        ESP_LOGI(TAG, "Verifying peer X.509 certificate...");
-        if ((flags = mbedtls_ssl_get_verify_result(&ssl)) != 0)
-        {
-            // TODO: probably want to close connection if ret != 0
-            ESP_LOGW(TAG, "Failed to verify peer certificate!");
-            bzero(buf, sizeof(buf));
-            mbedtls_x509_crt_verify_info(buf, sizeof(buf), "  ! ", flags);
-            ESP_LOGW(TAG, "verification info: %s", buf);
-        } else {
-            ESP_LOGI(TAG, "Certificate verified.");
-        }
-
-        ESP_LOGI(TAG, "Writing HTTP request...");
-
-        while((ret = mbedtls_ssl_write(&ssl, (const unsigned char *)request, strlen(request))) <= 0)
-        {
-            if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
-            {
-                ESP_LOGE(TAG, "mbedtls_ssl_write returned -0x%x", -ret);
-                goto exit;
-            }
-        }
-
-        len = ret;
-        ESP_LOGI(TAG, "%d bytes written", len);
-        ESP_LOGI(TAG, "Reading HTTP response...");
-
-        do
-        {
-            len = sizeof(buf) - 1;
-            bzero(buf, sizeof(buf));
-            ret = mbedtls_ssl_read(&ssl, (unsigned char *)buf, len);
-
-            if(ret == MBEDTLS_ERR_SSL_WANT_READ || ret == MBEDTLS_ERR_SSL_WANT_WRITE)
-                continue;
-
-            if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY) {
-                ret = 0;
-                break;
-            }
-
-            if(ret < 0)
-            {
-                ESP_LOGE(TAG, "mbedtls_ssl_read returned -0x%x", -ret);
-                break;
-            }
-
-            if(ret == 0)
-            {
-                ESP_LOGI(TAG, "connection closed");
-                break;
-            }
-
-            len = ret;
-            //ESP_LOGI(TAG, "%d bytes read", len);
-            for(int i = 0; i < len; i++) {
-                putchar(buf[i]);
-            }
-        } while(1);
-
-        mbedtls_ssl_close_notify(&ssl);
-
-    exit:
-        mbedtls_ssl_session_reset(&ssl);
-        mbedtls_net_free(&server_fd);
-
-        if(ret != 0)
-        {
-            mbedtls_strerror(ret, buf, 100);
-            ESP_LOGE(TAG, "Last error was: -0x%x - %s", -ret, buf);
-        }
-
+        ESP_LOGI(TAG, "http_get return code: %d", ret);
+        for(int i = 0; i < sizeof(g_acl_buf) && g_acl_buf[i] != 0; i++) {
+            putchar(g_acl_buf[i]);
+        }        
+        
         for(int countdown = 5; countdown >= 0; countdown--) {
             ESP_LOGI(TAG, "%d...", countdown);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
