@@ -29,6 +29,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
+#include "freertos/heap_regions.h"
+#include "esp_heap_alloc_caps.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 #include "esp_log.h"
@@ -62,10 +64,6 @@
 #define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
 
 static const char *TAG = "https_example";
-
-#define ACL_BUF_SIZE (80 * 1024)
-
-char g_acl_buf[ACL_BUF_SIZE];
 
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
@@ -160,10 +158,13 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
 
+#define ACL_BUF_SIZE (80 * 1024)
+
 static void https_get_task(void *pvParameters)
 {
     char web_url[128];
     int ret;
+    char *acl_buf;
     
     snprintf(web_url, sizeof(web_url), "https://%s/%s", WEB_SERVER, WEB_URL_PATH);
 
@@ -172,14 +173,30 @@ static void https_get_task(void *pvParameters)
         xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT,false, true, portMAX_DELAY);
         ESP_LOGI(TAG, "Connected to AP...");
 
+        ESP_LOGI(TAG, "Free heap size before malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         
-        http_init(0);
-        ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, g_acl_buf, sizeof(g_acl_buf));
+        acl_buf = pvPortMallocCaps(ACL_BUF_SIZE, MALLOC_CAP_8BIT);
 
-        ESP_LOGI(TAG, "http_get return code: %d", ret);
-        for(int i = 0; i < sizeof(g_acl_buf) && g_acl_buf[i] != 0; i++) {
-            putchar(g_acl_buf[i]);
-        }        
+        ESP_LOGI(TAG, "Free heap size after malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
+        
+        if (acl_buf) {
+            ESP_LOGI(TAG, "ACL buffer size = %zu", ACL_BUF_SIZE);
+            
+            http_init(0);
+            ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, acl_buf, ACL_BUF_SIZE);
+
+            ESP_LOGI(TAG, "http_get return code: %d", ret);
+            for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
+                putchar(acl_buf[i]);
+            }
+
+            vPortFreeTagged(acl_buf);
+            ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
+        } else {
+            ESP_LOGE(TAG, "Could not malloc acl buffer");
+        }
+        
+
         
         for(int countdown = 5; countdown >= 0; countdown--) {
             ESP_LOGI(TAG, "%d...", countdown);
@@ -191,6 +208,7 @@ static void https_get_task(void *pvParameters)
 
 void app_main()
 {
+    //heap_alloc_caps_init();
     nvs_flash_init();
     initialise_wifi();
     xTaskCreate(&https_get_task, "https_get_task", 8192, NULL, 5, NULL);
