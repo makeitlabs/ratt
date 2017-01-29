@@ -54,6 +54,15 @@
 #include "mbedtls/certs.h"
 #include "mbedtls/base64.h"
 
+#define SD_CARD
+
+#ifdef SD_CARD
+#include "esp_vfs_fat.h"
+#include "driver/sdmmc_host.h"
+#include "driver/sdmmc_defs.h"
+#include "sdmmc_cmd.h"
+#endif
+
 // The examples use simple configurations that you can set via 'make menuconfig'.
 #define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
 #define EXAMPLE_WIFI_PASS CONFIG_WIFI_PASSWORD
@@ -138,7 +147,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-static void initialise_wifi(void)
+static void initialize_wifi(void)
 {
     tcpip_adapter_init();
     wifi_event_group = xEventGroupCreate();
@@ -157,6 +166,49 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
+
+#ifdef SD_CARD
+static void initialize_sdcard(void)
+{
+    ESP_LOGI(TAG, "Initializing SD card");
+
+    sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+
+    // To use 1-line SD mode, uncomment the following line:
+    host.flags = SDMMC_HOST_FLAG_1BIT;
+
+    // This initializes the slot without card detect (CD) and write protect (WP) signals.
+    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
+    sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
+
+    // Options for mounting the filesystem.
+    // If format_if_mount_failed is set to true, SD card will be partitioned and formatted
+    // in case when mounting fails.
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+        .format_if_mount_failed = false,
+        .max_files = 5
+    };
+
+    // Use settings defined above to initialize SD card and mount FAT filesystem.
+    // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
+    // Please check its source code and implement error recovery when developing
+    // production applications.
+    sdmmc_card_t* card;
+    esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
+    if (ret != ESP_OK) {
+        if (ret == ESP_FAIL) {
+            ESP_LOGE(TAG, "Failed to mount filesystem. If you want the card to be formatted, set format_if_mount_failed = true.");
+        } else {
+            ESP_LOGE(TAG, "Failed to initialize the card (%d). Make sure SD card lines have pull-up resistors in place.", ret);
+        }
+        return;
+    }
+
+    // Card has been initialized, print its properties
+    sdmmc_card_print_info(stdout, card);
+}
+#endif
+
 
 #define ACL_BUF_SIZE (80 * 1024)
 
@@ -185,11 +237,48 @@ static void https_get_task(void *pvParameters)
             http_init(0);
             ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, acl_buf, ACL_BUF_SIZE);
 
+#ifdef SD_CARD
+            // Use POSIX and C standard library functions to work with files.
+            ESP_LOGI(TAG, "Opening file on SD card for write...");
+            FILE* f = fopen("/sdcard/acl.txt", "w");
+            if (f == NULL) {
+                ESP_LOGE(TAG, "Failed to open file for writing...");
+                return;
+            }
+            ret = fwrite(acl_buf, strlen(acl_buf), 1, f);
+            if (ret != 1) {
+                ESP_LOGE(TAG, "Failed to write to SD card... %d", ret);
+            }
+            fclose(f);
+            ESP_LOGI(TAG, "ACL file written to SD card...");
+
+            // Open file for reading
+            ESP_LOGI(TAG, "Reading ACL file from SD card...");
+            f = fopen("/sdcard/acl.txt", "r");
+            if (f == NULL) {
+                ESP_LOGE(TAG, "Failed to open file for reading");
+                return;
+            }
+
+            char line[128];
+            while (fgets(line, sizeof(line), f) == line) {
+                ESP_LOGI(TAG, "%s", line);
+            }
+            fclose(f);
+
+            // All done, unmount partition and disable SDMMC host peripheral
+            /*
+              esp_vfs_fat_sdmmc_unmount();
+              ESP_LOGI(TAG, "Card unmounted");
+            */
+            
+#else
             ESP_LOGI(TAG, "http_get return code: %d", ret);
             for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
                 putchar(acl_buf[i]);
             }
-
+#endif
+            
             vPortFreeTagged(acl_buf);
             ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         } else {
@@ -208,8 +297,10 @@ static void https_get_task(void *pvParameters)
 
 void app_main()
 {
-    //heap_alloc_caps_init();
     nvs_flash_init();
-    initialise_wifi();
+#ifdef SD_CARD
+    initialize_sdcard();
+#endif
+    initialize_wifi();
     xTaskCreate(&https_get_task, "https_get_task", 8192, NULL, 5, NULL);
 }
