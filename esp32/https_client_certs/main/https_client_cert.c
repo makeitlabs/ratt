@@ -63,6 +63,20 @@
 #include "sdmmc_cmd.h"
 #endif
 
+#define SERIAL_RFID
+
+#ifdef SERIAL_RFID
+#include "driver/uart.h"
+#include "soc/uart_struct.h"
+
+#define SER_BUF_SIZE (256)
+#define SER_RFID_TXD  (4)
+#define SER_RFID_RXD  (5)
+#define SER_RFID_RTS  (18)
+#define SER_RFID_CTS  (19)
+
+#endif
+
 // The examples use simple configurations that you can set via 'make menuconfig'.
 #define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
 #define EXAMPLE_WIFI_PASS CONFIG_WIFI_PASSWORD
@@ -287,13 +301,48 @@ static void https_get_task(void *pvParameters)
         
 
         
-        for(int countdown = 5; countdown >= 0; countdown--) {
+        for(int countdown = 30; countdown >= 0; countdown--) {
             ESP_LOGI(TAG, "%d...", countdown);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
         ESP_LOGI(TAG, "Starting again!");
     }
 }
+
+#ifdef SERIAL_RFID
+
+void rfid_task()
+{
+    int uart_num = UART_NUM_1;
+    uart_config_t uart_config = {
+        .baud_rate = 9600,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .rx_flow_ctrl_thresh = 122,
+    };
+
+    uart_param_config(uart_num, &uart_config);
+    uart_set_pin(uart_num, SER_RFID_TXD, SER_RFID_RXD, SER_RFID_RTS, SER_RFID_CTS);
+    uart_driver_install(uart_num, SER_BUF_SIZE * 2, 0, 0, NULL, 0);
+
+    uint8_t* rxbuf = (uint8_t*) malloc(SER_BUF_SIZE);
+    while(1) {
+        int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
+
+        if (len) {
+            for (int i=0; i<len; i++) {
+                char s[10];
+                snprintf(s, sizeof(s), "%2.2X ", rxbuf[i]);
+                ESP_LOGI(TAG, "SERIAL RX: %s", s);
+                
+            }
+        }
+    }
+}
+#endif
+
 
 void app_main()
 {
@@ -303,4 +352,8 @@ void app_main()
 #endif
     initialize_wifi();
     xTaskCreate(&https_get_task, "https_get_task", 8192, NULL, 5, NULL);
+
+#ifdef SERIAL_RFID
+    xTaskCreate(rfid_task, "rfid_task", 2048, NULL, 10, NULL);
+#endif
 }
