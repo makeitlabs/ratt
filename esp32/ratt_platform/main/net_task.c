@@ -1,29 +1,3 @@
-/* HTTPS GET Example using plain mbedTLS sockets
- * with 2-way authentication and encryption using client certificates.
- *
- * Contacts the a configurable URL via TLS v1.2 and reads a response.
- *
- * Adapted from the "04_https_request" example in esp-idf.
- * Now includes my ESP port of HISONA's HTTP/HTTPS REST client C library, which has been tweaked for
- * ESP32 platform stuff, extended to support client certificates, and http basic auth
- *
- * Steve Richardson - steve.richardson@makeitlabs.com
- *
- * Original Copyright (C) 2006-2016, ARM Limited, All Rights Reserved, Apache 2.0 License.
- * Additions Copyright (C) Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD, Apache 2.0 License.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 #include <string.h>
 #include <stdlib.h>
 #include "freertos/FreeRTOS.h"
@@ -35,7 +9,6 @@
 #include "esp_event_loop.h"
 #include "esp_log.h"
 #include "esp_system.h"
-#include "nvs_flash.h"
 #include "https.h"
 
 #include "lwip/err.h"
@@ -54,28 +27,8 @@
 #include "mbedtls/certs.h"
 #include "mbedtls/base64.h"
 
-#define SD_CARD
+static const char *TAG = "net_task";
 
-#ifdef SD_CARD
-#include "esp_vfs_fat.h"
-#include "driver/sdmmc_host.h"
-#include "driver/sdmmc_defs.h"
-#include "sdmmc_cmd.h"
-#endif
-
-#define SERIAL_RFID
-
-#ifdef SERIAL_RFID
-#include "driver/uart.h"
-#include "soc/uart_struct.h"
-
-#define SER_BUF_SIZE (256)
-#define SER_RFID_TXD  (4)
-#define SER_RFID_RXD  (5)
-#define SER_RFID_RTS  (18)
-#define SER_RFID_CTS  (19)
-
-#endif
 
 // The examples use simple configurations that you can set via 'make menuconfig'.
 #define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
@@ -86,8 +39,8 @@
 #define WEB_BASIC_AUTH_USER CONFIG_WEB_BASIC_AUTH_USER
 #define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
 
-static const char *TAG = "https_example";
 
+#define ACL_BUF_SIZE (80 * 1024)
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
 static EventGroupHandle_t wifi_event_group;
@@ -106,9 +59,7 @@ const int CONNECTED_BIT = BIT0;
    MBEDTLS_DEBUG_LEVEL 4 means all mbedTLS debug output gets sent here,
    and then filtered to the ESP logging mechanism.
 */
-static void mbedtls_debug(void *ctx, int level,
-                     const char *file, int line,
-                     const char *str)
+static void mbedtls_debug(void *ctx, int level, const char *file, int line, const char *str)
 {
     const char *MBTAG = "mbedtls";
     char *file_sep;
@@ -140,6 +91,8 @@ static void mbedtls_debug(void *ctx, int level,
 #endif
 
 
+
+
 static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     switch(event->event_id) {
@@ -161,7 +114,8 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-static void initialize_wifi(void)
+
+void net_init(void)
 {
     tcpip_adapter_init();
     wifi_event_group = xEventGroupCreate();
@@ -181,52 +135,8 @@ static void initialize_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
 
-#ifdef SD_CARD
-static void initialize_sdcard(void)
-{
-    ESP_LOGI(TAG, "Initializing SD card");
 
-    sdmmc_host_t host = SDMMC_HOST_DEFAULT();
-
-    // To use 1-line SD mode, uncomment the following line:
-    host.flags = SDMMC_HOST_FLAG_1BIT;
-
-    // This initializes the slot without card detect (CD) and write protect (WP) signals.
-    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
-    sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-
-    // Options for mounting the filesystem.
-    // If format_if_mount_failed is set to true, SD card will be partitioned and formatted
-    // in case when mounting fails.
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-        .format_if_mount_failed = false,
-        .max_files = 5
-    };
-
-    // Use settings defined above to initialize SD card and mount FAT filesystem.
-    // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
-    // Please check its source code and implement error recovery when developing
-    // production applications.
-    sdmmc_card_t* card;
-    esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
-    if (ret != ESP_OK) {
-        if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount filesystem. If you want the card to be formatted, set format_if_mount_failed = true.");
-        } else {
-            ESP_LOGE(TAG, "Failed to initialize the card (%d). Make sure SD card lines have pull-up resistors in place.", ret);
-        }
-        return;
-    }
-
-    // Card has been initialized, print its properties
-    sdmmc_card_print_info(stdout, card);
-}
-#endif
-
-
-#define ACL_BUF_SIZE (80 * 1024)
-
-static void https_get_task(void *pvParameters)
+void net_task(void *pvParameters)
 {
     char web_url[128];
     int ret;
@@ -251,7 +161,6 @@ static void https_get_task(void *pvParameters)
             http_init(0);
             ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, acl_buf, ACL_BUF_SIZE);
 
-#ifdef SD_CARD
             // Use POSIX and C standard library functions to work with files.
             ESP_LOGI(TAG, "Opening file on SD card for write...");
             FILE* f = fopen("/sdcard/acl.txt", "w");
@@ -286,12 +195,10 @@ static void https_get_task(void *pvParameters)
               ESP_LOGI(TAG, "Card unmounted");
             */
             
-#else
-            ESP_LOGI(TAG, "http_get return code: %d", ret);
-            for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
-                putchar(acl_buf[i]);
-            }
-#endif
+//            ESP_LOGI(TAG, "http_get return code: %d", ret);
+//            for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
+//                putchar(acl_buf[i]);
+//            }
             
             vPortFreeTagged(acl_buf);
             ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
@@ -307,53 +214,4 @@ static void https_get_task(void *pvParameters)
         }
         ESP_LOGI(TAG, "Starting again!");
     }
-}
-
-#ifdef SERIAL_RFID
-
-void rfid_task()
-{
-    int uart_num = UART_NUM_1;
-    uart_config_t uart_config = {
-        .baud_rate = 9600,
-        .data_bits = UART_DATA_8_BITS,
-        .parity = UART_PARITY_DISABLE,
-        .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
-        .rx_flow_ctrl_thresh = 122,
-    };
-
-    uart_param_config(uart_num, &uart_config);
-    uart_set_pin(uart_num, SER_RFID_TXD, SER_RFID_RXD, SER_RFID_RTS, SER_RFID_CTS);
-    uart_driver_install(uart_num, SER_BUF_SIZE * 2, 0, 0, NULL, 0);
-
-    uint8_t* rxbuf = (uint8_t*) malloc(SER_BUF_SIZE);
-    while(1) {
-        int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
-
-        if (len) {
-            for (int i=0; i<len; i++) {
-                char s[10];
-                snprintf(s, sizeof(s), "%2.2X ", rxbuf[i]);
-                ESP_LOGI(TAG, "SERIAL RX: %s", s);
-                
-            }
-        }
-    }
-}
-#endif
-
-
-void app_main()
-{
-    nvs_flash_init();
-#ifdef SD_CARD
-    initialize_sdcard();
-#endif
-    initialize_wifi();
-    xTaskCreate(&https_get_task, "https_get_task", 8192, NULL, 5, NULL);
-
-#ifdef SERIAL_RFID
-    xTaskCreate(rfid_task, "rfid_task", 2048, NULL, 10, NULL);
-#endif
 }
