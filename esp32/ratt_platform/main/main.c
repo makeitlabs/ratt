@@ -41,6 +41,7 @@
 #include "sdcard.h"
 #include "rfid_task.h"
 #include "net_task.h"
+#include "audio_task.h"
 
 static const char *TAG = "main";
 
@@ -51,8 +52,11 @@ void app_main()
     sdcard_init();
 
     rfid_init();
-    xTaskCreate(rfid_task, "rfid_task", 2048, NULL, 10, NULL);
+    xTaskCreate(rfid_task, "rfid_task", 2048, NULL, 6, NULL);
 
     net_init();
     xTaskCreate(&net_task, "net_task", 8192, NULL, 5, NULL);
+
+    audio_init();
+    xTaskCreate(&audio_task, "audio_task", 2048, NULL, 10, NULL);
 }

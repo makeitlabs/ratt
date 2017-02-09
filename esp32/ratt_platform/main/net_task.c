@@ -40,7 +40,7 @@ static const char *TAG = "net_task";
 #define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
 
 
-#define ACL_BUF_SIZE (80 * 1024)
+#define ACL_BUF_SIZE (64 * 1024)
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
 static EventGroupHandle_t wifi_event_group;
