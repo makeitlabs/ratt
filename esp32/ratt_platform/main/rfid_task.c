@@ -9,8 +9,8 @@
 #include "soc/uart_struct.h"
 
 #define SER_BUF_SIZE (256)
-#define SER_RFID_TXD  (4)
-#define SER_RFID_RXD  (5)
+#define SER_RFID_TXD  (17)
+#define SER_RFID_RXD  (16)
 #define SER_RFID_RTS  (18)
 #define SER_RFID_CTS  (19)
 
