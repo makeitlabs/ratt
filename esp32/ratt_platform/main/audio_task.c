@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
@@ -6,6 +7,7 @@
 #include "driver/i2s.h"
 #include "esp_log.h"
 #include "sdcard.h"
+
 
 static const char *TAG = "audio_task";
 
@@ -15,6 +17,9 @@ static const char *TAG = "audio_task";
 static QueueHandle_t m_qhandle;
 
 static char buf[512];
+
+#define NUM_FILES 4
+const char* files[] = { "/sdcard/hurry.s16", "/sdcard/complete.s16", "/sdcard/death.s16", "/sdcard/gameovr.s16", "/sdcard/smb.s16" };
 
 void audio_init()
 {
@@ -40,30 +45,52 @@ void audio_init()
 }
 
 
+void get_next_file(char *next_filename)
+{
+   static int file_idx = 0;
+
+   strcpy(next_filename, files[file_idx]);
+   
+   file_idx++;
+   if (file_idx >= NUM_FILES)
+       file_idx = 0;
+   
+}
+
 
 void audio_task(void *pvParameters)
 {
     i2s_event_type_t evt;
+    char filename[40];
 
-
-    ESP_LOGI(TAG, "taking sdcard mutex...");
-    xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    get_next_file(filename);
     
-    FILE* f = fopen("/sdcard/smb.s16", "r");
-
+    ESP_LOGI(TAG, "taking sdcard mutex...");
+    ESP_LOGI(TAG, "opening file %s", filename);
+    xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    FILE* f = fopen(filename, "r");
     xSemaphoreGive(g_sdcard_mutex);
     ESP_LOGI(TAG, "gave sdcard mutex...");
     
-    while (1) {
+    while (f) {
         int r;
         do {
             xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
             fread(buf, sizeof(buf), 1, f);
             xSemaphoreGive(g_sdcard_mutex);
+
+            if (feof(f)) {
+                get_next_file(filename);
+                ESP_LOGI(TAG, "done with previous file, opening next file %s", filename);
+                xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+                fclose(f);
+                f = fopen(filename, "r");
+                xSemaphoreGive(g_sdcard_mutex);
+            }
             
             r = i2s_write_bytes(I2S_NUM, buf, sizeof(buf), portMAX_DELAY);
         } while (r>0);
-
+        
         if (xQueueReceive(m_qhandle, &evt, 0) == pdTRUE) {
             switch (evt) {
             case I2S_EVENT_DMA_ERROR:
@@ -79,5 +106,8 @@ void audio_task(void *pvParameters)
                 ESP_LOGE(TAG, "I2S ERR unknown event");
             }
         }
-    }    
+    }
+
+    ESP_LOGE(TAG, "file not valid, audio task halted");
+    while(1);
 }
