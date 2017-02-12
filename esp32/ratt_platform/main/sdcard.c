@@ -1,3 +1,7 @@
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include <freertos/semphr.h>
 #include "esp_log.h"
 #include "esp_system.h"
 
@@ -8,10 +12,20 @@
 
 static const char *TAG = "sdcard";
 
+SemaphoreHandle_t g_sdcard_mutex;
 
 void sdcard_init(void)
 {
-    ESP_LOGI(TAG, "Initializing SD card");
+    ESP_LOGI(TAG, "Initializing SD card...");
+
+    g_sdcard_mutex = xSemaphoreCreateMutex();
+    if (!g_sdcard_mutex) {
+        ESP_LOGE(TAG, "Could not create SD card mutex.");
+        return;
+    }
+
+    xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    
 
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 
@@ -47,6 +61,14 @@ void sdcard_init(void)
 
     // Card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
+
+    
+    xSemaphoreGive(g_sdcard_mutex);
 }
 
 
+void sdcard_deinit()
+{
+    esp_vfs_fat_sdmmc_unmount();
+    ESP_LOGI(TAG, "SD card unmounted.");
+}

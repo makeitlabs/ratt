@@ -39,8 +39,8 @@
 #include "nvs_flash.h"
 
 #include "sdcard.h"
-#include "rfid_task.h"
 #include "net_task.h"
+#include "rfid_task.h"
 #include "audio_task.h"
 #include "display_task.h"
 #include "lcd_st7735.h"
@@ -50,24 +50,16 @@ static const char *TAG = "main";
 
 void app_main()
 {
-    ESP_LOGI(TAG, "in RATT app_main()");
+    //ESP_LOGI(TAG, "in RATT app_main()");
     
     nvs_flash_init();
-
     sdcard_init();
-
-    xTaskCreate(&display_task, "display_task", 4096, NULL, 10, NULL);
-
+    lcd_init_hw();
+    rfid_init();
+    audio_init();
     
-    //rfid_init();
-    //xTaskCreate(&rfid_task, "rfid_task", 2048, NULL, 6, NULL);
-
-    //net_init();
-    //xTaskCreate(&net_task, "net_task", 8192, NULL, 5, NULL);
-
-    //audio_init();
-    //xTaskCreate(&audio_task, "audio_task", 2048, NULL, 10, NULL);
-
-
-    
+    xTaskCreatePinnedToCore(&net_task, "net_task", 8192, NULL, 7, NULL, 0);
+    xTaskCreatePinnedToCore(&display_task, "display_task", 4096, NULL, 8, NULL, 0);
+    xTaskCreatePinnedToCore(&rfid_task, "rfid_task", 2048, NULL, 9, NULL, 0);
+    xTaskCreatePinnedToCore(&audio_task, "audio_task", 4096, NULL, 10, NULL, 0);
 }

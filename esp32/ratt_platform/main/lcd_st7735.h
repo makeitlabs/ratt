@@ -17,7 +17,7 @@
 // bus speed for SPI clock
 // works up to 20MHz on hand-wired prototype with logic analyzer connected
 #define ONE_MHZ 1000000
-#define LCD_SPI_BUS_SPEED (16 * ONE_MHZ)
+#define LCD_SPI_BUS_SPEED (20 * ONE_MHZ)
 
 
 // raft of defines from Adafruit library below
@@ -110,6 +110,7 @@ typedef struct { // Data stored for FONT AS A WHOLE:
 
 
 
+void lcd_init_hw(void);
 void lcd_init(void);
 void lcd_set_rotation(uint8_t m);
 void lcd_fill_screen(uint16_t color);

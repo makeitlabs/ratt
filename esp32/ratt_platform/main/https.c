@@ -24,7 +24,7 @@
 
 #include "esp_log.h"
 
-static const char *TAG = "https library";
+static const char *TAG = "https";
 
 #define CLIENT_PK_PASSPHRASE CONFIG_CLIENT_PK_PASSPHRASE
 
@@ -472,6 +472,8 @@ static int https_init(HTTP_INFO *hi, int https)
 {
     memset(hi, 0, sizeof(HTTP_INFO));
 
+    ESP_LOGI(TAG, "https_init() https=%d", https);
+    
     if(https == 1)
     {
         mbedtls_ssl_init(&hi->ssl);
@@ -486,8 +488,6 @@ static int https_init(HTTP_INFO *hi, int https)
     mbedtls_net_init(&hi->ssl_fd);
 
     hi->https = https;
-
-    ESP_LOGI(TAG, "https_init()");
     
     return 0;
 }

@@ -36,8 +36,9 @@ void rfid_init()
 
 void rfid_task(void *pvParameters)
 {
-
     uint8_t* rxbuf = (uint8_t*) malloc(SER_BUF_SIZE);
+
+
     while(1) {
         int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
 

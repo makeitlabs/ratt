@@ -5,14 +5,16 @@
 #include "esp_system.h"
 #include "driver/i2s.h"
 #include "esp_log.h"
-#include "math.h"
+#include "sdcard.h"
 
 static const char *TAG = "audio_task";
 
 #define SAMPLE_RATE     (16000)
 #define I2S_NUM         (0)
 
-QueueHandle_t m_qhandle;
+static QueueHandle_t m_qhandle;
+
+static char buf[512];
 
 void audio_init()
 {
@@ -22,7 +24,7 @@ void audio_init()
         .bits_per_sample = 16,
         .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
         .communication_format = I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB,
-        .dma_buf_count = 4,
+        .dma_buf_count = 8,
         .dma_buf_len = 512,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1
     };
@@ -43,13 +45,22 @@ void audio_task(void *pvParameters)
 {
     i2s_event_type_t evt;
 
+
+    ESP_LOGI(TAG, "taking sdcard mutex...");
+    xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    
     FILE* f = fopen("/sdcard/smb.s16", "r");
-    char buf[512];
+
+    xSemaphoreGive(g_sdcard_mutex);
+    ESP_LOGI(TAG, "gave sdcard mutex...");
     
     while (1) {
         int r;
         do {
+            xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
             fread(buf, sizeof(buf), 1, f);
+            xSemaphoreGive(g_sdcard_mutex);
+            
             r = i2s_write_bytes(I2S_NUM, buf, sizeof(buf), portMAX_DELAY);
         } while (r>0);
 

@@ -15,6 +15,7 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_log.h"
+#include "sdcard.h"
 #include "driver/spi_master.h"
 #include "soc/gpio_struct.h"
 #include "driver/gpio.h"
@@ -209,9 +210,12 @@ void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
     gpio_set_level(LCD_PIN_DC, dc);
 }
 
-void lcd_init(void)
+
+// set up GPIOs and reset the display, but don't initialize it yet
+void lcd_init_hw(void)
 {
-    // in RATT, reset and backlight pins shared with RTC XTAL
+    ESP_LOGI(TAG, "Initializing LCD control pins...");
+    
     // these pins must be set to GPIO mode with gpio_config()
     gpio_config_t rst_cfg = {
         .pin_bit_mask = LCD_SEL_RST,
@@ -259,8 +263,10 @@ void lcd_init(void)
     gpio_set_level(LCD_PIN_RST, 1);
     delay(50);
     gpio_set_level(LCD_PIN_CS, 1);
+}
 
-
+void lcd_init(void)
+{
     ESP_LOGI(TAG, "Initializing SPI bus..");
     esp_err_t ret;
     spi_bus_config_t buscfg={
@@ -840,6 +846,9 @@ void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *fi
      
     lcd_set_addr_window(x, y, x+w-1, y+h-1);
 
+    ESP_LOGI(TAG, "taking sdcard mutex...");
+    xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    
     FILE *f = fopen(filename, "r");
 
     if (!f) {
@@ -855,6 +864,9 @@ void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *fi
     
 
     fclose(f);
+
+    xSemaphoreGive(g_sdcard_mutex);
+    ESP_LOGI(TAG, "gave sdcard mutex...");
 }
 
 

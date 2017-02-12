@@ -10,6 +10,7 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "https.h"
+#include "sdcard.h"
 
 #include "lwip/err.h"
 #include "lwip/sockets.h"
@@ -39,8 +40,7 @@ static const char *TAG = "net_task";
 #define WEB_BASIC_AUTH_USER CONFIG_WEB_BASIC_AUTH_USER
 #define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
 
-
-#define ACL_BUF_SIZE (64 * 1024)
+#define ACL_BUF_SIZE (40 * 1024)
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
 static EventGroupHandle_t wifi_event_group;
@@ -91,8 +91,6 @@ static void mbedtls_debug(void *ctx, int level, const char *file, int line, cons
 #endif
 
 
-
-
 static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     switch(event->event_id) {
@@ -117,6 +115,8 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 
 void net_init(void)
 {
+    ESP_LOGI(TAG, "Initializing network...");
+    
     tcpip_adapter_init();
     wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
@@ -141,12 +141,17 @@ void net_task(void *pvParameters)
     char web_url[128];
     int ret;
     char *acl_buf;
+
+    net_init();
+
+    
+    ESP_LOGI(TAG, "start net task");
     
     snprintf(web_url, sizeof(web_url), "https://%s/%s", WEB_SERVER, WEB_URL_PATH);
 
     while(1) {
         // Wait for the callback to set the CONNECTED_BIT in the event group.
-        xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT,false, true, portMAX_DELAY);
+        xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
         ESP_LOGI(TAG, "Connected to AP...");
 
         ESP_LOGI(TAG, "Free heap size before malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
@@ -158,11 +163,16 @@ void net_task(void *pvParameters)
         if (acl_buf) {
             ESP_LOGI(TAG, "ACL buffer size = %zu", ACL_BUF_SIZE);
             
-            http_init(0);
+            ret = http_init(0);
+
             ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, acl_buf, ACL_BUF_SIZE);
 
             // Use POSIX and C standard library functions to work with files.
             ESP_LOGI(TAG, "Opening file on SD card for write...");
+
+            ESP_LOGI(TAG, "taking sdcard mutex...");
+            xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+
             FILE* f = fopen("/sdcard/acl.txt", "w");
             if (f == NULL) {
                 ESP_LOGE(TAG, "Failed to open file for writing...");
@@ -173,10 +183,18 @@ void net_task(void *pvParameters)
                 ESP_LOGE(TAG, "Failed to write to SD card... %d", ret);
             }
             fclose(f);
+
+            xSemaphoreGive(g_sdcard_mutex);
+            ESP_LOGI(TAG, "gave sdcard mutex...");
+            
             ESP_LOGI(TAG, "ACL file written to SD card...");
 
             // Open file for reading
             ESP_LOGI(TAG, "Reading ACL file from SD card...");
+
+            ESP_LOGI(TAG, "taking sdcard mutex...");
+            xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+
             f = fopen("/sdcard/acl.txt", "r");
             if (f == NULL) {
                 ESP_LOGE(TAG, "Failed to open file for reading");
@@ -184,21 +202,24 @@ void net_task(void *pvParameters)
             }
 
             char line[128];
+            uint16_t lines = 0;
             while (fgets(line, sizeof(line), f) == line) {
-                ESP_LOGI(TAG, "%s", line);
+                lines++;
+                //ESP_LOGI(TAG, "%s", line);
             }
             fclose(f);
-
-            // All done, unmount partition and disable SDMMC host peripheral
-            /*
-              esp_vfs_fat_sdmmc_unmount();
-              ESP_LOGI(TAG, "Card unmounted");
-            */
             
-//            ESP_LOGI(TAG, "http_get return code: %d", ret);
-//            for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
-//                putchar(acl_buf[i]);
-//            }
+            xSemaphoreGive(g_sdcard_mutex);
+            ESP_LOGI(TAG, "gave sdcard mutex...");
+
+            ESP_LOGI(TAG, ">>>>>>>>>>>>>>> Got %d lines in ACL file", lines);
+
+            /*
+            ESP_LOGI(TAG, "http_get return code: %d", ret);
+            for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
+                putchar(acl_buf[i]);
+            }
+            */
             
             vPortFreeTagged(acl_buf);
             ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
@@ -207,11 +228,12 @@ void net_task(void *pvParameters)
         }
         
 
-        
-        for(int countdown = 30; countdown >= 0; countdown--) {
+        /*
+        for(int countdown = 5; countdown >= 0; countdown--) {
             ESP_LOGI(TAG, "%d...", countdown);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
+        */
         ESP_LOGI(TAG, "Starting again!");
     }
 }
