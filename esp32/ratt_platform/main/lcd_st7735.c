@@ -295,7 +295,10 @@ void lcd_init(void)
     // set rotation
     lcd_set_rotation(0);
     
-
+    // init gfx routines
+    gfx_set_text_wrap(1);
+    gfx_set_text_size(1);
+    
     ESP_LOGI(TAG, "LCD Init complete, width=%d height=%d", _width, _height);
 }
 
@@ -483,7 +486,7 @@ void lcd_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
         for(x=w; x>0; x--) {
             buf[x] = color;
         }
-        lcd_data(m_spi, (uint8_t*)&buf, w * 2);
+        lcd_data(m_spi, (uint8_t*)buf, w * 2);
     }
 }
 
@@ -809,6 +812,49 @@ void gfx_set_font(const GFXfont *f)
     cursor_y -= 6;
   }
   gfxFont = (GFXfont *)f;
+}
+
+
+/*********************************************************
+ * Not from Adafruit's GFX library below here
+ *********************************************************/
+
+/* load a raw 565 bitmap file from sd card  .. must be in a very specific format and size
+ * TODO: not very robust, needs lots of cleanup.  just a proof of concept for now.
+ *
+ * preprocess images using imagemagick for resizing/scaling and ffmpeg for 565 conversion...
+ *
+ * resize to 128x160 - ( force to fit with \! ):
+ * convert myimage.jpg -resize 128x160\! myimage-scaled.bmp
+ *
+ * convert to rgb565be (big endian) using ffmpeg:
+ * ffmpeg -vcodec bmp -i myimage-scaled.bmp -vcodec rawvideo -f rawvideo -pix_fmt rgb565be myimage.raw
+ *
+ * copy file to SD card
+ *
+ */
+void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *filename)
+{
+    int r;
+    uint8_t buf[128*2];
+     
+    lcd_set_addr_window(x, y, x+w-1, y+h-1);
+
+    FILE *f = fopen(filename, "r");
+
+    if (!f) {
+        ESP_LOGE(TAG, "can't open filename %s", filename);
+        return;
+    }
+        
+    do {
+        r = fread(buf, sizeof(buf), 1, f);
+        if (r)
+            lcd_data(m_spi, buf, sizeof(buf));
+    } while (!feof(f));
+    
+
+    fclose(f);
 }
 
 

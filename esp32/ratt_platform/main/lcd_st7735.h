@@ -17,7 +17,7 @@
 // bus speed for SPI clock
 // works up to 20MHz on hand-wired prototype with logic analyzer connected
 #define ONE_MHZ 1000000
-#define LCD_SPI_BUS_SPEED (8 * ONE_MHZ)
+#define LCD_SPI_BUS_SPEED (16 * ONE_MHZ)
 
 
 // raft of defines from Adafruit library below
@@ -129,5 +129,7 @@ void gfx_set_text_color(uint16_t c);
 void gfx_set_text_color_bg(uint16_t c, uint16_t b);
 void gfx_set_text_wrap(uint8_t w);
 void gfx_set_font(const GFXfont *f);
+
+void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *filename);
 
 #endif
