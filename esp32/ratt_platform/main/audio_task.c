@@ -18,7 +18,7 @@ static QueueHandle_t m_qhandle;
 
 static char buf[512];
 
-#define NUM_FILES 4
+#define NUM_FILES 5
 const char* files[] = { "/sdcard/hurry.s16", "/sdcard/complete.s16", "/sdcard/death.s16", "/sdcard/gameovr.s16", "/sdcard/smb.s16" };
 
 void audio_init()
@@ -36,7 +36,7 @@ void audio_init()
     i2s_pin_config_t pin_config = {
         .bck_io_num = 26,
         .ws_io_num = 25,
-        .data_out_num = 22,
+        .data_out_num = 17,
         .data_in_num = -1
     };
 
