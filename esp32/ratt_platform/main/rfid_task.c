@@ -4,11 +4,14 @@
 #include <stdlib.h>
 #include <esp_log.h>
 #include <esp_system.h>
+#include "esp_heap_alloc_caps.h"
 
 #include <driver/uart.h>
 #include <soc/uart_struct.h>
 #include <mbedtls/sha256.h>
 
+#include "rfid_task.h"
+#include "sdcard.h"
 #include "display_task.h"
 
 #define SER_BUF_SIZE (256)
@@ -20,7 +23,6 @@
 static int uart_num = UART_NUM_1;
 
 static const char *TAG = "rfid_task";
-
 
 void rfid_init()
 {
@@ -39,7 +41,7 @@ void rfid_init()
 }
 
 //
-// create a hex digest of the hashed tag
+// create a hex digest of the SHA224 hashed tag
 // this is some legacy stuff of the MakeIt RFID system where tags are internally saved/managed as SHA224
 // not really very useful for security as the entire key space can be hashed and looked up in a few seconds
 // but it does prevent the RFID tag IDs from being stored/transferred in the clear
@@ -48,11 +50,12 @@ void rfid_hash_sha224(char *tag_ascii, int ascii_len, char *tag_hexdigest, int d
 {
     unsigned char tag_sha224[32];
 
-    // last arg = 1 for SHA224 instead of SHA256
+    // set last arg = 1 for SHA224 instead of SHA256
     mbedtls_sha256((unsigned char*)tag_ascii, ascii_len, tag_sha224, 1); 
     
-    // last 4 bytes of a SHA224 are 0 so ignore them
     bzero(tag_hexdigest, digest_len);
+
+    // last 4 bytes of a SHA224 are 0 so ignore them
     for (int i=0; i<28; i++) {
         char s[3];
         snprintf(s, sizeof(s), "%2.2x", tag_sha224[i]);
@@ -60,28 +63,96 @@ void rfid_hash_sha224(char *tag_ascii, int ascii_len, char *tag_hexdigest, int d
     }
 }
 
+uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
+{
+    char tag_ascii[32];
+    char tag_sha224[65];
+    
+    snprintf(tag_ascii, sizeof(tag_ascii), "%10.10u", tag);
+    rfid_hash_sha224(tag_ascii, strlen(tag_ascii), tag_sha224, sizeof(tag_sha224));
+    
+    ESP_LOGI(TAG, "RFID tag: %10.10u", tag);
+    ESP_LOGI(TAG, "RFID tag SHA224 hexdigest: %s", tag_sha224);
+
+    // Open file for reading
+    ESP_LOGI(TAG, "Reading ACL file from SD card...");
+
+    xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    FILE *f = fopen("/sdcard/acl.txt", "r");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "Failed to open ACL file for reading!");
+        return 0;
+    }
+    
+    char *line = pvPortMallocCaps(256, MALLOC_CAP_8BIT);
+    if (!line) {
+        ESP_LOGE(TAG, "can't malloc for line buffer");
+        return 0;
+    }
+    
+    uint8_t found = 0;
+    while ((fgets(line, 256, f) != NULL) && !found) {
+        //username,key,value,allowed,hashedCard,lastAccessed
+        //ESP_LOGI(TAG, "%s", line);
+
+        char *str = line;
+        char *token;
+        char *fields[10];
+        int num_fields;
+        
+        num_fields = 0;
+        while ((token = strsep(&str, ",")) != NULL && num_fields <= 10) {
+            fields[num_fields++] = token;
+        }
+        
+        if (num_fields == 6) {
+            char *username = fields[0];
+            //char *key = fields[1];
+            //char *value = fields[2];
+            char *allowed = fields[3];
+            char *hashed_card = fields[4];
+            char *last_accessed = fields[5];
+
+            if (strcmp(tag_sha224, hashed_card) == 0) {
+                ESP_LOGI(TAG, "found tag for user %s, allowed=%s, last accessed=%s", username, allowed, last_accessed);
+                found = 1;
+
+                strncpy(user->name, username, sizeof(user->name));
+                strncpy(user->last_accessed, last_accessed, sizeof(user->last_accessed));
+                user->allowed = (strcmp(allowed, "allowed") == 0);
+            }
+        }
+    }
+    fclose(f);
+    free(line);
+
+    xSemaphoreGive(g_sdcard_mutex);
+
+    return found;
+}
+
 void rfid_task(void *pvParameters)
 {
     uint8_t* rxbuf = (uint8_t*) malloc(SER_BUF_SIZE);
-
 
     while(1) {
         int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
 
         if (len==5) {
-            char tag_ascii[32];
-            char tag_hexdigest[65];
 
             uint8_t checksum_calc = rxbuf[0] ^ rxbuf[1] ^ rxbuf[2] ^ rxbuf[3];
             if (checksum_calc == rxbuf[4]) {
                 uint32_t tag = (rxbuf[0]<<24) | (rxbuf[1]<<16) | (rxbuf[2]<<8) | rxbuf[3];
-                snprintf(tag_ascii, sizeof(tag_ascii), "%10.10u", tag);
-                display_rfid_msg(tag_ascii);
-                ESP_LOGI(TAG, "Scanned RFID tag %10.10u", tag);
-                
-                rfid_hash_sha224(tag_ascii, strlen(tag_ascii), tag_hexdigest, sizeof(tag_hexdigest));
-                
-                ESP_LOGI(TAG, "RFID tag SHA224 hexdigest: %s", tag_hexdigest);
+                user_fields_t user;
+
+                bzero(&user, sizeof(user));
+                if (rfid_lookup(tag, &user)) {
+                    display_user_msg(user.name);
+                    display_allowed_msg(user.last_accessed, user.allowed);
+                } else {
+                    display_user_msg("Unknown Tag");
+                    display_allowed_msg("DENIED", 0);
+                }
                 
             } else {
                 char s[80];

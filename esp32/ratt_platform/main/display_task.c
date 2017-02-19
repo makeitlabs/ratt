@@ -21,13 +21,17 @@ typedef enum {
     DISP_CMD_WIFI_MSG = 0x00,
     DISP_CMD_WIFI_RSSI,
     DISP_CMD_NET_MSG,
-    DISP_CMD_RFID_MSG
+    DISP_CMD_ALLOWED_MSG,
+    DISP_CMD_USER_MSG
 } display_cmd_t;
 
 typedef struct display_evt {
     display_cmd_t cmd;
     char buf[DISPLAY_EVT_BUF_SIZE];
-    int16_t rssi;
+    union {
+        int16_t rssi;
+        uint8_t allowed;
+    } params;
 } display_evt_t;
 
 static QueueHandle_t m_q;
@@ -46,7 +50,7 @@ BaseType_t display_wifi_rssi(int16_t rssi)
 {
     display_evt_t evt;
     evt.cmd = DISP_CMD_WIFI_RSSI;
-    evt.rssi = rssi;
+    evt.params.rssi = rssi;
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
 
@@ -59,12 +63,22 @@ BaseType_t display_net_msg(char *msg)
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
 
-BaseType_t display_rfid_msg(char *msg)
+BaseType_t display_user_msg(char *msg)
 {
     display_evt_t evt;
-    evt.cmd = DISP_CMD_RFID_MSG;
+    evt.cmd = DISP_CMD_USER_MSG;
     strncpy(evt.buf, msg, sizeof(evt.buf)-1);
 
+    return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
+}
+
+BaseType_t display_allowed_msg(char *msg, uint8_t allowed)
+{
+    display_evt_t evt;
+    evt.cmd = DISP_CMD_ALLOWED_MSG;
+    strncpy(evt.buf, msg, sizeof(evt.buf)-1);
+    evt.params.allowed = allowed;
+    
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
 
@@ -112,7 +126,7 @@ void display_task(void *pvParameters)
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 152, 32, 8, lcd_rgb565(0x00, 0x00, 0xC0));
                 gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
-                snprintf(s, sizeof(s), "%d", evt.rssi); 
+                snprintf(s, sizeof(s), "%d", evt.params.rssi); 
                 gfx_write_string(0, 152, s);
                 break;
             case DISP_CMD_NET_MSG:
@@ -121,11 +135,21 @@ void display_task(void *pvParameters)
                 gfx_set_text_color(lcd_rgb565(0xF8, 0xE0, 0x00));
                 gfx_write_string(0, 8, evt.buf);
                 break;
-            case DISP_CMD_RFID_MSG:
+            case DISP_CMD_USER_MSG:
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 24, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
                 gfx_set_text_color(lcd_rgb565(0xF8, 0x00, 0xF8));
                 gfx_write_string(0, 24, evt.buf);
+                break;
+            case DISP_CMD_ALLOWED_MSG:
+                gfx_set_font(NULL);
+                lcd_fill_rect(0, 32, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
+                if (evt.params.allowed) {
+                    gfx_set_text_color(lcd_rgb565(0x00, 0xFF, 0x00));
+                } else {
+                    gfx_set_text_color(lcd_rgb565(0xFF, 0x00, 0x00));
+                }
+                gfx_write_string(0, 32, evt.buf);
                 break;
             }
             
