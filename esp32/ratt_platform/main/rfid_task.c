@@ -7,16 +7,18 @@
 
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
+#include "display_task.h"
 
 #define SER_BUF_SIZE (256)
-#define SER_RFID_TXD  (17)
+#define SER_RFID_TXD  (-1)
 #define SER_RFID_RXD  (16)
-#define SER_RFID_RTS  (18)
-#define SER_RFID_CTS  (19)
+#define SER_RFID_RTS  (-1)
+#define SER_RFID_CTS  (-1)
 
 static int uart_num = UART_NUM_1;
 
 static const char *TAG = "rfid_task";
+
 
 void rfid_init()
 {
@@ -42,12 +44,19 @@ void rfid_task(void *pvParameters)
     while(1) {
         int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
 
-        if (len) {
-            for (int i=0; i<len; i++) {
-                char s[10];
-                snprintf(s, sizeof(s), "%2.2X ", rxbuf[i]);
-                ESP_LOGI(TAG, "SERIAL RX: %s", s);
-                
+        if (len==5) {
+            char s[32];
+
+            uint8_t checksum_calc = rxbuf[0] ^ rxbuf[1] ^ rxbuf[2] ^ rxbuf[3];
+            if (checksum_calc == rxbuf[4]) {
+                uint32_t tag = (rxbuf[0]<<24) | (rxbuf[1]<<16) | (rxbuf[2]<<8) | rxbuf[3];
+                snprintf(s, sizeof(s), "%10.10u", tag);
+                display_rfid_msg(s);
+                ESP_LOGI(TAG, "Scanned RFID tag %10.10u", tag);
+            } else {
+                ESP_LOGI(TAG, "Bad RFID tag checksum, bytes follow:");
+                snprintf(s, sizeof(s), "%2.2X %2.2X %2.2X %2.2X [%2.2X != %2.2X]", rxbuf[0], rxbuf[1], rxbuf[2], rxbuf[3], rxbuf[4], checksum_calc);
+                ESP_LOGI(TAG, "%s", s);
             }
         }
     }
