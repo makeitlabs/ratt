@@ -113,6 +113,7 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
             char *hashed_card = fields[4];
             char *last_accessed = fields[5];
 
+            ESP_LOGI(TAG, "comparing %s to %s", tag_sha224, hashed_card);
             if (strcmp(tag_sha224, hashed_card) == 0) {
                 ESP_LOGI(TAG, "found tag for user %s, allowed=%s, last accessed=%s", username, allowed, last_accessed);
                 found = 1;

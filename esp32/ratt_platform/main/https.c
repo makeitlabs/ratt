@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <errno.h>
 
 #include "mbedtls/net.h"
 #include "mbedtls/entropy.h"
@@ -53,10 +54,13 @@ typedef struct
     char    r_buf[H_READ_SIZE];
     long    r_len;
     int     header_end;
+
     char    *body;
     long    body_size;
     long    body_len;
 
+    FILE    *fp;
+    
     mbedtls_net_context         ssl_fd;
     mbedtls_entropy_context     entropy;
     mbedtls_ctr_drbg_context    ctr_drbg;
@@ -89,11 +93,11 @@ static int https_read(HTTP_INFO *hi, char *buffer, int len);
 int http_init(int id);
 int http_close(int id);
 
-int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response, int size);
+int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response, int size, FILE *fp);
 int http_post(int id, char *url, char *data, char *response, int size);
 
 void http_strerror(char *buf, int len);
-int http_open_chunked(int id, char *url);
+int http_open_chunked(int id, char *url, char *auth_user, char *auth_pass);
 int http_write_chunked(int id, char *data, int len);
 int http_read_chunked(int id, char *response, int size);
 
@@ -247,192 +251,168 @@ static int http_parse(HTTP_INFO *hi)
     char    *p1, *p2;
     long    len;
 
-
     if(hi->r_len <= 0) return -1;
 
     p1 = hi->r_buf;
 
-    while(1)
-    {
-        if(hi->header_end == 0)     // header parser
-        {
-            if((p2 = strstr(p1, "\r\n")) != NULL)
-            {
+    while(1) {
+        if(hi->header_end == 0) {
+            // header parser            
+            if((p2 = strstr(p1, "\r\n")) != NULL) {
                 len = (long)(p2 - p1);
                 *p2 = 0;
-
-                if(len > 0)
-                {
+                
+                if(len > 0) {
                     // printf("header: %s(%ld)\n", p1, len);
 
                     http_header(hi, p1);
                     p1 = p2 + 2;    // skip CR+LF
-                }
-                else
-                {
+                } else {
                     hi->header_end = 1; // reach the header-end.
 
                     // printf("header_end .... \n");
 
                     p1 = p2 + 2;    // skip CR+LF
 
-                    if(hi->chunked == 1)
-                    {
+                    if(hi->chunked == 1) {
                         len = hi->r_len - (p1 - hi->r_buf);
-                        if(len > 0)
-                        {
-                            if((p2 = strstr(p1, "\r\n")) != NULL)
-                            {
+                        if(len > 0) {
+                            if((p2 = strstr(p1, "\r\n")) != NULL) {
                                 *p2 = 0;
 
-                                if((hi->length = strtol(p1, NULL, 16)) == 0)
-                                {
+                                if((hi->length = strtol(p1, NULL, 16)) == 0) {
                                     hi->chunked = 0;
-                                }
-                                else
-                                {
+                                } else {
                                     hi->content_length += hi->length;
                                 }
                                 p1 = p2 + 2;    // skip CR+LF
-                            }
-                            else
-                            {
+                            } else {
                                 // copy the data as chunked size ...
                                 strncpy(hi->r_buf, p1, len);
                                 hi->r_buf[len] = 0;
                                 hi->r_len = len;
                                 hi->length = -1;
-
                                 break;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             hi->r_len = 0;
                             hi->length = -1;
-
                             break;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         hi->length = hi->content_length;
                     }
                 }
-
-            }
-            else
-            {
+            } else {
                 len = hi->r_len - (p1 - hi->r_buf);
-                if(len  > 0)
-                {
+                if(len  > 0) {
                     // keep the partial header data ...
                     strncpy(hi->r_buf, p1, len);
                     hi->r_buf[len] = 0;
                     hi->r_len = len;
-                }
-                else
-                {
+                } else {
                     hi->r_len = 0;
                 }
-
                 break;
             }
-        }
-        else    // body parser ...
-        {
-            if(hi->chunked == 1 && hi->length == -1)
-            {
+        } else {
+            // body parser ...
+            if(hi->chunked == 1 && hi->length == -1) {
                 len = hi->r_len - (p1 - hi->r_buf);
-                if(len > 0)
-                {
-                    if ((p2 = strstr(p1, "\r\n")) != NULL)
-                    {
+                if(len > 0) {
+                    if ((p2 = strstr(p1, "\r\n")) != NULL) {
                         *p2 = 0;
 
-                        if((hi->length = strtol(p1, NULL, 16)) == 0)
-                        {
+                        if((hi->length = strtol(p1, NULL, 16)) == 0) {
                             hi->chunked = 0;
-                        }
-                        else
-                        {
+                        } else {
                             hi->content_length += hi->length;
                         }
-
                         p1 = p2 + 2;    // skip CR+LF
-                    }
-                    else
-                    {
+                    } else {
                         // copy the remain data as chunked size ...
                         strncpy(hi->r_buf, p1, len);
                         hi->r_buf[len] = 0;
                         hi->r_len = len;
                         hi->length = -1;
-
                         break;
                     }
-                }
-                else
-                {
+                } else {
                     hi->r_len = 0;
-
                     break;
                 }
-            }
-            else
-            {
-                if(hi->length > 0)
-                {
+            } else {
+                if(hi->length > 0) {
                     len = hi->r_len - (p1 - hi->r_buf);
 
-                    if(len > hi->length)
-                    {
+                    if(len > hi->length) {
                         // copy the data for response ..
-                        if(hi->body_len < hi->body_size-1)
-                        {
-                            if (hi->body_size > (hi->body_len + hi->length))
-                            {
-                                strncpy(&(hi->body[hi->body_len]), p1, hi->length);
-                                hi->body_len += hi->length;
-                                hi->body[hi->body_len] = 0;
+
+                        if (hi->fp) {
+                            size_t ret = fwrite(p1, 1, hi->length, hi->fp);
+                            if (ret != hi->length) {
+                                ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
+                                return -1;
                             }
-                            else
-                            {
-                                strncpy(&(hi->body[hi->body_len]), p1, hi->body_size - hi->body_len - 1);
-                                hi->body_len = hi->body_size - 1;
-                                hi->body[hi->body_len] = 0;
+                        } else {
+                            if(hi->body_len < hi->body_size-1) {
+                                // if there is still room in the body buffer...
+                                
+                                if (hi->body_size > (hi->body_len + hi->length)) {
+                                    // if there is room for the whole rcv buf to be copied into body buf...
+                                    // copy all bytes from rcv buf
+                                    
+                                    strncpy(&(hi->body[hi->body_len]), p1, hi->length);
+                                    hi->body_len += hi->length;
+                                    hi->body[hi->body_len] = 0;
+                                } else {
+                                    // there are more bytes in the rcv buf than will fit in the body buffer...
+                                    // only copy as many as will fit
+                                    
+                                    strncpy(&(hi->body[hi->body_len]), p1, hi->body_size - hi->body_len - 1);
+                                    hi->body_len = hi->body_size - 1;
+                                    hi->body[hi->body_len] = 0;
+                                }
                             }
                         }
 
                         p1 += hi->length;
                         len -= hi->length;
 
-                        if(hi->chunked == 1 && len >= 2)
-                        {
+                        if(hi->chunked == 1 && len >= 2) {
                             p1 += 2;    // skip CR+LF
                             hi->length = -1;
-                        }
-                        else
-                        {
+                        } else {
                             return -1;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         // copy the data for response ..
-                        if(hi->body_len < hi->body_size-1)
-                        {
-                            if (hi->body_size > (hi->body_len + len))
-                            {
-                                strncpy(&(hi->body[hi->body_len]), p1, len);
-                                hi->body_len += len;
-                                hi->body[hi->body_len] = 0;
+
+                        if (hi->fp) {
+                            size_t ret = fwrite(p1, 1, len, hi->fp);
+                            if (ret != len) {
+                                ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
+                                return -1;
                             }
-                            else
-                            {
-                                strncpy(&(hi->body[hi->body_len]), p1, hi->body_size - hi->body_len - 1);
-                                hi->body_len = hi->body_size - 1;
-                                hi->body[hi->body_len] = 0;
+                        } else {
+                            if(hi->body_len < hi->body_size-1) {
+                                // if there is still room in the body buffer...
+                                
+                                if (hi->body_size > (hi->body_len + len)) {
+                                    // if there is room for 'len' bytes to be copied into body buf...
+                                    // copy 'len' bytes from rcv buf
+                                    
+                                    strncpy(&(hi->body[hi->body_len]), p1, len);
+                                    hi->body_len += len;
+                                    hi->body[hi->body_len] = 0;
+                                } else {
+                                    // 'len' is more bytes than will fit in the body buffer...
+                                    // only copy as many as will fit 
+                                    
+                                    strncpy(&(hi->body[hi->body_len]), p1, hi->body_size - hi->body_len - 1);
+                                    hi->body_len = hi->body_size - 1;
+                                    hi->body[hi->body_len] = 0;
+                                }
                             }
                         }
 
@@ -443,19 +423,14 @@ static int http_parse(HTTP_INFO *hi)
 
                         break;
                     }
-                }
-                else
-                {
+                } else {
                     if(hi->chunked == 0) return 1;
 
                     // chunked size check ..
-                    if((hi->r_len > 2) && (memcmp(p1, "\r\n", 2) == 0))
-                    {
+                    if((hi->r_len > 2) && (memcmp(p1, "\r\n", 2) == 0)) {
                         p1 += 2;
                         hi->length = -1;
-                    }
-                    else
-                    {
+                    } else {
                         hi->length = -1;
                         hi->r_len = 0;
                     }
@@ -463,7 +438,7 @@ static int http_parse(HTTP_INFO *hi)
             }
         }
     }
-
+    
     return 0;
 }
 
@@ -528,9 +503,6 @@ static int mbedtls_net_connect_timeout( mbedtls_net_context *ctx, const char *ho
     int ret;
     struct addrinfo hints, *addr_list, *cur;
 
-
-    // no signals on ESP
-    //signal( SIGPIPE, SIG_IGN );
 
     /* Do name resolution with both IPv6 and IPv4 */
     memset( &hints, 0, sizeof( hints ) );
@@ -801,7 +773,7 @@ int http_close(int id)
 }
 
 /*---------------------------------------------------------------------*/
-int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response, int size)
+int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response, int size, FILE* fp)
 {
     HTTP_INFO   *hi;
     char        request[1024], err[100];
@@ -908,10 +880,17 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
     hi->content_length = 0;
     hi->close = 0;
 
-    hi->body = response;
-    hi->body_size = size;
-    hi->body_len = 0;
-
+    if (fp) {
+        hi->body = 0;
+        hi->body_size = 0;
+        hi->body_len = 0;
+    } else {
+        hi->body = response;
+        hi->body_size = size;
+        hi->body_len = 0;
+    }
+    hi->fp = fp;
+    
     while(1)
     {
         ret = https_read(hi, &hi->r_buf[hi->r_len], (int)(H_READ_SIZE - hi->r_len));
@@ -961,7 +940,6 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
     */
 
     return hi->status;
-
 }
 
 /*---------------------------------------------------------------------*/
@@ -1119,7 +1097,9 @@ void http_strerror(char *buf, int len)
 }
 
 /*---------------------------------------------------------------------*/
-int http_open_chunked(int id, char *url)
+
+
+int http_open_chunked(int id, char *url, char *auth_user, char *auth_pass)
 {
     HTTP_INFO *hi;
     char request[1024];
@@ -1175,17 +1155,60 @@ int http_open_chunked(int id, char *url)
 //          printf("socket reuse: %d \n", sock_fd);
     }
 
+
+//
+    
+    // build the http request, including an auth header if requested
+    if (strcmp(auth_user, "") != 0) {
+        size_t olen;
+        unsigned char base64[32];
+        char auth[64];
+        
+        snprintf(auth, sizeof(auth), "%s:%s", auth_user, auth_pass);
+        if ((ret = mbedtls_base64_encode(base64, 32, &olen, (const unsigned char*)auth, strlen(auth))) != 0) {
+            ESP_LOGE(TAG, "mbedtls_base64_encode returned -0x%x\n\n", -ret);
+            abort();
+        }
+        
+        snprintf(auth, sizeof(auth), "Authorization: Basic %s", base64);
+        
+        // basic auth required
+        len = snprintf(request, sizeof(request),
+                       "GET %s HTTP/1.1\r\n"
+                       "Host: %s:%s\r\n"
+                       "%s\r\n"
+                       "User-Agent: esp-idf/1.0 esp32\r\n"
+                       "Transfer-Encoding: chunked\r\n"
+                       "Connection: Keep-Alive\r\n"
+                       "%s\r\n", dir, host, port, auth, hi->cookie);
+    } else {
+        // no basic auth required
+        len = snprintf(request, sizeof(request),
+                       "GET %s HTTP/1.1\r\n"
+                       "Host: %s:%s\r\n"
+                       "User-Agent: esp-idf/1.0 esp32\r\n"
+                       "Transfer-Encoding: chunked\r\n"
+                       "Connection: Keep-Alive\r\n"
+                       "%s\r\n", dir, host, port, hi->cookie);
+        
+    }
+
+    ESP_LOGI(TAG, "request:\n\r %s", request);
+
+
     /* Send HTTP request. */
+    /*
     len = snprintf(request, 1024,
                    "POST %s HTTP/1.1\r\n"
                            "User-Agent: Mozilla/4.0\r\n"
                            "Host: %s:%s\r\n"
                            "Content-Type: application/json; charset=utf-8\r\n"
-                           "Transfer-Encoding: chunked\r\n"
-                           "Connection: Keep-Alive\r\n"
+                           "Transfer-Encoding: chunked\n"
+                           "Connection: Keep-Alive\n"
                            "%s\r\n",
                    dir, host, port, hi->cookie);
-
+    */
+    
     if ((ret = https_write(hi, request, len)) != len)
     {
         https_close(hi);
@@ -1259,8 +1282,6 @@ int http_read_chunked(int id, char *response, int size)
         return -1;
     }
 
-//  printf("request: %s \r\n\r\n", request);
-
     hi->status = 0;
     hi->r_len = 0;
     hi->header_end = 0;
@@ -1293,8 +1314,8 @@ int http_read_chunked(int id, char *response, int size)
         hi->r_len += ret;
         hi->r_buf[hi->r_len] = 0;
 
-//        printf("read(%ld): %s \n", hi->r_len, hi->r_buf);
-//        printf("read(%ld) \n", hi->r_len);
+        //printf("read(%ld): %s \n", hi->r_len, hi->r_buf);
+        //printf("read(%ld) \n", hi->r_len);
 
         if(http_parse(hi) != 0) break;
     }

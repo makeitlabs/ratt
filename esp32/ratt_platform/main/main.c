@@ -66,5 +66,5 @@ void app_main()
     xTaskCreatePinnedToCore(&display_task, "display_task", 4096, NULL, 8, NULL, 0);
     xTaskCreatePinnedToCore(&rfid_task, "rfid_task", 4096, NULL, 8, NULL, 0);
     //xTaskCreatePinnedToCore(&audio_task, "audio_task", 4096, NULL, 10, NULL, 0);
-    xTaskCreatePinnedToCore(&i2c_test_task, "i2c_test_task", 4096, NULL, 9, NULL, 0);
+    //xTaskCreatePinnedToCore(&i2c_test_task, "i2c_test_task", 4096, NULL, 9, NULL, 0);
 }

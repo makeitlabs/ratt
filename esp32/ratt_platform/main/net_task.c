@@ -43,7 +43,6 @@ static const char *TAG = "net_task";
 #define WEB_BASIC_AUTH_USER CONFIG_WEB_BASIC_AUTH_USER
 #define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
 
-#define ACL_BUF_SIZE (40 * 1024)
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
 static EventGroupHandle_t wifi_event_group;
@@ -160,11 +159,13 @@ void net_init(void)
 }
 
 
+#define RESP_BUF_SIZE 1024
+
 void net_task(void *pvParameters)
 {
     char web_url[128];
     int ret;
-    char *acl_buf;
+    char *resp_buf;
     char s[32];
     
     net_init();
@@ -185,23 +186,41 @@ void net_task(void *pvParameters)
         
         ESP_LOGI(TAG, "Free heap size before malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         
-        acl_buf = pvPortMallocCaps(ACL_BUF_SIZE, MALLOC_CAP_8BIT);
+        resp_buf = pvPortMallocCaps(RESP_BUF_SIZE, MALLOC_CAP_8BIT);
 
         ESP_LOGI(TAG, "Free heap size after malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         
-        if (acl_buf) {
-            ESP_LOGI(TAG, "ACL buffer size = %zu", ACL_BUF_SIZE);
+        if (resp_buf) {
+            ESP_LOGI(TAG, "response buffer size = %zu", RESP_BUF_SIZE);
 
             display_net_msg("INIT TLS");
             
             ret = http_init(0);
 
             display_net_msg("ACL DOWNLOAD");
+
+            xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+            FILE* file = fopen("/sdcard/acl.txt", "w");
             
-            ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, acl_buf, ACL_BUF_SIZE);
+            if (file) {
+                ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, resp_buf, RESP_BUF_SIZE, file);
 
+                ESP_LOGI(TAG, "http_get returned %d", ret);
+                if (ret == -1) {
+                    ESP_LOGE(TAG, "%s", resp_buf);
+                }
+                
+                fclose(file);
+            } else {
+                ESP_LOGE(TAG, "could not open file for writing");
+            }
+            xSemaphoreGive(g_sdcard_mutex);
+
+            ret = http_close(0);
+            ESP_LOGI(TAG, "http_close returned %d", ret);
+
+            /*
             display_net_msg("SAVING ACL");
-
             
             // Use POSIX and C standard library functions to work with files.
             ESP_LOGI(TAG, "Opening file on SD card for write...");
@@ -226,7 +245,7 @@ void net_task(void *pvParameters)
             ESP_LOGI(TAG, "ACL file written to SD card...");
 
             display_net_msg("SAVED ACL");
-
+            */
             
             // Open file for reading
             ESP_LOGI(TAG, "Reading ACL file from SD card...");
@@ -234,7 +253,7 @@ void net_task(void *pvParameters)
             ESP_LOGI(TAG, "taking sdcard mutex...");
             xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
 
-            f = fopen("/sdcard/acl.txt", "r");
+            FILE* f = fopen("/sdcard/acl.txt", "r");
             if (f == NULL) {
                 ESP_LOGE(TAG, "Failed to open file for reading");
                 return;
@@ -263,7 +282,7 @@ void net_task(void *pvParameters)
             }
             */
             
-            vPortFreeTagged(acl_buf);
+            vPortFreeTagged(resp_buf);
             ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         } else {
             ESP_LOGE(TAG, "Could not malloc acl buffer");
