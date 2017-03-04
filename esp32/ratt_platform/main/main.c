@@ -59,12 +59,16 @@ void app_main()
     display_init();
 
     rfid_init();
-    //audio_init();
+    audio_init();
     //i2c_init();
+
+    audio_play("/sdcard/macstart.s16");
+    display_user_msg("SCAN TAG");
+
     
     xTaskCreatePinnedToCore(&net_task, "net_task", 8192, NULL, 7, NULL, 0);
     xTaskCreatePinnedToCore(&display_task, "display_task", 4096, NULL, 8, NULL, 0);
     xTaskCreatePinnedToCore(&rfid_task, "rfid_task", 4096, NULL, 8, NULL, 0);
-    //xTaskCreatePinnedToCore(&audio_task, "audio_task", 4096, NULL, 10, NULL, 0);
+    xTaskCreatePinnedToCore(&audio_task, "audio_task", 4096, NULL, 10, NULL, 0);
     //xTaskCreatePinnedToCore(&i2c_test_task, "i2c_test_task", 4096, NULL, 9, NULL, 0);
 }

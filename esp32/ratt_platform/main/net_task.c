@@ -173,12 +173,16 @@ void net_task(void *pvParameters)
     char *resp_buf;
     char s[32];
 
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    
     net_init();
     
+
     ESP_LOGI(TAG, "start net task");
     
     snprintf(web_url, sizeof(web_url), "https://%s/%s", WEB_SERVER, WEB_URL_PATH);
 
+    
     while(1) {
         display_net_msg("WAITING FOR WIFI");
 
@@ -252,7 +256,7 @@ void net_task(void *pvParameters)
         for(int countdown = 30; countdown >= 0; countdown--) {
             ESP_LOGI(TAG, "%d...", countdown);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
-            snprintf(s, sizeof(s), "RESTART %d...", countdown);
+            snprintf(s, sizeof(s), "NEXT DOWNLOAD %d...", countdown);
             display_net_msg(s);
 
             wifi_ap_record_t wifidata;

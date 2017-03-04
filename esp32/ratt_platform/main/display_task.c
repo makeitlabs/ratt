@@ -138,7 +138,7 @@ void display_task(void *pvParameters)
             case DISP_CMD_USER_MSG:
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 24, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
-                gfx_set_text_color(lcd_rgb565(0xF8, 0x00, 0xF8));
+                gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
                 gfx_write_string(0, 24, evt.buf);
                 break;
             case DISP_CMD_ALLOWED_MSG:

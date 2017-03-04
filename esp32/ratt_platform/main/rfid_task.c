@@ -13,6 +13,7 @@
 #include "rfid_task.h"
 #include "sdcard.h"
 #include "display_task.h"
+#include "audio_task.h"
 
 #define SER_BUF_SIZE (256)
 #define SER_RFID_TXD  (-1)
@@ -159,9 +160,15 @@ void rfid_task(void *pvParameters)
                 if (rfid_lookup(tag, &user)) {
                     display_user_msg(user.name);
                     display_allowed_msg(user.last_accessed, user.allowed);
+                    if (user.allowed) {
+                        audio_play("/sdcard/granted.s16");
+                    } else {
+                        audio_play("/sdcard/denied.s16");
+                    }
                 } else {
                     display_user_msg("Unknown Tag");
                     display_allowed_msg("DENIED", 0);
+                    audio_play("/sdcard/denied.s16");
                 }
                 
             } else {
