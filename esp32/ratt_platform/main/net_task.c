@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
@@ -30,6 +32,7 @@
 #include "mbedtls/base64.h"
 
 #include "display_task.h"
+#include "rfid_task.h"
 
 static const char *TAG = "net_task";
 
@@ -161,13 +164,15 @@ void net_init(void)
 
 #define RESP_BUF_SIZE 1024
 
+
+
 void net_task(void *pvParameters)
 {
     char web_url[128];
     int ret;
     char *resp_buf;
     char s[32];
-    
+
     net_init();
     
     ESP_LOGI(TAG, "start net task");
@@ -200,7 +205,7 @@ void net_task(void *pvParameters)
             display_net_msg("ACL DOWNLOAD");
 
             xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
-            FILE* file = fopen("/sdcard/acl.txt", "w");
+            FILE* file = fopen("/sdcard/acl-temp.txt", "w");
             
             if (file) {
                 ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, resp_buf, RESP_BUF_SIZE, file);
@@ -214,74 +219,29 @@ void net_task(void *pvParameters)
             } else {
                 ESP_LOGE(TAG, "could not open file for writing");
             }
-            xSemaphoreGive(g_sdcard_mutex);
+            http_close(0);
 
-            ret = http_close(0);
-            ESP_LOGI(TAG, "http_close returned %d", ret);
+            if (ret == 200) {
+                xSemaphoreTake(g_acl_mutex, portMAX_DELAY);
+                // delete existing ACL file if it exists
+                struct stat st;
+                if (stat("/sdcard/acl.txt", &st) == 0) {
+                    unlink("/sdcard/acl.txt");
+                }
 
-            /*
-            display_net_msg("SAVING ACL");
-            
-            // Use POSIX and C standard library functions to work with files.
-            ESP_LOGI(TAG, "Opening file on SD card for write...");
-
-            ESP_LOGI(TAG, "taking sdcard mutex...");
-            xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
-
-            FILE* f = fopen("/sdcard/acl.txt", "w");
-            if (f == NULL) {
-                ESP_LOGE(TAG, "Failed to open file for writing...");
-                return;
+                // move downloaded ACL in place
+                if (rename("/sdcard/acl-temp.txt", "/sdcard/acl.txt") != 0) {
+                    ESP_LOGE(TAG, "Could not rename downloaded ACL file!");
+                }
+                xSemaphoreGive(g_acl_mutex);
+                
+                display_net_msg("SAVED NEW ACL");
+            } else {
+                display_net_msg("DOWNLOAD FAILED");
             }
-            ret = fwrite(acl_buf, strlen(acl_buf), 1, f);
-            if (ret != 1) {
-                ESP_LOGE(TAG, "Failed to write to SD card... %d", ret);
-            }
-            fclose(f);
-
-            xSemaphoreGive(g_sdcard_mutex);
-            ESP_LOGI(TAG, "gave sdcard mutex...");
-            
-            ESP_LOGI(TAG, "ACL file written to SD card...");
-
-            display_net_msg("SAVED ACL");
-            */
-            
-            // Open file for reading
-            ESP_LOGI(TAG, "Reading ACL file from SD card...");
-
-            ESP_LOGI(TAG, "taking sdcard mutex...");
-            xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
-
-            FILE* f = fopen("/sdcard/acl.txt", "r");
-            if (f == NULL) {
-                ESP_LOGE(TAG, "Failed to open file for reading");
-                return;
-            }
-
-            char line[128];
-            uint16_t lines = 0;
-            while (fgets(line, sizeof(line), f) == line) {
-                lines++;
-                //ESP_LOGI(TAG, "%s", line);
-            }
-            fclose(f);
             
             xSemaphoreGive(g_sdcard_mutex);
-            ESP_LOGI(TAG, "gave sdcard mutex...");
 
-            ESP_LOGI(TAG, ">>>>>>>>>>>>>>> Got %d lines in ACL file", lines);
-
-            snprintf(s, sizeof(s), "ACL %d LINES", lines);
-            display_net_msg(s);
-
-            /*
-            ESP_LOGI(TAG, "http_get return code: %d", ret);
-            for(int i = 0; i < ACL_BUF_SIZE && acl_buf[i] != 0; i++) {
-                putchar(acl_buf[i]);
-            }
-            */
-            
             vPortFreeTagged(resp_buf);
             ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         } else {

@@ -11,5 +11,7 @@ typedef struct user_fields {
     uint8_t allowed;
 } user_fields_t;
 
+extern SemaphoreHandle_t g_acl_mutex;
+
 
 #endif

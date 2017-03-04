@@ -50,14 +50,14 @@ typedef struct
     char    host[256];
     char    port[10];
 
-    long    length;
+    size_t  length;
     char    r_buf[H_READ_SIZE];
-    long    r_len;
+    size_t  r_len;
     int     header_end;
 
     char    *body;
-    long    body_size;
-    long    body_len;
+    size_t  body_size;
+    size_t  body_len;
 
     FILE    *fp;
     
@@ -87,8 +87,8 @@ static int http_parse(HTTP_INFO *hi);
 static int https_init(HTTP_INFO *hi, int https);
 static int https_close(HTTP_INFO *hi);
 static int https_connect(HTTP_INFO *hi, char *host, char *port);
-static int https_write(HTTP_INFO *hi, char *buffer, int len);
-static int https_read(HTTP_INFO *hi, char *buffer, int len);
+static int https_write(HTTP_INFO *hi, char *buffer, size_t len);
+static int https_read(HTTP_INFO *hi, char *buffer, size_t len);
 
 int http_init(int id);
 int http_close(int id);
@@ -249,12 +249,13 @@ static int http_header(HTTP_INFO *hi, char *param)
 static int http_parse(HTTP_INFO *hi)
 {
     char    *p1, *p2;
-    long    len;
+    size_t len;
 
     if(hi->r_len <= 0) return -1;
 
     p1 = hi->r_buf;
 
+    
     while(1) {
         if(hi->header_end == 0) {
             // header parser            
@@ -263,14 +264,14 @@ static int http_parse(HTTP_INFO *hi)
                 *p2 = 0;
                 
                 if(len > 0) {
-                    // printf("header: %s(%ld)\n", p1, len);
+                    //printf("header: %s(%zu)\n", p1, len);
 
                     http_header(hi, p1);
                     p1 = p2 + 2;    // skip CR+LF
                 } else {
                     hi->header_end = 1; // reach the header-end.
 
-                    // printf("header_end .... \n");
+                    //printf("header_end .... \n");
 
                     p1 = p2 + 2;    // skip CR+LF
 
@@ -319,6 +320,7 @@ static int http_parse(HTTP_INFO *hi)
             // body parser ...
             if(hi->chunked == 1 && hi->length == -1) {
                 len = hi->r_len - (p1 - hi->r_buf);
+
                 if(len > 0) {
                     if ((p2 = strstr(p1, "\r\n")) != NULL) {
                         *p2 = 0;
@@ -344,16 +346,49 @@ static int http_parse(HTTP_INFO *hi)
             } else {
                 if(hi->length > 0) {
                     len = hi->r_len - (p1 - hi->r_buf);
-
+                    
                     if(len > hi->length) {
                         // copy the data for response ..
 
                         if (hi->fp) {
-                            size_t ret = fwrite(p1, 1, hi->length, hi->fp);
-                            if (ret != hi->length) {
-                                ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
-                                return -1;
+                            if (hi->length) {
+                                size_t k = 0;
+                                while (k < hi->length) {
+                                    if (fputc(*(p1 + k), hi->fp) == EOF)
+                                        break;
+                                    k++;
+                                }
+
+                                if (k != hi->length) {
+                                    ESP_LOGE(TAG, "error writing to file with fputc() k=%zu hi->length=%zu", k, hi->length);
+                                    return -1;
+                                }
+                                
+                                /*
+                                 * there seems to be some kind of bug doing fwrite() on the ESP that i can't yet track down...
+                                 *
+                                 * results in file corruption:
+                                 * +8192 bytes -- two bytes are duplicated
+                                 * +1536 bytes -- two bytes missing
+                                 * +512 bytes  -- two bytes are duplicated
+                                 * +1536 bytes -- two bytes missing
+                                 * ...         -- (repeating corruption at 512/1536 for remainder of file written)
+                                 *
+                                 *
+                                 * YET this works fine using fputc() one character at a time...
+                                 *
+                                printf("fwrite() hi->length=%zu\n", hi->length);
+                                int ret = fwrite(p1, 1, hi->length, hi->fp);
+                                printf("fwrite() returned %d\n", ret);
+                                if (ret != hi->length) {
+                                    ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
+                                    return -1;
+                                }
+                                */
+
+
                             }
+                            
                         } else {
                             if(hi->body_len < hi->body_size-1) {
                                 // if there is still room in the body buffer...
@@ -389,11 +424,42 @@ static int http_parse(HTTP_INFO *hi)
                         // copy the data for response ..
 
                         if (hi->fp) {
-                            size_t ret = fwrite(p1, 1, len, hi->fp);
-                            if (ret != len) {
-                                ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
-                                return -1;
+                            if (len) {
+                                size_t k = 0;
+                                while (k < len) {
+                                    if (fputc(*(p1 + k), hi->fp) == EOF)
+                                        break;
+                                    k++;
+                                }
+
+                                if (k != len) {
+                                    ESP_LOGE(TAG, "error writing to file with fputc() k=%zu len=%zu", k, len);
+                                    return -1;
+                                }
+                                
+                                /*
+                                 * there seems to be some kind of bug doing fwrite() on the ESP that i can't yet track down...
+                                 *
+                                 * results in file corruption:
+                                 * +8192 bytes -- two bytes are duplicated
+                                 * +1536 bytes -- two bytes missing
+                                 * +512 bytes  -- two bytes are duplicated
+                                 * +1536 bytes -- two bytes missing
+                                 * ...         -- (repeating corruption at 512/1536 for remainder of file written)
+                                 *
+                                 *
+                                 * YET this works fine using fputc() one character at a time...
+                                 *
+                                printf("fwrite() len=%zu\n", len);
+                                int ret = fwrite(hi->body, sizeof(char), len, hi->fp);
+                                printf("fwrite() returned %d\n", ret);
+                                if (ret != len) {
+                                    ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
+                                    return -1;
+                                }
+                                */
                             }
+
                         } else {
                             if(hi->body_len < hi->body_size-1) {
                                 // if there is still room in the body buffer...
@@ -715,16 +781,17 @@ static int https_connect(HTTP_INFO *hi, char *host, char *port)
 }
 
 /*---------------------------------------------------------------------*/
-static int https_write(HTTP_INFO *hi, char *buffer, int len)
+static int https_write(HTTP_INFO *hi, char *buffer, size_t len)
 {
-    int ret, slen = 0;
+    int ret;
+    size_t slen = 0;
 
     while(1)
     {
         if(hi->https == 1)
-            ret = mbedtls_ssl_write(&hi->ssl, (u_char *)&buffer[slen], (size_t)(len-slen));
+            ret = mbedtls_ssl_write(&hi->ssl, (u_char *)&buffer[slen], (len-slen));
         else
-            ret = mbedtls_net_send(&hi->ssl_fd, (u_char *)&buffer[slen], (size_t)(len-slen));
+            ret = mbedtls_net_send(&hi->ssl_fd, (u_char *)&buffer[slen], (len-slen));
 
         if(ret == MBEDTLS_ERR_SSL_WANT_WRITE) continue;
         else if(ret <= 0) return ret;
@@ -738,15 +805,15 @@ static int https_write(HTTP_INFO *hi, char *buffer, int len)
 }
 
 /*---------------------------------------------------------------------*/
-static int https_read(HTTP_INFO *hi, char *buffer, int len)
+static int https_read(HTTP_INFO *hi, char *buffer, size_t len)
 {
     if(hi->https == 1)
     {
-        return mbedtls_ssl_read(&hi->ssl, (u_char *)buffer, (size_t)len);
+        return mbedtls_ssl_read(&hi->ssl, (u_char *)buffer, len);
     }
     else
     {
-        return mbedtls_net_recv_timeout(&hi->ssl_fd, (u_char *)buffer, (size_t)len, 5000);
+        return mbedtls_net_recv_timeout(&hi->ssl_fd, (u_char *)buffer, len, 5000);
     }
 }
 
@@ -881,8 +948,8 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
     hi->close = 0;
 
     if (fp) {
-        hi->body = 0;
-        hi->body_size = 0;
+        hi->body = response;
+        hi->body_size = size;
         hi->body_len = 0;
     } else {
         hi->body = response;
@@ -893,7 +960,12 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
     
     while(1)
     {
-        ret = https_read(hi, &hi->r_buf[hi->r_len], (int)(H_READ_SIZE - hi->r_len));
+        //printf("start https_read r_len=%zu\n", hi->r_len);
+        
+        ret = https_read(hi, &hi->r_buf[hi->r_len], (H_READ_SIZE - hi->r_len));
+
+        //printf("done https_read ret=%d WANT_READ=%d\n", ret, MBEDTLS_ERR_SSL_WANT_READ);
+        
         if(ret == MBEDTLS_ERR_SSL_WANT_READ) continue;
         else if(ret < 0)
         {
@@ -912,11 +984,19 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
         }
 
         hi->r_len += ret;
-        hi->r_buf[hi->r_len] = 0;
+        // SSR - this looks like it will overflow the buffer, taking it out for now
+        //hi->r_buf[hi->r_len] = 0;
 
         // printf("read(%ld): |%s| \n", hi->r_len, hi->r_buf);
-        // printf("read(%ld) ... \n", hi->r_len);
+        //printf("read(%zu) ... \n", hi->r_len);
 
+        /*
+        for (size_t k=0; k<hi->r_len; k++) {
+            printf("%c", hi->r_buf[k]);
+        }
+        printf("\n");
+        */
+        
         if(http_parse(hi) != 0) break;
     }
 

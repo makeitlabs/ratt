@@ -60,7 +60,7 @@ void app_main()
 
     rfid_init();
     //audio_init();
-    i2c_init();
+    //i2c_init();
     
     xTaskCreatePinnedToCore(&net_task, "net_task", 8192, NULL, 7, NULL, 0);
     xTaskCreatePinnedToCore(&display_task, "display_task", 4096, NULL, 8, NULL, 0);

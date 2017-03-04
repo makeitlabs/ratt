@@ -24,6 +24,9 @@ static int uart_num = UART_NUM_1;
 
 static const char *TAG = "rfid_task";
 
+SemaphoreHandle_t g_acl_mutex;
+
+
 void rfid_init()
 {
     uart_config_t uart_config = {
@@ -38,6 +41,12 @@ void rfid_init()
     uart_param_config(uart_num, &uart_config);
     uart_set_pin(uart_num, SER_RFID_TXD, SER_RFID_RXD, SER_RFID_RTS, SER_RFID_CTS);
     uart_driver_install(uart_num, SER_BUF_SIZE * 2, 0, 0, NULL, 0);
+
+    g_acl_mutex = xSemaphoreCreateMutex();
+    if (!g_sdcard_mutex) {
+        ESP_LOGE(TAG, "Could not create ACL file mutex.");
+        return;
+    }
 }
 
 //
@@ -63,10 +72,12 @@ void rfid_hash_sha224(char *tag_ascii, int ascii_len, char *tag_hexdigest, int d
     }
 }
 
+#define LINE_SIZE 256
 uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
 {
     char tag_ascii[32];
     char tag_sha224[65];
+    char line[LINE_SIZE];
     
     snprintf(tag_ascii, sizeof(tag_ascii), "%10.10u", tag);
     rfid_hash_sha224(tag_ascii, strlen(tag_ascii), tag_sha224, sizeof(tag_sha224));
@@ -78,20 +89,18 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
     ESP_LOGI(TAG, "Reading ACL file from SD card...");
 
     xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
+    xSemaphoreTake(g_acl_mutex, portMAX_DELAY);
+    
     FILE *f = fopen("/sdcard/acl.txt", "r");
     if (f == NULL) {
         ESP_LOGE(TAG, "Failed to open ACL file for reading!");
-        return 0;
-    }
-    
-    char *line = pvPortMallocCaps(256, MALLOC_CAP_8BIT);
-    if (!line) {
-        ESP_LOGE(TAG, "can't malloc for line buffer");
+        xSemaphoreGive(g_sdcard_mutex);
+        xSemaphoreGive(g_acl_mutex);
         return 0;
     }
     
     uint8_t found = 0;
-    while ((fgets(line, 256, f) != NULL) && !found) {
+    while ((fgets(line, LINE_SIZE, f) != NULL) && !found) {
         //username,key,value,allowed,hashedCard,lastAccessed
         //ESP_LOGI(TAG, "%s", line);
 
@@ -113,7 +122,7 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
             char *hashed_card = fields[4];
             char *last_accessed = fields[5];
 
-            ESP_LOGI(TAG, "comparing %s to %s", tag_sha224, hashed_card);
+            //ESP_LOGI(TAG, "comparing %s to %s", tag_sha224, hashed_card);
             if (strcmp(tag_sha224, hashed_card) == 0) {
                 ESP_LOGI(TAG, "found tag for user %s, allowed=%s, last accessed=%s", username, allowed, last_accessed);
                 found = 1;
@@ -125,8 +134,8 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
         }
     }
     fclose(f);
-    free(line);
 
+    xSemaphoreGive(g_acl_mutex);
     xSemaphoreGive(g_sdcard_mutex);
 
     return found;
