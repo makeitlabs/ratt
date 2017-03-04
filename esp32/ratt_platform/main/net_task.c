@@ -131,6 +131,14 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 }
 
 
+void net_timer(TimerHandle_t xTimer)
+{
+    wifi_ap_record_t wifidata;
+    if (esp_wifi_sta_get_ap_info(&wifidata)==0){
+        display_wifi_rssi(wifidata.rssi);
+    }
+}
+
 void net_init(void)
 {
     char s[32];
@@ -159,6 +167,14 @@ void net_init(void)
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
+
+
+    TimerHandle_t timer = xTimerCreate("rssi_timer", (250 / portTICK_PERIOD_MS), pdTRUE, (void*) 0, net_timer);
+
+    if (xTimerStart(timer, 0) != pdPASS) {
+        ESP_LOGE(TAG, "Could not start net timer");
+    }
+    
 }
 
 
@@ -258,12 +274,6 @@ void net_task(void *pvParameters)
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             snprintf(s, sizeof(s), "NEXT DOWNLOAD %d...", countdown);
             display_net_msg(s);
-
-            wifi_ap_record_t wifidata;
-            if (esp_wifi_sta_get_ap_info(&wifidata)==0){
-                ESP_LOGI(TAG, "rssi = %d", wifidata.rssi);
-                display_wifi_rssi(wifidata.rssi);
-            }
 
         }
         ESP_LOGI(TAG, "Starting again!");

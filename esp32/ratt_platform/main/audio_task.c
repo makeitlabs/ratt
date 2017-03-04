@@ -158,9 +158,6 @@ void audio_task(void *pvParameters)
         }
         
         if (xQueueReceive(m_evt_q, &evt, (20 / portTICK_PERIOD_MS)) == pdTRUE) {
-            // event received
-            ESP_LOGI(TAG, "evt received");
-
             switch(evt.cmd) {
             case AUDIO_CMD_PLAY:
                 xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);

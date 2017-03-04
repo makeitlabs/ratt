@@ -112,9 +112,6 @@ void display_task(void *pvParameters)
         display_evt_t evt;
         
         if (xQueueReceive(m_q, &evt, (100 / portTICK_PERIOD_MS)) == pdPASS) {
-            // event received
-            ESP_LOGI(TAG, "evt received");
-
             switch(evt.cmd) {
             case DISP_CMD_WIFI_MSG:
                 gfx_set_font(NULL);
