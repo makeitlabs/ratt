@@ -132,5 +132,9 @@ void gfx_set_text_wrap(uint8_t w);
 void gfx_set_font(const GFXfont *f);
 
 void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *filename);
+void gfx_refresh();
+void gfx_refresh_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+
+
 
 #endif

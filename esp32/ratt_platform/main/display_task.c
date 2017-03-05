@@ -6,7 +6,7 @@
 #include "esp_system.h"
 #include "esp_log.h"
 #include "lcd_st7735.h"
-#include "FreeSans9pt7b.h"
+//#include "FreeSans9pt7b.h"
 
 static const char *TAG = "display_task";
 
@@ -100,7 +100,6 @@ void display_init()
    
 }
 
-
 void display_task(void *pvParameters)
 {
     uint8_t spin_idx = 0;
@@ -111,10 +110,10 @@ void display_task(void *pvParameters)
     
     lcd_init();
     lcd_fill_screen(lcd_rgb565(0x00, 0x00, 0xC0));
-
     gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
     gfx_write_string(0, 144, "RSSI");
-
+    gfx_refresh();
+    
     int b1=0, b2=0, b3=0, b4=0;
     int last_b1=0, last_b2=0, last_b3=0, last_b4=0;
     while(1) {
@@ -147,12 +146,14 @@ void display_task(void *pvParameters)
         last_b4 = b4;
         
         if (xQueueReceive(m_q, &evt, (20 / portTICK_PERIOD_MS)) == pdPASS) {
+            ESP_LOGI(TAG, "recv event %d", evt.cmd);
             switch(evt.cmd) {
             case DISP_CMD_WIFI_MSG:
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 0, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
                 gfx_set_text_color(lcd_rgb565(0x00, 0xE0, 0xF8));
                 gfx_write_string(0, 0, evt.buf);
+                gfx_refresh();
                 break;
             case DISP_CMD_WIFI_RSSI:
                 gfx_set_font(NULL);
@@ -160,18 +161,21 @@ void display_task(void *pvParameters)
                 gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
                 snprintf(s, sizeof(s), "%d", evt.params.rssi); 
                 gfx_write_string(0, 152, s);
+                gfx_refresh();
                 break;
             case DISP_CMD_NET_MSG:
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 8, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
                 gfx_set_text_color(lcd_rgb565(0xF8, 0xE0, 0x00));
                 gfx_write_string(0, 8, evt.buf);
+                gfx_refresh();
                 break;
             case DISP_CMD_USER_MSG:
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 24, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
                 gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
                 gfx_write_string(0, 24, evt.buf);
+                gfx_refresh();
                 break;
             case DISP_CMD_ALLOWED_MSG:
                 gfx_set_font(NULL);
@@ -182,6 +186,7 @@ void display_task(void *pvParameters)
                     gfx_set_text_color(lcd_rgb565(0xFF, 0x00, 0x00));
                 }
                 gfx_write_string(0, 32, evt.buf);
+                gfx_refresh();
                 break;
             }
             
@@ -192,6 +197,7 @@ void display_task(void *pvParameters)
             // heartbeat
             gfx_set_font(NULL);
             gfx_draw_char(122, 152, m_spin[spin_idx][0], lcd_rgb565(0x00, 0xFC, 0x00), lcd_rgb565(0x00, 0x00, 0xC0), 1);
+            gfx_refresh();
             spin_idx = (spin_idx + 1) % SPIN_LENGTH;
 
             last_heartbeat_tick = now;

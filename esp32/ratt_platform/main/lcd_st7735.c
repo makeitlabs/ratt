@@ -13,6 +13,7 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_heap_alloc_caps.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include "sdcard.h"
@@ -23,6 +24,10 @@
 
 // include standard font
 #include "glcdfont.c"
+
+
+#include "FreeSans12pt7b.h"
+#include "FreeSans9pt7b.h"
 
 static spi_device_handle_t m_spi;
 static uint32_t colstart, rowstart;
@@ -48,6 +53,11 @@ void lcd_init_common(const uint8_t *cmdList);
 void lcd_initB(void);
 void lcd_initR(uint8_t options);
 
+void gfx_refresh();
+
+
+uint16_t *m_frame_buf;
+size_t m_frame_buf_size;
 
 // Rather than a bazillion writecommand() and writedata() calls, screen
 // initialization commands and arguments are organized in these tables
@@ -196,6 +206,9 @@ static const uint8_t
       100 };                  //     100 ms delay
 
 
+
+
+
 void delay(int ms)
 {
     TickType_t delay = ms / portTICK_PERIOD_MS;
@@ -263,6 +276,8 @@ void lcd_init_hw(void)
     gpio_set_level(LCD_PIN_RST, 1);
     delay(50);
     gpio_set_level(LCD_PIN_CS, 1);
+
+    ESP_LOGI(TAG, "LCD hardware initialized");
 }
 
 void lcd_init(void)
@@ -293,7 +308,7 @@ void lcd_init(void)
     assert(ret==ESP_OK);
 
     ESP_LOGI(TAG, "Initializing LCD...");
-    
+
     // init LCD
     //lcd_initB();
     lcd_initR(INITR_BLACKTAB);
@@ -304,8 +319,81 @@ void lcd_init(void)
     // init gfx routines
     gfx_set_text_wrap(1);
     gfx_set_text_size(1);
+
     
-    ESP_LOGI(TAG, "LCD Init complete, width=%d height=%d", _width, _height);
+    m_frame_buf_size = (size_t)_width * (size_t)_height * sizeof(uint16_t);
+    m_frame_buf = (uint16_t*) pvPortMallocCaps(m_frame_buf_size, MALLOC_CAP_8BIT);
+
+    if (!m_frame_buf) {
+        ESP_LOGE(TAG, "Can't alloc frame buffer of %zu bytes", m_frame_buf_size);
+        return;
+    }
+
+    /*
+     * stress/performance test
+     *
+    portTickType ticks, total;
+    
+    while (1) {
+        ticks = xTaskGetTickCount();
+        lcd_fill_rect(0, 0, 128, 8, lcd_rgb565(0x00, 0x00, 0x55));
+        lcd_fill_rect(0, 8, 128, 8, lcd_rgb565(0x00, 0x55, 0x00));
+
+        for (unsigned int f=0; f<160; f+= 16) {
+            lcd_fill_rect(0, f, 32, 8, lcd_rgb565(0x33, 0x33, 0x33));
+            lcd_fill_rect(32, f, 32, 8, lcd_rgb565(0x66, 0x66, 0x66));
+            lcd_fill_rect(64, f, 32, 8, lcd_rgb565(0xAA, 0xAA, 0xAA));
+            lcd_fill_rect(96, f, 32, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+            
+            lcd_fill_rect(0, f+8, 32, 8, lcd_rgb565(0x11, 0x11, 0x11));
+            lcd_fill_rect(32, f+8, 32, 8, lcd_rgb565(0x44, 0x44, 0x44));
+            lcd_fill_rect(64, f+8, 32, 8, lcd_rgb565(0x88, 0x88, 0x88));
+            lcd_fill_rect(96, f+8, 32, 8, lcd_rgb565(0xDD, 0xDD, 0xDD));
+        }
+        
+        gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
+        gfx_set_font(NULL);
+        gfx_write_string(0, 0, "BLOCKS");
+        gfx_refresh();
+
+        total = xTaskGetTickCount() - ticks;
+        ESP_LOGI(TAG, "completed in %d ms", total * portTICK_PERIOD_MS);
+
+        delay(1000);
+        ticks = xTaskGetTickCount();
+        lcd_fill_screen(lcd_rgb565(0x00,0xFF,0x00));
+        gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
+        gfx_set_font(NULL);
+        gfx_write_string(0, 0, "CIRCLES");
+        for (unsigned int r=16; r<64; r+= 16) {
+            gfx_draw_circle(64, 80, r, lcd_rgb565(0xFF,0xFF,0x00));
+        }
+        gfx_refresh();
+        total = xTaskGetTickCount() - ticks;
+        ESP_LOGI(TAG, "completed in %d ms", total * portTICK_PERIOD_MS);
+
+        
+        delay(1000);
+        ticks = xTaskGetTickCount();
+        lcd_fill_screen(lcd_rgb565(0x00,0x00,0xFF));
+
+        gfx_set_font(&FreeSans12pt7b);
+        gfx_set_text_color(lcd_rgb565(0x00,0xFF,0xFF));
+        gfx_write_string(0, 24, "Big Font");
+
+        gfx_set_font(&FreeSans9pt7b);
+        gfx_set_text_color(lcd_rgb565(0x00,0xFF,0x00));
+        gfx_write_string(0, 48, "Medium Font");
+        
+        gfx_refresh();
+        total = xTaskGetTickCount() - ticks;
+        ESP_LOGI(TAG, "completed in %d ms", total * portTICK_PERIOD_MS);
+        delay(1000);
+    }
+    */
+
+    
+    ESP_LOGI(TAG, "LCD Init complete, width=%d height=%d, frame buffer size=%zu", _width, _height, m_frame_buf_size);
 }
 
 
@@ -443,12 +531,9 @@ void lcd_set_addr_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 
 void lcd_draw_pixel(int16_t x, int16_t y, uint16_t color)
 {
-
   if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
 
-  lcd_set_addr_window(x,y,x+1,y+1);
-
-  lcd_data(m_spi, (uint8_t*)&color, sizeof(color));  
+  m_frame_buf[((_height - y) * _width) + x] = color;
 }
 
 void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
@@ -476,30 +561,28 @@ void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color)
                
 }
 
+
 // fill a rectangle
 void lcd_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
 {
-    uint16_t buf[_width];
-    
     // rudimentary clipping (drawChar w/big text requires this)
     if((x >= _width) || (y >= _height)) return;
     if((x + w - 1) >= _width)  w = _width  - x;
     if((y + h - 1) >= _height) h = _height - y;
+
     
-    lcd_set_addr_window(x, y, x+w-1, y+h-1);
-    
-    for(y=h; y>0; y--) {
-        for(x=w; x>0; x--) {
-            buf[x] = color;
+    for(int iy=y+h-1; iy>=y; iy--) {
+        for(int ix=x+w; ix>x; ix--) {
+            m_frame_buf[((_height - iy) * _width) + ix - 1] = color;
         }
-        lcd_data(m_spi, (uint8_t*)buf, w * 2);
     }
 }
 
 void lcd_fill_screen(uint16_t color)
 {
-  lcd_fill_rect(0, 0,  _width, _height, color);
+    lcd_fill_rect(0, 0,  _width, _height, color);
 }
+
 
 // Pass 8-bit (each) R,G,B, get back 16-bit packed color
 uint16_t lcd_rgb565(uint8_t r, uint8_t g, uint8_t b)
@@ -714,8 +797,8 @@ void gfx_draw_char(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16
 
     uint16_t bo = glyph->bitmapOffset;
     uint8_t  w  = glyph->width,
-             h  = glyph->height,
-             xa = glyph->xAdvance;
+        h  = glyph->height;
+//             xa = glyph->xAdvance;
     int8_t   xo = glyph->xOffset,
              yo = glyph->yOffset;
     uint8_t  xx, yy, bits = 0, bit = 0;
@@ -761,6 +844,7 @@ void gfx_draw_char(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16
     }
 
   } // End classic vs custom font
+
 }
 
 
@@ -825,6 +909,53 @@ void gfx_set_font(const GFXfont *f)
  * Not from Adafruit's GFX library below here
  *********************************************************/
 
+void gfx_refresh()
+{
+    esp_err_t ret;
+    spi_transaction_t t;
+
+    lcd_set_addr_window(0, 0, _width-1, _height-1);
+
+    // zero out the transaction
+    memset(&t, 0, sizeof(t));
+    // transaction length is in bits.
+    t.length = (_width * sizeof(uint16_t)) * 8;
+    // DC set to 1
+    t.user=(void*)1;
+    
+    for (int y=_height; y>0; y--) {
+        // data buffer
+        t.tx_buffer = (uint8_t*)&m_frame_buf[y * _width];
+        // transmit
+        ret=spi_device_transmit(m_spi, &t);
+        assert(ret==ESP_OK);
+    }
+}
+
+void gfx_refresh_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
+{
+    esp_err_t ret;
+    spi_transaction_t t;
+
+    lcd_set_addr_window(x, y, w, h);
+
+    // zero out the transaction
+    memset(&t, 0, sizeof(t));
+    // transaction length is in bits.
+    t.length = (w * sizeof(uint16_t)) * 8;
+    // DC set to 1
+    t.user=(void*)1;
+    
+    for (int iy=h; iy>0; iy--) {
+        // data buffer
+        t.tx_buffer = (uint8_t*)&m_frame_buf[iy * _width];
+        // transmit
+        ret=spi_device_transmit(m_spi, &t);
+        assert(ret==ESP_OK);
+    }
+}
+
+
 /* load a raw 565 bitmap file from sd card  .. must be in a very specific format and size
  * TODO: not very robust, needs lots of cleanup.  just a proof of concept for now.
  *
@@ -844,7 +975,7 @@ void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *fi
     int r;
     uint8_t buf[128*2];
      
-    lcd_set_addr_window(x, y, x+w-1, y+h-1);
+    lcd_set_addr_window(0, 0, x+w-1, y+h-1);
 
     ESP_LOGI(TAG, "taking sdcard mutex...");
     xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
@@ -868,7 +999,6 @@ void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *fi
     xSemaphoreGive(g_sdcard_mutex);
     ESP_LOGI(TAG, "gave sdcard mutex...");
 }
-
 
 /*==============================================================*/
 
