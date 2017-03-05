@@ -83,8 +83,15 @@ BaseType_t display_allowed_msg(char *msg, uint8_t allowed)
 }
 
 
+
+
 void display_init()
 {
+    gpio_set_direction(GPIO_NUM_36, GPIO_MODE_INPUT);
+    gpio_set_direction(GPIO_NUM_37, GPIO_MODE_INPUT);
+    gpio_set_direction(GPIO_NUM_38, GPIO_MODE_INPUT);
+    gpio_set_direction(GPIO_NUM_39, GPIO_MODE_INPUT);
+
     m_q = xQueueCreate(DISPLAY_QUEUE_DEPTH, sizeof(display_evt_t));
 
     if (m_q == NULL) {
@@ -92,6 +99,7 @@ void display_init()
     }
    
 }
+
 
 void display_task(void *pvParameters)
 {
@@ -107,11 +115,38 @@ void display_task(void *pvParameters)
     gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
     gfx_write_string(0, 144, "RSSI");
 
-    
+    int b1=0, b2=0, b3=0, b4=0;
+    int last_b1=0, last_b2=0, last_b3=0, last_b4=0;
     while(1) {
         display_evt_t evt;
+
+        b1 = gpio_get_level(GPIO_NUM_36);
+        b2 = gpio_get_level(GPIO_NUM_37);
+        b3 = gpio_get_level(GPIO_NUM_38);
+        b4 = gpio_get_level(GPIO_NUM_39);
+
+        if (b1 != last_b1) {
+            ESP_LOGI(TAG, "Button 1 now=%d", b1);
+        }
+
+        if (b2 != last_b2) {
+            ESP_LOGI(TAG, "Button 2 now=%d", b2);
+        }
+
+        if (b3 != last_b3) {
+            ESP_LOGI(TAG, "Button 3 now=%d", b3);
+        }
+
+        if (b4 != last_b4) {
+            ESP_LOGI(TAG, "Button 4 now=%d", b4);
+        }
         
-        if (xQueueReceive(m_q, &evt, (100 / portTICK_PERIOD_MS)) == pdPASS) {
+        last_b1 = b1;
+        last_b2 = b2;
+        last_b3 = b3;
+        last_b4 = b4;
+        
+        if (xQueueReceive(m_q, &evt, (20 / portTICK_PERIOD_MS)) == pdPASS) {
             switch(evt.cmd) {
             case DISP_CMD_WIFI_MSG:
                 gfx_set_font(NULL);
