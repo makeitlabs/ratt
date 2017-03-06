@@ -168,19 +168,15 @@ void net_init(void)
     ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 
-
     TimerHandle_t timer = xTimerCreate("rssi_timer", (250 / portTICK_PERIOD_MS), pdTRUE, (void*) 0, net_timer);
 
     if (xTimerStart(timer, 0) != pdPASS) {
         ESP_LOGE(TAG, "Could not start net timer");
     }
-    
 }
 
 
 #define RESP_BUF_SIZE 1024
-
-
 
 void net_task(void *pvParameters)
 {

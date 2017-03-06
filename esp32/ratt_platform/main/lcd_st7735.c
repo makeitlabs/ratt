@@ -295,7 +295,7 @@ void lcd_init(void)
         .clock_speed_hz=LCD_SPI_BUS_SPEED,      //SPI clock
         .mode=0,                                //SPI mode 0
         .spics_io_num=LCD_PIN_CS,               //CS pin
-        .queue_size=7,                          //We want to be able to queue 7 transactions at a time
+        .queue_size=16,                          //We want to be able to queue 16 transactions at a time
         .pre_cb=lcd_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
     };
     
@@ -533,7 +533,7 @@ void lcd_draw_pixel(int16_t x, int16_t y, uint16_t color)
 {
   if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
 
-  m_frame_buf[((_height - y) * _width) + x] = color;
+  m_frame_buf[((_height - y - 1) * _width) + x] = color;
 }
 
 void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
@@ -573,7 +573,7 @@ void lcd_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
     
     for(int iy=y+h-1; iy>=y; iy--) {
         for(int ix=x+w; ix>x; ix--) {
-            m_frame_buf[((_height - iy) * _width) + ix - 1] = color;
+            m_frame_buf[((_height - iy-1) * _width) + ix - 1] = color;
         }
     }
 }
@@ -914,6 +914,8 @@ void gfx_refresh()
     esp_err_t ret;
     spi_transaction_t t;
 
+    ESP_LOGI(TAG, "gfx_refresh()");
+    
     lcd_set_addr_window(0, 0, _width-1, _height-1);
 
     // zero out the transaction
@@ -922,8 +924,8 @@ void gfx_refresh()
     t.length = (_width * sizeof(uint16_t)) * 8;
     // DC set to 1
     t.user=(void*)1;
-    
-    for (int y=_height; y>0; y--) {
+
+    for (int y=_height-1; y>=0; y--) {
         // data buffer
         t.tx_buffer = (uint8_t*)&m_frame_buf[y * _width];
         // transmit
@@ -936,7 +938,7 @@ void gfx_refresh_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
 {
     esp_err_t ret;
     spi_transaction_t t;
-
+    
     lcd_set_addr_window(x, y, w, h);
 
     // zero out the transaction
@@ -946,9 +948,9 @@ void gfx_refresh_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
     // DC set to 1
     t.user=(void*)1;
     
-    for (int iy=h; iy>0; iy--) {
+    for (int iy=h-1; iy>=0; iy--) {
         // data buffer
-        t.tx_buffer = (uint8_t*)&m_frame_buf[iy * _width];
+        t.tx_buffer = (uint8_t*)&m_frame_buf[y + (iy * _width)];
         // transmit
         ret=spi_device_transmit(m_spi, &t);
         assert(ret==ESP_OK);
