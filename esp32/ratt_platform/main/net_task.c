@@ -264,9 +264,7 @@ void net_task(void *pvParameters)
             ESP_LOGE(TAG, "Could not malloc acl buffer");
         }
         
-        
         for(int countdown = 30; countdown >= 0; countdown--) {
-            ESP_LOGI(TAG, "%d...", countdown);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             snprintf(s, sizeof(s), "NEXT DOWNLOAD %d...", countdown);
             display_net_msg(s);

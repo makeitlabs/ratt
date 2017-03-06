@@ -25,10 +25,6 @@
 // include standard font
 #include "glcdfont.c"
 
-
-#include "FreeSans12pt7b.h"
-#include "FreeSans9pt7b.h"
-
 static spi_device_handle_t m_spi;
 static uint32_t colstart, rowstart;
 static uint8_t  tabcolor;
@@ -295,7 +291,7 @@ void lcd_init(void)
         .clock_speed_hz=LCD_SPI_BUS_SPEED,      //SPI clock
         .mode=0,                                //SPI mode 0
         .spics_io_num=LCD_PIN_CS,               //CS pin
-        .queue_size=16,                          //We want to be able to queue 16 transactions at a time
+        .queue_size=32,                          //We want to be able to queue 16 transactions at a time
         .pre_cb=lcd_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
     };
     
@@ -329,70 +325,6 @@ void lcd_init(void)
         return;
     }
 
-    /*
-     * stress/performance test
-     *
-    portTickType ticks, total;
-    
-    while (1) {
-        ticks = xTaskGetTickCount();
-        lcd_fill_rect(0, 0, 128, 8, lcd_rgb565(0x00, 0x00, 0x55));
-        lcd_fill_rect(0, 8, 128, 8, lcd_rgb565(0x00, 0x55, 0x00));
-
-        for (unsigned int f=0; f<160; f+= 16) {
-            lcd_fill_rect(0, f, 32, 8, lcd_rgb565(0x33, 0x33, 0x33));
-            lcd_fill_rect(32, f, 32, 8, lcd_rgb565(0x66, 0x66, 0x66));
-            lcd_fill_rect(64, f, 32, 8, lcd_rgb565(0xAA, 0xAA, 0xAA));
-            lcd_fill_rect(96, f, 32, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
-            
-            lcd_fill_rect(0, f+8, 32, 8, lcd_rgb565(0x11, 0x11, 0x11));
-            lcd_fill_rect(32, f+8, 32, 8, lcd_rgb565(0x44, 0x44, 0x44));
-            lcd_fill_rect(64, f+8, 32, 8, lcd_rgb565(0x88, 0x88, 0x88));
-            lcd_fill_rect(96, f+8, 32, 8, lcd_rgb565(0xDD, 0xDD, 0xDD));
-        }
-        
-        gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
-        gfx_set_font(NULL);
-        gfx_write_string(0, 0, "BLOCKS");
-        gfx_refresh();
-
-        total = xTaskGetTickCount() - ticks;
-        ESP_LOGI(TAG, "completed in %d ms", total * portTICK_PERIOD_MS);
-
-        delay(1000);
-        ticks = xTaskGetTickCount();
-        lcd_fill_screen(lcd_rgb565(0x00,0xFF,0x00));
-        gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
-        gfx_set_font(NULL);
-        gfx_write_string(0, 0, "CIRCLES");
-        for (unsigned int r=16; r<64; r+= 16) {
-            gfx_draw_circle(64, 80, r, lcd_rgb565(0xFF,0xFF,0x00));
-        }
-        gfx_refresh();
-        total = xTaskGetTickCount() - ticks;
-        ESP_LOGI(TAG, "completed in %d ms", total * portTICK_PERIOD_MS);
-
-        
-        delay(1000);
-        ticks = xTaskGetTickCount();
-        lcd_fill_screen(lcd_rgb565(0x00,0x00,0xFF));
-
-        gfx_set_font(&FreeSans12pt7b);
-        gfx_set_text_color(lcd_rgb565(0x00,0xFF,0xFF));
-        gfx_write_string(0, 24, "Big Font");
-
-        gfx_set_font(&FreeSans9pt7b);
-        gfx_set_text_color(lcd_rgb565(0x00,0xFF,0x00));
-        gfx_write_string(0, 48, "Medium Font");
-        
-        gfx_refresh();
-        total = xTaskGetTickCount() - ticks;
-        ESP_LOGI(TAG, "completed in %d ms", total * portTICK_PERIOD_MS);
-        delay(1000);
-    }
-    */
-
-    
     ESP_LOGI(TAG, "LCD Init complete, width=%d height=%d, frame buffer size=%zu", _width, _height, m_frame_buf_size);
 }
 
@@ -570,7 +502,7 @@ void lcd_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
     if((x + w - 1) >= _width)  w = _width  - x;
     if((y + h - 1) >= _height) h = _height - y;
 
-    
+   
     for(int iy=y+h-1; iy>=y; iy--) {
         for(int ix=x+w; ix>x; ix--) {
             m_frame_buf[((_height - iy-1) * _width) + ix - 1] = color;
@@ -914,8 +846,6 @@ void gfx_refresh()
     esp_err_t ret;
     spi_transaction_t t;
 
-    ESP_LOGI(TAG, "gfx_refresh()");
-    
     lcd_set_addr_window(0, 0, _width-1, _height-1);
 
     // zero out the transaction
@@ -934,12 +864,12 @@ void gfx_refresh()
     }
 }
 
-void gfx_refresh_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
+void gfx_refresh_rect(int16_t x, int16_t y, int16_t w, int16_t h)
 {
     esp_err_t ret;
     spi_transaction_t t;
-    
-    lcd_set_addr_window(x, y, w, h);
+
+    lcd_set_addr_window(x, y, x+w-1, y+h-1);
 
     // zero out the transaction
     memset(&t, 0, sizeof(t));
@@ -947,10 +877,10 @@ void gfx_refresh_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
     t.length = (w * sizeof(uint16_t)) * 8;
     // DC set to 1
     t.user=(void*)1;
-    
-    for (int iy=h-1; iy>=0; iy--) {
+
+    for (int iy=y; iy<y+h-1; iy++) {
         // data buffer
-        t.tx_buffer = (uint8_t*)&m_frame_buf[y + (iy * _width)];
+        t.tx_buffer = (uint8_t*)&m_frame_buf[((_height - iy - 1) * _width) + x];
         // transmit
         ret=spi_device_transmit(m_spi, &t);
         assert(ret==ESP_OK);
