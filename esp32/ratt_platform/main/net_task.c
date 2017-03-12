@@ -103,10 +103,10 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 
     switch(event->event_id) {
     case SYSTEM_EVENT_WIFI_READY:
-        display_wifi_msg("READY");
+        display_wifi_msg("WIFI READY");
         break;
     case SYSTEM_EVENT_STA_START:
-        display_wifi_msg("CONNECTING");
+        display_wifi_msg("WIFI CONNECT");
         esp_wifi_connect();
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
@@ -119,7 +119,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     case SYSTEM_EVENT_STA_DISCONNECTED:
         /* This is a workaround as ESP32 WiFi libs don't currently
            auto-reassociate. */
-        display_wifi_msg("DISCONNECTED");
+        display_wifi_msg("WIFI DISCON");
         
         esp_wifi_connect();
         xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
@@ -145,7 +145,7 @@ void net_init(void)
     
     ESP_LOGI(TAG, "Initializing network...");
 
-    display_net_msg("INITIALIZING");
+    display_net_msg("WIFI INIT");
     
     tcpip_adapter_init();
     wifi_event_group = xEventGroupCreate();
@@ -196,14 +196,14 @@ void net_task(void *pvParameters)
 
     
     while(1) {
-        display_net_msg("WAITING FOR WIFI");
+        display_net_msg("WIFI WAITING");
 
         // Wait for the callback to set the CONNECTED_BIT in the event group.
         xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
         ESP_LOGI(TAG, "Connected to AP...");
 
         
-        display_net_msg("CONNECTED!");
+        display_net_msg("WIFI CONNECT");
         
         ESP_LOGI(TAG, "Free heap size before malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
         
@@ -214,11 +214,9 @@ void net_task(void *pvParameters)
         if (resp_buf) {
             ESP_LOGI(TAG, "response buffer size = %zu", RESP_BUF_SIZE);
 
-            display_net_msg("INIT TLS");
-            
             ret = http_init(0);
 
-            display_net_msg("ACL DOWNLOAD");
+            display_net_msg("WIFI DOWNLOAD");
 
             xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
             FILE* file = fopen("/sdcard/acl-temp.txt", "w");
@@ -251,9 +249,9 @@ void net_task(void *pvParameters)
                 }
                 xSemaphoreGive(g_acl_mutex);
                 
-                display_net_msg("SAVED NEW ACL");
+                display_net_msg("DOWNLOAD OK");
             } else {
-                display_net_msg("DOWNLOAD FAILED");
+                display_net_msg("DOWNLOAD FAIL");
             }
             
             xSemaphoreGive(g_sdcard_mutex);
@@ -264,9 +262,9 @@ void net_task(void *pvParameters)
             ESP_LOGE(TAG, "Could not malloc acl buffer");
         }
         
-        for(int countdown = 30; countdown >= 0; countdown--) {
+        for(int countdown = 120; countdown >= 0; countdown--) {
             vTaskDelay(1000 / portTICK_PERIOD_MS);
-            snprintf(s, sizeof(s), "NEXT DOWNLOAD %d...", countdown);
+            snprintf(s, sizeof(s), "WIFI SLEEP %d", countdown);
             display_net_msg(s);
 
         }

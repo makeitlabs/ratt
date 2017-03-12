@@ -6,8 +6,7 @@
 #include "esp_system.h"
 #include "esp_log.h"
 #include "lcd_st7735.h"
-#include "FreeSans9pt7b.h"
-#include "FreeSans12pt7b.h"
+#include "FontAtari8.h"
 
 static const char *TAG = "display_task";
 
@@ -110,7 +109,14 @@ void display_task(void *pvParameters)
     
     lcd_init();
     lcd_fill_screen(lcd_rgb565(0x00, 0x00, 0xC0));
-    gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
+    lcd_fill_rect(0, 0, 128, 16, lcd_rgb565(0xFF, 0xFF, 0xFF));
+    lcd_fill_rect(0, 17, 128, 1, lcd_rgb565(0x00, 0x00, 0x00));
+
+    lcd_fill_rect(0, 143, 128, 1, lcd_rgb565(0x00, 0x00, 0x00));
+    lcd_fill_rect(0, 144, 128, 16, lcd_rgb565(0xFF, 0xFF, 0xFF));
+    
+    gfx_set_font(&Atari8);
+    gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
     gfx_write_string(0, 144, "RSSI");
     gfx_refresh();
     
@@ -152,49 +158,52 @@ void display_task(void *pvParameters)
             switch(evt.cmd) {
             case DISP_CMD_WIFI_MSG:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 0, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
-                gfx_set_text_color(lcd_rgb565(0x00, 0xE0, 0xF8));
+                lcd_fill_rect(0, 0, 128, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+                gfx_set_font(&Atari8);
+                gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
                 gfx_write_string(0, 0, evt.buf);
                 gfx_refresh_rect(0, 0, 128, 8);
                 break;
             case DISP_CMD_WIFI_RSSI:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 152, 32, 8, lcd_rgb565(0x00, 0x00, 0xC0));
-                gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
+                lcd_fill_rect(0, 152, 32, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+                gfx_set_font(&Atari8);
+                gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
                 snprintf(s, sizeof(s), "%d", evt.params.rssi); 
                 gfx_write_string(0, 152, s);
                 gfx_refresh_rect(0, 152, 32, 8);
                 break;
             case DISP_CMD_NET_MSG:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 8, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
-                gfx_set_text_color(lcd_rgb565(0xF8, 0xE0, 0x00));
+                lcd_fill_rect(0, 8, 128, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+                gfx_set_font(&Atari8);
+                gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
                 gfx_write_string(0, 8, evt.buf);
                 gfx_refresh_rect(0, 8, 128, 8);
                 break;
             case DISP_CMD_USER_MSG:
                 gfx_set_font(NULL);
                 lcd_fill_rect(0, 24, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
+                gfx_set_font(&Atari8);
                 gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
                 gfx_write_string(0, 24, evt.buf);
                 gfx_refresh_rect(0, 24, 128, 8);
                 break;
             case DISP_CMD_ALLOWED_MSG:
-                gfx_set_font(NULL);
+                gfx_set_font(&Atari8);
                 lcd_fill_rect(0, 32, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
                 gfx_set_text_color(lcd_rgb565(0x99, 0x99, 0x99));
                 gfx_write_string(0, 32, evt.buf);
                 
                 lcd_fill_rect(0, 40, 128, 20, lcd_rgb565(0x00, 0x00, 0xC0));
-                gfx_set_font(&FreeSans12pt7b);
                 if (evt.params.allowed) {
                     gfx_set_text_color(lcd_rgb565(0x00, 0xFF, 0x00));
-                    gfx_write_string(0, 58, "ALLOWED");
+                    gfx_write_string(0, 40, "ALLOWED");
                 } else {
                     gfx_set_text_color(lcd_rgb565(0xFF, 0x00, 0x00));
-                    gfx_write_string(0, 58, "DENIED");
+                    gfx_write_string(0, 40, "DENIED");
                 }
-                gfx_refresh_rect(0, 32, 128, 8 + 20);
+                gfx_refresh_rect(0, 32, 128, 16);
 
                 break;
             }
@@ -204,7 +213,7 @@ void display_task(void *pvParameters)
         if (now - last_heartbeat_tick >= (500/portTICK_PERIOD_MS)) {
             // heartbeat
             gfx_set_font(NULL);
-            gfx_draw_char(122, 152, m_spin[spin_idx][0], lcd_rgb565(0xFF, 0x00, 0x00), lcd_rgb565(0x00, 0x00, 0xC0), 1);
+            gfx_draw_char(122, 152, m_spin[spin_idx][0], lcd_rgb565(0xFF, 0x00, 0x00), lcd_rgb565(0xFF, 0xFF, 0xFF), 1);
             spin_idx = (spin_idx + 1) % SPIN_LENGTH;
             gfx_refresh_rect(122, 152, 6, 8);
 

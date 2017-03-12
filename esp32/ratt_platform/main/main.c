@@ -62,7 +62,7 @@ void app_main()
     audio_init();
     i2c_init();
 
-    //audio_play("/sdcard/macstart.s16");
+    audio_play("/sdcard/macstart.s16");
     display_user_msg("SCAN TAG");
 
     xTaskCreatePinnedToCore(&net_task, "net_task", 8192, NULL, 7, NULL, 0);
