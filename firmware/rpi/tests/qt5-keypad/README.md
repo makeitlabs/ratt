@@ -10,4 +10,4 @@ To run:
 
 Or run as root and redirect output to /dev/tty1 to turn off blinking console cursor:
 
-# QT_QPA_PLATFORM=linuxfb:fb=/dev/fb1 ./qt5-keypad > /dev/tty1
+> QT_QPA_PLATFORM=linuxfb:fb=/dev/fb1 ./qt5-keypad > /dev/tty1
