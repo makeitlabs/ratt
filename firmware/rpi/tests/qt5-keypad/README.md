@@ -27,6 +27,3 @@ jalastram ( https://freesound.org/people/jalastram/ )
 You can find this pack online at: https://freesound.org/people/jalastram/packs/19798/
 
 Attribution: http://creativecommons.org/licenses/by/3.0/
-
-
-
