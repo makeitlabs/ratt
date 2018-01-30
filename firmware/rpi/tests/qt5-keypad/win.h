@@ -2,7 +2,7 @@
 #include <QWidget>
 #include <QKeyEvent>
 #include <QLabel>
-
+#include <QSoundEffect>
 
 class Win : public QWidget
 {
@@ -20,5 +20,9 @@ class Win : public QWidget
     QLabel* downWidget;
     QLabel* upWidget;
     QLabel* enterWidget;
+    QSoundEffect* escSfx;
+    QSoundEffect* downSfx;
+    QSoundEffect* upSfx;
+    QSoundEffect* enterSfx;
 };
 

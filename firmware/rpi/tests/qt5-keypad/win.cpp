@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QAudioDeviceInfo>
 #include "win.h"
 
 // quick and dirty test to show qt reacting to key events
@@ -28,6 +29,27 @@ Win::Win(QWidget* parent) :
     enterWidget->resize(40,27);
     enterWidget->setFrameStyle(QFrame::Panel | QFrame::Raised);
     enterWidget->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
+    QList<QAudioDeviceInfo> list = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+
+    qDebug() << "found" << list.size() << "audio output devices";
+    for (QList<QAudioDeviceInfo>::iterator iter = list.begin(); iter != list.end(); iter++) {
+        qDebug() << "audio device: " << (*iter).deviceName();
+    }
+    
+    escSfx = new QSoundEffect(this);
+    escSfx->setSource(QUrl::fromLocalFile("sfx014.wav"));
+    escSfx->setVolume(0.5);
+    downSfx = new QSoundEffect(this);
+    downSfx->setSource(QUrl::fromLocalFile("sfx012.wav"));
+    downSfx->setVolume(0.5);
+    upSfx = new QSoundEffect(this);
+    upSfx->setSource(QUrl::fromLocalFile("sfx033.wav"));
+    upSfx->setVolume(1.0);
+    enterSfx = new QSoundEffect(this);
+    enterSfx->setSource(QUrl::fromLocalFile("sfx061.wav"));
+    enterSfx->setVolume(0.5);
+    
 }
 
 Win::~Win()
@@ -36,6 +58,11 @@ Win::~Win()
     downWidget->deleteLater();
     upWidget->deleteLater();
     enterWidget->deleteLater();
+
+    escSfx->deleteLater();
+    downSfx->deleteLater();
+    upSfx->deleteLater();
+    enterSfx->deleteLater();
 }
 
 
@@ -46,15 +73,19 @@ void Win::keyPressEvent(QKeyEvent* event)
     switch (event->key()) {
     case Qt::Key_Escape:
         escWidget->setLineWidth(4);
+        escSfx->play();
         break;
     case Qt::Key_Down:
         downWidget->setLineWidth(4);
+        downSfx->play();
         break;
     case Qt::Key_Up:
         upWidget->setLineWidth(4);
+        upSfx->play();
         break;
     case Qt::Key_Return:
         enterWidget->setLineWidth(4);
+        enterSfx->play();
         break;
     }
         

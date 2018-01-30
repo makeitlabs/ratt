@@ -10,5 +10,5 @@ INCLUDEPATH += .
 HEADERS += win.h
 SOURCES += qt5-keypad.cpp win.cpp
 
-QT += widgets
+QT += widgets multimedia
 
