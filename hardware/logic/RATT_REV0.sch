@@ -13801,13 +13801,6 @@ Protection for I/O Lines</text>
 <label x="96.52" y="-86.36" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="N$40" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="GPIO17/GEN0"/>
-<wire x1="101.6" y1="-81.28" x2="96.52" y2="-81.28" width="0.1524" layer="91"/>
-<label x="96.52" y="-81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
 <net name="!I/O_IRQ" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="GPIO4/GCKL"/>
@@ -13869,6 +13862,11 @@ Protection for I/O Lines</text>
 <wire x1="63.5" y1="160.02" x2="50.8" y2="160.02" width="0.1524" layer="91"/>
 <junction x="63.5" y="160.02"/>
 <label x="50.8" y="160.02" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="GPIO17/GEN0"/>
+<wire x1="101.6" y1="-81.28" x2="96.52" y2="-81.28" width="0.1524" layer="91"/>
+<label x="96.52" y="-81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>

@@ -58,7 +58,7 @@
 <layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="51" name="tDocu" color="17" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="19" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
@@ -10541,7 +10541,7 @@ design rules under a new name.</description>
 <attribute name="OC_FARNELL" value="unknown" x="-152.4" y="-172.72" size="0.0508" layer="27" font="vector" display="off"/>
 </element>
 <element name="R35" library="SparkFun-Passives" package="0603-RES" value="10K" x="-152.4" y="-177.8"/>
-<element name="U$1" library="RPI-Zero" package="RASPBERRYPI_BASTELSTUBE_V13_RASPI_BOARD_B+_FULL" value="RPI-ZERO" x="-33.274" y="68.072" rot="R270"/>
+<element name="U$1" library="RPI-Zero" package="RASPBERRYPI_BASTELSTUBE_V13_RASPI_BOARD_B+_FULL" value="RPI-ZERO" x="-39.624" y="59.436" rot="R270"/>
 </elements>
 <signals>
 <signal name="I2C_SDA">
