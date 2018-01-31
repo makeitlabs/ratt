@@ -429,10 +429,10 @@ UsedLibrary="C:/Users/Adam/Documents/GitHub/ratt/hardware/libraries/RPI-Zero.lbr
 
 [Win_1]
 Type="Board Editor"
-Loc="-1289 -9 -10 937"
+Loc="-1289 74 -10 925"
 State=1
 Number=2
-File="C:/Users/Adam/Documents/GitHub/ratt/hardware/logic/RATT_REV0.brd"
+File="RATT_REV0.brd"
 View="-63.4201 3.23603 30.9176 70.6776"
 WireWidths=" 0 0.254 0.3048 0.6096 0.8128 1.016 1.27 1.4224 1.6764 1.778 1.9304 2.1844 2.54 3.81 6.4516 0.4064"
 PadDiameters=" 0.254 0.3048 0.4064 0.6096 0.8128 1.016 1.27 1.4224 1.6764 1.778 1.9304 2.1844 2.54 3.81 6.4516 0"
@@ -474,14 +474,8 @@ PadsSameType=0
 Layer=16
 
 [Win_2]
-Type="Control Panel"
-Loc="-9 -9 1910 993"
-State=1
-Number=0
-
-[Win_3]
 Type="Library Editor"
-Loc="-9 -38 1031 664"
+Loc="0 0 1040 702"
 State=2
 Number=3
 File="C:/Users/Adam/Documents/GitHub/ratt/hardware/libraries/RPI-Zero.lbr"
@@ -526,13 +520,13 @@ PadsSameType=0
 Layer=21
 Package="RASPBERRYPI_BASTELSTUBE_V13_RASPI_BOARD_B+_FULL"
 
-[Win_4]
+[Win_3]
 Type="Schematic Editor"
-Loc="-9 -9 1910 993"
+Loc="1911 -9 3830 993"
 State=1
 Number=1
-File="C:/Users/Adam/Documents/GitHub/ratt/hardware/logic/RATT_REV0.sch"
-View="41.6362 -154.466 251.857 -49.4246"
+File="RATT_REV0.sch"
+View="-53.0128 185.97 199.252 312.02"
 WireWidths=" 0 0.3048 0.6096 0.8128 1.016 1.27 1.4224 1.6764 1.778 1.9304 2.1844 2.54 3.81 6.4516 0.4064 0.1524"
 PadDiameters=" 0.254 0.3048 0.4064 0.6096 0.8128 1.016 1.27 1.4224 1.6764 1.778 1.9304 2.1844 2.54 3.81 6.4516 0"
 PadDrills=" 0.5 0.6 0.7 0.9 1 1.1 1.2 1.3 1.4 1.5 1.6 2 2.2 2.8 3.2 0.8"
@@ -571,11 +565,17 @@ ArcDirection=0
 AddLevel=2
 PadsSameType=0
 Layer=91
-Views=" 1: 41.6362 -154.466 251.857 -49.4246"
+Views=" 1: -53.0128 185.97 199.252 312.02"
 Sheet="1"
 
+[Win_4]
+Type="Control Panel"
+Loc="0 0 1919 1002"
+State=1
+Number=0
+
 [Desktop]
-Screen="3200 1080"
+Screen="5280 1080"
 Window="Win_1"
 Window="Win_2"
 Window="Win_3"
