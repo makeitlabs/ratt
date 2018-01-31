@@ -1,0 +1,75 @@
+/*
+ * MakeIt Labs RATT: RFID All The Things
+ * steve.richardson@makeitlabs.com
+ * -----------------------------------------------------------------
+ * GPIO inputs mapped to key input subsystem
+ * resources: GPIO6, GPIO7, GPIO12, GPIO13 for BUTTON0-BUTTON3 (left-right)
+ * note: GPIO7 is normally taken by SPI_CS1.  remapped to GPIO22 via dtoverlay=spi0-cs,cs1_pin=22 in /boot/config.txt
+ *
+ * buttons are momentary pushbuttons, pulled up, active low and located below the LCD
+ *
+ * [ESCAPE] [DOWN] [UP] [ENTER]
+ */
+
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
+
+	fragment@0 {
+		target = <&gpio>;
+		__overlay__ {
+			keypad_pins: keypad_pins {
+				brcm,pins = <6 7 12 13>;
+				brcm,function = <0>; /* in */
+				brcm,pull = <2>;     /* pull-up */
+			};
+		};
+	};
+
+	/*
+	 * Values for input event code is found under the
+	 * 'Keys and buttons' heading https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
+	 */
+	fragment@1 {
+		target-path = "/soc";
+		__overlay__ {
+			keypad: keypad {
+				compatible = "gpio-keys";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&keypad_pins>;
+				status = "okay";
+				/* autorepeat;  -- uncomment to enable auto repeat */
+
+				button@6 {
+					label = "GPIO KEY_ESC";
+					linux,code = <1>;
+					gpios = <&gpio 6 1>;
+				};
+				button@7 {
+					label = "GPIO KEY_DOWN";
+					linux,code = <108>;
+					gpios = <&gpio 7 1>;
+				};
+				button@12 {
+					label = "GPIO KEY_UP";
+					linux,code = <103>;
+					gpios = <&gpio 12 1>;
+				};
+				button@13 {
+					label = "GPIO KEY_ENTER";
+					linux,code = <28>;
+					gpios = <&gpio 13 1>;
+				};
+			};
+		};
+	};
+
+	__overrides__ {
+		keypad =     <&keypad>,"status";
+	};
+};

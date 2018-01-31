@@ -1,0 +1,75 @@
+/*
+ * MakeIt Labs RATT: RFID All The Things
+ * steve.richardson@makeitlabs.com
+ * -----------------------------------------------------------------
+ * 1.8" SPI LCD, 160x128, ST7735R type controller using adafruit18 fbtft driver
+ * fbtft driver compiled into custom kernel so display is available early in boot process
+ *
+ * display rotation=270 degrees, wide format with pin headers on right hand side
+ *
+ * resources: SPI0 (MISO=GPIO9, MOSI=GPIO10, CS0=GPIO8)
+ *            Reset=GPIO25, D/C=GPIO24, BACKLIGHT=GPIO23
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
+
+	fragment@0 {
+		target = <&spi0>;
+		__overlay__ {
+			status = "okay";
+
+			spidev@0{
+				status = "disabled";
+			};
+
+			spidev@1{
+				status = "disabled";
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <&gpio>;
+		__overlay__ {
+			rpi_display_pins: rpi_display_pins {
+				brcm,pins = <23 24 25>;
+				brcm,function = <1 1 1>; /* out out out */
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&spi0>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			adafruit18: adafruit18@0{
+				compatible = "sitronix,st7735r";
+				reg = <0>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&rpi_display_pins>;
+
+				spi-max-frequency = <16000000>;
+				rotate = <270>;
+				bgr;
+				fps = <20>;
+				buswidth = <8>;
+				reset-gpios = <&gpio 25 0>;
+				dc-gpios = <&gpio 24 0>;
+				led-gpios = <&gpio 23 1>;
+				debug = <1>;
+			};
+		};
+	};
+	__overrides__ {
+		speed =   <&adafruit18>,"spi-max-frequency:0";
+		rotate =  <&adafruit18>,"rotate:0";
+		fps =     <&adafruit18>,"fps:0";
+		debug =   <&adafruit18>,"debug:0";
+	};
+};
