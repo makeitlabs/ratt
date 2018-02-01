@@ -9,9 +9,10 @@ class App(QWidget):
         key = event.key();
         print('key press: {}'.format(key))
         if key == Qt.Key_Return:
-            self.netWorker.setAuth(user='api', password='s33krit')
-            self.netWorker.req(url='https://192.168.0.24:8443/auth/api/v1/resources/frontdoor/acl')
-        
+            self.netWorker.get(url='https://192.168.0.24:8443/auth/api/v1/resources/frontdoor/acl')
+        elif key == Qt.Key_Escape:
+            self.netWorker.post(url='https://192.168.0.24:8443/auth/api/v1/resources/frontdoor/log')
+            
     def keyReleaseEvent(self, event):
         key = event.key();
         print('key release: {}'.format(key))
@@ -20,6 +21,7 @@ class App(QWidget):
         super().__init__()
 
         self.netWorker = NetWorker()
+        self.netWorker.setAuth(user='api', password='s33krit')
         
         self.initUI()
         

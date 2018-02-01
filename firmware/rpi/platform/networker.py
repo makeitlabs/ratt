@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice
+from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
 import json
 
@@ -24,12 +24,34 @@ class NetWorker(QObject):
         self.caCertFile = caCertFile
         self.clientCertFile = clientCertFile
         self.clientKeyFile = clientKeyFile
-    
+
+    def post(self, url):
+        # there must be a nicer way to build the request
+        req = QNetworkRequest(QUrl(url))
+        req.setHeader(QNetworkRequest.ContentTypeHeader, "application/x-www-form-urlencoded")
+
+        now = QDateTime.currentDateTime()
+        unix_time = now.toMSecsSinceEpoch()
+        p = 'event_date=' + str(unix_time)
+
+        p = p + '&event_type=test&member=Ralph.Teste&message=RATT'
+
+        ba = QByteArray()
+        ba.append(p)
         
-    def req(self, url):
+        self.mgr.finished.connect(self.handlePostResponse)
+        self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
+
+        if self.ssl:
+            self.mgr.sslErrors.connect(self.handleSSLErrors)
+            req.setSslConfiguration(self.sslConfig)
+
+        self.mgr.post(req, ba)
+        
+    def get(self, url):
         req = QNetworkRequest(QUrl(url))
 
-        self.mgr.finished.connect(self.handleResponse)
+        self.mgr.finished.connect(self.handleGetResponse)
         self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
 
         if self.ssl:
@@ -49,9 +71,26 @@ class NetWorker(QObject):
 
         authenticator.setUser(self.user)
         authenticator.setPassword(self.password)
+
+    def handlePostResponse(self, reply):
+        print('handlePostResponse')
+        error = reply.error()
+
+        if error == QNetworkReply.NoError:
+            print (reply.readAll())
+            
+        else:
+            print('NetWorker response error: ', error)
+            print(reply.errorString())
+
+        self.mgr.finished.disconnect(self.handlePostResponse)
+        self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
+        if self.ssl:
+            self.mgr.sslErrors.disconnect(self.handleSSLErrors)
+
         
-    def handleResponse(self, reply):
-        print('handleResponse')
+    def handleGetResponse(self, reply):
+        print('handleGetResponse')
         error = reply.error()
 
         if error == QNetworkReply.NoError:
@@ -63,11 +102,12 @@ class NetWorker(QObject):
             print('NetWorker response error: ', error)
             print(reply.errorString())
 
-        self.mgr.finished.disconnect(self.handleResponse)
+        self.mgr.finished.disconnect(self.handleGetResponse)
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
         if self.ssl:
             self.mgr.sslErrors.disconnect(self.handleSSLErrors)
 
+            
             
     def configureCerts(self):
         ## import the private client key
