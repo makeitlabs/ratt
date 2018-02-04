@@ -50,13 +50,10 @@ dtparam=spi=on
 dtoverlay=ratt-lcd
 
 # i2c expander, i2c bus at 400kHz
+# also contains gpio-keys mapping for keypad keys
 dtparam=i2c_arm=on
 dtparam=i2c_arm_baudrate=400000
 dtoverlay=ratt-ioexpander
-
-# gpio keypad
-dtoverlay=spi0-cs,cs1_pin=22
-dtoverlay=ratt-keypad
 
 # i2s audio (from pimoroni/adafruit, need to unwind this to make it our own)
 dtparam=i2s=on
@@ -68,3 +65,7 @@ kernel=ratt-kernel.img
 
 # uncomment to enable uart for serial console
 # enable_uart=1
+
+# disable bluetooth and restore uart0/ttyAMA0 to GPIO 14/15
+dtoverlay=pi3-disable-bt
+
