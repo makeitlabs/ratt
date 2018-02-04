@@ -4,6 +4,9 @@
  * -----------------------------------------------------------------
  * single PCA9539 16-bit I2C I/O Expander - I2C addr 0x74
  * resources: I2C1 with interrupt on GPIO4 (active low)
+ *
+ * also contains the hooks for gpio-keys to assign expander gpio inputs
+ * to keypad keys
  */
  
 /dts-v1/;
@@ -48,6 +51,43 @@
 				interrupt-controller;
 
 				status = "okay";
+
+			};
+		};
+	};
+
+	fragment@3 {
+		   target-path = "/soc";
+		   __overlay__ {
+			keypad: keypad {
+				compatible = "gpio-keys";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				
+				status = "okay";
+				
+				/* autorepeat;  -- uncomment to enable auto repeat */
+
+				button_0 {
+					label = "GPIO KEY_ESC";
+					linux,code = <1>;
+					gpios = <&pca9539 8 1>;
+				};
+				button_1 {
+					label = "GPIO KEY_DOWN";
+					linux,code = <108>;
+					gpios = <&pca9539 9 1>;
+				};
+				button_2 {
+					label = "GPIO KEY_UP";
+					linux,code = <103>;
+					gpios = <&pca9539 10 1>;
+				};
+				button_3 {
+					label = "GPIO KEY_ENTER";
+					linux,code = <28>;
+					gpios = <&pca9539 11 1>;
+				};
 			};
 		};
 	};

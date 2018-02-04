@@ -23,5 +23,4 @@ run_dtc()
 ###
 
 run_dtc ratt-lcd
-run_dtc ratt-keypad
 run_dtc ratt-ioexpander
