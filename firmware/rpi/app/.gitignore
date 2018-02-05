@@ -65,6 +65,7 @@ Thumbs.db
 
 # Python byte code
 *.pyc
+*.qmlc
 
 # Binaries
 # --------
