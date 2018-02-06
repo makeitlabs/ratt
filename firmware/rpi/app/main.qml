@@ -32,39 +32,6 @@ ApplicationWindow {
             }
         }
 
-        states: [
-            State {
-                name: "splash"
-                PropertyChanges {
-                    target: splash; visible: true;
-                }
-                PropertyChanges {
-                    target: stack; visible: false;
-                }
-                PropertyChanges {
-                    target: tool; visible: false;
-                }
-                PropertyChanges {
-                    target: status; visible: false;
-                }
-            },
-            State {
-                name: "stack"
-                PropertyChanges {
-                    target: splash; visible: false;
-                }
-                PropertyChanges {
-                    target: stack; visible: true;
-                }
-                PropertyChanges {
-                    target: tool; visible: true;
-                }
-                PropertyChanges {
-                    target: status; visible: true;
-                }
-            }
-        ]
-
         Keys.onPressed: {
             if (event.key === Qt.Key_Escape)
                 appWindow.close();
@@ -75,15 +42,15 @@ ApplicationWindow {
             }
         }
 
-        ViewSplash {
-            id: splash
+        ViewIdle {
+            id: viewIdle
             visible: false
         }
 
         StackView {
             id: stack
             anchors.fill: parent
-
+            initialItem: viewIdle
         }
     }
 

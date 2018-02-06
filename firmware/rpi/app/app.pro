@@ -36,4 +36,5 @@ DISTFILES += \
     RattToolBar.qml \
     ViewSplash.qml \
     RattAppEngine.py \
-    NetWorker.py
+    NetWorker.py \
+    ViewIdle.qml

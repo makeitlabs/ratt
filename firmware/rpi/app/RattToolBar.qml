@@ -10,9 +10,15 @@ ToolBar {
     height: 20
 
     Label {
+        anchors.left: parent.left
         font.pixelSize: 12
         height: 12
         text: time
+    }
+
+    Image {
+        anchors.right: parent.right
+        source: "images/wifi_3.png"
     }
 
     Timer {
