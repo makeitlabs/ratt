@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.3
+import QtQuick 2.5
+import QtQuick.Controls 1.3
+import QtQuick.Layouts 1.2
 
 Rectangle {
     id: root
@@ -110,7 +110,7 @@ Rectangle {
             Layout.fillWidth: true
             text: "Scan RFID Below"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 18
+            font.pixelSize: 16
             font.weight: Font.Bold
             color: "#000077"
         }

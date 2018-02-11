@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
-import json
+import simplejson as json
 
 class NetWorker(QObject):
     def __init__(self):
@@ -96,7 +96,7 @@ class NetWorker(QObject):
         error = reply.error()
 
         if error == QNetworkReply.NoError:
-            doc = str(reply.readAll(), 'utf-8')
+            doc = str(reply.readAll())
             j = json.loads(doc)
             print (json.dumps(j, sort_keys=True, indent=1))
             
