@@ -10,75 +10,67 @@ ApplicationWindow {
     width: 640
     height: 480
 
-    Item {
+    Rectangle {
         id: root
-        focus: true
         anchors.top: parent.top
-        anchors.left: parent.left
-        width: 160
-        height: 128
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: "black"
+        width: tftWindow.width + 20
+        height: tftWindow.height + 20
 
-        RattToolBar {
-            id: tool
-            width: parent.width
-            anchors.top: parent.top
-        }
+        Item {
+            id: tftWindow
+            focus: true
+            anchors.centerIn: parent
+            width: 160
+            height: 128
 
-        RattStatusBar {
-            id: status
-            width: parent.width
-            anchors.bottom: parent.bottom
-        }
-
-
-        state: "splash"
-
-        Timer {
-            interval: 1500
-            repeat: false
-            running: true
-            onTriggered: {
-                root.state = "stack";
+            RattToolBar {
+                id: tool
+                width: parent.width
+                anchors.top: parent.top
             }
-        }
 
-        Keys.onPressed: {
-            if (event.key === Qt.Key_Escape)
-                appWindow.close();
-            else if (event.key === Qt.Key_Down) {
-                appEngine.testUpdateACL();
-            } else if (event.key === Qt.Key_Up) {
-                appEngine.testPostLog();
+            RattStatusBar {
+                id: status
+                width: parent.width
+                anchors.bottom: parent.bottom
             }
-        }
 
-        ViewIdle {
-            id: viewIdle
-            visible: false
-        }
+            state: "splash"
 
-        StackView {
-            id: stack
-            anchors.top: tool.bottom
-            anchors.bottom: status.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            initialItem: viewIdle
-        }
-    }
+            Timer {
+                interval: 1500
+                repeat: false
+                running: true
+                onTriggered: {
+                    root.state = "stack";
+                }
+            }
 
-    Item {
-        anchors.left: root.right
-        anchors.top: parent.top
-        width: parent.width - root.width
-        height: root.height
-        anchors.margins: 4
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Escape)
+                    appWindow.close();
+                else if (event.key === Qt.Key_Down) {
+                    appEngine.testUpdateACL();
+                } else if (event.key === Qt.Key_Up) {
+                    appEngine.testPostLog();
+                }
+            }
 
-        Label {
-            color: "white"
-            text: "MakeIt Labs RATT - HDMI Debug Window"
-            font.bold: true
-            font.pixelSize: 12
+            ViewIdle {
+                id: viewIdle
+                visible: false
+            }
+
+            StackView {
+                id: stack
+                anchors.top: tool.bottom
+                anchors.bottom: status.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                initialItem: viewIdle
+            }
         }
     }
 
@@ -97,7 +89,7 @@ ApplicationWindow {
             }
             Label {
                 color: "white"
-                text: "rootWindow size=" + root.width + "x" + root.height
+                text: "tftWindow size=" + tftWindow.width + "x" + tftWindow.height + " x,y=" + tftWindow.x + "," + tftWindow.y
                 font.pixelSize: 10
             }
         }
