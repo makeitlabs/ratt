@@ -1,0 +1,3 @@
+[submodule "firmware/rpi/poky-rocko"]
+	path = firmware/rpi/poky-rocko
+	url = git://git.yoctoproject.org/poky.git
