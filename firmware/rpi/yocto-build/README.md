@@ -4,13 +4,15 @@ Based on http://www.jumpnowtek.com/rpi/Raspberry-Pi-Systems-with-Yocto.html
 
 ## Pre-requisites
 
-Start with Ubuntu 16.04.3 LTS image running in a virtual machine.
+Start with Ubuntu 16.04.3 LTS image running in a virtual machine.  Make sure you have enough disk space (at LEAST 50GB, preferably more).  If you are
+doing a lot of building, you will want this on fast disk (SSD).  You will also want to give the Virtual Machine a lot of RAM and CPU cores if you can.
+I run with 16GB and 12 cores dedicated to the VM for faster builds.
 
 ### Set up a work directory in `/u` (with `/tmp`-like permissions)
 
-    mkdir /u
-    chmod 777 /u
-    chmod o+t /u
+    sudo mkdir /u
+    sudo chmod 777 /u
+    sudo chmod o+t /u
 
 ### Install some pre-requisites for building:
 
@@ -22,42 +24,58 @@ Start with Ubuntu 16.04.3 LTS image running in a virtual machine.
     lrwxrwxrwx 1 root root 9 Feb  8 05:47 /usr/bin/python -> python2.7
     steve@ubuntu:~$ ls -al /usr/bin/python2
     lrwxrwxrwx 1 root root 9 Feb  8 05:47 /usr/bin/python2 -> python2.7
-    steve@ubuntu:~$
 
 ### Ensure 'dash' is disabled on Ubuntu:
     sudo dpkg-reconfigure dash
 
 Choose No to dash when prompted.
 
-### Clone the RATT repo
+### Clone the RATT repo from github
 
 Some directories have fixed paths with `${HOME}` references for the Yocto build, so it is necessary to clone it into your home directory, i.e. `~/ratt` - do not place it inside of other directories or in other locations.
 
     cd ~
     git clone https://github.com/makeitlabs/ratt.git
 
-### Make a local clone of the Yocto poky-rocko branch from github
-
-I've included a script to do the dirty work in `~/ratt/firmware/rpi/yocto-build/scripts/clone-poky-rocko.sh`
-
-### Check that the meta-ratt submodule was initialized
+### Check that the `meta-ratt` submodule was initialized
 
 Some versions of git will not automatically initialize submodules.  If `~/ratt/firmware/rpi/meta-ratt` is empty after your initial git clone, do this:
 
     cd ~/ratt/firmware/rpi
     git submodule update --init --recursive
 
-### Make a central directory for downloaded source files:
+_The `meta-ratt` is included as a submodule because it's forked from the `meta-rpi` project and for ease of maintainance I want to keep it
+separate from the rest of RATT._  `meta-ratt` is essentially the layer that defines how to build Yocto exactly for our RATT platform.  It
+stands on the shoulders of a lot of work from others for Raspberry Pi compatibility, and makes only specific tweaks where necessary to adjust
+the build to our needs.
 
-    mkdir /u/rpi/oe-sources
+### Make a local clone of the Yocto poky-rocko branch from github
+
+Poky is the name of the reference build of Yocto Project.  Rocko is the branch that RATT is based on, and was released in October of 2017.
+See https://www.yoctoproject.org/downloads/core/rocko24 for more info about the specific release.
+
+I've included a script to do the dirty work of cloning Poky-Rocko.
+
+    ~/ratt/firmware/rpi/yocto-build/scripts/clone-poky-rocko.sh
+
+**TODO: Maybe adjust the script to tie to specific SHAs for poky-rocko and its dependencies so we're not chasing updates.**
+
+### Make a central directory for downloaded source files
+
+The build system will download sources and keep them around so they don't have to be re-downloaded every time you build.  This directory is configurable,
+but for simplicity we fix it at `/u/rpi/oe-sources`.  Make sure this directory exists.
+
+    mkdir -p /u/rpi/oe-sources
     
-_Note that this location is controlled with the variable `DL_DIR` in `~/ratt/firmware/rpi/yocto-build/conf/local.conf`_
+_Note that this location is controlled with the variable `DL_DIR` in `~/ratt/firmware/rpi/yocto-build/conf/local.conf` - don't change it unless you know what you're doing._
 
 ### Set up a temporary build directory for Yocto
 
-    mkdir /u/rpi/tmp
+The build system uses a lot of temporary space for the build.
 
-_Note that this location is controlled with the variable `TMPDIR` in `~/ratt/firmware/rpi/yocto-build/conf/local.conf`_
+    mkdir -p /u/rpi/tmp
+
+_Note that this location is controlled with the variable `TMPDIR` in `~/ratt/firmware/rpi/yocto-build/conf/local.conf` - don't change it unless you know what you're doing._
 
 ## Building
 
@@ -65,17 +83,17 @@ _Note that this location is controlled with the variable `TMPDIR` in `~/ratt/fir
 
     source /u/rpi/poky-rocko/oe-init-build-env ~/ratt/firmware/rpi/yocto-build
 
-_Ignore the common target text that is spit out here - we don't build those targets._
+_Ignore the common suggested build target text that is spit out here - we don't build those targets._
 
 ### Start a build of the RATT image
 
     bitbake ratt-image
 
-_Wait a long time... 2-3 hours typically_
+_Wait a long time..._  2-3 hours typically.  More RAM, faster disk, and more/faster cores will help but it's building a lot of stuff.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much smaller.
 
 ## Copying to SD Card
 
-Insert the SD card into your reader, and make sure the USB device is attached to the Virtual Machine.
+Insert the SD card into your USB reader, and make sure the USB device is attached to the Virtual Machine.
 
 ### Find the device with a combination of dmesg/lsblk
 
