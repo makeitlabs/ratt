@@ -1,0 +1,3 @@
+[submodule "firmware/rpi/meta-ratt"]
+	path = firmware/rpi/meta-ratt
+	url = https://github.com/makeitlabs/meta-ratt.git
