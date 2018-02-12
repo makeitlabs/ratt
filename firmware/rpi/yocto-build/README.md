@@ -63,7 +63,7 @@ _Note that this location is controlled with the variable `TMPDIR` in `~/ratt/fir
 
 ### Source the yocto environment before running bitbake
 
-    source /u/rpi/poky-rocko/oe-init-build-env ~/ratt/firmware/rpi/yocto-build/build
+    source /u/rpi/poky-rocko/oe-init-build-env ~/ratt/firmware/rpi/yocto-build
 
 _Ignore the common target text that is spit out here - we don't build those targets._
 
