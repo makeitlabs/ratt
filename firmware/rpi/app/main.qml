@@ -48,9 +48,9 @@ ApplicationWindow {
                 }
             }
 
-            Audio {
+            SoundEffect {
                 id: keyAudio
-                source: "audio/sfx013.wav"
+                source: "audio/sfx011.wav"
             }
 
             Keys.onPressed: {
