@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
-
+import QtMultimedia 5.9
 
 ApplicationWindow {
     id: appWindow
@@ -48,7 +48,14 @@ ApplicationWindow {
                 }
             }
 
+            Audio {
+                id: keyAudio
+                source: "audio/sfx013.wav"
+            }
+
             Keys.onPressed: {
+                keyAudio.play();
+
                 if (event.key === Qt.Key_Escape)
                     appWindow.close();
                 else if (event.key === Qt.Key_Down) {
