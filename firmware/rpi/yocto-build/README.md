@@ -155,7 +155,7 @@ Some of the utility scripts have this mount point hard coded, so make sure it ex
 
 _Note, replace `sdf` with your actual SD card device, and be careful!_
 
-    source ~/ratt_card_env.sh
+    source ./ratt_card_env.sh
     ./copy_boot.sh sdf
 
 ### Copy root filesystem:
@@ -170,3 +170,14 @@ This script takes several args:
 
 Note: This can be pretty slow to finish (minutes to potentially tens of minutes depending on quality of card).
 
+# Yocto / OpenEmbedded References
+
+## Writing Recipes
+
+  * http://www.yoctoproject.org/docs/current/dev-manual/dev-manual.html#new-recipe-writing-a-new-recipe
+  * https://wiki.yoctoproject.org/wiki/Building_your_own_recipes_from_first_principles
+  * http://www.embeddedlinux.org.cn/OEManual/directories_installation.html
+  * http://www.embeddedlinux.org.cn/OEManual/recipes_directories.html
+  * https://elinux.org/Bitbake_Cheat_Sheet
+  
+  
