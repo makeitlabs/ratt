@@ -10,6 +10,15 @@ ApplicationWindow {
     width: 640
     height: 480
 
+    SoundEffect {
+        id: keyAudio
+        source: "audio/sfx013.wav"
+    }
+    SoundEffect {
+        id: rfidAudio
+        source: "audio/sfx061.wav"
+    }
+
     Rectangle {
         id: root
         anchors.top: parent.top
@@ -48,11 +57,6 @@ ApplicationWindow {
                 }
             }
 
-            Audio {
-                id: keyAudio
-                source: "audio/sfx013.wav"
-            }
-
             Keys.onPressed: {
                 keyAudio.play();
 
@@ -88,6 +92,15 @@ ApplicationWindow {
         height: parent.height - root.height
         anchors.margins: 4
 
+        Connections {
+            target: rfid
+            onTagScan: {
+                rfidAudio.play()
+                var prettyTime = new Date(time * 1000)
+                tagText.text = tag + '(' + prettyTime + ')'
+            }
+        }
+
         ColumnLayout {
             Label {
                 color: "white"
@@ -99,10 +112,16 @@ ApplicationWindow {
                 text: "tftWindow size=" + tftWindow.width + "x" + tftWindow.height + " x,y=" + tftWindow.x + "," + tftWindow.y
                 font.pixelSize: 10
             }
+            RowLayout {
+                Label {
+                    color: "white"
+                    text: "Last RFID Read:"
+                }
+                Label {
+                    id: tagText
+                    color: "cyan"
+                }
+            }
         }
-
-
     }
-
-
 }
