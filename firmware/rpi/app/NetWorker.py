@@ -1,4 +1,21 @@
 # -*- coding: utf-8 -*-
+# --------------------------------------------------------------------------
+#  _____       ______________
+# |  __ \   /\|__   ____   __|
+# | |__) | /  \  | |    | |
+# |  _  / / /\ \ | |    | |
+# | | \ \/ ____ \| |    | |
+# |_|  \_\/    \_\_|    |_|    ... RFID ALL THE THINGS!
+#
+# A resource access control and telemetry solution for Makerspaces
+#
+# Developed at MakeIt Labs - New Hampshire's First & Largest Makerspace
+# http://www.makeitlabs.com/
+#
+# --------------------------------------------------------------------------
+#
+# Author: Steve Richardson (steve.richardson@makeitlabs.com)
+#
 
 from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
