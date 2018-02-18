@@ -38,4 +38,5 @@ DISTFILES += \
     RattAppEngine.py \
     NetWorker.py \
     ViewIdle.qml \
-    RFID.py
+    RFID.py \
+    LICENSE
