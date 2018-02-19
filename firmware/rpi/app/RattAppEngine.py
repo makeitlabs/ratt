@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 # --------------------------------------------------------------------------
 #  _____       ______________
 # |  __ \   /\|__   ____   __|
@@ -37,7 +36,7 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant
 from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from NetWorker import NetWorker
@@ -45,11 +44,13 @@ from RFID import RFID
 import ConfigParser
 
 class RattAppEngine(QQmlApplicationEngine):
+    validScan = pyqtSignal('QVariant', name='validScan', arguments=['record'])
+
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
         self.netWorker = NetWorker()
-        #self.netWorker.setAuth(user='api', password='s33krit')
+        self.netWorker.setAuth(user='api', password='s33krit')
 
         self.rfid = RFID("/dev/ttyAMA0")
 
@@ -57,16 +58,31 @@ class RattAppEngine(QQmlApplicationEngine):
         self.rootContext().setContextProperty("netWorker", self.netWorker)
         self.rootContext().setContextProperty("rfid", self.rfid)
 
+        self.rfid.tagScan.connect(self.tagScanHandler)
+
         self.rfid.monitor()
 
-    @Slot()
+        self.testUpdateACL()
+
+    #@pyqtSlot()
+    def tagScanHandler(self, tag, hash, time, debugText):
+        print('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
+
+        result = self.netWorker.searchAcl(hash)
+
+        if result != []:
+            print result
+            v = QVariant(result,)
+            self.validScan.emit(v)
+
+    @pyqtSlot()
     def testUpdateACL(self):
         print('testing acl download')
-        #self.netWorker.get(url='https://192.168.0.24:8443/auth/api/v1/resources/frontdoor/acl')
-        self.netWorker.get(url='http://jsonplaceholder.typicode.com/posts/1')
+        self.netWorker.get(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/acl')
+        #self.netWorker.get(url='http://jsonplaceholder.typicode.com/posts/1')
 
-    @Slot()
+    @pyqtSlot()
     def testPostLog(self):
         print('testing log post')
-        #self.netWorker.post(url='https://192.168.0.24:8443/auth/api/v1/resources/frontdoor/log')
-        self.netWorker.post(url='http://jsonplaceholder.typicode.com/posts')
+        self.netWorker.post(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/log')
+        #self.netWorker.post(url='http://jsonplaceholder.typicode.com/posts')

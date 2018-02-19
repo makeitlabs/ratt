@@ -132,42 +132,6 @@ ApplicationWindow {
         height: parent.height - root.height
         anchors.margins: 4
 
-        Connections {
-            target: rfid
-            onTagScan: {
-                rfidSuccessAudio.play();
-                var prettyTime = new Date(time * 1000);
-                tagTimeText.text = "Time: " + prettyTime;
-                tagIDText.text = "Tag: " + tag;
-                tagTimeText.color = "cyan";
-                tagIDText.color = "#00FF00";
-                tagDebugText.text = debugText;
-                tagDebugText.color = "gray";
-                rfidRect.color = "#002266";
-            }
-
-            onTagScanError: {
-                rfidFailureAudio.play();
-                var prettyTime = new Date(time * 1000);
-                tagTimeText.text = "Time: " + prettyTime;
-
-                var errText = "Unknown error";
-
-                console.log("error = " + error);
-                if (error === rfid.errPacket)
-                    errText = "Packet structure error";
-                else if (error === rfid.errChecksum)
-                    errText = "Checksum error";
-
-                tagIDText.text = "RFID Read Error: " + errText;
-                tagDebugText.text = debugText;
-                tagTimeText.color = "yellow";
-                tagIDText.color = "#ff0000";
-                tagDebugText.color = "white";
-                rfidRect.color = "#660000"
-            }
-        }
-
         ColumnLayout {
             Label {
                 color: "white"
@@ -179,11 +143,103 @@ ApplicationWindow {
                 text: "tftWindow size=" + tftWindow.width + "x" + tftWindow.height + " x,y=" + tftWindow.x + "," + tftWindow.y
                 font.pixelSize: 10
             }
+
+            Rectangle {
+                id: aclRect
+                color: "#444444"
+                width: 600
+                height: 100
+
+                Connections {
+                    target: netWorker
+                    onAclUpdate: {
+                        aclTotalText.text = "Total Records: " + total
+                        aclActiveText.text = "Active Records: " + active
+                        aclHash.text = "Hash: " + hash
+                    }
+
+                    onAclUpdateError: {
+                    }
+                }
+
+                ColumnLayout {
+                    anchors.margins: 10
+                    Label {
+                        text: "ACL"
+                        color: "white"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Label {
+                        id: aclTotalText
+                        color: "#999999"
+                        font.pixelSize: 12
+                    }
+                    Label {
+                        id: aclActiveText
+                        color: "#00f000"
+                        font.pixelSize: 12
+                    }
+                    Label {
+                        id: aclHash
+                        color: "#777777"
+                        font.pixelSize: 10
+                    }
+                }
+            }
+
             Rectangle {
                 id: rfidRect
                 color: "#222222"
-                width: 400
+                width: 600
                 height: 100
+
+                Connections {
+                    target: rfid
+                    onTagScan: {
+                        rfidSuccessAudio.play();
+                        var prettyTime = new Date(time * 1000);
+                        tagTimeText.text = "Time: " + prettyTime;
+                        tagTimeText.color = "cyan";
+
+                        tagIDText.text = "Tag: " + tag
+                        tagIDText.color = "#00FF00";
+
+                        tagHashText.text = "Hash: " + hash
+                        tagHashText.color = "gray";
+
+                        tagDebugText.text = "Debug: " + debugText;
+                        tagDebugText.color = "gray";
+
+                        rfidRect.color = "#002266";
+                    }
+
+                    onTagScanError: {
+                        rfidFailureAudio.play();
+                        var prettyTime = new Date(time * 1000);
+                        tagTimeText.text = "Time: " + prettyTime;
+                        tagTimeText.color = "yellow";
+
+                        var errText = "Unknown error";
+
+                        console.log("error = " + error);
+                        if (error === rfid.errPacket)
+                            errText = "Packet structure error";
+                        else if (error === rfid.errChecksum)
+                            errText = "Checksum error";
+
+                        tagIDText.text = "RFID Read Error: " + errText;
+                        tagIDText.color = "#ff0000";
+
+                        tagHashText.text = ""
+
+                        tagDebugText.text = debugText;
+                        tagDebugText.color = "white";
+                        rfidRect.color = "#660000"
+                    }
+                }
+
+
                 ColumnLayout {
                     anchors.margins: 10
                     Label {
@@ -201,11 +257,81 @@ ApplicationWindow {
                         font.pixelSize: 12
                     }
                     Label {
+                        id: tagHashText
+                        font.pixelSize: 10
+                    }
+                    Label {
                         id: tagDebugText
                         font.pixelSize: 10
                     }
                 }
             }
+
+
+            Rectangle {
+                id: lookupRect
+                color: "#333333"
+                width: 600
+                height: 150
+
+                Connections {
+                    target: appEngine
+                    onValidScan: {
+                        var level = record['level'];
+                        var tagid = record['tagid'];
+                        var lastaccessed = record['lastaccessed'];
+                        var member = record['member'];
+                        var warning = record['warning'];
+                        var plan = record['plan'];
+                        var allowed = record['allowed'];
+                        var nickname = record['nickname'];
+
+                        memberText.text = member;
+                        planText.text = plan;
+                        tagidText.text = tagid;
+                        allowedText.text = allowed;
+                        warningText.text = warning;
+
+                        lookupRect.color = (allowed === 'allowed') ? "#007700" : "#770000"
+                    }
+                }
+                ColumnLayout {
+                    anchors.margins: 10
+                    Label {
+                        color: "white"
+                        text: "Last Record Lookup"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Label {
+                        id: memberText
+                        font.pixelSize: 10
+                        color: "white"
+                    }
+                    Label {
+                        id: planText
+                        font.pixelSize: 10
+                        color: "white"
+                    }
+                    Label {
+                        id: tagidText
+                        font.pixelSize: 10
+                        color: "white"
+                    }
+                    Label {
+                        id: allowedText
+                        font.pixelSize: 10
+                        color: "white"
+                    }
+                    Label {
+                        id: warningText
+                        font.pixelSize: 10
+                        color: "white"
+                    }
+
+                }
+            }
+
         }
     }
 }

@@ -40,9 +40,10 @@ from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QIODevice, QByteAr
 from PyQt5.QtSerialPort import QSerialPort
 import calendar
 import time
+import hashlib
 
 class RFID(QThread):
-    tagScan = pyqtSignal(int, int, str, name='tagScan', arguments=['tag', 'time', 'debugText'])
+    tagScan = pyqtSignal(int, str, int, str, name='tagScan', arguments=['tag', 'hash', 'time', 'debugText'])
     tagScanError = pyqtSignal(int, int, str, name='tagScanError', arguments=['error', 'time', 'debugText'])
 
     @pyqtProperty(int)
@@ -125,6 +126,17 @@ class RFID(QThread):
                 print("rfid: packet error")
             return self.errPacket
 
+    def hash_tag(self, tag):
+        m = hashlib.sha224()
+        tag_str = '%.10d' % int(tag)
+        m.update(str(tag_str).encode())
+        tag_hash = m.hexdigest()
+
+        if self.debug:
+            print('rfid hash: %s' % tag_hash)
+
+        return tag_hash
+
     def run(self):
 
         serial = QSerialPort()
@@ -148,6 +160,6 @@ class RFID(QThread):
                     print("rfid: tag=%d, now=%d" % (tag, now))
 
                 if tag > 0:
-                    self.tagScan.emit(tag, now, self.dump_pkt(bytes))
+                    self.tagScan.emit(tag, self.hash_tag(tag), now, self.dump_pkt(bytes))
                 else:
                     self.tagScanError.emit(tag, now, self.dump_pkt(bytes))
