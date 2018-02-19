@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -8193,6 +8193,8 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <wire x1="2.54" y1="-1.27" x2="3.81" y2="-1.27" width="0.1524" layer="94"/>
 <wire x1="2.54" y1="1.27" x2="3.81" y2="1.27" width="0.1524" layer="94"/>
 <wire x1="3.81" y1="1.27" x2="3.81" y2="5.08" width="0.1524" layer="94"/>
+<text x="3.81" y="6.35" size="1.27" layer="94" font="vector" align="center-left">DC+</text>
+<text x="3.81" y="-6.35" size="1.27" layer="94" font="vector" align="center-left">DC-</text>
 </symbol>
 </symbols>
 <devicesets>
