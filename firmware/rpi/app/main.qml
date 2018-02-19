@@ -51,8 +51,12 @@ ApplicationWindow {
         source: "audio/sfx013.wav"
     }
     SoundEffect {
-        id: rfidAudio
+        id: rfidSuccessAudio
         source: "audio/sfx061.wav"
+    }
+    SoundEffect {
+        id: rfidFailureAudio
+        source: "audio/sfx033.wav"
     }
 
     Rectangle {
@@ -131,9 +135,36 @@ ApplicationWindow {
         Connections {
             target: rfid
             onTagScan: {
-                rfidAudio.play()
-                var prettyTime = new Date(time * 1000)
-                tagText.text = tag + '(' + prettyTime + ')'
+                rfidSuccessAudio.play();
+                var prettyTime = new Date(time * 1000);
+                tagTimeText.text = "Time: " + prettyTime;
+                tagIDText.text = "Tag: " + tag;
+                tagTimeText.color = "cyan";
+                tagIDText.color = "#00FF00";
+                tagDebugText.text = debugText;
+                tagDebugText.color = "gray";
+                rfidRect.color = "#002266";
+            }
+
+            onTagScanError: {
+                rfidFailureAudio.play();
+                var prettyTime = new Date(time * 1000);
+                tagTimeText.text = "Time: " + prettyTime;
+
+                var errText = "Unknown error";
+
+                console.log("error = " + error);
+                if (error === rfid.errPacket)
+                    errText = "Packet structure error";
+                else if (error === rfid.errChecksum)
+                    errText = "Checksum error";
+
+                tagIDText.text = "RFID Read Error: " + errText;
+                tagDebugText.text = debugText;
+                tagTimeText.color = "yellow";
+                tagIDText.color = "#ff0000";
+                tagDebugText.color = "white";
+                rfidRect.color = "#660000"
             }
         }
 
@@ -148,14 +179,31 @@ ApplicationWindow {
                 text: "tftWindow size=" + tftWindow.width + "x" + tftWindow.height + " x,y=" + tftWindow.x + "," + tftWindow.y
                 font.pixelSize: 10
             }
-            RowLayout {
-                Label {
-                    color: "white"
-                    text: "Last RFID Read:"
-                }
-                Label {
-                    id: tagText
-                    color: "cyan"
+            Rectangle {
+                id: rfidRect
+                color: "#222222"
+                width: 400
+                height: 100
+                ColumnLayout {
+                    anchors.margins: 10
+                    Label {
+                        color: "white"
+                        text: "Last RFID Read"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Label {
+                        id: tagTimeText
+                        font.pixelSize: 12
+                    }
+                    Label {
+                        id: tagIDText
+                        font.pixelSize: 12
+                    }
+                    Label {
+                        id: tagDebugText
+                        font.pixelSize: 10
+                    }
                 }
             }
         }

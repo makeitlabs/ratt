@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 # --------------------------------------------------------------------------
 #  _____       ______________
 # |  __ \   /\|__   ____   __|
@@ -37,14 +36,22 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QIODevice, QByteArray, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QIODevice, QByteArray, pyqtSignal, pyqtProperty
 from PyQt5.QtSerialPort import QSerialPort
 import calendar
 import time
 
 class RFID(QThread):
-    tagScan = pyqtSignal(int, int, name='tagScan', arguments=['tag', 'time'])
-    tagScanError = pyqtSignal(int, name='tagScanError', arguments=['time'])
+    tagScan = pyqtSignal(int, int, str, name='tagScan', arguments=['tag', 'time', 'debugText'])
+    tagScanError = pyqtSignal(int, int, str, name='tagScanError', arguments=['error', 'time', 'debugText'])
+
+    @pyqtProperty(int)
+    def errPacket(self):
+        return -1
+
+    @pyqtProperty(int)
+    def errChecksum(self):
+        return -2
 
     def __init__(self, portName):
         QThread.__init__(self)
@@ -64,6 +71,15 @@ class RFID(QThread):
             self.start();
         else:
             self.cond.wakeOne();
+
+    def dump_pkt(self, bytes):
+        bstr = ''
+        for b in bytes:
+            byte = ord(b)
+            bstr += '%02x ' % byte
+
+        return bstr
+
 
     def decode_gwiot(self, bytes):
         #
@@ -95,22 +111,19 @@ class RFID(QThread):
                 tag = (ord(bytes[4]) << 24) | (ord(bytes[5]) << 16) | (ord(bytes[6]) << 8) | ord(bytes[7])
 
                 if self.debug:
-                    bstr = ''
-                    for b in bytes:
-                        byte = ord(b)
-                        bstr += '%02x ' % byte
-
-                    print("rfid serial read: " + bstr)
+                    print("rfid serial read: " + self.dump_pkt(bytes))
                     print('rfid tag = %10.10d' % tag)
 
                 return tag
 
             else:
-                print("rfid: checksum error")
-                return -2
+                if self.debug:
+                    print("rfid: checksum error")
+                return self.errChecksum
         else:
-            print("rfid: packet error")
-            return -1
+            if self.debug:
+                print("rfid: packet error")
+            return self.errPacket
 
     def run(self):
 
@@ -129,8 +142,12 @@ class RFID(QThread):
                     bytes += serial.readAll()
 
                 tag = self.decode_gwiot(bytes)
+                now = calendar.timegm(time.gmtime())
+
+                if self.debug:
+                    print("rfid: tag=%d, now=%d" % (tag, now))
 
                 if tag > 0:
-                    self.tagScan.emit(tag, calendar.timegm(time.gmtime()))
+                    self.tagScan.emit(tag, now, self.dump_pkt(bytes))
                 else:
-                    self.tagScanError.emit(calendar.timegm(time.gmtime()))
+                    self.tagScanError.emit(tag, now, self.dump_pkt(bytes))
