@@ -39,4 +39,5 @@ DISTFILES += \
     NetWorker.py \
     ViewIdle.qml \
     RFID.py \
-    LICENSE
+    LICENSE \
+    MemberRecord.py

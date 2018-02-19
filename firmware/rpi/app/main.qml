@@ -38,6 +38,7 @@ import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 import QtMultimedia 5.9
+import RATT 1.0
 
 ApplicationWindow {
     id: appWindow
@@ -149,6 +150,8 @@ ApplicationWindow {
                 color: "#444444"
                 width: 600
                 height: 100
+                border.width: 4
+                border.color: "#000000"
 
                 Connections {
                     target: netWorker
@@ -156,14 +159,17 @@ ApplicationWindow {
                         aclTotalText.text = "Total Records: " + total
                         aclActiveText.text = "Active Records: " + active
                         aclHash.text = "Hash: " + hash
+                        aclRect.border.color = "#009900"
                     }
 
                     onAclUpdateError: {
+                        aclRect.border.color = "#990000"
                     }
                 }
 
                 ColumnLayout {
-                    anchors.margins: 10
+                    anchors.fill: parent
+                    anchors.margins: 6
                     Label {
                         text: "ACL"
                         color: "white"
@@ -193,11 +199,12 @@ ApplicationWindow {
                 color: "#222222"
                 width: 600
                 height: 100
+                border.width: 4
+                border.color: "#000000"
 
                 Connections {
                     target: rfid
                     onTagScan: {
-                        rfidSuccessAudio.play();
                         var prettyTime = new Date(time * 1000);
                         tagTimeText.text = "Time: " + prettyTime;
                         tagTimeText.color = "cyan";
@@ -211,11 +218,10 @@ ApplicationWindow {
                         tagDebugText.text = "Debug: " + debugText;
                         tagDebugText.color = "gray";
 
-                        rfidRect.color = "#002266";
+                        rfidRect.border.color = "#002266";
                     }
 
                     onTagScanError: {
-                        rfidFailureAudio.play();
                         var prettyTime = new Date(time * 1000);
                         tagTimeText.text = "Time: " + prettyTime;
                         tagTimeText.color = "yellow";
@@ -235,13 +241,14 @@ ApplicationWindow {
 
                         tagDebugText.text = debugText;
                         tagDebugText.color = "white";
-                        rfidRect.color = "#660000"
+                        rfidRect.border.color = "#660000"
                     }
                 }
 
 
                 ColumnLayout {
-                    anchors.margins: 10
+                    anchors.fill: parent
+                    anchors.margins: 6
                     Label {
                         color: "white"
                         text: "Last RFID Read"
@@ -270,33 +277,33 @@ ApplicationWindow {
 
             Rectangle {
                 id: lookupRect
-                color: "#333333"
+                color: "#222222"
                 width: 600
                 height: 150
+                border.width: 4
+                border.color: "#000000"
 
                 Connections {
                     target: appEngine
                     onValidScan: {
-                        var level = record['level'];
-                        var tagid = record['tagid'];
-                        var lastaccessed = record['lastaccessed'];
-                        var member = record['member'];
-                        var warning = record['warning'];
-                        var plan = record['plan'];
-                        var allowed = record['allowed'];
-                        var nickname = record['nickname'];
+                        lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
 
-                        memberText.text = member;
-                        planText.text = plan;
-                        tagidText.text = tagid;
-                        allowedText.text = allowed;
-                        warningText.text = warning;
-
-                        lookupRect.color = (allowed === 'allowed') ? "#007700" : "#770000"
+                        if (activeMemberRecord.allowed) {
+                            rfidSuccessAudio.play();
+                        } else {
+                            rfidFailureAudio.play();
+                        }
+                    }
+                    onInvalidScan: {
+                        console.log("invalid scan")
+                        lookupRect.border.color = "#999900"
+                        invalidReason.text = reason;
+                        rfidFailureAudio.play();
                     }
                 }
                 ColumnLayout {
-                    anchors.margins: 10
+                    anchors.fill: parent
+                    anchors.margins: 6
                     Label {
                         color: "white"
                         text: "Last Record Lookup"
@@ -304,29 +311,41 @@ ApplicationWindow {
                         font.bold: true
                     }
                     Label {
-                        id: memberText
+                        id: invalidReason
+                        font.pixelSize: 12
+                        color: "#777777"
+                        visible: !activeMemberRecord.valid
+                    }
+
+                    Label {
                         font.pixelSize: 10
                         color: "white"
+                        text: activeMemberRecord.name
+                        visible: activeMemberRecord.valid
                     }
                     Label {
-                        id: planText
                         font.pixelSize: 10
                         color: "white"
+                        text: activeMemberRecord.plan
+                        visible: activeMemberRecord.valid
                     }
                     Label {
-                        id: tagidText
                         font.pixelSize: 10
                         color: "white"
+                        text: activeMemberRecord.tag
+                        visible: activeMemberRecord.valid
                     }
                     Label {
-                        id: allowedText
                         font.pixelSize: 10
                         color: "white"
+                        text: activeMemberRecord.allowed ? "Allowed" : "Denied"
+                        visible: activeMemberRecord.valid
                     }
                     Label {
-                        id: warningText
                         font.pixelSize: 10
                         color: "white"
+                        text: activeMemberRecord.warningText
+                        visible: activeMemberRecord.valid
                     }
 
                 }

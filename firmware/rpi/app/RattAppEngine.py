@@ -41,10 +41,13 @@ from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from NetWorker import NetWorker
 from RFID import RFID
+from MemberRecord import MemberRecord
+
 import ConfigParser
 
 class RattAppEngine(QQmlApplicationEngine):
-    validScan = pyqtSignal('QVariant', name='validScan', arguments=['record'])
+    validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
+    invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
@@ -54,9 +57,14 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self.rfid = RFID("/dev/ttyAMA0")
 
+        self.activeMemberRecord = MemberRecord()
+
         self.rootContext().setContextProperty("appEngine", self)
         self.rootContext().setContextProperty("netWorker", self.netWorker)
         self.rootContext().setContextProperty("rfid", self.rfid)
+        self.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
+
+        qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
 
         self.rfid.tagScan.connect(self.tagScanHandler)
 
@@ -71,9 +79,18 @@ class RattAppEngine(QQmlApplicationEngine):
         result = self.netWorker.searchAcl(hash)
 
         if result != []:
-            print result
-            v = QVariant(result,)
-            self.validScan.emit(v)
+            success = self.activeMemberRecord.parseRecord(result)
+
+            if success:
+                self.validScan.emit(self.activeMemberRecord)
+            else:
+                self.invalidScan.emit('could not create MemberRecord')
+                print('error making member record')
+        else:
+            self.activeMemberRecord.clearRecord()
+            self.invalidScan.emit('unknown rfid tag')
+            print('unknown rfid tag')
+
 
     @pyqtSlot()
     def testUpdateACL(self):
