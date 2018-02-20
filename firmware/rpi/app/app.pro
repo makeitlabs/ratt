@@ -40,4 +40,6 @@ DISTFILES += \
     ViewIdle.qml \
     RFID.py \
     LICENSE \
-    MemberRecord.py
+    MemberRecord.py \
+    RattDiags.qml \
+    RattSounds.qml
