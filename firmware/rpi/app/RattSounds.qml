@@ -40,79 +40,37 @@ import QtQuick.Layouts 1.2
 import QtMultimedia 5.9
 import RATT 1.0
 
-ApplicationWindow {
-    id: appWindow
-    visible: true
-    color: "#004488"
-    width: 640
-    height: 480
+Item {
+    property alias keyAudio: keyAudio
 
-    RattSounds {
-        id: sound
+    SoundEffect {
+        id: keyAudio
+        source: "audio/sfx013.wav"
+    }
+    SoundEffect {
+        id: rfidSuccessAudio
+        source: "audio/sfx061.wav"
+    }
+    SoundEffect {
+        id: rfidFailureAudio
+        source: "audio/sfx033.wav"
+    }
+    SoundEffect {
+        id: rfidErrorAudio
+        source: "audio/sfx033.wav"
     }
 
-    Rectangle {
-        id: root
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        color: "black"
-        width: tftWindow.width + 20
-        height: tftWindow.height + 20
-
-        Item {
-            id: tftWindow
-            focus: true
-            anchors.centerIn: parent
-            width: 160
-            height: 128
-
-            RattToolBar {
-                id: tool
-                width: parent.width
-                anchors.top: parent.top
-            }
-
-            RattStatusBar {
-                id: status
-                width: parent.width
-                anchors.bottom: parent.bottom
-            }
-
-            Keys.onPressed: {
-                sound.keyAudio.play();
-
-                if (event.key === Qt.Key_Escape)
-                    appWindow.close();
-                else if (event.key === Qt.Key_Down) {
-                    appEngine.testUpdateACL();
-                } else if (event.key === Qt.Key_Up) {
-                    appEngine.testPostLog();
-                }
-            }
-
-            ViewIdle {
-                id: viewIdle
-                visible: false
-            }
-
-            StackView {
-                id: stack
-                anchors.top: tool.bottom
-                anchors.bottom: status.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                initialItem: viewIdle
+    Connections {
+        target: appEngine
+        onValidScan: {
+            if (record.allowed) {
+                rfidSuccessAudio.play();
+            } else {
+                rfidFailureAudio.play();
             }
         }
-    }
-
-    RattDiags {
-
-        anchors.top: root.bottom
-        anchors.left: parent.left
-        width: parent.width
-        height: parent.height - root.height
-        anchors.margins: 4
-
+        onInvalidScan: {
+            rfidErrorAudio.play();
+        }
     }
 }
