@@ -13652,8 +13652,7 @@ Dual Diodes, Cathode to Anode</description>
 <part name="R6" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100K"/>
 <part name="R7" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100K"/>
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
-<part name="R8" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="500K"/>
-<part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
+<part name="R8" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680K"/>
 <part name="FB1" library="Adafruit_MAX98357" deviceset="FERRITE" device=""/>
 <part name="FB2" library="Adafruit_MAX98357" deviceset="FERRITE" device=""/>
 <part name="C5" library="MakeItLabs" deviceset="CAP" device="0603" value="220pF"/>
@@ -13866,6 +13865,7 @@ Dual Diodes, Cathode to Anode</description>
 <part name="SUPPLY61" library="supply2" deviceset="GND" device=""/>
 <part name="P+12" library="supply1" deviceset="+5V" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
+<part name="SUPPLY62" library="SparkFun-Aesthetics" deviceset="VIN" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -13969,9 +13969,6 @@ Revise power path circuit</text>
 <instance part="R8" gate="G$1" x="25.4" y="48.26" smashed="yes" rot="R90">
 <attribute name="NAME" x="23.9014" y="44.45" size="1.27" layer="95" font="vector" rot="R90"/>
 <attribute name="VALUE" x="28.194" y="44.45" size="1.27" layer="96" font="vector" rot="R90"/>
-</instance>
-<instance part="+3V4" gate="G$1" x="25.4" y="58.42" smashed="yes">
-<attribute name="VALUE" x="22.86" y="58.42" size="1.778" layer="96" font="vector"/>
 </instance>
 <instance part="FB1" gate="G$1" x="63.5" y="40.64"/>
 <instance part="FB2" gate="G$1" x="63.5" y="33.02"/>
@@ -14526,6 +14523,7 @@ Revise power path circuit</text>
 <instance part="+3V5" gate="G$1" x="269.24" y="50.8" smashed="yes">
 <attribute name="VALUE" x="266.7" y="50.8" size="1.778" layer="96" font="vector"/>
 </instance>
+<instance part="SUPPLY62" gate="G$1" x="25.4" y="55.88"/>
 </instances>
 <busses>
 </busses>
@@ -15042,11 +15040,6 @@ Revise power path circuit</text>
 </net>
 <net name="+3V3" class="0">
 <segment>
-<pinref part="R8" gate="G$1" pin="2"/>
-<pinref part="+3V4" gate="G$1" pin="+3V3"/>
-<wire x1="25.4" y1="55.88" x2="25.4" y2="53.34" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <pinref part="+3V6" gate="G$1" pin="+3V3"/>
 <wire x1="127" y1="185.42" x2="127" y2="182.88" width="0.1524" layer="91"/>
 <pinref part="IC16" gate="A" pin="VCC"/>
@@ -15327,6 +15320,11 @@ Revise power path circuit</text>
 <wire x1="73.66" y1="27.94" x2="76.2" y2="27.94" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="27.94" x2="76.2" y2="30.48" width="0.1524" layer="91"/>
 <pinref part="SUPPLY22" gate="G$1" pin="VIN"/>
+</segment>
+<segment>
+<pinref part="R8" gate="G$1" pin="2"/>
+<wire x1="25.4" y1="55.88" x2="25.4" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="SUPPLY62" gate="G$1" pin="VIN"/>
 </segment>
 </net>
 <net name="N$17" class="0">

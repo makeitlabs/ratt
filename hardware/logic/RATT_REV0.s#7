@@ -13867,8 +13867,8 @@ Dual Diodes, Cathode to Anode</description>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="SUPPLY62" library="SparkFun-Aesthetics" deviceset="VIN" device=""/>
 <part name="X2" library="Adafruit_MAX98357" deviceset="TERMBLOCK_1X2" device=""/>
-<part name="SUPPLY63" library="SparkFun-Aesthetics" deviceset="VIN" device=""/>
 <part name="SUPPLY64" library="supply2" deviceset="GND" device=""/>
+<part name="P+13" library="supply1" deviceset="+5V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14528,9 +14528,11 @@ Revise power path circuit</text>
 </instance>
 <instance part="SUPPLY62" gate="G$1" x="25.4" y="55.88"/>
 <instance part="X2" gate="G$1" x="-60.96" y="231.14" rot="MR0"/>
-<instance part="SUPPLY63" gate="G$1" x="-53.34" y="236.22"/>
 <instance part="SUPPLY64" gate="GND" x="-53.34" y="226.06" smashed="yes">
 <attribute name="VALUE" x="-60.325" y="225.425" size="1.778" layer="96" font="vector"/>
+</instance>
+<instance part="P+13" gate="1" x="-53.34" y="238.76" smashed="yes">
+<attribute name="VALUE" x="-55.88" y="239.776" size="1.778" layer="96"/>
 </instance>
 </instances>
 <busses>
@@ -15340,12 +15342,6 @@ Revise power path circuit</text>
 <wire x1="25.4" y1="55.88" x2="25.4" y2="53.34" width="0.1524" layer="91"/>
 <pinref part="SUPPLY62" gate="G$1" pin="VIN"/>
 </segment>
-<segment>
-<pinref part="X2" gate="G$1" pin="1"/>
-<wire x1="-55.88" y1="233.68" x2="-53.34" y2="233.68" width="0.1524" layer="91"/>
-<wire x1="-53.34" y1="233.68" x2="-53.34" y2="236.22" width="0.1524" layer="91"/>
-<pinref part="SUPPLY63" gate="G$1" pin="VIN"/>
-</segment>
 </net>
 <net name="N$17" class="0">
 <segment>
@@ -15719,6 +15715,12 @@ Revise power path circuit</text>
 <wire x1="264.16" y1="48.26" x2="264.16" y2="30.48" width="0.1524" layer="91"/>
 <pinref part="JP1" gate="A" pin="5"/>
 <wire x1="276.86" y1="30.48" x2="264.16" y2="30.48" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="X2" gate="G$1" pin="1"/>
+<wire x1="-55.88" y1="233.68" x2="-53.34" y2="233.68" width="0.1524" layer="91"/>
+<wire x1="-53.34" y1="233.68" x2="-53.34" y2="236.22" width="0.1524" layer="91"/>
+<pinref part="P+13" gate="1" pin="+5V"/>
 </segment>
 </net>
 <net name="N$10" class="0">

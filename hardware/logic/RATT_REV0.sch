@@ -8671,7 +8671,6 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
-<text x="-17.1196" y="-2.7559" size="0.04571875" layer="51" font="vector">C:/Users/Adam/Documents/GitHub/ratt/hardware/references/logo.bmp</text>
 </package>
 <package name="1.8TFT_CHI">
 <wire x1="23" y1="-17" x2="23" y2="-16.9683" width="0" layer="20"/>

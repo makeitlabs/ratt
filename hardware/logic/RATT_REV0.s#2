@@ -15430,11 +15430,6 @@ Revise power path circuit</text>
 </net>
 <net name="!I/O_IRQ" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="GPIO4/GCKL"/>
-<wire x1="27.94" y1="248.92" x2="22.86" y2="248.92" width="0.1524" layer="91"/>
-<label x="22.86" y="248.92" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC16" gate="A" pin="~INT"/>
 <wire x1="175.26" y1="167.64" x2="157.48" y2="167.64" width="0.1524" layer="91"/>
 <label x="149.86" y="167.64" size="1.27" layer="95" rot="R180" xref="yes"/>
@@ -15442,6 +15437,11 @@ Revise power path circuit</text>
 <wire x1="157.48" y1="167.64" x2="149.86" y2="167.64" width="0.1524" layer="91"/>
 <wire x1="157.48" y1="170.18" x2="157.48" y2="167.64" width="0.1524" layer="91"/>
 <junction x="157.48" y="167.64"/>
+</segment>
+<segment>
+<wire x1="27.94" y1="243.84" x2="22.86" y2="243.84" width="0.1524" layer="91"/>
+<label x="22.86" y="243.84" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U1" gate="G$1" pin="GPIO17/GEN0"/>
 </segment>
 </net>
 <net name="3V3" class="0">
@@ -15467,9 +15467,9 @@ Revise power path circuit</text>
 <junction x="152.4" y="162.56"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="GPIO17/GEN0"/>
-<wire x1="27.94" y1="243.84" x2="22.86" y2="243.84" width="0.1524" layer="91"/>
-<label x="22.86" y="243.84" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="27.94" y1="248.92" x2="22.86" y2="248.92" width="0.1524" layer="91"/>
+<label x="22.86" y="248.92" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U1" gate="G$1" pin="GPIO4/GCKL"/>
 </segment>
 </net>
 <net name="IN0" class="0">
