@@ -8671,7 +8671,6 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
-<text x="-17.1196" y="-2.7559" size="0.04571875" layer="51" font="vector">C:/Users/Adam/Documents/GitHub/ratt/hardware/references/logo.bmp</text>
 </package>
 <package name="1.8TFT_CHI">
 <wire x1="23" y1="-17" x2="23" y2="-16.9683" width="0" layer="20"/>
@@ -13487,6 +13486,9 @@ Dual Diodes, Cathode to Anode</description>
 <part name="X2" library="Adafruit_MAX98357" deviceset="TERMBLOCK_1X2" device=""/>
 <part name="SUPPLY64" library="supply2" deviceset="GND" device=""/>
 <part name="P+13" library="supply1" deviceset="+5V" device=""/>
+<part name="R5" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R55" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14113,8 +14115,8 @@ Revise power path circuit</text>
 <attribute name="VALUE" x="203.835" y="19.685" size="1.778" layer="96"/>
 </instance>
 <instance part="JP1" gate="A" x="279.4" y="27.94"/>
-<instance part="SUPPLY61" gate="GND" x="302.26" y="30.48" smashed="yes">
-<attribute name="VALUE" x="300.355" y="27.305" size="1.778" layer="96"/>
+<instance part="SUPPLY61" gate="GND" x="302.26" y="25.4" smashed="yes">
+<attribute name="VALUE" x="300.355" y="22.225" size="1.778" layer="96"/>
 </instance>
 <instance part="P+12" gate="1" x="292.1" y="45.72" smashed="yes">
 <attribute name="VALUE" x="290.83" y="46.228" size="1.778" layer="96"/>
@@ -14129,6 +14131,17 @@ Revise power path circuit</text>
 </instance>
 <instance part="P+13" gate="1" x="-53.34" y="238.76" smashed="yes">
 <attribute name="VALUE" x="-55.88" y="239.776" size="1.778" layer="96"/>
+</instance>
+<instance part="R5" gate="G$1" x="233.68" y="142.24" smashed="yes" rot="R90">
+<attribute name="NAME" x="232.1814" y="146.05" size="1.27" layer="95" font="vector" rot="R90"/>
+<attribute name="VALUE" x="236.474" y="138.43" size="1.27" layer="96" font="vector" rot="R90"/>
+</instance>
+<instance part="R55" gate="G$1" x="238.76" y="142.24" smashed="yes" rot="R90">
+<attribute name="NAME" x="237.2614" y="146.05" size="1.27" layer="95" font="vector" rot="R90"/>
+<attribute name="VALUE" x="241.554" y="138.43" size="1.27" layer="96" font="vector" rot="R90"/>
+</instance>
+<instance part="+3V4" gate="G$1" x="233.68" y="154.94" smashed="yes">
+<attribute name="VALUE" x="226.06" y="154.94" size="1.778" layer="96" font="vector"/>
 </instance>
 </instances>
 <busses>
@@ -14630,13 +14643,12 @@ Revise power path circuit</text>
 <segment>
 <pinref part="JP1" gate="A" pin="2"/>
 <pinref part="SUPPLY61" gate="GND" pin="GND"/>
-<wire x1="284.48" y1="35.56" x2="289.56" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="289.56" y1="35.56" x2="302.26" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="302.26" y1="35.56" x2="302.26" y2="33.02" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="A" pin="4"/>
-<wire x1="284.48" y1="33.02" x2="289.56" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="289.56" y1="33.02" x2="289.56" y2="35.56" width="0.1524" layer="91"/>
-<junction x="289.56" y="35.56"/>
+<wire x1="284.48" y1="35.56" x2="302.26" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="302.26" y1="35.56" x2="302.26" y2="30.48" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="A" pin="6"/>
+<wire x1="302.26" y1="30.48" x2="302.26" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="284.48" y1="30.48" x2="302.26" y2="30.48" width="0.1524" layer="91"/>
+<junction x="302.26" y="30.48"/>
 </segment>
 </net>
 <net name="+3V3" class="0">
@@ -14751,6 +14763,16 @@ Revise power path circuit</text>
 <wire x1="297.18" y1="43.18" x2="297.18" y2="27.94" width="0.1524" layer="91"/>
 <pinref part="JP1" gate="A" pin="8"/>
 <wire x1="297.18" y1="27.94" x2="284.48" y2="27.94" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="+3V4" gate="G$1" pin="+3V3"/>
+<pinref part="R5" gate="G$1" pin="2"/>
+<wire x1="233.68" y1="152.4" x2="233.68" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="233.68" y1="149.86" x2="233.68" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="233.68" y1="149.86" x2="238.76" y2="149.86" width="0.1524" layer="91"/>
+<junction x="233.68" y="149.86"/>
+<pinref part="R55" gate="G$1" pin="2"/>
+<wire x1="238.76" y1="149.86" x2="238.76" y2="147.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -15285,10 +15307,10 @@ Revise power path circuit</text>
 <pinref part="P+13" gate="1" pin="+5V"/>
 </segment>
 <segment>
-<pinref part="JP1" gate="A" pin="6"/>
-<wire x1="284.48" y1="30.48" x2="292.1" y2="30.48" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="A" pin="4"/>
+<wire x1="284.48" y1="33.02" x2="292.1" y2="33.02" width="0.1524" layer="91"/>
 <pinref part="P+12" gate="1" pin="+5V"/>
-<wire x1="292.1" y1="30.48" x2="292.1" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="292.1" y1="33.02" x2="292.1" y2="43.18" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$10" class="0">
@@ -16026,6 +16048,22 @@ Revise power path circuit</text>
 <pinref part="IC3" gate="G$1" pin="DC+"/>
 <pinref part="J8" gate=".4" pin="1"/>
 <wire x1="228.6" y1="83.82" x2="231.14" y2="83.82" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$8" class="0">
+<segment>
+<pinref part="IC16" gate="A" pin="P17"/>
+<pinref part="R55" gate="G$1" pin="1"/>
+<wire x1="210.82" y1="132.08" x2="238.76" y2="132.08" width="0.1524" layer="91"/>
+<wire x1="238.76" y1="132.08" x2="238.76" y2="137.16" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$13" class="0">
+<segment>
+<pinref part="R5" gate="G$1" pin="1"/>
+<pinref part="IC16" gate="A" pin="P16"/>
+<wire x1="233.68" y1="137.16" x2="233.68" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="233.68" y1="134.62" x2="210.82" y2="134.62" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

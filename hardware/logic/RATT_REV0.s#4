@@ -8671,7 +8671,6 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
-<text x="-17.1196" y="-2.7559" size="0.04571875" layer="51" font="vector">C:/Users/Adam/Documents/GitHub/ratt/hardware/references/logo.bmp</text>
 </package>
 <package name="1.8TFT_CHI">
 <wire x1="23" y1="-17" x2="23" y2="-16.9683" width="0" layer="20"/>
@@ -14150,9 +14149,9 @@ Revise power path circuit</text>
 <label x="22.86" y="254" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<label x="269.24" y="17.78" size="1.27" layer="95" rot="R180" xref="yes"/>
-<wire x1="276.86" y1="17.78" x2="269.24" y2="17.78" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="A" pin="15"/>
+<label x="269.24" y="20.32" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="276.86" y1="20.32" x2="269.24" y2="20.32" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="A" pin="13"/>
 </segment>
 </net>
 <net name="I2C_SCL" class="0">
@@ -14171,9 +14170,9 @@ Revise power path circuit</text>
 <label x="22.86" y="251.46" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<label x="269.24" y="20.32" size="1.27" layer="95" rot="R180" xref="yes"/>
-<wire x1="276.86" y1="20.32" x2="269.24" y2="20.32" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="A" pin="13"/>
+<label x="269.24" y="17.78" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="276.86" y1="17.78" x2="269.24" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="A" pin="15"/>
 </segment>
 </net>
 <net name="LCD_CS" class="0">
@@ -15430,11 +15429,6 @@ Revise power path circuit</text>
 </net>
 <net name="!I/O_IRQ" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="GPIO4/GCKL"/>
-<wire x1="27.94" y1="248.92" x2="22.86" y2="248.92" width="0.1524" layer="91"/>
-<label x="22.86" y="248.92" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC16" gate="A" pin="~INT"/>
 <wire x1="175.26" y1="167.64" x2="157.48" y2="167.64" width="0.1524" layer="91"/>
 <label x="149.86" y="167.64" size="1.27" layer="95" rot="R180" xref="yes"/>
@@ -15442,6 +15436,11 @@ Revise power path circuit</text>
 <wire x1="157.48" y1="167.64" x2="149.86" y2="167.64" width="0.1524" layer="91"/>
 <wire x1="157.48" y1="170.18" x2="157.48" y2="167.64" width="0.1524" layer="91"/>
 <junction x="157.48" y="167.64"/>
+</segment>
+<segment>
+<wire x1="27.94" y1="243.84" x2="22.86" y2="243.84" width="0.1524" layer="91"/>
+<label x="22.86" y="243.84" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U1" gate="G$1" pin="GPIO17/GEN0"/>
 </segment>
 </net>
 <net name="3V3" class="0">
@@ -15467,9 +15466,9 @@ Revise power path circuit</text>
 <junction x="152.4" y="162.56"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="GPIO17/GEN0"/>
-<wire x1="27.94" y1="243.84" x2="22.86" y2="243.84" width="0.1524" layer="91"/>
-<label x="22.86" y="243.84" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="27.94" y1="248.92" x2="22.86" y2="248.92" width="0.1524" layer="91"/>
+<label x="22.86" y="248.92" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U1" gate="G$1" pin="GPIO4/GCKL"/>
 </segment>
 </net>
 <net name="IN0" class="0">
