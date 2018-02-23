@@ -69,7 +69,7 @@
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
-<layer number="93" name="Pins" color="2" fill="1" visible="no" active="yes"/>
+<layer number="93" name="Pins" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="94" name="Symbols" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="95" name="Names" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="96" name="Values" color="7" fill="1" visible="yes" active="yes"/>
@@ -8671,7 +8671,6 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
-<text x="-17.1196" y="-2.7559" size="0.04571875" layer="51" font="vector">C:/Users/Adam/Documents/GitHub/ratt/hardware/references/logo.bmp</text>
 </package>
 <package name="1.8TFT_CHI">
 <wire x1="23" y1="-17" x2="23" y2="-16.9683" width="0" layer="20"/>
@@ -13487,6 +13486,8 @@ Dual Diodes, Cathode to Anode</description>
 <part name="X2" library="Adafruit_MAX98357" deviceset="TERMBLOCK_1X2" device=""/>
 <part name="SUPPLY64" library="supply2" deviceset="GND" device=""/>
 <part name="P+13" library="supply1" deviceset="+5V" device=""/>
+<part name="F2" library="SparkFun-PowerIC" deviceset="PTC" device="SMD" value="500mA"/>
+<part name="F3" library="SparkFun-PowerIC" deviceset="PTC" device="SMD" value="500mA"/>
 </parts>
 <sheets>
 <sheet>
@@ -14130,6 +14131,8 @@ Revise power path circuit</text>
 <instance part="P+13" gate="1" x="-53.34" y="238.76" smashed="yes">
 <attribute name="VALUE" x="-55.88" y="239.776" size="1.778" layer="96"/>
 </instance>
+<instance part="F2" gate="G$1" x="289.56" y="231.14"/>
+<instance part="F3" gate="G$1" x="314.452" y="232.41"/>
 </instances>
 <busses>
 </busses>
@@ -14150,9 +14153,9 @@ Revise power path circuit</text>
 <label x="22.86" y="254" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<label x="269.24" y="17.78" size="1.27" layer="95" rot="R180" xref="yes"/>
-<wire x1="276.86" y1="17.78" x2="269.24" y2="17.78" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="A" pin="15"/>
+<label x="269.24" y="20.32" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="276.86" y1="20.32" x2="269.24" y2="20.32" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="A" pin="13"/>
 </segment>
 </net>
 <net name="I2C_SCL" class="0">
@@ -14171,9 +14174,9 @@ Revise power path circuit</text>
 <label x="22.86" y="251.46" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<label x="269.24" y="20.32" size="1.27" layer="95" rot="R180" xref="yes"/>
-<wire x1="276.86" y1="20.32" x2="269.24" y2="20.32" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="A" pin="13"/>
+<label x="269.24" y="17.78" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="276.86" y1="17.78" x2="269.24" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="A" pin="15"/>
 </segment>
 </net>
 <net name="LCD_CS" class="0">
