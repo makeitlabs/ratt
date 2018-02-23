@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -13707,15 +13707,15 @@ Dual Diodes, Cathode to Anode</description>
 <part name="R24" library="SparkFun-Resistors" deviceset="10KOHM" device="-0603-1/10W-1%" value="10k"/>
 <part name="D4" library="SparkFun-DiscreteSemi" deviceset="DIODE-SCHOTTKY" device="-BAT20J" value="BAT20J"/>
 <part name="IC16" library="Texas Instruments_By_element14_Batch_1" deviceset="PCA9539PW" device=""/>
-<part name="R25" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R25" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="SUPPLY41" library="supply2" deviceset="GND" device=""/>
-<part name="R26" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R27" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R26" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R27" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="SUPPLY42" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY43" library="supply2" deviceset="GND" device=""/>
-<part name="R28" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R29" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R30" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R28" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R29" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R30" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="C18" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="0.1uF"/>
 <part name="C20" library="SparkFun-Capacitors" deviceset="CAP" device="0805" value="10uF"/>
@@ -13724,12 +13724,12 @@ Dual Diodes, Cathode to Anode</description>
 <part name="J3" library="con-headers-jp" deviceset="F-1X06-" device="SIP-100-40" value="F-1X06-SIP-100-40"/>
 <part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
 <part name="SUPPLY47" library="supply2" deviceset="GND" device=""/>
-<part name="C21" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="0.1uF"/>
+<part name="C21" library="MakeItLabs" deviceset="CAP" device="0603" value="0.1uF"/>
 <part name="SUPPLY48" library="supply2" deviceset="GND" device=""/>
-<part name="R31" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R32" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R33" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R34" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R31" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R32" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R33" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R34" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="SUPPLY49" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY50" library="supply2" deviceset="GND" device=""/>
 <part name="+3V8" library="supply1" deviceset="+3V3" device=""/>
@@ -13747,17 +13747,17 @@ Dual Diodes, Cathode to Anode</description>
 <part name="SJ11" library="MakeItLabs" deviceset="SOLDERJUMPER_CLOSED" device="10MIL" value="JUMPER-PAD-2-NC_BY_TRACE"/>
 <part name="SUPPLY55" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY56" library="SparkFun-Aesthetics" deviceset="V_USB" device=""/>
-<part name="C25" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="0.1uF"/>
+<part name="C25" library="MakeItLabs" deviceset="CAP" device="0603" value="0.1uF"/>
 <part name="SUPPLY57" library="supply2" deviceset="GND" device=""/>
 <part name="SW0" library="MakeIt_Labs" deviceset="ESWITCH_320" device=""/>
 <part name="SW1" library="MakeIt_Labs" deviceset="ESWITCH_320" device=""/>
 <part name="SW2" library="MakeIt_Labs" deviceset="ESWITCH_320" device=""/>
 <part name="SW3" library="MakeIt_Labs" deviceset="ESWITCH_320" device=""/>
-<part name="R20" library="SparkFun-Resistors" deviceset="2.0KOHM1/10W5%(0603)" device="" value="750R"/>
-<part name="R37" library="SparkFun-Resistors" deviceset="2.0KOHM1/10W5%(0603)" device="" value="1.5K"/>
+<part name="R20" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="750R"/>
+<part name="R37" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1.5K"/>
 <part name="Q5" library="zetex" deviceset="NMOSSOT23" device="" value="2N7002"/>
 <part name="SUPPLY28" library="supply2" deviceset="GND" device=""/>
-<part name="R35" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R35" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="U1" library="RPI-Zero" deviceset="RPI-ZERO" device=""/>
 <part name="R36" library="SparkFun-Resistors" deviceset="1KOHM-1/10W-1%(0603)" device="" value="1K"/>
 <part name="SUPPLY59" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
@@ -13783,10 +13783,10 @@ Dual Diodes, Cathode to Anode</description>
 <part name="LCD3" library="MakeItLabs" deviceset="1.8TFT_CHI" device="2.0"/>
 <part name="IC1" library="DURRIDGE-IC" deviceset="TLP292-4" device=""/>
 <part name="SUPPLY23" library="supply2" deviceset="GND" device=""/>
-<part name="R2" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R3" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R4" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R13" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R2" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R3" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R4" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R13" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="+3V2" library="supply1" deviceset="+3V3" device=""/>
 <part name="R14" library="DURRIDGE-RESISTORS" deviceset="RESISTOR" device="2512" value="680R">
 <attribute name="P" value="1W"/>
@@ -13800,15 +13800,15 @@ Dual Diodes, Cathode to Anode</description>
 <part name="R22" library="DURRIDGE-RESISTORS" deviceset="RESISTOR" device="2512" value="680R">
 <attribute name="P" value="1W"/>
 </part>
-<part name="R23" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="0R"/>
-<part name="R38" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="0R"/>
-<part name="R39" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="0R"/>
-<part name="R40" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="0R"/>
+<part name="R23" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="0R"/>
+<part name="R38" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="0R"/>
+<part name="R39" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="0R"/>
+<part name="R40" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="0R"/>
 <part name="LED1" library="SparkFun-LED" deviceset="LED" device="5MM"/>
 <part name="LED2" library="SparkFun-LED" deviceset="LED" device="5MM"/>
 <part name="+3V3" library="supply1" deviceset="+3V3" device=""/>
-<part name="R41" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="680R"/>
-<part name="R42" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="680R"/>
+<part name="R41" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680R"/>
+<part name="R42" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680R"/>
 <part name="P+3" library="supply1" deviceset="+5V" device=""/>
 <part name="J1" library="MakeItLabs" deviceset="GROVE-CONNECTOR-TH" device="-VERT" value="4P-2.0"/>
 <part name="J2" library="MakeItLabs" deviceset="GROVE-CONNECTOR-TH" device="-VERT" value="4P-2.0"/>
@@ -13816,32 +13816,32 @@ Dual Diodes, Cathode to Anode</description>
 <part name="J6" library="MakeItLabs" deviceset="GROVE-CONNECTOR-TH" device="-VERT" value="4P-2.0"/>
 <part name="SUPPLY31" library="supply2" deviceset="GND" device=""/>
 <part name="D5" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
-<part name="R45" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
-<part name="R46" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
+<part name="R45" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
+<part name="R46" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
 <part name="P+6" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY34" library="supply2" deviceset="GND" device=""/>
 <part name="D6" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
 <part name="P+7" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY35" library="supply2" deviceset="GND" device=""/>
 <part name="D2" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
-<part name="R43" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
-<part name="R44" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
+<part name="R43" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
+<part name="R44" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
 <part name="P+4" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY32" library="supply2" deviceset="GND" device=""/>
 <part name="D3" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY33" library="supply2" deviceset="GND" device=""/>
 <part name="D7" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
-<part name="R47" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
-<part name="R48" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
+<part name="R47" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
+<part name="R48" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
 <part name="P+8" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY36" library="supply2" deviceset="GND" device=""/>
 <part name="D8" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
 <part name="P+9" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY37" library="supply2" deviceset="GND" device=""/>
 <part name="D9" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
-<part name="R49" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
-<part name="R50" library="SparkFun-Resistors" deviceset="RESISTOR" device="0603-RES" value="100R"/>
+<part name="R49" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
+<part name="R50" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="100R"/>
 <part name="P+10" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY38" library="supply2" deviceset="GND" device=""/>
 <part name="D10" library="DURRIDGE-DIODES" deviceset="BAT54S" device=""/>
@@ -13852,20 +13852,23 @@ Dual Diodes, Cathode to Anode</description>
 <part name="IC3" library="MakeItLabs" deviceset="CPC1002N" device=""/>
 <part name="IC4" library="MakeItLabs" deviceset="CPC1002N" device=""/>
 <part name="IC5" library="MakeItLabs" deviceset="CPC1002N" device=""/>
-<part name="R51" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="680R"/>
+<part name="R51" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680R"/>
 <part name="SUPPLY53" library="supply2" deviceset="GND" device=""/>
 <part name="J8" library="MakeItLabs" deviceset="PHOENIX1803484" device=""/>
-<part name="R52" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="680R"/>
+<part name="R52" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680R"/>
 <part name="SUPPLY54" library="supply2" deviceset="GND" device=""/>
-<part name="R53" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="680R"/>
+<part name="R53" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680R"/>
 <part name="SUPPLY58" library="supply2" deviceset="GND" device=""/>
-<part name="R54" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="680R"/>
+<part name="R54" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="680R"/>
 <part name="SUPPLY60" library="supply2" deviceset="GND" device=""/>
 <part name="JP1" library="pinhead" deviceset="PINHD-2X8" device=""/>
 <part name="SUPPLY61" library="supply2" deviceset="GND" device=""/>
 <part name="P+12" library="supply1" deviceset="+5V" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="SUPPLY62" library="SparkFun-Aesthetics" deviceset="VIN" device=""/>
+<part name="X2" library="Adafruit_MAX98357" deviceset="TERMBLOCK_1X2" device=""/>
+<part name="SUPPLY64" library="supply2" deviceset="GND" device=""/>
+<part name="P+13" library="supply1" deviceset="+5V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14524,6 +14527,13 @@ Revise power path circuit</text>
 <attribute name="VALUE" x="266.7" y="50.8" size="1.778" layer="96" font="vector"/>
 </instance>
 <instance part="SUPPLY62" gate="G$1" x="25.4" y="55.88"/>
+<instance part="X2" gate="G$1" x="-60.96" y="231.14" rot="MR0"/>
+<instance part="SUPPLY64" gate="GND" x="-53.34" y="226.06" smashed="yes">
+<attribute name="VALUE" x="-60.325" y="225.425" size="1.778" layer="96" font="vector"/>
+</instance>
+<instance part="P+13" gate="1" x="-53.34" y="238.76" smashed="yes">
+<attribute name="VALUE" x="-55.88" y="239.776" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -15037,6 +15047,12 @@ Revise power path circuit</text>
 <wire x1="76.2" y1="220.98" x2="78.74" y2="220.98" width="0.1524" layer="91"/>
 <junction x="78.74" y="220.98"/>
 </segment>
+<segment>
+<pinref part="X2" gate="G$1" pin="2"/>
+<wire x1="-55.88" y1="231.14" x2="-53.34" y2="231.14" width="0.1524" layer="91"/>
+<pinref part="SUPPLY64" gate="GND" pin="GND"/>
+<wire x1="-53.34" y1="231.14" x2="-53.34" y2="228.6" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="+3V3" class="0">
 <segment>
@@ -15483,9 +15499,9 @@ Revise power path circuit</text>
 <pinref part="JP1" gate="A" pin="15"/>
 </segment>
 <segment>
-<wire x1="480.06" y1="154.94" x2="477.52" y2="154.94" width="0.1524" layer="91"/>
-<label x="477.52" y="154.94" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="J3" gate="G$1" pin="6"/>
+<wire x1="480.06" y1="157.48" x2="477.52" y2="157.48" width="0.1524" layer="91"/>
+<label x="477.52" y="157.48" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="J3" gate="G$1" pin="5"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -15574,9 +15590,9 @@ Revise power path circuit</text>
 <pinref part="R20" gate="G$1" pin="2"/>
 </segment>
 <segment>
-<wire x1="480.06" y1="157.48" x2="477.52" y2="157.48" width="0.1524" layer="91"/>
-<label x="477.52" y="157.48" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="J3" gate="G$1" pin="5"/>
+<wire x1="480.06" y1="154.94" x2="477.52" y2="154.94" width="0.1524" layer="91"/>
+<label x="477.52" y="154.94" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="J3" gate="G$1" pin="6"/>
 </segment>
 </net>
 <net name="N$34" class="0">
@@ -15699,6 +15715,12 @@ Revise power path circuit</text>
 <wire x1="264.16" y1="48.26" x2="264.16" y2="30.48" width="0.1524" layer="91"/>
 <pinref part="JP1" gate="A" pin="5"/>
 <wire x1="276.86" y1="30.48" x2="264.16" y2="30.48" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="X2" gate="G$1" pin="1"/>
+<wire x1="-55.88" y1="233.68" x2="-53.34" y2="233.68" width="0.1524" layer="91"/>
+<wire x1="-53.34" y1="233.68" x2="-53.34" y2="236.22" width="0.1524" layer="91"/>
+<pinref part="P+13" gate="1" pin="+5V"/>
 </segment>
 </net>
 <net name="N$10" class="0">
