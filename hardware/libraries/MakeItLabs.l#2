@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.9" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -13101,52 +13101,52 @@ Chinafruit</text>
 <hole x="-20.7" y="20" drill="3.3"/>
 </package>
 <package name="1.8TFT_CHI_2.0">
-<wire x1="19.812" y1="-16.891" x2="19.812" y2="16.891" width="0" layer="21"/>
-<wire x1="19.812" y1="16.891" x2="-22.86" y2="16.891" width="0" layer="21"/>
-<wire x1="-22.86" y1="16.891" x2="-22.86" y2="-16.891" width="0" layer="21"/>
-<wire x1="-22.86" y1="-16.891" x2="19.812" y2="-16.891" width="0" layer="21"/>
-<wire x1="22.86" y1="22.86" x2="22.86" y2="-22.86" width="0.127" layer="21"/>
-<wire x1="22.86" y1="-22.86" x2="-27.94" y2="-22.86" width="0.127" layer="21"/>
-<wire x1="-27.94" y1="-22.86" x2="-27.94" y2="22.86" width="0.127" layer="21"/>
-<wire x1="-27.94" y1="22.86" x2="22.86" y2="22.86" width="0.127" layer="21"/>
-<pad name="1" x="-26.67" y="-19.05" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="2" x="-26.67" y="-16.51" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="3" x="-26.67" y="-13.97" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="4" x="-26.67" y="-11.43" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="5" x="-26.67" y="-8.89" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="6" x="-26.67" y="-6.35" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="7" x="-26.67" y="-3.81" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="8" x="-26.67" y="-1.27" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="9" x="-26.67" y="1.27" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="10" x="-26.67" y="3.81" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="11" x="-26.67" y="6.35" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="12" x="-26.67" y="8.89" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="13" x="-26.67" y="11.43" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="14" x="-26.67" y="13.97" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="15" x="-26.67" y="16.51" drill="1.016" diameter="1.778" shape="octagon"/>
-<pad name="16" x="-26.67" y="19.05" drill="1.016" diameter="1.778" shape="octagon"/>
+<wire x1="22.6" y1="-16.891" x2="22.6" y2="16.891" width="0" layer="21"/>
+<wire x1="22.6" y1="16.891" x2="-20" y2="16.891" width="0" layer="21"/>
+<wire x1="-20" y1="16.891" x2="-20" y2="-16.891" width="0" layer="21"/>
+<wire x1="-20" y1="-16.891" x2="22.6" y2="-16.891" width="0" layer="21"/>
+<wire x1="25.9" y1="23.2" x2="25.9" y2="-22.8" width="0.127" layer="21"/>
+<wire x1="25.9" y1="-22.8" x2="-25.1" y2="-22.8" width="0.127" layer="21"/>
+<wire x1="-25.1" y1="-22.8" x2="-25.1" y2="23.2" width="0.127" layer="21"/>
+<wire x1="-25.1" y1="23.2" x2="25.9" y2="23.2" width="0.127" layer="21"/>
+<pad name="1" x="-23.85" y="-18.85" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="2" x="-23.85" y="-16.31" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="3" x="-23.85" y="-13.77" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="4" x="-23.85" y="-11.23" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="5" x="-23.85" y="-8.69" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="6" x="-23.85" y="-6.15" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="7" x="-23.85" y="-3.61" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="8" x="-23.85" y="-1.07" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="9" x="-23.85" y="1.47" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="10" x="-23.85" y="4.01" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="11" x="-23.85" y="6.55" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="12" x="-23.85" y="9.09" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="13" x="-23.85" y="11.63" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="14" x="-23.85" y="14.17" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="15" x="-23.85" y="16.71" drill="1.016" diameter="1.778" shape="octagon"/>
+<pad name="16" x="-23.85" y="19.25" drill="1.016" diameter="1.778" shape="octagon"/>
 <text x="-11.049" y="-14.8336" size="1.27" layer="21" font="vector">160x128 TFT display
 Chinafruit 2.0</text>
-<text x="-19.05" y="-19.939" size="1.27" layer="21" font="vector">Gnd</text>
-<text x="-19.05" y="-17.399" size="1.27" layer="21" font="vector">VCC</text>
-<text x="-19.05" y="-7.239" size="1.27" layer="21" font="vector">RESET</text>
-<text x="-19.05" y="-4.699" size="1.27" layer="21" font="vector">A0</text>
-<text x="-19.05" y="-2.159" size="1.27" layer="21" font="vector">TFT_MOSI</text>
-<text x="-19.05" y="0.381" size="1.27" layer="21" font="vector">TFT_CLK</text>
-<text x="-19.05" y="2.921" size="1.27" layer="21" font="vector">TFT_CS</text>
-<text x="-19.05" y="5.461" size="1.27" layer="21" font="vector">SD_SCK</text>
-<text x="-19.05" y="8.001" size="1.27" layer="21" font="vector">SD_MISO</text>
-<text x="-19.05" y="10.541" size="1.27" layer="21" font="vector">SD_MOSI</text>
-<text x="-19.05" y="-14.859" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-12.319" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-9.779" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="13.081" size="1.27" layer="21" font="vector">SD_CS</text>
-<text x="-19.05" y="15.621" size="1.27" layer="21" font="vector">LED+</text>
-<text x="-19.05" y="18.161" size="1.27" layer="21" font="vector">LED-</text>
+<text x="-19.05" y="-19.739" size="1.27" layer="21" font="vector">Gnd</text>
+<text x="-19.05" y="-17.199" size="1.27" layer="21" font="vector">VCC</text>
+<text x="-19.05" y="-7.039" size="1.27" layer="21" font="vector">RESET</text>
+<text x="-19.05" y="-4.499" size="1.27" layer="21" font="vector">A0</text>
+<text x="-19.05" y="-1.959" size="1.27" layer="21" font="vector">TFT_MOSI</text>
+<text x="-19.05" y="0.581" size="1.27" layer="21" font="vector">TFT_CLK</text>
+<text x="-19.05" y="3.121" size="1.27" layer="21" font="vector">TFT_CS</text>
+<text x="-19.05" y="5.661" size="1.27" layer="21" font="vector">SD_SCK</text>
+<text x="-19.05" y="8.201" size="1.27" layer="21" font="vector">SD_MISO</text>
+<text x="-19.05" y="10.741" size="1.27" layer="21" font="vector">SD_MOSI</text>
+<text x="-19.05" y="-14.659" size="1.27" layer="21" font="vector">NC</text>
+<text x="-19.05" y="-12.119" size="1.27" layer="21" font="vector">NC</text>
+<text x="-19.05" y="-9.579" size="1.27" layer="21" font="vector">NC</text>
+<text x="-19.05" y="13.281" size="1.27" layer="21" font="vector">SD_CS</text>
+<text x="-19.05" y="15.821" size="1.27" layer="21" font="vector">LED+</text>
+<text x="-19.05" y="18.361" size="1.27" layer="21" font="vector">LED-</text>
 <text x="-8.89" y="-20.32" size="1.27" layer="21">KMR-1.8 SPI</text>
-<hole x="16.891" y="20.0787" drill="3.3"/>
-<hole x="-23.749" y="-20.0787" drill="3.3"/>
-<hole x="-23.749" y="20.0787" drill="3.3"/>
+<hole x="19.9" y="20.2" drill="3.3"/>
+<hole x="-21.1" y="-19.8" drill="3.3"/>
+<hole x="-21.1" y="20.2" drill="3.3"/>
 <wire x1="-17.653" y1="14.097" x2="17.653" y2="14.097" width="0.127" layer="51"/>
 <wire x1="17.653" y1="14.097" x2="17.653" y2="-14.097" width="0.127" layer="51"/>
 <wire x1="17.653" y1="-14.097" x2="-17.653" y2="-14.097" width="0.127" layer="51"/>
@@ -15791,7 +15791,6 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
-<text x="-17.1196" y="-2.7559" size="0.04571875" layer="51" font="vector">C:/Users/Adam/Documents/GitHub/ratt/hardware/references/logo.bmp</text>
 </package>
 </packages>
 <symbols>
@@ -16947,6 +16946,24 @@ Chinafruit 2.0</text>
 <text x="-12.7" y="22.86" size="2.54" layer="95" font="vector">&gt;NAME</text>
 <text x="-7.62" y="-20.32" size="2.54" layer="95" font="vector">&gt;VALUE</text>
 <text x="-10.16" y="2.54" size="2.286" layer="97" font="vector">Chinafruit 1.8TFT</text>
+</symbol>
+<symbol name="+5V">
+<wire x1="0.762" y1="1.27" x2="0" y2="2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="-0.762" y2="1.27" width="0.254" layer="94"/>
+<text x="-1.016" y="3.556" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="+5V" x="0" y="0" visible="off" length="short" direction="sup" rot="R90"/>
+</symbol>
+<symbol name="+3.3V">
+<wire x1="0.762" y1="1.27" x2="0" y2="2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="-0.762" y2="1.27" width="0.254" layer="94"/>
+<text x="-1.016" y="3.556" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="+3.3V" x="0" y="0" visible="off" length="short" direction="sup" rot="R90"/>
+</symbol>
+<symbol name="+5VIN">
+<wire x1="0.762" y1="1.27" x2="0" y2="2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="-0.762" y2="1.27" width="0.254" layer="94"/>
+<text x="-1.016" y="3.556" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="+5VIN" x="0" y="0" visible="off" length="short" direction="sup" rot="R90"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -20096,6 +20113,43 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <connect gate="G$1" pin="TFT_DAT" pad="8"/>
 <connect gate="G$1" pin="VCC" pad="2"/>
 </connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="+5V" prefix="SUPPLY">
+<gates>
+<gate name="G$1" symbol="+5V" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="+3.3V" prefix="SUPPLY">
+<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
+<gates>
+<gate name="G$1" symbol="+3.3V" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="+5VIN" prefix="SUPPLY">
+<gates>
+<gate name="G$1" symbol="+5VIN" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
 <technologies>
 <technology name=""/>
 </technologies>
