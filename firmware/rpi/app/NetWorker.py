@@ -1,10 +1,55 @@
-from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime
+# -*- coding: utf-8 -*-
+# --------------------------------------------------------------------------
+#  _____       ______________
+# |  __ \   /\|__   ____   __|
+# | |__) | /  \  | |    | |
+# |  _  / / /\ \ | |    | |
+# | | \ \/ ____ \| |    | |
+# |_|  \_\/    \_\_|    |_|    ... RFID ALL THE THINGS!
+#
+# A resource access control and telemetry solution for Makerspaces
+#
+# Developed at MakeIt Labs - New Hampshire's First & Largest Makerspace
+# http://www.makeitlabs.com/
+#
+# Copyright 2018 MakeIt Labs
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# --------------------------------------------------------------------------
+#
+# Author: Steve Richardson (steve.richardson@makeitlabs.com)
+#
+
+from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, pyqtSignal
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
 import simplejson as json
+import hashlib
 
 class NetWorker(QObject):
+    aclUpdate = pyqtSignal(int, int, str, name='aclUpdate', arguments=['total', 'active', 'hash'])
+    aclUpdateError = pyqtSignal(name='aclUpdateError')
+
     def __init__(self):
         QObject.__init__(self)
+
+        self.mutex = QMutex()
+        self.acl = json.loads('[]')
 
         self.mgr = QNetworkAccessManager()
         self.sslConfig = QSslConfiguration()
@@ -16,11 +61,44 @@ class NetWorker(QObject):
         if self.ssl:
             self.configureCerts()
 
+    def searchAcl(self, hash):
+        self.mutex.lock()
+        found_record = []
+
+        for record in self.acl:
+            if record['tagid'] == hash:
+                found_record = record
+                break
+
+        self.mutex.unlock()
+        return found_record
+
+    def countAclActive(self):
+        self.mutex.lock()
+        active = 0
+
+        for record in self.acl:
+            if record['allowed'] == 'allowed':
+                active = active + 1
+
+        self.mutex.unlock()
+        return active
+
+    def hashAcl(self):
+        self.mutex.lock()
+
+        m = hashlib.sha224()
+        m.update(str(self.acl).encode())
+        hash = m.hexdigest()
+
+        self.mutex.unlock()
+        return hash
+
     def setAuth(self, user = '', password = ''):
         self.user = user
         self.password = password
 
-    def setCertFiles(self, caCertFile = '/home/pi/ssl/cacert.pem', clientCertFile = '/home/pi/ssl/client_cert.pem', clientKeyFile = '/home/pi/ssl/client_key.pem'):
+    def setCertFiles(self, caCertFile = '/etc/ssl/cacert.pem', clientCertFile = '/etc/ssl/client_cert.pem', clientKeyFile = '/etc/ssl/client_key.pem'):
         self.caCertFile = caCertFile
         self.clientCertFile = clientCertFile
         self.clientKeyFile = clientKeyFile
@@ -97,8 +175,25 @@ class NetWorker(QObject):
 
         if error == QNetworkReply.NoError:
             doc = str(reply.readAll())
-            j = json.loads(doc)
-            print (json.dumps(j, sort_keys=True, indent=1))
+
+            try:
+                j = json.loads(doc)
+
+                self.mutex.lock()
+                self.acl = j
+                total = len (self.acl)
+                self.mutex.unlock()
+
+                active = self.countAclActive()
+                hash = self.hashAcl()
+
+                print('json acl with %d entries, %d active, hash=%s' % (total, active, hash))
+
+                self.aclUpdate.emit(total, active, hash)
+            except:
+                print('json parse error')
+                self.aclUpdateError.emit()
+
             
         else:
             print('NetWorker response error: ', error)
@@ -108,8 +203,6 @@ class NetWorker(QObject):
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
         if self.ssl:
             self.mgr.sslErrors.disconnect(self.handleSSLErrors)
-
-            
             
     def configureCerts(self):
         ## import the private client key

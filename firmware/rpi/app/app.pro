@@ -37,4 +37,7 @@ DISTFILES += \
     ViewSplash.qml \
     RattAppEngine.py \
     NetWorker.py \
-    ViewIdle.qml
+    ViewIdle.qml \
+    RFID.py \
+    LICENSE \
+    MemberRecord.py
