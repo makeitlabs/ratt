@@ -17666,6 +17666,152 @@ Op. Temp:</text>
 <text x="-20.32" y="35.56" size="1.27" layer="95" font="vector">&gt;NAME</text>
 <text x="-20.32" y="33.655" size="1.27" layer="96" font="vector">&gt;VALUE</text>
 </symbol>
+<symbol name="US_11X17">
+<wire x1="0" y1="279.4" x2="431.8" y2="279.4" width="0.6096" layer="94"/>
+<wire x1="431.8" y1="279.4" x2="431.8" y2="0" width="0.6096" layer="94"/>
+<wire x1="0" y1="279.4" x2="0" y2="0" width="0.6096" layer="94"/>
+<wire x1="0" y1="0" x2="431.8" y2="0" width="0.6096" layer="94"/>
+</symbol>
+<symbol name="DOCFIELD_MAKEIT">
+<circle x="101.9175" y="29.845" radius="1.4199" width="0.254" layer="94"/>
+<text x="109.22" y="1.27" size="2.54" layer="94" font="vector" ratio="10">&gt;SHEET</text>
+<text x="112.7125" y="22.86" size="2.54" layer="94" font="vector" ratio="12">REV</text>
+<text x="21.59" y="22.86" size="2.54" layer="94" font="vector" ratio="12">TITLE</text>
+<text x="90.17" y="11.43" size="2.54" layer="94" font="vector" ratio="12">DRG</text>
+<text x="101.2825" y="12.3825" size="2.1844" layer="94" ratio="12">o</text>
+<text x="33.3375" y="1.27" size="2.54" layer="94" ratio="10">&gt;DRAWING_NAME</text>
+<text x="98.7425" y="11.43" size="2.54" layer="94" font="vector" ratio="12">N</text>
+<text x="21.59" y="11.43" size="2.54" layer="94" font="vector" ratio="12">DATE</text>
+<text x="33.3375" y="7.62" size="2.54" layer="94" ratio="10">&gt;LAST_DATE_TIME</text>
+<text x="105.0925" y="28.8925" size="1.778" layer="94" ratio="12">2017</text>
+<text x="101.4412" y="29.21" size="1.27" layer="94" ratio="12">C</text>
+<text x="5.3975" y="28.8925" size="1.9304" layer="94" ratio="12">ISSUE</text>
+<text x="1.27" y="23.495" size="1.778" layer="94" ratio="12">DRAWN</text>
+<text x="1.27" y="14.605" size="1.778" layer="94" ratio="12">CHECKED</text>
+<text x="1.27" y="5.715" size="1.778" layer="94" ratio="12">DATE</text>
+<text x="25.0508" y="28.9877" size="1.778" layer="94" ratio="14">MakeIt Labs</text>
+<text x="21.59" y="1.27" size="2.54" layer="94" font="vector" ratio="12">FILE:</text>
+<text x="97.155" y="1.27" size="2.54" layer="94" font="vector" ratio="12">PAGE:</text>
+<text x="45.72" y="30.1625" size="1.27" layer="94" ratio="14">Nashua, NH</text>
+<text x="49.53" y="28.2575" size="1.27" layer="94" ratio="14">U.S.A</text>
+<text x="66.9925" y="30.7975" size="1.016" layer="94" ratio="12">THIS DRAWING CONTAINS PROPRIETARY</text>
+<text x="66.3575" y="29.21" size="1.016" layer="94" ratio="12">INFORMATION AND SHOULD NOT BE USED</text>
+<text x="68.8975" y="27.6225" size="1.016" layer="94" ratio="12">WITHOUT WRITTEN PERMISSION.</text>
+<circle x="101.9175" y="29.845" radius="1.4199" width="0.254" layer="94"/>
+<wire x1="20.32" y1="0" x2="95.885" y2="0" width="0.6096" layer="94"/>
+<wire x1="20.32" y1="0" x2="20.32" y2="5.08" width="0.3048" layer="94"/>
+<wire x1="20.32" y1="5.08" x2="88.9" y2="5.08" width="0.3048" layer="94"/>
+<wire x1="20.32" y1="5.08" x2="20.32" y2="8.89" width="0.3048" layer="94"/>
+<wire x1="20.32" y1="8.89" x2="20.32" y2="15.24" width="0.3048" layer="94"/>
+<wire x1="121.92" y1="15.24" x2="121.92" y2="5.08" width="0.6096" layer="94"/>
+<wire x1="95.885" y1="5.08" x2="95.885" y2="0" width="0.3048" layer="94"/>
+<wire x1="95.885" y1="0" x2="121.92" y2="0" width="0.6096" layer="94"/>
+<wire x1="88.9" y1="15.24" x2="88.9" y2="5.08" width="0.3048" layer="94"/>
+<wire x1="88.9" y1="5.08" x2="95.885" y2="5.08" width="0.3048" layer="94"/>
+<wire x1="121.92" y1="15.24" x2="110.49" y2="15.24" width="0.3048" layer="94"/>
+<wire x1="110.49" y1="15.24" x2="88.9" y2="15.24" width="0.3048" layer="94"/>
+<wire x1="88.9" y1="15.24" x2="20.32" y2="15.24" width="0.3048" layer="94"/>
+<wire x1="95.885" y1="5.08" x2="121.92" y2="5.08" width="0.3048" layer="94"/>
+<wire x1="121.92" y1="5.08" x2="121.92" y2="0" width="0.6096" layer="94"/>
+<wire x1="20.32" y1="15.24" x2="20.32" y2="17.78" width="0.3048" layer="94"/>
+<wire x1="20.32" y1="17.78" x2="20.32" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="121.92" y1="33.02" x2="113.03" y2="33.02" width="0.6096" layer="94"/>
+<wire x1="113.03" y1="33.02" x2="98.425" y2="33.02" width="0.6096" layer="94"/>
+<wire x1="98.425" y1="33.02" x2="65.0875" y2="33.02" width="0.6096" layer="94"/>
+<wire x1="65.0875" y1="33.02" x2="20.32" y2="33.02" width="0.6096" layer="94"/>
+<wire x1="121.92" y1="33.02" x2="121.92" y2="26.67" width="0.6096" layer="94"/>
+<wire x1="20.32" y1="26.67" x2="65.0875" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="65.0875" y1="26.67" x2="98.425" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="98.425" y1="26.67" x2="110.49" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="110.49" y1="26.67" x2="113.03" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="113.03" y1="26.67" x2="121.92" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="20.32" y1="26.67" x2="20.32" y2="33.02" width="0.3048" layer="94"/>
+<wire x1="121.92" y1="26.67" x2="121.92" y2="15.24" width="0.6096" layer="94"/>
+<wire x1="101.6" y1="11.7475" x2="102.5525" y2="11.7475" width="0.254" layer="94"/>
+<wire x1="110.49" y1="26.67" x2="110.49" y2="15.24" width="0.3048" layer="94"/>
+<wire x1="113.03" y1="26.67" x2="113.03" y2="33.02" width="0.3048" layer="94"/>
+<wire x1="98.425" y1="26.67" x2="98.425" y2="33.02" width="0.3048" layer="94"/>
+<wire x1="20.32" y1="33.02" x2="0" y2="33.02" width="0.6096" layer="94"/>
+<wire x1="0" y1="33.02" x2="0" y2="26.67" width="0.6096" layer="94"/>
+<wire x1="0" y1="26.67" x2="0" y2="17.78" width="0.6096" layer="94"/>
+<wire x1="0" y1="17.78" x2="0" y2="8.89" width="0.6096" layer="94"/>
+<wire x1="0" y1="8.89" x2="0" y2="0" width="0.6096" layer="94"/>
+<wire x1="0" y1="0" x2="20.32" y2="0" width="0.6096" layer="94"/>
+<wire x1="0" y1="26.67" x2="20.32" y2="26.67" width="0.3048" layer="94"/>
+<wire x1="0" y1="17.78" x2="20.32" y2="17.78" width="0.3048" layer="94"/>
+<wire x1="0" y1="8.89" x2="20.32" y2="8.89" width="0.3048" layer="94"/>
+<wire x1="65.0875" y1="26.67" x2="65.0875" y2="33.02" width="0.3048" layer="94"/>
+<text x="109.22" y="1.27" size="2.54" layer="94" font="vector" ratio="10">&gt;SHEET</text>
+<text x="112.7125" y="22.86" size="2.54" layer="94" font="vector" ratio="12">REV</text>
+<text x="21.59" y="22.86" size="2.54" layer="94" font="vector" ratio="12">TITLE</text>
+<text x="90.17" y="11.43" size="2.54" layer="94" font="vector" ratio="12">DRG</text>
+<text x="101.2825" y="12.3825" size="2.1844" layer="94" ratio="12">o</text>
+<text x="33.3375" y="1.27" size="2.54" layer="94" ratio="10">&gt;DRAWING_NAME</text>
+<text x="98.7425" y="11.43" size="2.54" layer="94" font="vector" ratio="12">N</text>
+<text x="21.59" y="11.43" size="2.54" layer="94" font="vector" ratio="12">DATE</text>
+<text x="33.3375" y="7.62" size="2.54" layer="94" ratio="10">&gt;LAST_DATE_TIME</text>
+<text x="105.0925" y="28.8925" size="1.778" layer="94" ratio="12">2017</text>
+<text x="101.4412" y="29.21" size="1.27" layer="94" ratio="12">C</text>
+<text x="5.3975" y="28.8925" size="1.9304" layer="94" ratio="12">ISSUE</text>
+<text x="1.27" y="23.495" size="1.778" layer="94" ratio="12">DRAWN</text>
+<text x="1.27" y="14.605" size="1.778" layer="94" ratio="12">CHECKED</text>
+<text x="1.27" y="5.715" size="1.778" layer="94" ratio="12">DATE</text>
+<text x="25.0508" y="28.9877" size="1.778" layer="94" ratio="14">MakeIt Labs</text>
+<text x="21.59" y="1.27" size="2.54" layer="94" font="vector" ratio="12">FILE:</text>
+<text x="97.155" y="1.27" size="2.54" layer="94" font="vector" ratio="12">PAGE:</text>
+<text x="45.72" y="30.1625" size="1.27" layer="94" ratio="14">Nashua, NH</text>
+<text x="49.53" y="28.2575" size="1.27" layer="94" ratio="14">U.S.A</text>
+<text x="66.9925" y="30.7975" size="1.016" layer="94" ratio="12">THIS DRAWING CONTAINS PROPRIETARY</text>
+<text x="66.3575" y="29.21" size="1.016" layer="94" ratio="12">INFORMATION AND SHOULD NOT BE USED</text>
+<text x="68.8975" y="27.6225" size="1.016" layer="94" ratio="12">WITHOUT WRITTEN PERMISSION.</text>
+</symbol>
+<symbol name="CHGFIELD">
+<wire x1="0" y1="0" x2="7.62" y2="0" width="0.6096" layer="94"/>
+<text x="1.5875" y="23.495" size="1.778" layer="94" ratio="14">REV</text>
+<text x="12.065" y="23.495" size="1.778" layer="94" ratio="14">DATE</text>
+<text x="33.655" y="23.495" size="1.778" layer="94" ratio="14">CHANGE HISTORY</text>
+<wire x1="7.62" y1="0" x2="22.86" y2="0" width="0.6096" layer="94"/>
+<wire x1="22.86" y1="0" x2="66.04" y2="0" width="0.6096" layer="94"/>
+<wire x1="0" y1="4.445" x2="66.04" y2="4.445" width="0.3048" layer="94"/>
+<wire x1="0" y1="8.89" x2="66.04" y2="8.89" width="0.3048" layer="94"/>
+<wire x1="0" y1="13.335" x2="66.04" y2="13.335" width="0.3048" layer="94"/>
+<wire x1="0" y1="17.78" x2="66.04" y2="17.78" width="0.3048" layer="94"/>
+<wire x1="0" y1="26.67" x2="7.62" y2="26.67" width="0.6096" layer="94"/>
+<wire x1="7.62" y1="26.67" x2="22.86" y2="26.67" width="0.6096" layer="94"/>
+<wire x1="22.86" y1="26.67" x2="66.04" y2="26.67" width="0.6096" layer="94"/>
+<wire x1="0" y1="26.67" x2="0" y2="22.225" width="0.6096" layer="94"/>
+<wire x1="0" y1="22.225" x2="0" y2="17.78" width="0.6096" layer="94"/>
+<wire x1="0" y1="17.78" x2="0" y2="13.335" width="0.6096" layer="94"/>
+<wire x1="0" y1="13.335" x2="0" y2="8.89" width="0.6096" layer="94"/>
+<wire x1="0" y1="8.89" x2="0" y2="4.445" width="0.6096" layer="94"/>
+<wire x1="0" y1="4.445" x2="0" y2="0" width="0.6096" layer="94"/>
+<wire x1="66.04" y1="26.67" x2="66.04" y2="22.225" width="0.6096" layer="94"/>
+<wire x1="66.04" y1="22.225" x2="66.04" y2="17.78" width="0.6096" layer="94"/>
+<wire x1="66.04" y1="17.78" x2="66.04" y2="13.335" width="0.6096" layer="94"/>
+<wire x1="66.04" y1="13.335" x2="66.04" y2="8.89" width="0.6096" layer="94"/>
+<wire x1="66.04" y1="8.89" x2="66.04" y2="4.445" width="0.6096" layer="94"/>
+<wire x1="66.04" y1="4.445" x2="66.04" y2="0" width="0.6096" layer="94"/>
+<wire x1="22.86" y1="26.67" x2="22.86" y2="0" width="0.3048" layer="94"/>
+<wire x1="0" y1="22.225" x2="66.04" y2="22.225" width="0.3048" layer="94"/>
+<wire x1="7.62" y1="26.67" x2="7.62" y2="0" width="0.3048" layer="94"/>
+<text x="1.5875" y="23.495" size="1.778" layer="94" ratio="14">REV</text>
+<text x="12.065" y="23.495" size="1.778" layer="94" ratio="14">DATE</text>
+<text x="33.655" y="23.495" size="1.778" layer="94" ratio="14">CHANGE HISTORY</text>
+</symbol>
+<symbol name="PROPFIELD">
+<text x="2.54" y="-2.794" size="1.27" layer="94" ratio="12">THE INFORMATION CONTAINED IN THIS DRAWING IS THE SOLE PROPERTY OF</text>
+<text x="2.54" y="-5.08" size="1.27" layer="94" ratio="12">RTZ PROFESSIONAL AUDIO.  ANY REPRODUCTION IN PART OR WHOLE IS</text>
+<text x="2.54" y="-7.366" size="1.27" layer="94" ratio="12">STRICTLY PROHIBITED WITHOUT WRITTEN PERMISSION.</text>
+<text x="2.54" y="-12.7" size="2.54" layer="94" ratio="14">PROPRIETARY</text>
+<wire x1="0" y1="0" x2="78.74" y2="0" width="0.6096" layer="94"/>
+<wire x1="78.74" y1="0" x2="78.74" y2="-8.89" width="0.6096" layer="94"/>
+<wire x1="78.74" y1="-8.89" x2="0" y2="-8.89" width="0.6096" layer="94"/>
+<wire x1="0" y1="-8.89" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-2.794" size="1.27" layer="94" ratio="12">THE INFORMATION CONTAINED IN THIS DRAWING IS THE SOLE PROPERTY OF</text>
+<text x="2.54" y="-5.08" size="1.27" layer="94" ratio="12">RTZ PROFESSIONAL AUDIO.  ANY REPRODUCTION IN PART OR WHOLE IS</text>
+<text x="2.54" y="-7.366" size="1.27" layer="94" ratio="12">STRICTLY PROHIBITED WITHOUT WRITTEN PERMISSION.</text>
+<text x="2.54" y="-12.7" size="2.54" layer="94" ratio="14">PROPRIETARY</text>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="LED_CREE_XPE">
@@ -21128,6 +21274,27 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <connect gate="G$1" pin="RXD0/GPIO15" pad="10"/>
 <connect gate="G$1" pin="TXD0/GPIO14" pad="8"/>
 </connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="US_11X17" prefix="FRAME">
+<description>&lt;b&gt;FRAME&lt;/b&gt;&lt;p&gt;
+US Ledger Size, 11x17"&lt;p&gt;Landscape</description>
+<gates>
+<gate name="G$1" symbol="US_11X17" x="0" y="0"/>
+<gate name="G$2" symbol="DOCFIELD_MAKEIT" x="309.88" y="0" addlevel="must"/>
+<gate name="G$3" symbol="CHGFIELD" x="243.84" y="0" addlevel="request"/>
+<gate name="G$4" symbol="PROPFIELD" x="0" y="279.4" addlevel="request"/>
+<gate name="G$5" symbol="US_11X17" x="0" y="0"/>
+<gate name="G$6" symbol="DOCFIELD_MAKEIT" x="309.88" y="0" addlevel="must"/>
+<gate name="G$7" symbol="CHGFIELD" x="243.84" y="0" addlevel="request"/>
+<gate name="G$8" symbol="PROPFIELD" x="0" y="279.4" addlevel="request"/>
+</gates>
+<devices>
+<device name="">
 <technologies>
 <technology name=""/>
 </technologies>
