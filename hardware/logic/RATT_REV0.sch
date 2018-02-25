@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -8685,6 +8685,21 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="-9.652" y1="-3.302" x2="-8.128" y2="-3.302" width="0.127" layer="21"/>
 <wire x1="-8.128" y1="-3.302" x2="-8.89" y2="-4.318" width="0.127" layer="21"/>
 </package>
+<package name="1206-RCW">
+<wire x1="-2.073" y1="0.983" x2="2.073" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="2.073" y1="-0.983" x2="-2.073" y2="-0.983" width="0.0508" layer="39"/>
+<wire x1="-2.073" y1="-0.983" x2="-2.073" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="2.073" y1="0.983" x2="2.073" y2="-0.983" width="0.0508" layer="39"/>
+<smd name="1" x="0" y="0" dx="3.8" dy="1.6" layer="1"/>
+<text x="-1.27" y="1.143" size="1.27" layer="25" font="vector">&gt;NAME</text>
+<text x="-1.397" y="-2.324" size="1.27" layer="27" font="vector">&gt;VALUE</text>
+<rectangle x1="-1.6" y1="-0.8" x2="1.6" y2="0.8" layer="51"/>
+<rectangle x1="-0.1999" y1="-0.4001" x2="0.1999" y2="0.4001" layer="35"/>
+<wire x1="2" y1="-0.9" x2="2" y2="0.9" width="0.127" layer="21"/>
+<wire x1="2" y1="-0.9" x2="-2" y2="-0.9" width="0.127" layer="21"/>
+<wire x1="-2" y1="-0.9" x2="-2" y2="0.9" width="0.127" layer="21"/>
+<wire x1="-2" y1="0.9" x2="2" y2="0.9" width="0.127" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="GROVE-CONNECTOR-DIP">
@@ -9508,6 +9523,14 @@ Op. Temp:</text>
 <pin name="GPIO21" x="25.4" y="-17.78" length="short" rot="R180"/>
 <text x="-20.32" y="35.56" size="1.27" layer="95" font="vector">&gt;NAME</text>
 <text x="-20.32" y="33.655" size="1.27" layer="96" font="vector">&gt;VALUE</text>
+</symbol>
+<symbol name="TESTPAD">
+<description>&lt;b&gt;Test Pad&lt;/b&gt;
+&lt;br&gt;Single test pad</description>
+<circle x="1.27" y="0" radius="1.27" width="0.254" layer="94"/>
+<pin name="TP" x="-2.54" y="0" visible="off" length="short"/>
+<text x="2.54" y="0" size="1.524" layer="95" font="vector" align="center-left">&gt;NAME</text>
+<text x="-2.54" y="-5.08" size="1.524" layer="96" font="vector">&gt;VALUE</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -10965,6 +10988,24 @@ IC-09995</description>
 </device>
 </devices>
 </deviceset>
+<deviceset name="RCW-0C" prefix="TP">
+<description>SMD Circuit Probe Pad&lt;br&gt;
+Test Pad&lt;br&gt;
+1206 Size</description>
+<gates>
+<gate name="G$1" symbol="TESTPAD" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="1206-RCW">
+<connects>
+<connect gate="G$1" pin="TP" pad="1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -11213,6 +11254,18 @@ IC-09995</description>
 <part name="SUPPLY94" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="SUPPLY95" library="MakeItLabs" deviceset="+5VIN" device=""/>
 <part name="SUPPLY96" library="MakeItLabs" deviceset="+3.3V" device=""/>
+<part name="TP1" library="MakeItLabs" deviceset="RCW-0C" device="" value="5VIN"/>
+<part name="TP2" library="MakeItLabs" deviceset="RCW-0C" device="" value="5VB"/>
+<part name="TP3" library="MakeItLabs" deviceset="RCW-0C" device="" value="3.3V"/>
+<part name="TP4" library="MakeItLabs" deviceset="RCW-0C" device="" value="GND"/>
+<part name="TP5" library="MakeItLabs" deviceset="RCW-0C" device="" value="GND"/>
+<part name="SUPPLY61" library="MakeItLabs" deviceset="GND" device=""/>
+<part name="SUPPLY68" library="MakeItLabs" deviceset="GND" device=""/>
+<part name="SUPPLY91" library="MakeItLabs" deviceset="+5VIN" device=""/>
+<part name="SUPPLY97" library="MakeItLabs" deviceset="+5VB" device=""/>
+<part name="SUPPLY98" library="MakeItLabs" deviceset="+3.3V" device=""/>
+<part name="SUPPLY99" library="MakeItLabs" deviceset="V_BATT" device=""/>
+<part name="TP6" library="MakeItLabs" deviceset="RCW-0C" device="" value="BATT"/>
 </parts>
 <sheets>
 <sheet>
@@ -11849,6 +11902,34 @@ or by the Pi Module</text>
 <attribute name="VALUE" x="283.464" y="39.116" size="1.778" layer="96"/>
 </instance>
 <instance part="SUPPLY96" gate="G$1" x="292.1" y="35.56"/>
+<instance part="TP1" gate="G$1" x="375.92" y="205.74" smashed="yes" rot="R270">
+<attribute name="NAME" x="375.92" y="203.2" size="1.524" layer="95" font="vector" rot="R270" align="center-left"/>
+</instance>
+<instance part="TP2" gate="G$1" x="386.08" y="205.74" smashed="yes" rot="R270">
+<attribute name="NAME" x="386.08" y="203.2" size="1.524" layer="95" font="vector" rot="R270" align="center-left"/>
+</instance>
+<instance part="TP3" gate="G$1" x="396.24" y="205.74" smashed="yes" rot="R270">
+<attribute name="NAME" x="396.24" y="203.2" size="1.524" layer="95" font="vector" rot="R270" align="center-left"/>
+</instance>
+<instance part="TP4" gate="G$1" x="419.1" y="210.82" smashed="yes" rot="R90">
+<attribute name="NAME" x="419.1" y="213.36" size="1.524" layer="95" font="vector" rot="R90" align="center-left"/>
+</instance>
+<instance part="TP5" gate="G$1" x="424.18" y="210.82" smashed="yes" rot="R90">
+<attribute name="NAME" x="424.18" y="213.36" size="1.524" layer="95" font="vector" rot="R90" align="center-left"/>
+</instance>
+<instance part="SUPPLY61" gate="GND" x="424.18" y="203.2" smashed="yes">
+<attribute name="VALUE" x="422.275" y="200.025" size="1.27" layer="96" font="vector"/>
+</instance>
+<instance part="SUPPLY68" gate="GND" x="419.1" y="203.2" smashed="yes">
+<attribute name="VALUE" x="417.195" y="200.025" size="1.27" layer="96" font="vector"/>
+</instance>
+<instance part="SUPPLY91" gate="G$1" x="375.92" y="210.82"/>
+<instance part="SUPPLY97" gate="G$1" x="386.08" y="210.82"/>
+<instance part="SUPPLY98" gate="G$1" x="396.24" y="210.82"/>
+<instance part="SUPPLY99" gate="G$2" x="406.4" y="210.82"/>
+<instance part="TP6" gate="G$1" x="406.4" y="205.74" smashed="yes" rot="R270">
+<attribute name="NAME" x="406.4" y="203.2" size="1.524" layer="95" font="vector" rot="R270" align="center-left"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -12394,6 +12475,16 @@ or by the Pi Module</text>
 <pinref part="J3" gate="A" pin="2"/>
 <pinref part="J3" gate="A" pin="6"/>
 </segment>
+<segment>
+<pinref part="TP5" gate="G$1" pin="TP"/>
+<pinref part="SUPPLY61" gate="GND" pin="GND"/>
+<wire x1="424.18" y1="205.74" x2="424.18" y2="208.28" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="TP4" gate="G$1" pin="TP"/>
+<pinref part="SUPPLY68" gate="GND" pin="GND"/>
+<wire x1="419.1" y1="205.74" x2="419.1" y2="208.28" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="N$1" class="0">
 <segment>
@@ -12516,6 +12607,11 @@ or by the Pi Module</text>
 <junction x="299.72" y="246.38"/>
 <junction x="304.8" y="246.38"/>
 <pinref part="SUPPLY63" gate="G$2" pin="V_BATT"/>
+</segment>
+<segment>
+<pinref part="SUPPLY99" gate="G$2" pin="V_BATT"/>
+<pinref part="TP6" gate="G$1" pin="TP"/>
+<wire x1="406.4" y1="208.28" x2="406.4" y2="210.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">
@@ -13475,6 +13571,11 @@ or by the Pi Module</text>
 <wire x1="287.02" y1="35.56" x2="287.02" y2="30.48" width="0.1524" layer="91"/>
 <pinref part="J3" gate="A" pin="4"/>
 </segment>
+<segment>
+<pinref part="TP1" gate="G$1" pin="TP"/>
+<pinref part="SUPPLY91" gate="G$1" pin="+5VIN"/>
+<wire x1="375.92" y1="208.28" x2="375.92" y2="210.82" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="+5VB" class="0">
 <segment>
@@ -13596,6 +13697,11 @@ or by the Pi Module</text>
 <pinref part="SUPPLY66" gate="G$1" pin="+5VB"/>
 <wire x1="144.78" y1="236.22" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
 <junction x="144.78" y="231.14"/>
+</segment>
+<segment>
+<pinref part="TP2" gate="G$1" pin="TP"/>
+<pinref part="SUPPLY97" gate="G$1" pin="+5VB"/>
+<wire x1="386.08" y1="208.28" x2="386.08" y2="210.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+3.3V" class="0">
@@ -13758,6 +13864,11 @@ or by the Pi Module</text>
 <pinref part="SUPPLY96" gate="G$1" pin="+3.3V"/>
 <pinref part="J3" gate="A" pin="8"/>
 </segment>
+<segment>
+<pinref part="TP3" gate="G$1" pin="TP"/>
+<pinref part="SUPPLY98" gate="G$1" pin="+3.3V"/>
+<wire x1="396.24" y1="208.28" x2="396.24" y2="210.82" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="N$37" class="0">
 <segment>
@@ -13804,10 +13915,9 @@ or by the Pi Module</text>
 <approved hash="102,1,86.36,231.14,5V0,+5VB,,,,"/>
 <approved hash="102,1,86.36,228.6,5V0,+5VB,,,,"/>
 <approved hash="104,1,35.56,27.94,IC300,VDD,+5VB,,,"/>
-<approved hash="104,1,266.7,246.38,IC13,VIN,+5VIN,,,"/>
 <approved hash="104,1,287.02,246.38,IC13,VBAT,V_BATT,,,"/>
+<approved hash="104,1,266.7,246.38,IC13,VIN,+5VIN,,,"/>
 <approved hash="104,1,287.02,241.3,IC13,VSS,GND,,,"/>
-<approved hash="202,1,381,236.22,U5,BP,,,,"/>
 <approved hash="104,1,175.26,172.72,IC16,VCC,+3.3V,,,"/>
 <approved hash="104,1,175.26,238.76,IC200,IN1,V_BATT,,,"/>
 <approved hash="104,1,175.26,236.22,IC200,IN2,+5VIN,,,"/>

@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.01" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="mm" altunit="mm"/>
+<grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -17323,6 +17323,21 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <wire x1="-9.652" y1="-3.302" x2="-8.128" y2="-3.302" width="0.127" layer="21"/>
 <wire x1="-8.128" y1="-3.302" x2="-8.89" y2="-4.318" width="0.127" layer="21"/>
 </package>
+<package name="1206-RCW">
+<wire x1="-2.073" y1="0.983" x2="2.073" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="2.073" y1="-0.983" x2="-2.073" y2="-0.983" width="0.0508" layer="39"/>
+<wire x1="-2.073" y1="-0.983" x2="-2.073" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="2.073" y1="0.983" x2="2.073" y2="-0.983" width="0.0508" layer="39"/>
+<smd name="1" x="0" y="0" dx="3.8" dy="1.6" layer="1"/>
+<text x="-1.27" y="1.143" size="1.27" layer="25" font="vector">&gt;NAME</text>
+<text x="-1.397" y="-2.324" size="1.27" layer="27" font="vector">&gt;VALUE</text>
+<rectangle x1="-1.6" y1="-0.8" x2="1.6" y2="0.8" layer="51"/>
+<rectangle x1="-0.1999" y1="-0.4001" x2="0.1999" y2="0.4001" layer="35"/>
+<wire x1="2" y1="-0.9" x2="2" y2="0.9" width="0.127" layer="21"/>
+<wire x1="2" y1="-0.9" x2="-2" y2="-0.9" width="0.127" layer="21"/>
+<wire x1="-2" y1="-0.9" x2="-2" y2="0.9" width="0.127" layer="21"/>
+<wire x1="-2" y1="0.9" x2="2" y2="0.9" width="0.127" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="LED_XPE">
@@ -22846,7 +22861,7 @@ Generic symbol for the battery input to a system.</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="PINHD-2X8" prefix="JP" uservalue="yes">
+<deviceset name="PINHD-2X8" prefix="J" uservalue="yes">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
 <gates>
 <gate name="A" symbol="PINH2X8" x="0" y="0"/>
@@ -22876,6 +22891,29 @@ Generic symbol for the battery input to a system.</description>
 </technologies>
 </device>
 <device name="/90" package="2X08/90">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="10" pad="10"/>
+<connect gate="A" pin="11" pad="11"/>
+<connect gate="A" pin="12" pad="12"/>
+<connect gate="A" pin="13" pad="13"/>
+<connect gate="A" pin="14" pad="14"/>
+<connect gate="A" pin="15" pad="15"/>
+<connect gate="A" pin="16" pad="16"/>
+<connect gate="A" pin="2" pad="2"/>
+<connect gate="A" pin="3" pad="3"/>
+<connect gate="A" pin="4" pad="4"/>
+<connect gate="A" pin="5" pad="5"/>
+<connect gate="A" pin="6" pad="6"/>
+<connect gate="A" pin="7" pad="7"/>
+<connect gate="A" pin="8" pad="8"/>
+<connect gate="A" pin="9" pad="9"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SHROUD" package="2X08_SHROUD">
 <connects>
 <connect gate="A" pin="1" pad="1"/>
 <connect gate="A" pin="10" pad="10"/>
@@ -23181,6 +23219,24 @@ IC-09995</description>
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="RCW-0C" prefix="TP">
+<description>SMD Circuit Probe Pad&lt;br&gt;
+Test Pad&lt;br&gt;
+1206 Size</description>
+<gates>
+<gate name="G$1" symbol="TESTPAD" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="1206-RCW">
+<connects>
+<connect gate="G$1" pin="TP" pad="1"/>
 </connects>
 <technologies>
 <technology name=""/>
