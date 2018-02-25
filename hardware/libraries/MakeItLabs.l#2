@@ -23055,11 +23055,16 @@ IC-09995</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="PHOENIX1803426">
+<deviceset name="PHOENIX1803426" prefix="J">
 <gates>
+<gate name="G$1" symbol="1X2" x="0" y="-2.54"/>
 </gates>
 <devices>
 <device name="" package="1803426">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
