@@ -8432,6 +8432,12 @@
 <text x="82.55" y="70.866" size="0.85" layer="21" font="vector" ratio="16" rot="R90">GND</text>
 <text x="8.636" y="68.834" size="0.85" layer="21" font="vector" ratio="16" rot="R90">SPEAKER</text>
 <text x="55.626" y="74.168" size="0.85" layer="21" font="vector" ratio="16">RFID</text>
+<text x="116.586" y="49.022" size="0.85" layer="21" font="vector" ratio="16" rot="R90">DRY OUTPUTS: 60V 0.7A MAX</text>
+<text x="116.586" y="15.494" size="0.85" layer="21" font="vector" ratio="16" rot="R90">INPUTS</text>
+<text x="125.222" y="49.276" size="0.85" layer="21" font="vector" ratio="16" rot="R270">-    +</text>
+<text x="125.222" y="56.896" size="0.85" layer="21" font="vector" ratio="16" rot="R270">-    +</text>
+<text x="125.222" y="64.516" size="0.85" layer="21" font="vector" ratio="16" rot="R270">-    +</text>
+<text x="125.222" y="72.136" size="0.85" layer="21" font="vector" ratio="16" rot="R270">-    +</text>
 </plain>
 <libraries>
 <library name="MakeItLabs">
@@ -8759,7 +8765,8 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <rectangle x1="-1.4605" y1="1.905" x2="-1.0795" y2="3.048" layer="51" rot="R180"/>
 <text x="-2.54" y="5.08" size="1.27" layer="25" font="vector" align="center-left">&gt;NAME</text>
 <text x="-2.54" y="-5.08" size="1.27" layer="27" font="vector" align="center-left">&gt;VALUE</text>
-<text x="-1.778" y="1.016" size="1.27" layer="21" font="vector" align="center-left">+ -</text>
+<text x="-1.5" y="0.9" size="0.85" layer="21" ratio="16">+</text>
+<text x="1" y="0.9" size="0.85" layer="21" ratio="16">-</text>
 </package>
 <package name="1.8TFT_CHI_2.0">
 <wire x1="22.6" y1="-16.891" x2="22.6" y2="16.891" width="0" layer="21"/>
@@ -13042,7 +13049,7 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="VALUE" x="105.864" y="59.193" size="0.85" layer="27" font="vector" ratio="16" rot="R180"/>
 </element>
 <element name="J11" library="MakeItLabs" package="1803484" value="PHOENIX1803484" x="120.904" y="58.42" smashed="yes" rot="R90">
-<attribute name="NAME" x="124.968" y="45.085" size="0.85" layer="25" ratio="16" rot="R270"/>
+<attribute name="NAME" x="123.698" y="42.291" size="0.85" layer="25" ratio="16" rot="R270"/>
 <attribute name="VALUE" x="117.094" y="58.42" size="0.85" layer="27" ratio="16" rot="R90"/>
 </element>
 <element name="R48" library="MakeItLabs" package="0603-RES" value="680R" x="104.648" y="61.976" smashed="yes" rot="R180">

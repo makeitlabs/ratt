@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.01" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.001" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -58,7 +58,7 @@
 <layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="51" name="tDocu" color="14" fill="1" visible="no" active="yes"/>
+<layer number="51" name="tDocu" color="14" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
@@ -15840,10 +15840,9 @@ Source: http://cds.linear.com/docs/Datasheet/623012fb.pdf</description>
 <wire x1="-6.35" y1="6.35" x2="6.35" y2="6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="6.35" x2="6.35" y2="-6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="-6.35" x2="-6.35" y2="-6.35" width="0.8128" layer="21"/>
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
-<hole x="-3.81" y="-3.81" drill="1"/>
+<hole x="-3.81" y="-3.81" drill="1.5"/>
 <hole x="3.81" y="1.27" drill="1"/>
 </package>
 <package name="0603">
@@ -16780,7 +16779,7 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="2.2606" y1="1.5494" x2="0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="1.5494" x2="-2.2606" y2="1.5494" width="0.1524" layer="21"/>
-<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0" layer="21" curve="-180"/>
+<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21" curve="-180"/>
 <smd name="1" x="-2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="2" x="-2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="3" x="-2.921" y="-0.3302" dx="1.4732" dy="0.3556" layer="1"/>

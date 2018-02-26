@@ -6823,7 +6823,6 @@ It has a reduced top mask to make it harder to install upside-down.</description
 <rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <pad name="1" x="-3.81" y="3.81" drill="1.22"/>
 <pad name="3" x="1.27" y="-1.27" drill="1.22"/>
-<text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
 <hole x="-3.81" y="-3.81" drill="1"/>
 <hole x="3.81" y="1.27" drill="1"/>
@@ -6831,11 +6830,7 @@ It has a reduced top mask to make it harder to install upside-down.</description
 <wire x1="-6.35" y1="6.35" x2="6.35" y2="6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="6.35" x2="6.35" y2="-6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="-6.35" x2="-6.35" y2="-6.35" width="0.8128" layer="21"/>
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
-<text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
-<hole x="-3.81" y="-3.81" drill="1"/>
-<hole x="3.81" y="1.27" drill="1"/>
 </package>
 <package name="QFN16_3MM">
 <circle x="-2.1" y="1.4" radius="0.14141875" width="0.3048" layer="21"/>

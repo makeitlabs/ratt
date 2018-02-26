@@ -51,15 +51,15 @@
 <layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
 <layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
-<layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="44" name="Drills" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="17" fill="1" visible="yes" active="yes"/>
-<layer number="52" name="bDocu" color="19" fill="1" visible="no" active="yes"/>
+<layer number="51" name="tDocu" color="17" fill="1" visible="no" active="yes"/>
+<layer number="52" name="bDocu" color="63" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
 <layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
@@ -8444,6 +8444,7 @@
 <wire x1="124.968" y1="10.16" x2="126.492" y2="10.16" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="2.54" x2="126.492" y2="2.54" width="0.3048" layer="21"/>
 <text x="24.13" y="55.626" size="2.54" layer="21" font="vector" ratio="16" rot="R90">RATT V1.0</text>
+<text x="2.032" y="1.016" size="1.27" layer="21" font="vector" ratio="16" rot="R90">A. Shrey</text>
 </plain>
 <libraries>
 <library name="MakeItLabs">
@@ -8799,25 +8800,24 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <pad name="14" x="-23.85" y="14.17" drill="1.016" diameter="1.778" shape="octagon"/>
 <pad name="15" x="-23.85" y="16.71" drill="1.016" diameter="1.778" shape="octagon"/>
 <pad name="16" x="-23.85" y="19.25" drill="1.016" diameter="1.778" shape="octagon"/>
-<text x="-11.049" y="-14.8336" size="1.27" layer="21" font="vector">160x128 TFT display
+<text x="-10.033" y="-10.2616" size="1.27" layer="51" font="vector">160x128 TFT display
 Chinafruit 2.0</text>
-<text x="-19.05" y="-19.739" size="1.27" layer="21" font="vector">Gnd</text>
-<text x="-19.05" y="-17.199" size="1.27" layer="21" font="vector">VCC</text>
-<text x="-19.05" y="-7.039" size="1.27" layer="21" font="vector">RESET</text>
-<text x="-19.05" y="-4.499" size="1.27" layer="21" font="vector">A0</text>
-<text x="-19.05" y="-1.959" size="1.27" layer="21" font="vector">TFT_MOSI</text>
-<text x="-19.05" y="0.581" size="1.27" layer="21" font="vector">TFT_CLK</text>
-<text x="-19.05" y="3.121" size="1.27" layer="21" font="vector">TFT_CS</text>
-<text x="-19.05" y="5.661" size="1.27" layer="21" font="vector">SD_SCK</text>
-<text x="-19.05" y="8.201" size="1.27" layer="21" font="vector">SD_MISO</text>
-<text x="-19.05" y="10.741" size="1.27" layer="21" font="vector">SD_MOSI</text>
-<text x="-19.05" y="-14.659" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-12.119" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-9.579" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="13.281" size="1.27" layer="21" font="vector">SD_CS</text>
-<text x="-19.05" y="15.821" size="1.27" layer="21" font="vector">LED+</text>
-<text x="-19.05" y="18.361" size="1.27" layer="21" font="vector">LED-</text>
-<text x="-8.89" y="-20.32" size="1.27" layer="21">KMR-1.8 SPI</text>
+<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector" rot="SR0">Gnd</text>
+<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector" rot="SR0">VCC</text>
+<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector" rot="SR0">RESET</text>
+<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector" rot="SR0">A0</text>
+<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector" rot="SR0">TFT_MOSI</text>
+<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector" rot="SR0">TFT_CLK</text>
+<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector" rot="SR0">TFT_CS</text>
+<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector" rot="SR0">SD_SCK</text>
+<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector" rot="SR0">SD_MISO</text>
+<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector" rot="SR0">SD_MOSI</text>
+<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector" rot="SR0">SD_CS</text>
+<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector" rot="SR0">LED+</text>
+<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector" rot="SR0">LED-</text>
 <hole x="19.9" y="20.2" drill="3.3"/>
 <hole x="-21.1" y="-19.8" drill="3.3"/>
 <hole x="-21.1" y="20.2" drill="3.3"/>
@@ -11465,6 +11465,8 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
+<text x="-10.414" y="19.812" size="0.85" layer="25" ratio="16">&gt;NAME</text>
+<text x="-16.51" y="-20.574" size="0.85" layer="27" ratio="16">&gt;VALUE</text>
 </package>
 <package name="SOLDERJUMPER_10MIL">
 <description>Solder Jumper with 10 mil trace</description>
@@ -11944,7 +11946,7 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="2.2606" y1="1.5494" x2="0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="1.5494" x2="-2.2606" y2="1.5494" width="0.1524" layer="21"/>
-<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0" layer="21" curve="-180"/>
+<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21" curve="-180"/>
 <smd name="1" x="-2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="2" x="-2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="3" x="-2.921" y="-0.3302" dx="1.4732" dy="0.3556" layer="1"/>
@@ -11954,9 +11956,9 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <smd name="7" x="2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="8" x="2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <text x="-3.7592" y="1.1938" size="1.27" layer="51" ratio="6" rot="SR0">*</text>
-<text x="-3.7592" y="1.1938" size="1.27" layer="21" ratio="6" rot="SR0">*</text>
 <text x="-4.7498" y="2.4892" size="2.0828" layer="25" ratio="10" rot="SR0">&gt;NAME</text>
 <text x="-5.4864" y="-4.572" size="2.0828" layer="27" ratio="10" rot="SR0">&gt;VALUE</text>
+<circle x="-2.921" y="1.905" radius="0.179603125" width="0.127" layer="21"/>
 </package>
 <package name="SOP65P640X120-24N">
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="21" curve="-180"/>
@@ -12807,27 +12809,23 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="VALUE" x="47.7012" y="71.0946" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>
 <element name="SW103" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="57.15" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="64.77" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="48.26" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="64.77" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="55.499" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="48.26" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="SW102" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="44.45" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="52.07" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="35.56" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="52.07" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="42.545" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="35.56" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="SW101" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="31.75" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="39.37" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="22.86" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="39.37" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="30.099" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="22.86" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="SW100" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="19.05" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="26.67" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="10.16" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="26.67" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="17.399" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="10.16" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="R21" library="MakeItLabs" package="0603-RES" value="750R" x="56.642" y="66.802" smashed="yes" rot="R90">
@@ -12919,15 +12917,13 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="VALUE" x="110.544" y="25.262" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>
 <element name="LED101" library="MakeItLabs" package="LED5MM" value="" x="72.39" y="66.675" smashed="yes" rot="MR0">
-<attribute name="NAME" x="69.215" y="67.2084" size="1.27" layer="26" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="69.1896" y="64.8716" size="1.27" layer="28" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="69.215" y="67.2084" size="0.85" layer="26" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="77.3176" y="69.215" size="0.85" layer="26" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="69.1896" y="64.8716" size="1.27" layer="28" ratio="10" rot="MR0"/>
 </element>
 <element name="LED100" library="MakeItLabs" package="LED5MM" value="" x="72.39" y="9.525" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="69.215" y="10.0584" size="1.27" layer="26" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="69.1896" y="7.7216" size="1.27" layer="28" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="69.215" y="10.0584" size="0.85" layer="26" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="77.3176" y="11.303" size="0.85" layer="26" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="69.1896" y="7.7216" size="1.27" layer="28" ratio="10" rot="MR0"/>
 </element>
 <element name="R29" library="MakeItLabs" package="0603-RES" value="680R" x="76.188" y="65.862" smashed="yes" rot="R270">

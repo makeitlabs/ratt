@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="mm" altunit="mm"/>
+<grid distance="0.01" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -58,7 +58,7 @@
 <layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="51" name="tDocu" color="14" fill="1" visible="yes" active="yes"/>
+<layer number="51" name="tDocu" color="14" fill="1" visible="no" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
@@ -7109,7 +7109,8 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <rectangle x1="-1.4605" y1="1.905" x2="-1.0795" y2="3.048" layer="51" rot="R180"/>
 <text x="-2.54" y="5.08" size="1.27" layer="25" font="vector" align="center-left">&gt;NAME</text>
 <text x="-2.54" y="-5.08" size="1.27" layer="27" font="vector" align="center-left">&gt;VALUE</text>
-<text x="-1.778" y="1.016" size="1.27" layer="21" font="vector" align="center-left">+ -</text>
+<text x="-1.5" y="0.9" size="0.85" layer="21" ratio="16">+</text>
+<text x="1" y="0.9" size="0.85" layer="21" ratio="16">-</text>
 </package>
 <package name="1.8TFT_ADA">
 <wire x1="-25.4" y1="17.145" x2="-27.94" y2="14.605" width="0" layer="20" curve="90"/>
@@ -16854,12 +16855,6 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="3.9624" x2="-1.9304" y2="3.9624" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="21" curve="-180"/>
-<wire x1="-4.1656" y1="-2.0828" x2="-4.1656" y2="-2.4638" width="0.1524" layer="21"/>
-<wire x1="-4.1656" y1="-2.4638" x2="-3.9116" y2="-2.4638" width="0.1524" layer="21"/>
-<wire x1="-3.9116" y1="-2.4638" x2="-3.9116" y2="-2.0828" width="0.1524" layer="21"/>
-<wire x1="4.1656" y1="1.1684" x2="4.1656" y2="0.7874" width="0.1524" layer="21"/>
-<wire x1="4.1656" y1="0.7874" x2="3.9116" y2="0.7874" width="0.1524" layer="21"/>
-<wire x1="3.9116" y1="0.7874" x2="3.9116" y2="1.1684" width="0.1524" layer="21"/>
 <wire x1="-2.2606" y1="3.429" x2="-2.2606" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="-2.2606" y1="3.7338" x2="-3.302" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="-3.302" y1="3.7338" x2="-3.302" y2="3.429" width="0.1524" layer="51"/>
@@ -16957,16 +16952,25 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="3.302" y1="3.429" x2="3.302" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="3.302" y1="3.7338" x2="2.2606" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="-2.2606" y1="-3.9624" x2="2.2606" y2="-3.9624" width="0.1524" layer="51"/>
-<wire x1="2.2606" y1="-2.1336" x2="2.2606" y2="2.1336" width="0.1524" layer="51"/>
+<wire x1="2.2606" y1="-1.778" x2="2.2606" y2="1.778" width="0.1524" layer="51"/>
 <wire x1="2.2606" y1="3.9624" x2="0.3048" y2="3.9624" width="0.1524" layer="51"/>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0.1524" layer="51"/>
 <wire x1="-0.3048" y1="3.9624" x2="-2.2606" y2="3.9624" width="0.1524" layer="51"/>
-<wire x1="-2.2606" y1="3.429" x2="-2.2606" y2="-3.429" width="0.1524" layer="51"/>
+<wire x1="-2.2606" y1="3.0734" x2="-2.2606" y2="-3.0734" width="0.1524" layer="51"/>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="51" curve="-180"/>
 <text x="-3.7592" y="3.81" size="1.27" layer="21" ratio="6" rot="SR0">*</text>
 <text x="-3.7592" y="3.81" size="1.27" layer="51" ratio="6" rot="SR0">*</text>
 <text x="-4.699" y="4.9022" size="2.0828" layer="25" ratio="10" rot="SR0">&gt;NAME</text>
 <text x="-5.6642" y="-6.6802" size="2.0828" layer="27" ratio="10" rot="SR0">&gt;VALUE</text>
+<wire x1="-1.778" y1="4.064" x2="-0.508" y2="4.064" width="0.127" layer="21"/>
+<wire x1="-0.508" y1="4.064" x2="0.508" y2="4.064" width="0.127" layer="21"/>
+<wire x1="0.508" y1="4.064" x2="1.778" y2="4.064" width="0.127" layer="21"/>
+<wire x1="1.778" y1="4.064" x2="1.778" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="1.778" y1="-4.064" x2="-1.778" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="-1.778" y1="-4.064" x2="-1.778" y2="4.064" width="0.127" layer="21"/>
+<wire x1="-0.508" y1="4.064" x2="0" y2="3.556" width="0.127" layer="21" curve="90"/>
+<wire x1="0" y1="3.556" x2="0.508" y2="4.064" width="0.127" layer="21" curve="90"/>
+<circle x="-2.794" y="4.318" radius="0.254" width="0.127" layer="21"/>
 </package>
 <package name="SOT23-5">
 <description>&lt;b&gt;Small Outline Transistor&lt;/b&gt;</description>
@@ -22555,7 +22559,7 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="AUDIOAMP_MAX98357" prefix="U" uservalue="yes">
+<deviceset name="AUDIOAMP_MAX98357" prefix="IC" uservalue="yes">
 <description>&lt;p&gt;&lt;b&gt;MAX98357&lt;/b&gt; - 3.2W I2S Mono Audio Amp&lt;/p&gt;</description>
 <gates>
 <gate name="G$1" symbol="MAX98357" x="0" y="0"/>

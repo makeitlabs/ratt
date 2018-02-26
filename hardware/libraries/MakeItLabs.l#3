@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.01" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="mm" altunit="mm"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -13139,22 +13139,22 @@ Chinafruit</text>
 <pad name="16" x="-23.85" y="19.25" drill="1.016" diameter="1.778" shape="octagon"/>
 <text x="-10.033" y="-10.2616" size="1.27" layer="51" font="vector">160x128 TFT display
 Chinafruit 2.0</text>
-<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector">Gnd</text>
-<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector">VCC</text>
-<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector">RESET</text>
-<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector">A0</text>
-<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector">TFT_MOSI</text>
-<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector">TFT_CLK</text>
-<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector">TFT_CS</text>
-<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector">SD_SCK</text>
-<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector">SD_MISO</text>
-<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector">SD_MOSI</text>
-<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector">NC</text>
-<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector">NC</text>
-<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector">NC</text>
-<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector">SD_CS</text>
-<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector">LED+</text>
-<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector">LED-</text>
+<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector" rot="SR0">Gnd</text>
+<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector" rot="SR0">VCC</text>
+<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector" rot="SR0">RESET</text>
+<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector" rot="SR0">A0</text>
+<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector" rot="SR0">TFT_MOSI</text>
+<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector" rot="SR0">TFT_CLK</text>
+<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector" rot="SR0">TFT_CS</text>
+<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector" rot="SR0">SD_SCK</text>
+<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector" rot="SR0">SD_MISO</text>
+<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector" rot="SR0">SD_MOSI</text>
+<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector" rot="SR0">SD_CS</text>
+<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector" rot="SR0">LED+</text>
+<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector" rot="SR0">LED-</text>
 <hole x="19.9" y="20.2" drill="3.3"/>
 <hole x="-21.1" y="-19.8" drill="3.3"/>
 <hole x="-21.1" y="20.2" drill="3.3"/>
@@ -15829,7 +15829,6 @@ Source: http://cds.linear.com/docs/Datasheet/623012fb.pdf</description>
 <rectangle x1="-1.175" y1="0.8" x2="-0.725" y2="1.4" layer="51"/>
 </package>
 <package name="ESWITCH320">
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <pad name="1" x="-3.81" y="3.81" drill="1.22"/>
 <pad name="3" x="1.27" y="-1.27" drill="1.22"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
@@ -15840,11 +15839,14 @@ Source: http://cds.linear.com/docs/Datasheet/623012fb.pdf</description>
 <wire x1="-6.35" y1="6.35" x2="6.35" y2="6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="6.35" x2="6.35" y2="-6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="-6.35" x2="-6.35" y2="-6.35" width="0.8128" layer="21"/>
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
 <hole x="-3.81" y="-3.81" drill="1"/>
 <hole x="3.81" y="1.27" drill="1"/>
+<wire x1="-6.2865" y1="6.2865" x2="6.2865" y2="6.2865" width="0.127" layer="39"/>
+<wire x1="6.2865" y1="6.2865" x2="6.2865" y2="-6.2865" width="0.127" layer="39"/>
+<wire x1="6.2865" y1="-6.2865" x2="-6.2865" y2="-6.2865" width="0.127" layer="39"/>
+<wire x1="-6.2865" y1="-6.2865" x2="-6.2865" y2="6.2865" width="0.127" layer="39"/>
 </package>
 <package name="0603">
 <description>0603 (1608 Metric)</description>
@@ -16780,7 +16782,7 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="2.2606" y1="1.5494" x2="0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="1.5494" x2="-2.2606" y2="1.5494" width="0.1524" layer="21"/>
-<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0" layer="21" curve="-180"/>
+<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21" curve="-180"/>
 <smd name="1" x="-2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="2" x="-2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="3" x="-2.921" y="-0.3302" dx="1.4732" dy="0.3556" layer="1"/>
@@ -16790,9 +16792,9 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <smd name="7" x="2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="8" x="2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <text x="-3.7592" y="1.1938" size="1.27" layer="51" ratio="6" rot="SR0">*</text>
-<text x="-3.7592" y="1.1938" size="1.27" layer="21" ratio="6" rot="SR0">*</text>
 <text x="-4.7498" y="2.4892" size="2.0828" layer="25" ratio="10" rot="SR0">&gt;NAME</text>
 <text x="-5.4864" y="-4.572" size="2.0828" layer="27" ratio="10" rot="SR0">&gt;VALUE</text>
+<circle x="-2.921" y="1.905" radius="0.179603125" width="0.127" layer="21"/>
 </package>
 <package name="SOP65P640X120-24N">
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="21" curve="-180"/>

@@ -23,33 +23,33 @@
 <layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
 <layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
 <layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
-<layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
-<layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
+<layer number="31" name="tCream" color="7" fill="4" visible="yes" active="yes"/>
+<layer number="32" name="bCream" color="7" fill="5" visible="yes" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="yes"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="yes"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
 <layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
-<layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
-<layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
+<layer number="40" name="bKeepout" color="1" fill="11" visible="yes" active="yes"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
-<layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
@@ -58,7 +58,7 @@
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="17" fill="1" visible="no" active="yes"/>
+<layer number="51" name="tDocu" color="17" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="63" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
@@ -141,7 +141,7 @@
 <layer number="195" name="mNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="196" name="mValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="199" name="Contour" color="7" fill="1" visible="no" active="yes"/>
-<layer number="200" name="200bmp" color="1" fill="10" visible="yes" active="yes"/>
+<layer number="200" name="200bmp" color="1" fill="10" visible="no" active="yes"/>
 <layer number="201" name="201bmp" color="2" fill="10" visible="no" active="yes"/>
 <layer number="202" name="202bmp" color="3" fill="10" visible="no" active="yes"/>
 <layer number="203" name="203bmp" color="4" fill="10" visible="no" active="yes"/>
@@ -11551,7 +11551,6 @@ Chinafruit 2.0</text>
 <rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <pad name="1" x="-3.81" y="3.81" drill="1.22"/>
 <pad name="3" x="1.27" y="-1.27" drill="1.22"/>
-<text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
 <hole x="-3.81" y="-3.81" drill="1"/>
 <hole x="3.81" y="1.27" drill="1"/>
@@ -11559,11 +11558,7 @@ Chinafruit 2.0</text>
 <wire x1="-6.35" y1="6.35" x2="6.35" y2="6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="6.35" x2="6.35" y2="-6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="-6.35" x2="-6.35" y2="-6.35" width="0.8128" layer="21"/>
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
-<text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
-<hole x="-3.81" y="-3.81" drill="1"/>
-<hole x="3.81" y="1.27" drill="1"/>
 </package>
 <package name="QFN16_3MM">
 <circle x="-2.1" y="1.4" radius="0.14141875" width="0.3048" layer="21"/>
@@ -14868,7 +14863,123 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 </signal>
 </signals>
 <errors>
+<approved hash="3,1,369c469c41f231f2"/>
+<approved hash="3,1,1e9c7e9c69da09da"/>
+<approved hash="3,1,262c962cb1620162"/>
+<approved hash="3,1,3fd69fd6a6f506f5"/>
+<approved hash="3,1,9996f9968168e168"/>
+<approved hash="3,1,da6afa6a830ba30b"/>
+<approved hash="3,1,6af1eaf1e3426342"/>
+<approved hash="3,1,344514451d263d26"/>
+<approved hash="3,1,d07e907e99a0d9a0"/>
+<approved hash="3,1,a27a827a8bfbabfb"/>
+<approved hash="3,1,5201e201fb4a4b4a"/>
+<approved hash="3,1,3cbd0cbd15362536"/>
+<approved hash="3,1,2886e886f1b731b7"/>
+<approved hash="3,1,aa8a8a8a93ebb3eb"/>
+<approved hash="3,1,5a09ca09c3725372"/>
+<approved hash="3,1,c10421042e02ce02"/>
+<approved hash="3,1,1a9b6a9b62321232"/>
+<approved hash="3,1,bea3cea3c659b659"/>
+<approved hash="3,1,4f185f18542e442e"/>
+<approved hash="3,1,0632d632cfb91fb9"/>
+<approved hash="3,1,1887c887d02e002e"/>
+<approved hash="3,1,e904c904d602f602"/>
+<approved hash="3,1,02ab62ab7a2a1a2a"/>
+<approved hash="3,1,216bd16bce123e12"/>
+<approved hash="3,1,472857284c3e5c3e"/>
+<approved hash="3,1,2e1ade1ad7412741"/>
+<approved hash="3,1,1097d097d8c618c6"/>
+<approved hash="3,1,e10cc10cce0aee0a"/>
+<approved hash="3,1,1abb7abb72da12da"/>
+<approved hash="3,1,d97bc97bc6f2d6f2"/>
+<approved hash="3,1,5f384f3844ce54ce"/>
+<approved hash="3,1,26e2e6e29f515f51"/>
+<approved hash="3,1,186f286f50d660d6"/>
+<approved hash="3,1,890ce90c960af60a"/>
+<approved hash="3,1,123342333aca6aca"/>
+<approved hash="3,1,c18bc18bbe1abe1a"/>
+<approved hash="3,1,57c847c83cde2cde"/>
+<approved hash="3,1,4ef29ef297794779"/>
+<approved hash="3,1,6047404748e668e6"/>
+<approved hash="3,1,c10cf10cfe32ce32"/>
+<approved hash="3,1,7a233a2332f272f2"/>
+<approved hash="3,1,8993899386228622"/>
+<approved hash="3,1,dfd83fd83495d495"/>
+<approved hash="3,1,46da86da9f695f69"/>
+<approved hash="3,1,687f787f60f670f6"/>
+<approved hash="3,1,39052905360b260b"/>
+<approved hash="3,1,4202d202cada5ada"/>
+<approved hash="3,1,91a381a39e2a8e2a"/>
+<approved hash="3,1,b79027903fb7afb7"/>
+<approved hash="3,1,d45f445f5c85cc85"/>
+<approved hash="3,1,aeca9eca9711a711"/>
+<approved hash="3,1,006f606f688e088e"/>
+<approved hash="3,1,010d210d2e0b0e0b"/>
+<approved hash="3,1,5a1ada1ad2aa52aa"/>
+<approved hash="3,1,f9ab89ab8652f652"/>
+<approved hash="3,1,9f87cf87c7df97df"/>
+<approved hash="3,1,cc5f7c5f74f5c4f5"/>
+<approved hash="3,1,a6ba96baaf019f01"/>
+<approved hash="3,1,08077807409e309e"/>
+<approved hash="3,1,49751975263b763b"/>
+<approved hash="3,1,b25af25acaaa8aaa"/>
+<approved hash="3,1,f1db81dbbe42ce42"/>
+<approved hash="3,1,c41704173ce5fce5"/>
+<approved hash="3,1,8ea2dea2d7098709"/>
+<approved hash="3,1,301f301f38ae38ae"/>
+<approved hash="3,1,911d311d3e1b9e1b"/>
+<approved hash="3,1,d9cbb9cbb64ad64a"/>
+<approved hash="3,1,fc0f2c0f24d5f4d5"/>
+<approved hash="3,1,866ac66adf199f19"/>
+<approved hash="3,1,382f382f20be20be"/>
+<approved hash="3,1,b925492551fba1fb"/>
+<approved hash="3,1,d1f3c1f3de5ace5a"/>
+<approved hash="3,1,f43f243f3cc5ecc5"/>
+<approved hash="3,1,9e7ade7ad0e990e9"/>
+<approved hash="3,1,503f203f2f465f46"/>
+<approved hash="3,1,f12d412d4e13fe13"/>
+<approved hash="3,1,f9e3d9e3d1a2f1a2"/>
+<approved hash="3,1,ec370c370335e335"/>
+<approved hash="3,1,a18ad18528fe58f1"/>
+<approved hash="3,1,2fcf2fc0d751d75e"/>
+<approved hash="3,1,1edd4ed2b63be634"/>
+<approved hash="3,1,f62bc62439bd09b2"/>
+<approved hash="3,1,e3c703c8fb2a1b25"/>
+<approved hash="3,1,599d199d10ce50ce"/>
+<approved hash="3,1,d7d0d7d0df61df61"/>
+<approved hash="3,1,f6ca86ca8e13fe13"/>
+<approved hash="3,1,1e343e3431951195"/>
+<approved hash="3,1,1bd8fbd8f31a131a"/>
+<approved hash="3,1,41ad11ad08c658c6"/>
+<approved hash="3,1,dfe0dfe0c771c771"/>
+<approved hash="3,1,cec29ec2860bd60b"/>
+<approved hash="3,1,e60c060c198cf98c"/>
+<approved hash="3,1,13e8f3e8eb0a0b0a"/>
+<approved hash="3,1,59bd09bd00b650b6"/>
+<approved hash="3,1,c7f0c7f0cf01cf01"/>
+<approved hash="3,1,c6d286d28e03ce03"/>
+<approved hash="3,1,fe1c1e1c11fcf1fc"/>
+<approved hash="3,1,0bf8ebf8e37a037a"/>
+<approved hash="3,1,21d511d528ae18ae"/>
+<approved hash="3,1,cf80cf80f711f711"/>
+<approved hash="3,1,beaa7eaa461b861b"/>
+<approved hash="3,1,e67406743994d994"/>
+<approved hash="3,1,0388e388db6a3b6a"/>
+<approved hash="3,1,09c529c521660166"/>
+<approved hash="3,1,f7e8e7e8ef21ff21"/>
+<approved hash="3,1,86ba46ba4e2b8e2b"/>
+<approved hash="3,1,de6bce6bc1a4d1a4"/>
+<approved hash="3,1,3b80eb80e35a335a"/>
+<approved hash="3,1,01f521f539761976"/>
+<approved hash="3,1,ffd8efd8f731e731"/>
+<approved hash="3,1,9e8a4e8a56238623"/>
+<approved hash="3,1,e623d623c9bcf9bc"/>
+<approved hash="3,1,c3b0e3b0fb31db31"/>
+<approved hash="3,1,29ecc9ecc18e218e"/>
+<approved hash="3,1,e7c8f7c8ffc1efc1"/>
 <approved hash="3,1,734c4b744b6c7354"/>
+<approved hash="3,16,734c4b744b6c7354"/>
 <approved hash="8,1,b05aa2063079f3f4"/>
 <approved hash="8,1,13627f5857840905"/>
 <approved hash="8,1,101a2764757c4f7e"/>
@@ -14878,16 +14989,16 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <approved hash="4,1,cf82bc60820ec14b"/>
 <approved hash="19,1,e0e941cd439aee98"/>
 <approved hash="19,1,f878a936a760fa08"/>
-<approved hash="19,1,eec36376567ebdc7"/>
 <approved hash="19,1,3a32d51dac152536"/>
-<approved hash="19,1,41663848ab58d065"/>
+<approved hash="19,1,eec36376567ebdc7"/>
 <approved hash="19,1,551d29bbf6b48801"/>
-<approved hash="19,1,aefc43215e2ed1ff"/>
+<approved hash="19,1,41663848ab58d065"/>
 <approved hash="19,1,189397c0c6cf2b90"/>
-<approved hash="19,1,c2569f4f6043bb56"/>
+<approved hash="19,1,aefc43215e2ed1ff"/>
 <approved hash="19,1,75b2aee31def40b2"/>
-<approved hash="19,1,052dd830a73dfa2c"/>
+<approved hash="19,1,c2569f4f6043bb56"/>
 <approved hash="19,1,338d69605a6d808c"/>
+<approved hash="19,1,052dd830a73dfa2c"/>
 <approved hash="4,1,c77581db91361509"/>
 <approved hash="4,16,cf82bc60820ec14b"/>
 <approved hash="4,16,c77581db91361509"/>

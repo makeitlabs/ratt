@@ -8,7 +8,7 @@
 </settings>
 <grid distance="0.01" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.001" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="1" name="Top" color="4" fill="1" visible="no" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
 <layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
 <layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
@@ -28,12 +28,12 @@
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="no" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
@@ -48,18 +48,18 @@
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
-<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
-<layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
-<layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="44" name="Drills" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="17" fill="1" visible="yes" active="yes"/>
-<layer number="52" name="bDocu" color="19" fill="1" visible="no" active="yes"/>
+<layer number="51" name="tDocu" color="17" fill="1" visible="no" active="yes"/>
+<layer number="52" name="bDocu" color="63" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
 <layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
@@ -8443,6 +8443,8 @@
 <wire x1="124.968" y1="17.78" x2="126.492" y2="17.78" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="10.16" x2="126.492" y2="10.16" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="2.54" x2="126.492" y2="2.54" width="0.3048" layer="21"/>
+<text x="24.13" y="55.626" size="2.54" layer="21" font="vector" ratio="16" rot="R90">RATT V1.0</text>
+<text x="98.552" y="1.016" size="1.27" layer="21" font="vector" ratio="16" rot="R90">A. Shrey</text>
 </plain>
 <libraries>
 <library name="MakeItLabs">
@@ -12806,27 +12808,23 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="VALUE" x="47.7012" y="71.0946" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>
 <element name="SW103" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="57.15" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="64.77" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="48.26" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="64.77" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="55.499" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="48.26" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="SW102" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="44.45" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="52.07" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="35.56" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="52.07" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="42.545" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="35.56" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="SW101" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="31.75" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="39.37" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="22.86" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="39.37" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="30.099" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="22.86" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="SW100" library="MakeItLabs" package="ESWITCH320" value="" x="81.915" y="19.05" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="88.265" y="26.67" size="1.27" layer="26" font="vector" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="88.265" y="10.16" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
-<attribute name="NAME" x="88.265" y="26.67" size="0.85" layer="26" font="vector" ratio="16" rot="MR0"/>
+<attribute name="NAME" x="74.93" y="17.399" size="0.85" layer="26" font="vector" ratio="16" rot="SMR270"/>
 <attribute name="VALUE" x="88.265" y="10.16" size="1.27" layer="28" font="vector" ratio="10" rot="MR0"/>
 </element>
 <element name="R21" library="MakeItLabs" package="0603-RES" value="750R" x="56.642" y="66.802" smashed="yes" rot="R90">
@@ -12918,13 +12916,11 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="VALUE" x="110.544" y="25.262" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>
 <element name="LED101" library="MakeItLabs" package="LED5MM" value="" x="72.39" y="66.675" smashed="yes" rot="MR0">
-<attribute name="NAME" x="69.215" y="67.2084" size="1.27" layer="26" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="69.1896" y="64.8716" size="1.27" layer="28" ratio="10" rot="MR0"/>
 <attribute name="NAME" x="69.215" y="67.2084" size="0.85" layer="26" ratio="16" rot="MR0"/>
 <attribute name="VALUE" x="69.1896" y="64.8716" size="1.27" layer="28" ratio="10" rot="MR0"/>
 </element>
 <element name="LED100" library="MakeItLabs" package="LED5MM" value="" x="72.39" y="9.525" locked="yes" smashed="yes" rot="MR0">
-<attribute name="NAME" x="69.215" y="10.0584" size="1.27" layer="26" ratio="10" rot="MR0"/>
 <attribute name="VALUE" x="69.1896" y="7.7216" size="1.27" layer="28" ratio="10" rot="MR0"/>
 <attribute name="NAME" x="69.215" y="10.0584" size="0.85" layer="26" ratio="16" rot="MR0"/>
 <attribute name="VALUE" x="69.1896" y="7.7216" size="1.27" layer="28" ratio="10" rot="MR0"/>
