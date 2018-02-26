@@ -8567,6 +8567,42 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="17.85" y1="-26.5" x2="17.6" y2="-27" width="0.127" layer="52"/>
 <wire x1="17.6" y1="-27" x2="25.6" y2="-27" width="0.127" layer="52"/>
 <wire x1="25.6" y1="-27" x2="25.35" y2="-26.5" width="0.127" layer="52"/>
+<circle x="-29" y="-23" radius="3.1" width="0.127" layer="22"/>
+<circle x="29" y="-23" radius="3.1" width="0.127" layer="22"/>
+<circle x="29" y="0" radius="3.1" width="0.127" layer="22"/>
+<circle x="-29" y="0" radius="3.1" width="0.127" layer="22"/>
+<wire x1="-32.5" y1="-23.5" x2="-29.5" y2="-26.5" width="0.254" layer="22" curve="90"/>
+<wire x1="-29.5" y1="-26.5" x2="-25.65" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-18.15" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="-18.15" y1="-26.5" x2="29.5" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="29.5" y1="-26.5" x2="32.5" y2="-23.5" width="0.254" layer="22" curve="90"/>
+<wire x1="32.5" y1="-23.5" x2="32.5" y2="0.5" width="0.254" layer="22"/>
+<wire x1="32.5" y1="0.5" x2="29.5" y2="3.5" width="0.254" layer="22" curve="90"/>
+<wire x1="29.5" y1="3.5" x2="-29.5" y2="3.5" width="0.254" layer="22"/>
+<wire x1="-29.5" y1="3.5" x2="-32.5" y2="0.5" width="0.254" layer="22" curve="90"/>
+<wire x1="-32.5" y1="0.5" x2="-32.5" y2="-23.5" width="0.254" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-25.65" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="-25.65" y1="-20.75" x2="-18.15" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="-18.15" y1="-20.75" x2="-18.15" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-25.9" y2="-27" width="0.127" layer="22"/>
+<wire x1="-25.9" y1="-27" x2="-17.9" y2="-27" width="0.127" layer="22"/>
+<wire x1="-17.9" y1="-27" x2="-18.15" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="4.4" y1="-26.5" x2="5.25" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="12.75" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="5.25" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="5.25" y1="-20.75" x2="12.75" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="12.75" y1="-20.75" x2="12.75" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="5" y2="-27" width="0.127" layer="22"/>
+<wire x1="5" y1="-27" x2="13" y2="-27" width="0.127" layer="22"/>
+<wire x1="13" y1="-27" x2="12.75" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="17" y1="-26.5" x2="17.85" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="25.35" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="17.85" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="17.85" y1="-20.75" x2="25.35" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="25.35" y1="-20.75" x2="25.35" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="17.6" y2="-27" width="0.127" layer="22"/>
+<wire x1="17.6" y1="-27" x2="25.6" y2="-27" width="0.127" layer="22"/>
+<wire x1="25.6" y1="-27" x2="25.35" y2="-26.5" width="0.127" layer="22"/>
 </package>
 <package name="2X08_SHROUD">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>

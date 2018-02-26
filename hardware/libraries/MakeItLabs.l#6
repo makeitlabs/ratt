@@ -16780,7 +16780,7 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="2.2606" y1="1.5494" x2="0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="1.5494" x2="-2.2606" y2="1.5494" width="0.1524" layer="21"/>
-<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0" layer="21" curve="-180"/>
+<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21" curve="-180"/>
 <smd name="1" x="-2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="2" x="-2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="3" x="-2.921" y="-0.3302" dx="1.4732" dy="0.3556" layer="1"/>

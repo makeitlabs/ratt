@@ -13139,22 +13139,22 @@ Chinafruit</text>
 <pad name="16" x="-23.85" y="19.25" drill="1.016" diameter="1.778" shape="octagon"/>
 <text x="-10.033" y="-10.2616" size="1.27" layer="51" font="vector">160x128 TFT display
 Chinafruit 2.0</text>
-<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector">Gnd</text>
-<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector">VCC</text>
-<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector">RESET</text>
-<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector">A0</text>
-<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector">TFT_MOSI</text>
-<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector">TFT_CLK</text>
-<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector">TFT_CS</text>
-<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector">SD_SCK</text>
-<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector">SD_MISO</text>
-<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector">SD_MOSI</text>
-<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector">NC</text>
-<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector">NC</text>
-<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector">NC</text>
-<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector">SD_CS</text>
-<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector">LED+</text>
-<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector">LED-</text>
+<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector" rot="SR0">Gnd</text>
+<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector" rot="SR0">VCC</text>
+<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector" rot="SR0">RESET</text>
+<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector" rot="SR0">A0</text>
+<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector" rot="SR0">TFT_MOSI</text>
+<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector" rot="SR0">TFT_CLK</text>
+<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector" rot="SR0">TFT_CS</text>
+<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector" rot="SR0">SD_SCK</text>
+<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector" rot="SR0">SD_MISO</text>
+<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector" rot="SR0">SD_MOSI</text>
+<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector" rot="SR0">SD_CS</text>
+<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector" rot="SR0">LED+</text>
+<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector" rot="SR0">LED-</text>
 <hole x="19.9" y="20.2" drill="3.3"/>
 <hole x="-21.1" y="-19.8" drill="3.3"/>
 <hole x="-21.1" y="20.2" drill="3.3"/>

@@ -15829,6 +15829,7 @@ Source: http://cds.linear.com/docs/Datasheet/623012fb.pdf</description>
 <rectangle x1="-1.175" y1="0.8" x2="-0.725" y2="1.4" layer="51"/>
 </package>
 <package name="ESWITCH320">
+<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <pad name="1" x="-3.81" y="3.81" drill="1.22"/>
 <pad name="3" x="1.27" y="-1.27" drill="1.22"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
@@ -15843,10 +15844,6 @@ Source: http://cds.linear.com/docs/Datasheet/623012fb.pdf</description>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
 <hole x="-3.81" y="-3.81" drill="1"/>
 <hole x="3.81" y="1.27" drill="1"/>
-<wire x1="-6.2865" y1="6.2865" x2="6.2865" y2="6.2865" width="0.127" layer="39"/>
-<wire x1="6.2865" y1="6.2865" x2="6.2865" y2="-6.2865" width="0.127" layer="39"/>
-<wire x1="6.2865" y1="-6.2865" x2="-6.2865" y2="-6.2865" width="0.127" layer="39"/>
-<wire x1="-6.2865" y1="-6.2865" x2="-6.2865" y2="6.2865" width="0.127" layer="39"/>
 </package>
 <package name="0603">
 <description>0603 (1608 Metric)</description>

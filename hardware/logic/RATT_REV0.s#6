@@ -11333,6 +11333,7 @@ or by the Pi Module</text>
 <wire x1="116.84" y1="256.54" x2="0" y2="256.54" width="0.1524" layer="97" style="longdash"/>
 <text x="12.7" y="264.16" size="6.35" layer="97">MakeIt Labs RATT</text>
 <text x="12.7" y="205.74" size="1.27" layer="97">Not Used</text>
+<text x="391.16" y="139.7" size="1.778" layer="97">DNP R19 for 3.3V RFID</text>
 </plain>
 <instances>
 <instance part="IC3" gate="G$1" x="50.8" y="33.02" smashed="yes">

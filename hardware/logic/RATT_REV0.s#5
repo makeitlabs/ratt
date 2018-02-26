@@ -533,7 +533,8 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <rectangle x1="-1.4605" y1="1.905" x2="-1.0795" y2="3.048" layer="51" rot="R180"/>
 <text x="-2.54" y="5.08" size="1.27" layer="25" font="vector" align="center-left">&gt;NAME</text>
 <text x="-2.54" y="-5.08" size="1.27" layer="27" font="vector" align="center-left">&gt;VALUE</text>
-<text x="-1.778" y="1.016" size="1.27" layer="21" font="vector" align="center-left">+ -</text>
+<text x="-1.5" y="0.9" size="0.85" layer="21" ratio="16">+</text>
+<text x="1" y="0.9" size="0.85" layer="21" ratio="16">-</text>
 </package>
 <package name="1.8TFT_CHI_2.0">
 <wire x1="22.6" y1="-16.891" x2="22.6" y2="16.891" width="0" layer="21"/>

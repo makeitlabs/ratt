@@ -8447,7 +8447,6 @@
 <wire x1="124.968" y1="17.78" x2="126.492" y2="17.78" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="10.16" x2="126.492" y2="10.16" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="2.54" x2="126.492" y2="2.54" width="0.3048" layer="21"/>
-<text x="45.3263" y="83.2612" size="2.54" layer="21" font="vector" ratio="16" rot="R90">RATT V1.0</text>
 <text x="2.54" y="2.032" size="1.27" layer="21" font="vector" ratio="16" rot="R90">A. Shrey</text>
 <text x="67.056" y="1.778" size="0.85" layer="21" ratio="16" rot="R180">https://github.com/makeitlabs/ratt/</text>
 <rectangle x1="52.657375" y1="13.122275" x2="52.663725" y2="13.128625" layer="21"/>
@@ -19170,12 +19169,10 @@
 <rectangle x1="63.566675" y1="20.805775" x2="63.674625" y2="20.812125" layer="21"/>
 <text x="90.424" y="3.302" size="1.016" layer="21" font="vector" ratio="16">Ver 1.0</text>
 <text x="90.424" y="1.778" size="1.016" layer="21" font="vector" ratio="16">2/26/2018</text>
-<polygon width="0.6096" layer="21">
-<vertex x="22.86" y="75.438"/>
-<vertex x="22.86" y="58.42"/>
-<vertex x="27.686" y="58.42"/>
-<vertex x="27.686" y="75.438"/>
-</polygon>
+<wire x1="22.86" y1="57.658" x2="22.86" y2="75.692" width="0.1524" layer="21"/>
+<wire x1="22.86" y1="75.692" x2="28.194" y2="75.692" width="0.1524" layer="21"/>
+<wire x1="28.194" y1="75.692" x2="28.194" y2="57.658" width="0.1524" layer="21"/>
+<wire x1="28.194" y1="57.658" x2="22.86" y2="57.658" width="0.1524" layer="21"/>
 </plain>
 <libraries>
 <library name="MakeItLabs">

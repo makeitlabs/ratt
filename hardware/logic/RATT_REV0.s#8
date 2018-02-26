@@ -10035,7 +10035,7 @@ Footprints per IPC-7351 Density Level B</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="AUDIOAMP_MAX98357" prefix="U" uservalue="yes">
+<deviceset name="AUDIOAMP_MAX98357" prefix="IC" uservalue="yes">
 <description>&lt;p&gt;&lt;b&gt;MAX98357&lt;/b&gt; - 3.2W I2S Mono Audio Amp&lt;/p&gt;</description>
 <gates>
 <gate name="G$1" symbol="MAX98357" x="0" y="0"/>
@@ -10988,7 +10988,7 @@ IC-09995</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="RCW-0C" prefix="TP">
+<deviceset name="RCW-0C" prefix="TP" uservalue="yes">
 <description>SMD Circuit Probe Pad&lt;br&gt;
 Test Pad&lt;br&gt;
 1206 Size</description>

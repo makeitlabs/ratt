@@ -58,7 +58,7 @@
 <layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="51" name="tDocu" color="14" fill="1" visible="no" active="yes"/>
+<layer number="51" name="tDocu" color="14" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
@@ -13137,25 +13137,24 @@ Chinafruit</text>
 <pad name="14" x="-23.85" y="14.17" drill="1.016" diameter="1.778" shape="octagon"/>
 <pad name="15" x="-23.85" y="16.71" drill="1.016" diameter="1.778" shape="octagon"/>
 <pad name="16" x="-23.85" y="19.25" drill="1.016" diameter="1.778" shape="octagon"/>
-<text x="-11.049" y="-14.8336" size="1.27" layer="21" font="vector">160x128 TFT display
+<text x="-10.033" y="-10.2616" size="1.27" layer="51" font="vector">160x128 TFT display
 Chinafruit 2.0</text>
-<text x="-19.05" y="-19.739" size="1.27" layer="21" font="vector">Gnd</text>
-<text x="-19.05" y="-17.199" size="1.27" layer="21" font="vector">VCC</text>
-<text x="-19.05" y="-7.039" size="1.27" layer="21" font="vector">RESET</text>
-<text x="-19.05" y="-4.499" size="1.27" layer="21" font="vector">A0</text>
-<text x="-19.05" y="-1.959" size="1.27" layer="21" font="vector">TFT_MOSI</text>
-<text x="-19.05" y="0.581" size="1.27" layer="21" font="vector">TFT_CLK</text>
-<text x="-19.05" y="3.121" size="1.27" layer="21" font="vector">TFT_CS</text>
-<text x="-19.05" y="5.661" size="1.27" layer="21" font="vector">SD_SCK</text>
-<text x="-19.05" y="8.201" size="1.27" layer="21" font="vector">SD_MISO</text>
-<text x="-19.05" y="10.741" size="1.27" layer="21" font="vector">SD_MOSI</text>
-<text x="-19.05" y="-14.659" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-12.119" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-9.579" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="13.281" size="1.27" layer="21" font="vector">SD_CS</text>
-<text x="-19.05" y="15.821" size="1.27" layer="21" font="vector">LED+</text>
-<text x="-19.05" y="18.361" size="1.27" layer="21" font="vector">LED-</text>
-<text x="-8.89" y="-20.32" size="1.27" layer="21">KMR-1.8 SPI</text>
+<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector">Gnd</text>
+<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector">VCC</text>
+<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector">RESET</text>
+<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector">A0</text>
+<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector">TFT_MOSI</text>
+<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector">TFT_CLK</text>
+<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector">TFT_CS</text>
+<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector">SD_SCK</text>
+<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector">SD_MISO</text>
+<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector">SD_MOSI</text>
+<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector">NC</text>
+<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector">NC</text>
+<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector">NC</text>
+<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector">SD_CS</text>
+<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector">LED+</text>
+<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector">LED-</text>
 <hole x="19.9" y="20.2" drill="3.3"/>
 <hole x="-21.1" y="-19.8" drill="3.3"/>
 <hole x="-21.1" y="20.2" drill="3.3"/>
@@ -15803,6 +15802,8 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
+<text x="-10.414" y="19.812" size="0.85" layer="25" ratio="16">&gt;NAME</text>
+<text x="-16.51" y="-20.574" size="0.85" layer="27" ratio="16">&gt;VALUE</text>
 </package>
 <package name="TSOT23-6">
 <description>&lt;b&gt;S6 Package 6-Lead Plastic TSOT-23&lt;/b&gt;&lt;p&gt;
