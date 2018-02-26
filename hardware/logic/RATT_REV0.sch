@@ -11894,7 +11894,7 @@ or by the Pi Module</text>
 <instance part="R14" gate="G$1" x="55.88" y="99.06"/>
 <instance part="SUPPLY25" gate="G$1" x="332.74" y="182.88"/>
 <instance part="SUPPLY86" gate="G$1" x="388.62" y="160.02"/>
-<instance part="J1" gate="G$1" x="111.76" y="40.64" rot="R180"/>
+<instance part="J1" gate="G$1" x="111.76" y="38.1" rot="MR0"/>
 <instance part="J7" gate="A" x="274.32" y="25.4"/>
 <instance part="SUPPLY94" gate="GND" x="297.18" y="22.86" smashed="yes">
 <attribute name="VALUE" x="295.275" y="19.685" size="1.778" layer="96"/>
@@ -12530,9 +12530,9 @@ or by the Pi Module</text>
 <wire x1="78.74" y1="38.1" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="1"/>
 <wire x1="101.6" y1="35.56" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="38.1" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
+<pinref part="J1" gate="G$1" pin="1"/>
+<wire x1="101.6" y1="38.1" x2="104.14" y2="38.1" width="0.1524" layer="91"/>
 <junction x="101.6" y="38.1"/>
-<pinref part="J1" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$7" class="0">
@@ -12541,9 +12541,9 @@ or by the Pi Module</text>
 <wire x1="73.66" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <pinref part="C4" gate="G$1" pin="1"/>
 <wire x1="93.98" y1="35.56" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
-<wire x1="93.98" y1="40.64" x2="104.14" y2="40.64" width="0.1524" layer="91"/>
+<pinref part="J1" gate="G$1" pin="2"/>
+<wire x1="104.14" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <junction x="93.98" y="40.64"/>
-<pinref part="J1" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$17" class="0">
