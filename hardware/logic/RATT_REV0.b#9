@@ -30,7 +30,7 @@
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
@@ -201,8 +201,8 @@
 <circle x="98.171" y="63.5" radius="3.81" width="0" layer="39"/>
 <circle x="98.171" y="12.7" radius="2.3876" width="0" layer="16"/>
 <rectangle x1="87.148" y1="37.846" x2="115.068" y2="46.736" layer="51"/>
-<text x="5.842" y="74.422" size="0.85" layer="21" ratio="16">+</text>
-<text x="2.794" y="74.422" size="0.85" layer="21" ratio="16">-</text>
+<text x="5.842" y="73.66" size="0.85" layer="21" ratio="16">+</text>
+<text x="3.048" y="73.66" size="0.85" layer="21" ratio="16">-</text>
 <rectangle x1="54.125" y1="65.975" x2="59.875" y2="78.375" layer="51" rot="R90"/>
 <rectangle x1="52.8193" y1="1.5875" x2="53.0987" y2="1.6129" layer="21"/>
 <rectangle x1="52.7431" y1="1.6129" x2="53.1749" y2="1.6383" layer="21"/>
@@ -13168,9 +13168,9 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="NAME" x="35.179" y="66.548" size="0.85" layer="25" font="vector" ratio="16" rot="R270"/>
 <attribute name="VALUE" x="31.712" y="66.675" size="0.85" layer="27" font="vector" ratio="16" rot="R270"/>
 </element>
-<element name="J1" library="MakeItLabs" package="MOLEX-1X2" value="" x="6.096" y="71.882" smashed="yes" rot="R180">
-<attribute name="NAME" x="1.016" y="72.39" size="0.85" layer="25" ratio="16" rot="R270"/>
-<attribute name="VALUE" x="7.366" y="75.692" size="0.85" layer="27" ratio="16" rot="R180"/>
+<element name="J1" library="MakeItLabs" package="MOLEX-1X2" value="" x="3.556" y="71.882" smashed="yes">
+<attribute name="NAME" x="8.636" y="71.374" size="0.85" layer="25" ratio="16" rot="R90"/>
+<attribute name="VALUE" x="2.286" y="68.072" size="0.85" layer="27" ratio="16"/>
 </element>
 <element name="J7" library="MakeItLabs" package="2X08_SHROUD" value="" x="101.092" y="42.291" smashed="yes" rot="R180">
 <attribute name="NAME" x="84.758" y="39.282" size="0.85" layer="25" ratio="16" rot="R270"/>
@@ -13501,8 +13501,8 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <wire x1="3.116" y1="64.114" x2="1.542" y2="64.114" width="0.6096" layer="1"/>
 <wire x1="1.542" y1="64.114" x2="1.456" y2="64.028" width="0.6096" layer="1"/>
 <wire x1="3.116" y1="64.114" x2="3.116" y2="71.442" width="0.6096" layer="1"/>
-<contactref element="J1" pad="2"/>
-<wire x1="3.116" y1="71.442" x2="3.556" y2="71.882" width="0.6096" layer="1"/>
+<contactref element="J1" pad="1"/>
+<wire x1="3.556" y1="71.882" x2="3.116" y2="71.442" width="0.6096" layer="1"/>
 </signal>
 <signal name="N$7">
 <contactref element="FB2" pad="2"/>
@@ -13510,8 +13510,8 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <wire x1="4.758" y1="64.078" x2="4.758" y2="69.274" width="0.6096" layer="1"/>
 <wire x1="6.418" y1="64.064" x2="4.772" y2="64.064" width="0.6096" layer="1"/>
 <wire x1="4.772" y1="64.064" x2="4.758" y2="64.078" width="0.6096" layer="1"/>
-<contactref element="J1" pad="1"/>
 <wire x1="4.758" y1="69.274" x2="6.096" y2="70.612" width="0.6096" layer="1"/>
+<contactref element="J1" pad="2"/>
 <wire x1="6.096" y1="70.612" x2="6.096" y2="71.882" width="0.6096" layer="1"/>
 </signal>
 <signal name="N$17">
