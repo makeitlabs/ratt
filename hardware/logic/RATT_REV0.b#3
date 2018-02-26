@@ -184,13 +184,14 @@
 </layers>
 <board>
 <plain>
-<wire x1="0" y1="0" x2="124.46" y2="0" width="0" layer="20"/>
+<wire x1="0" y1="2.54" x2="2.54" y2="0" width="0" layer="20" curve="90"/>
+<wire x1="2.54" y1="0" x2="124.46" y2="0" width="0" layer="20"/>
 <wire x1="124.46" y1="0" x2="127" y2="2.54" width="0" layer="20" curve="90"/>
 <wire x1="127" y1="2.54" x2="127" y2="73.66" width="0" layer="20"/>
 <wire x1="127" y1="73.66" x2="124.46" y2="76.2" width="0" layer="20" curve="90"/>
 <wire x1="124.46" y1="76.2" x2="2.54" y2="76.2" width="0" layer="20"/>
 <wire x1="2.54" y1="76.2" x2="0" y2="73.66" width="0" layer="20" curve="90"/>
-<wire x1="0" y1="73.66" x2="0" y2="0" width="0" layer="20"/>
+<wire x1="0" y1="73.66" x2="0" y2="2.54" width="0" layer="20"/>
 <hole x="18.796" y="63.5" drill="2.54"/>
 <hole x="18.796" y="12.7" drill="2.54"/>
 <circle x="18.796" y="63.5" radius="3.81" width="0" layer="39"/>
@@ -13368,7 +13369,8 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <polygon width="0.127" layer="1" rank="2">
 <vertex x="2.54" y="76.2" curve="90"/>
 <vertex x="0" y="73.66"/>
-<vertex x="0" y="0"/>
+<vertex x="0" y="2.54" curve="90"/>
+<vertex x="2.54" y="0"/>
 <vertex x="124.46" y="0" curve="90"/>
 <vertex x="127" y="2.54"/>
 <vertex x="127" y="73.66" curve="90"/>
@@ -13414,7 +13416,8 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <contactref element="J100" pad="30"/>
 <polygon width="0.127" layer="16" rank="2">
 <vertex x="0" y="73.66"/>
-<vertex x="0" y="0"/>
+<vertex x="0" y="2.54" curve="90"/>
+<vertex x="2.54" y="0"/>
 <vertex x="124.46" y="0" curve="90"/>
 <vertex x="127" y="2.54"/>
 <vertex x="127" y="73.66" curve="90"/>
