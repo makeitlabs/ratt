@@ -49,8 +49,11 @@ Item {
         }
         Label {
             color: "white"
-            text: "tftWindow size=" + tftWindow.width + "x" + tftWindow.height + " x,y=" + tftWindow.x + "," + tftWindow.y
             font.pixelSize: 10
+            Component.onCompleted: {
+                var gc = tftWindow.mapToGlobal(0, 0);
+                text = "tftWindow size=" + tftWindow.width + "x" + tftWindow.height + " x,y=" + gc.x + "," + gc.y;
+            }
         }
 
         Rectangle {
