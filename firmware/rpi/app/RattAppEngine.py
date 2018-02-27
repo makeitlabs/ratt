@@ -70,7 +70,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self.rfid.monitor()
 
-        self.testUpdateACL()
+        self.netWorker.fetchAcl()
 
     #@pyqtSlot()
     def tagScanHandler(self, tag, hash, time, debugText):
@@ -92,14 +92,7 @@ class RattAppEngine(QQmlApplicationEngine):
             print('unknown rfid tag')
 
 
-    @pyqtSlot()
-    def testUpdateACL(self):
-        print('testing acl download')
-        self.netWorker.get(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/acl')
-        #self.netWorker.get(url='http://jsonplaceholder.typicode.com/posts/1')
 
     @pyqtSlot()
     def testPostLog(self):
         print('testing log post')
-        self.netWorker.post(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/log')
-        #self.netWorker.post(url='http://jsonplaceholder.typicode.com/posts')

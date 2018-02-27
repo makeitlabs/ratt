@@ -61,6 +61,11 @@ class NetWorker(QObject):
         if self.ssl:
             self.configureCerts()
 
+    def fetchAcl(self):
+        print('downloading ACL')
+        self.get(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/acl')
+
+
     def searchAcl(self, hash):
         self.mutex.lock()
         found_record = []
@@ -93,6 +98,11 @@ class NetWorker(QObject):
 
         self.mutex.unlock()
         return hash
+
+    def log(self):
+        self.post(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/log')
+        #self.netWorker.post(url='http://jsonplaceholder.typicode.com/posts')
+
 
     def setAuth(self, user = '', password = ''):
         self.user = user

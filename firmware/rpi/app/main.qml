@@ -44,8 +44,8 @@ ApplicationWindow {
     id: appWindow
     visible: true
     color: "#004488"
-    width: 640
-    height: 480
+    width: 1024
+    height: 768
 
     RattSounds {
         id: sound
@@ -81,12 +81,15 @@ ApplicationWindow {
             Keys.onPressed: {
                 sound.keyAudio.play();
 
-                if (event.key === Qt.Key_Escape)
+                if (event.key === Qt.Key_Escape) {
+                    console.log("esc");
                     appWindow.close();
-                else if (event.key === Qt.Key_Down) {
-                    appEngine.testUpdateACL();
+                } else if (event.key === Qt.Key_Down) {
+                    console.log("down");
                 } else if (event.key === Qt.Key_Up) {
-                    appEngine.testPostLog();
+                    console.log("up");
+                } else if (event.key === Qt.Key_Return) {
+                    console.log("return");
                 }
             }
 
