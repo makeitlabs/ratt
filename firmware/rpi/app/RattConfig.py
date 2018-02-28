@@ -55,6 +55,10 @@ class RattConfig(QObject):
         return self.config['General.Debug']
 
     @pyqtProperty(str, notify=configChanged)
+    def Personality_Class(self):
+        return self.config['Personality.Class']
+
+    @pyqtProperty(str, notify=configChanged)
     def General_ToolDesc(self):
         return self.config['General.ToolDesc']
 
@@ -101,6 +105,8 @@ class RattConfig(QObject):
 
         self.addConfigBool('General', 'Debug')
         self.addConfig('General', 'ToolDesc')
+
+        self.addConfig('Personality', 'Class')
 
         self.addConfigBool('Auth', 'Debug')
         self.addConfig('Auth', 'ResourceId')

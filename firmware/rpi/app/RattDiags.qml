@@ -55,6 +55,12 @@ Item {
             }
         }
 
+        Label {
+            color: "cyan"
+            text: "personality=" + config.Personality_Class
+            font.pixelSize: 12
+        }
+
         Rectangle {
             id: aclRect
             color: "#444444"

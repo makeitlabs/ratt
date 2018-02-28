@@ -43,6 +43,7 @@ from RattConfig import RattConfig
 from NetWorker import NetWorker
 from RFID import RFID
 from MemberRecord import MemberRecord
+import sys
 
 class RattAppEngine(QQmlApplicationEngine):
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
@@ -52,6 +53,7 @@ class RattAppEngine(QQmlApplicationEngine):
         QQmlApplicationEngine.__init__(self)
 
         self.config = RattConfig()
+        self.__initPersonality__()
 
         self.netWorker = NetWorker(authDebug=self.config.value('Auth.Debug'))
         self.netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
@@ -83,6 +85,21 @@ class RattAppEngine(QQmlApplicationEngine):
         self.rfid.monitor()
 
         self.netWorker.fetchAcl()
+
+    def __initPersonality__(self):
+        personalities = ['PersonalitySimpleMotor', 'PersonalityLaserCutter', 'PersonalityAutoLift']
+
+        personalityClass = 'Personality' + self.config.value('Personality.Class')
+
+        try:
+            sys.path.append('personalities')
+            module = __import__(personalityClass)
+
+            self.personality = module.Personality()
+        except:
+            print('could not establish personality: ' + personalityClass)
+            exit(-1)
+
 
 
 

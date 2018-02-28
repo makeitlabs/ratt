@@ -44,4 +44,11 @@ DISTFILES += \
     RattDiags.qml \
     RattSounds.qml \
     RattConfig.py \
-    ratt.ini
+    ratt.ini \
+    PersonalityBase.py \
+    PersonalitySimpleMotor.py \
+    PersonalityLaserCutter.py \
+    personalities/PersonalityAutoLift.py \
+    personalities/PersonalityBase.py \
+    personalities/PersonalityLaserCutter.py \
+    personalities/PersonalitySimpleMotor.py
