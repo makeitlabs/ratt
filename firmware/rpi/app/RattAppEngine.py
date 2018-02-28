@@ -44,8 +44,6 @@ from NetWorker import NetWorker
 from RFID import RFID
 from MemberRecord import MemberRecord
 
-import ConfigParser
-
 class RattAppEngine(QQmlApplicationEngine):
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
@@ -53,15 +51,19 @@ class RattAppEngine(QQmlApplicationEngine):
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
+        self.config = RattConfig()
 
         self.netWorker = NetWorker()
-        self.netWorker.setAuth(user='api', password='s33krit')
 
-        self.rfid = RFID("/dev/ttyAMA0")
+        self.netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'), password=self.config.value('Auth.HttpAuthPassword'))
+        self.netWorker.setUrls(acl=self.config.value('Auth.AclUrl'), log=self.config.value('Auth.LogUrl'))
+
+        self.rfid = RFID(self.config.value('RFID.SerialPort'))
 
         self.activeMemberRecord = MemberRecord()
 
         self.rootContext().setContextProperty("appEngine", self)
+        self.rootContext().setContextProperty("config", self.config)
         self.rootContext().setContextProperty("netWorker", self.netWorker)
         self.rootContext().setContextProperty("rfid", self.rfid)
         self.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)

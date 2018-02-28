@@ -43,4 +43,5 @@ DISTFILES += \
     MemberRecord.py \
     RattDiags.qml \
     RattSounds.qml \
-    RattConfig.py
+    RattConfig.py \
+    ratt.ini

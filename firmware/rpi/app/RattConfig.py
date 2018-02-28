@@ -36,16 +36,55 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-
-
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty
+import ConfigParser
 
 class RattConfig(QObject):
+    configChanged = pyqtSignal()
 
     def __init__(self):
         QObject.__init__(self)
-        self.initConfig()
+        self.loadConfig()
 
-    def initConfig(self):
-        self.resourceId = ''
-        self.resourceDescription = ''
+    def DEBUG(self):
+        return (self.config['General.Debug'] == "True")
+
+    @pyqtProperty(str, notify=configChanged)
+    def ToolDesc(self):
+        return self.config['General.ToolDesc']
+
+
+    def value(self, key):
+        return self.config[key]
+
+    def addConfig(self, section, key):
+        self.config['%s.%s' % (section, key)] = self.parser.get(section, key)
+
+    def loadConfig(self):
+        defaults = {}
+        self.parser = ConfigParser.ConfigParser(defaults)
+        self.parser.read('ratt.ini')
+
+        self.config = { }
+
+        self.addConfig('General', 'Debug')
+        self.addConfig('General', 'ToolDesc')
+
+        self.addConfig('Auth', 'ResourceId')
+        self.addConfig('Auth', 'AclUrl')
+        self.addConfig('Auth', 'LogUrl')
+        self.addConfig('Auth', 'HttpAuthUser')
+        self.addConfig('Auth', 'HttpAuthPassword')
+
+        self.addConfig('RFID', 'SerialPort')
+
+        self.configChanged.emit()
+
+        if self.DEBUG():
+            print(self.config)
+
+
+
+
+
+

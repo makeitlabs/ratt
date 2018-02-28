@@ -56,14 +56,16 @@ class NetWorker(QObject):
         self.ssl = QSslSocket.supportsSsl()
 
         self.setAuth()
+        self.setUrls()
         self.setCertFiles()
-        
+
+
         if self.ssl:
             self.configureCerts()
 
     def fetchAcl(self):
-        print('downloading ACL')
-        self.get(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/acl')
+        print('downloading ACL from ' + self.AclUrl)
+        self.get(url=self.AclUrl)
 
 
     def searchAcl(self, hash):
@@ -100,9 +102,12 @@ class NetWorker(QObject):
         return hash
 
     def log(self):
-        self.post(url='http://192.168.0.170:5000/api/v1/resources/tormach_1100/log')
-        #self.netWorker.post(url='http://jsonplaceholder.typicode.com/posts')
+        print('logging to ' + self.LogUrl)
+        self.post(url=self.LogUrl)
 
+    def setUrls(self, acl = '', log = ''):
+        self.AclUrl = acl
+        self.LogUrl = log
 
     def setAuth(self, user = '', password = ''):
         self.user = user
