@@ -37,7 +37,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
-import QtMultimedia 5.9
+import QtMultimedia 5.5
 import RATT 1.0
 
 Item {
