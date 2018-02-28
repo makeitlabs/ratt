@@ -59,8 +59,11 @@ class RattAppEngine(QQmlApplicationEngine):
                                         clientCertFile=self.config.value('SSL.ClientCertFile'),
                                         clientKeyFile=self.config.value('SSL.ClientKeyFile'))
 
-        self.netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'), password=self.config.value('Auth.HttpAuthPassword'))
-        self.netWorker.setUrls(acl=self.config.value('Auth.AclUrl'), log=self.config.value('Auth.LogUrl'))
+        self.netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
+                               password=self.config.value('Auth.HttpAuthPassword'))
+
+        self.netWorker.setUrls(acl=self.config.value('Auth.AclUrl'),
+                               log=self.config.value('Auth.LogUrl'))
 
         self.rfid = RFID(self.config.value('RFID.SerialPort'))
 

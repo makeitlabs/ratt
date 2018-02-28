@@ -111,11 +111,13 @@ class NetWorker(QObject):
 
     def setSSLCertConfig(self, enabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
         self.sslEnabled = enabled
-        self.caCertFile = caCertFile
-        self.clientCertFile = clientCertFile
-        self.clientKeyFile = clientKeyFile
 
         if self.sslSupported and self.sslEnabled:
+            print('SSL enabled')
+            self.caCertFile = caCertFile
+            self.clientCertFile = clientCertFile
+            self.clientKeyFile = clientKeyFile
+
             self.configureCerts()
 
     def post(self, url):

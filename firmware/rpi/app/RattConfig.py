@@ -47,7 +47,7 @@ class RattConfig(QObject):
         self.loadConfig()
 
     def DEBUG(self):
-        return (self.config['General.Debug'] == "True")
+        return self.config['General.Debug']
 
     @pyqtProperty(str, notify=configChanged)
     def ToolDesc(self):
@@ -59,6 +59,15 @@ class RattConfig(QObject):
     def addConfig(self, section, key):
         self.config['%s.%s' % (section, key)] = self.parser.get(section, key)
 
+    def addConfigBool(self, section, key):
+            self.config['%s.%s' % (section, key)] = self.parser.getboolean(section, key)
+
+    def addConfigInt(self, section, key):
+            self.config['%s.%s' % (section, key)] = self.parser.getint(section, key)
+
+    def addConfigFloat(self, section, key):
+            self.config['%s.%s' % (section, key)] = self.parser.getfloat(section, key)
+
     def loadConfig(self):
         defaults = {}
         self.parser = ConfigParser.ConfigParser(defaults)
@@ -66,7 +75,7 @@ class RattConfig(QObject):
 
         self.config = { }
 
-        self.addConfig('General', 'Debug')
+        self.addConfigBool('General', 'Debug')
         self.addConfig('General', 'ToolDesc')
 
         self.addConfig('Auth', 'ResourceId')
@@ -75,7 +84,7 @@ class RattConfig(QObject):
         self.addConfig('Auth', 'HttpAuthUser')
         self.addConfig('Auth', 'HttpAuthPassword')
 
-        self.addConfig('SSL', 'Enabled')
+        self.addConfigBool('SSL', 'Enabled')
         self.addConfig('SSL', 'CaCertFile')
         self.addConfig('SSL', 'ClientCertFile')
         self.addConfig('SSL', 'ClientKeyFile')
