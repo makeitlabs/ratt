@@ -130,7 +130,7 @@ Rectangle {
         }
         Label {
             Layout.fillWidth: true
-            text: config.ToolDesc
+            text: config.General_ToolDesc
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
             font.weight: Font.DemiBold

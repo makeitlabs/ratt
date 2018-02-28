@@ -36,7 +36,7 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty
+from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 import ConfigParser
 
 class RattConfig(QObject):
@@ -46,12 +46,36 @@ class RattConfig(QObject):
         QObject.__init__(self)
         self.loadConfig()
 
-    def DEBUG(self):
+    #---------------------------------------------------------------------------------------------
+    # if any config variables need to be exposed to QML they need to be defined here as properties
+    # naming convention to translate from "Section.Key" is to name the property "Section_Key"
+    #
+    @pyqtProperty(QVariant, notify=configChanged)
+    def General_Debug(self):
         return self.config['General.Debug']
 
     @pyqtProperty(str, notify=configChanged)
-    def ToolDesc(self):
+    def General_ToolDesc(self):
         return self.config['General.ToolDesc']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_KeyPress(self):
+        return self.config['Sound.KeyPress']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_RFIDSuccess(self):
+        return self.config['Sound.RFIDSuccess']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_RFIDFailure(self):
+        return self.config['Sound.RFIDFailure']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_RFIDError(self):
+        return self.config['Sound.RFIDError']
+    #---------------------------------------------------------------------------------------------
+
+
 
     def value(self, key):
         return self.config[key]
@@ -78,6 +102,7 @@ class RattConfig(QObject):
         self.addConfigBool('General', 'Debug')
         self.addConfig('General', 'ToolDesc')
 
+        self.addConfigBool('Auth', 'Debug')
         self.addConfig('Auth', 'ResourceId')
         self.addConfig('Auth', 'AclUrl')
         self.addConfig('Auth', 'LogUrl')
@@ -89,12 +114,18 @@ class RattConfig(QObject):
         self.addConfig('SSL', 'ClientCertFile')
         self.addConfig('SSL', 'ClientKeyFile')
 
-
+        self.addConfigBool('RFID', 'Debug')
         self.addConfig('RFID', 'SerialPort')
+
+        self.addConfig('Sound', 'KeyPress')
+        self.addConfig('Sound', 'RFIDSuccess')
+        self.addConfig('Sound', 'RFIDFailure')
+        self.addConfig('Sound', 'RFIDError')
+
 
         self.configChanged.emit()
 
-        if self.DEBUG():
+        if self.General_Debug:
             print(self.config)
 
 

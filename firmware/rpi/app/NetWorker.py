@@ -45,8 +45,10 @@ class NetWorker(QObject):
     aclUpdate = pyqtSignal(int, int, str, name='aclUpdate', arguments=['total', 'active', 'hash'])
     aclUpdateError = pyqtSignal(name='aclUpdateError')
 
-    def __init__(self):
+    def __init__(self, authDebug=False):
         QObject.__init__(self)
+
+        self.authDebug = authDebug
 
         self.mutex = QMutex()
         self.acl = json.loads('[]')
@@ -60,7 +62,8 @@ class NetWorker(QObject):
         self.setSSLCertConfig()
 
     def fetchAcl(self):
-        print('downloading ACL from ' + self.AclUrl)
+        if self.authDebug:
+            print('downloading ACL from ' + self.AclUrl)
         self.get(url=self.AclUrl)
 
 
@@ -98,7 +101,8 @@ class NetWorker(QObject):
         return hash
 
     def log(self):
-        print('logging to ' + self.LogUrl)
+        if self.authDebug:
+            print('logging to ' + self.LogUrl)
         self.post(url=self.LogUrl)
 
     def setUrls(self, acl = '', log = ''):
@@ -113,7 +117,8 @@ class NetWorker(QObject):
         self.sslEnabled = enabled
 
         if self.sslSupported and self.sslEnabled:
-            print('SSL enabled')
+            if self.authDebug:
+                print('SSL enabled')
             self.caCertFile = caCertFile
             self.clientCertFile = clientCertFile
             self.clientKeyFile = clientKeyFile
@@ -170,7 +175,8 @@ class NetWorker(QObject):
 
 
     def handlePostResponse(self, reply):
-        print('handlePostResponse')
+        if self.authDebug:
+            print('handlePostResponse')
         error = reply.error()
 
         if error == QNetworkReply.NoError:
@@ -187,7 +193,8 @@ class NetWorker(QObject):
 
 
     def handleGetResponse(self, reply):
-        print('handleGetResponse')
+        if self.authDebug:
+            print('handleGetResponse')
         error = reply.error()
 
         if error == QNetworkReply.NoError:
@@ -204,7 +211,8 @@ class NetWorker(QObject):
                 active = self.countAclActive()
                 hash = self.hashAcl()
 
-                print('json acl with %d entries, %d active, hash=%s' % (total, active, hash))
+                if self.authDebug:
+                    print('json acl with %d entries, %d active, hash=%s' % (total, active, hash))
 
                 self.aclUpdate.emit(total, active, hash)
             except:
@@ -247,6 +255,3 @@ class NetWorker(QObject):
         caCertList = self.sslConfig.caCertificates()
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
-        
-        
-

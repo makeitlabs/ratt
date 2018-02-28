@@ -45,19 +45,19 @@ Item {
 
     SoundEffect {
         id: keyAudio
-        source: "audio/sfx013.wav"
+        source: config.Sound_KeyPress
     }
     SoundEffect {
         id: rfidSuccessAudio
-        source: "audio/sfx061.wav"
+        source: config.Sound_RFIDSuccess
     }
     SoundEffect {
         id: rfidFailureAudio
-        source: "audio/sfx033.wav"
+        source: config.Sound_RFIDFailure
     }
     SoundEffect {
         id: rfidErrorAudio
-        source: "audio/sfx033.wav"
+        source: config.Sound_RFIDError
     }
 
     Connections {

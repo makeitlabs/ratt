@@ -54,8 +54,10 @@ class RFID(QThread):
     def errChecksum(self):
         return -2
 
-    def __init__(self, portName):
+    def __init__(self, portName='', debug=False):
         QThread.__init__(self)
+
+        self.debug = debug
 
         self.cond = QWaitCondition()
         self.mutex = QMutex()
