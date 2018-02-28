@@ -39,6 +39,7 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant
 from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
+from RattConfig import RattConfig
 from NetWorker import NetWorker
 from RFID import RFID
 from MemberRecord import MemberRecord
@@ -51,6 +52,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
+
 
         self.netWorker = NetWorker()
         self.netWorker.setAuth(user='api', password='s33krit')
@@ -72,7 +74,8 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self.netWorker.fetchAcl()
 
-    #@pyqtSlot()
+
+
     def tagScanHandler(self, tag, hash, time, debugText):
         print('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
 
@@ -91,8 +94,3 @@ class RattAppEngine(QQmlApplicationEngine):
             self.invalidScan.emit('unknown rfid tag')
             print('unknown rfid tag')
 
-
-
-    @pyqtSlot()
-    def testPostLog(self):
-        print('testing log post')

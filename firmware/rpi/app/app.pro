@@ -42,4 +42,5 @@ DISTFILES += \
     LICENSE \
     MemberRecord.py \
     RattDiags.qml \
-    RattSounds.qml
+    RattSounds.qml \
+    RattConfig.py
