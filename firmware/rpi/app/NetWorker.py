@@ -53,15 +53,11 @@ class NetWorker(QObject):
 
         self.mgr = QNetworkAccessManager()
         self.sslConfig = QSslConfiguration()
-        self.ssl = QSslSocket.supportsSsl()
+        self.sslSupported = QSslSocket.supportsSsl()
 
         self.setAuth()
         self.setUrls()
-        self.setCertFiles()
-
-
-        if self.ssl:
-            self.configureCerts()
+        self.setSSLCertConfig()
 
     def fetchAcl(self):
         print('downloading ACL from ' + self.AclUrl)
@@ -113,10 +109,14 @@ class NetWorker(QObject):
         self.user = user
         self.password = password
 
-    def setCertFiles(self, caCertFile = '/etc/ssl/cacert.pem', clientCertFile = '/etc/ssl/client_cert.pem', clientKeyFile = '/etc/ssl/client_key.pem'):
+    def setSSLCertConfig(self, enabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
+        self.sslEnabled = enabled
         self.caCertFile = caCertFile
         self.clientCertFile = clientCertFile
         self.clientKeyFile = clientKeyFile
+
+        if self.sslSupported and self.sslEnabled:
+            self.configureCerts()
 
     def post(self, url):
         # there must be a nicer way to build the request
@@ -135,7 +135,7 @@ class NetWorker(QObject):
         self.mgr.finished.connect(self.handlePostResponse)
         self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
 
-        if self.ssl:
+        if self.sslSupported and self.sslEnabled:
             self.mgr.sslErrors.connect(self.handleSSLErrors)
             req.setSslConfiguration(self.sslConfig)
 
@@ -148,7 +148,7 @@ class NetWorker(QObject):
         self.mgr.finished.connect(self.handleGetResponse)
         self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
 
-        if self.ssl:
+        if self.sslSupported and self.sslEnabled:
             self.mgr.sslErrors.connect(self.handleSSLErrors)
             req.setSslConfiguration(self.sslConfig)
 
@@ -180,7 +180,7 @@ class NetWorker(QObject):
 
         self.mgr.finished.disconnect(self.handlePostResponse)
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
-        if self.ssl:
+        if self.sslSupported and self.sslEnabled:
             self.mgr.sslErrors.disconnect(self.handleSSLErrors)
 
 
@@ -216,7 +216,7 @@ class NetWorker(QObject):
 
         self.mgr.finished.disconnect(self.handleGetResponse)
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
-        if self.ssl:
+        if self.sslSupported and self.sslEnabled:
             self.mgr.sslErrors.disconnect(self.handleSSLErrors)
             
     def configureCerts(self):

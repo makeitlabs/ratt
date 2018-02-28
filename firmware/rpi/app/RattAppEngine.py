@@ -54,6 +54,10 @@ class RattAppEngine(QQmlApplicationEngine):
         self.config = RattConfig()
 
         self.netWorker = NetWorker()
+        self.netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
+                                        caCertFile=self.config.value('SSL.CaCertFile'),
+                                        clientCertFile=self.config.value('SSL.ClientCertFile'),
+                                        clientKeyFile=self.config.value('SSL.ClientKeyFile'))
 
         self.netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'), password=self.config.value('Auth.HttpAuthPassword'))
         self.netWorker.setUrls(acl=self.config.value('Auth.AclUrl'), log=self.config.value('Auth.LogUrl'))

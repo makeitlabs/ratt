@@ -53,7 +53,6 @@ class RattConfig(QObject):
     def ToolDesc(self):
         return self.config['General.ToolDesc']
 
-
     def value(self, key):
         return self.config[key]
 
@@ -75,6 +74,12 @@ class RattConfig(QObject):
         self.addConfig('Auth', 'LogUrl')
         self.addConfig('Auth', 'HttpAuthUser')
         self.addConfig('Auth', 'HttpAuthPassword')
+
+        self.addConfig('SSL', 'Enabled')
+        self.addConfig('SSL', 'CaCertFile')
+        self.addConfig('SSL', 'ClientCertFile')
+        self.addConfig('SSL', 'ClientKeyFile')
+
 
         self.addConfig('RFID', 'SerialPort')
 
