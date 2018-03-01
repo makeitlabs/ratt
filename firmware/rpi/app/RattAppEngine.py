@@ -87,8 +87,6 @@ class RattAppEngine(QQmlApplicationEngine):
         self.netWorker.fetchAcl()
 
     def __initPersonality__(self):
-        personalities = ['PersonalitySimpleMotor', 'PersonalityLaserCutter', 'PersonalityAutoLift']
-
         personalityClass = 'Personality' + self.config.value('Personality.Class')
 
         try:
