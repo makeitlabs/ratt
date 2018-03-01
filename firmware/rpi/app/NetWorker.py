@@ -216,7 +216,7 @@ class NetWorker(QObject):
 
             
         else:
-            self.logger.error('NetWorker response error: %s (%s)', (error, reply.errorString()))
+            self.logger.error('NetWorker response error: %s (%s)' % (error, reply.errorString()))
 
         self.mgr.finished.disconnect(self.handleGetResponse)
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
