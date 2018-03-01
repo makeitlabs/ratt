@@ -38,6 +38,8 @@
 
 from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, pyqtSignal
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
+from Logger import Logger
+import logging
 import simplejson as json
 import hashlib
 
@@ -45,13 +47,13 @@ class NetWorker(QObject):
     aclUpdate = pyqtSignal(int, int, str, name='aclUpdate', arguments=['total', 'active', 'hash'])
     aclUpdateError = pyqtSignal(name='aclUpdateError')
 
-    def __init__(self, logger, authDebug=False):
+    def __init__(self, loglevel='WARNING'):
         QObject.__init__(self)
-        self.logger = logger
-        self.debug = authDebug
 
-        if self.debug:
-            self.logger.info('NetWorker debug enabled')
+        self.logger = Logger(name='ratt.networker')
+        self.logger.setLogLevelStr(loglevel)
+        self.debug = self.logger.isDebug()
+
 
         self.mutex = QMutex()
         self.acl = json.loads('[]')

@@ -107,15 +107,18 @@ class RattConfig(QObject):
 
         self.config = { }
 
-        self.addConfigBool('General', 'Debug')
         self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
 
         self.addConfig('Log', 'File')
+        self.addConfigBool('Log', 'Console')
+        self.addConfigBool('Log', 'Qt')
+        self.addConfigBool('Log', 'QtVerbose')
+        self.addConfig('Log', 'LogLevel')
 
         self.addConfig('Personality', 'Class')
 
-        self.addConfigBool('Auth', 'Debug')
+        self.addConfig('Auth', 'LogLevel')
         self.addConfig('Auth', 'ResourceId')
         self.addConfig('Auth', 'AclUrl')
         self.addConfig('Auth', 'LogUrl')
@@ -127,7 +130,7 @@ class RattConfig(QObject):
         self.addConfig('SSL', 'ClientCertFile')
         self.addConfig('SSL', 'ClientKeyFile')
 
-        self.addConfigBool('RFID', 'Debug')
+        self.addConfig('RFID', 'LogLevel')
         self.addConfig('RFID', 'SerialPort')
 
         self.addConfig('Sound', 'KeyPress')

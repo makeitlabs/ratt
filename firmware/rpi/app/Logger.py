@@ -41,27 +41,59 @@ from PyQt5.QtCore import qDebug, QtInfoMsg, QtWarningMsg, QtCriticalMsg, QtFatal
 import logging
 
 class Logger():
-    def __init__(self, name='Logger', filename='logger.log'):
-        qInstallMessageHandler(self.qtDebugHandler)
+    def __init__(self, name, filename='', stream=False,
+                 flevel=logging.INFO, slevel=logging.DEBUG, mlevel=logging.NOTSET,
+                 qt=False, qtlevel=logging.INFO, qtVerbose=False):
 
         self.log = logging.getLogger(name)
+        self.log.setLevel(mlevel)
 
-        self.handler = logging.FileHandler(filename)
+        # create a logfile handler only if filename is set
+        if filename != '':
+            self.handler = logging.FileHandler(filename)
 
-        fmt = logging.Formatter('%(asctime)s: %(levelname)s %(message)s')
-        self.handler.setFormatter(fmt)
+            fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
+            self.handler.setFormatter(fmt)
 
-        self.handler.setLevel(logging.INFO)
-        self.log.addHandler(self.handler)
+            self.handler.setLevel(flevel)
+            self.log.addHandler(self.handler)
+
+        # create a stream stdout handler only if enabled
+        if stream:
+            console = logging.StreamHandler()
+            console.setLevel(slevel)
+            fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
+            console.setFormatter(fmt)
+            logging.getLogger('').addHandler(console)
+
+            self.log.setLevel(logging.DEBUG)
+
+        if qt:
+            self.qtlog = logging.getLogger(name + '.qt')
+            self.qtlog.setLevel(qtlevel)
+            if qtVerbose:
+                qInstallMessageHandler(self.qtVerboseDebugHandler)
+            else:
+                qInstallMessageHandler(self.qtDebugHandler)
 
 
-        console = logging.StreamHandler()
-        console.setLevel(logging.DEBUG)
-        fmt = logging.Formatter('%(name)s: %(levelname)-8s %(message)s')
-        console.setFormatter(fmt)
-        logging.getLogger('').addHandler(console)
+    def setLogLevelStr(self, levelstr, fallback=logging.WARNING):
+        try:
+            loglevel = eval('logging.' + levelstr)
+            self.log.setLevel(loglevel)
+            return True
+        except:
+            self.log.setLevel(fallback)
+            return False
 
-        self.log.setLevel(logging.DEBUG)
+    def isDebug(self):
+        dbg = bool(self.log.getEffectiveLevel() == logging.DEBUG)
+        if dbg:
+            self.log.debug("debug enabled")
+        return dbg
+
+
+
 
     def info(self, msg, *args, **kwargs):
         self.log.info(msg, *args, **kwargs)
@@ -82,15 +114,27 @@ class Logger():
         self.log.debug(msg, *args, **kwargs)
 
     def qtDebugHandler(self, mode, context, message):
-        msg = '(Qt line: %d, func: %s(), file: %s): %s' % (context.line, context.function, context.file, message)
+        if mode == QtInfoMsg:
+            self.qtlog.info(message)
+        elif mode == QtWarningMsg:
+            self.qtlog.warning(message)
+        elif mode == QtCriticalMsg:
+            self.qtlog.critical(message)
+        elif mode == QtFatalMsg:
+            self.qtlog.error(message)
+        else:
+            self.qtlog.debug(message)
+
+    def qtVerboseDebugHandler(self, mode, context, message):
+        msg = '[line %d, func %s(), file %s]: %s' % (context.line, context.function, context.file, message)
 
         if mode == QtInfoMsg:
-            self.info(msg)
+            self.qtlog.info(msg)
         elif mode == QtWarningMsg:
-            self.warning(msg)
+            self.qtlog.warning(msg)
         elif mode == QtCriticalMsg:
-            self.critical(msg)
+            self.qtlog.critical(msg)
         elif mode == QtFatalMsg:
-            self.error(msg)
+            self.qtlog.error(msg)
         else:
-            self.debug(msg)
+            self.qtlog.debug(msg)

@@ -53,10 +53,19 @@ class RattAppEngine(QQmlApplicationEngine):
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
+        # load the config
         self.config = RattConfig()
-        self.logger = Logger(name='RATT', filename=self.config.value('Log.File'))
-        self.logger.info('Initializing RATT System')
 
+        # create parent logger which will optionally log to file and console, and opionally enable Qt logging
+        self.logger = Logger(name='ratt',
+                             filename=self.config.value('Log.File'), stream=self.config.value('Log.Console'),
+                             qt=self.config.value('Log.Qt'), qtVerbose=self.config.value('Log.QtVerbose'))
+        self.logger.setLogLevelStr(self.config.value('Log.LogLevel'))
+        self.logger.info('Initializing RATT System')
+        self.debug = self.logger.isDebug()
+
+
+        # iniialize the node personality and the other necessary modules
         self.__initPersonality__()
         self.__initSystem__()
 
@@ -70,7 +79,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
         qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
 
-
+        # temporary for test; will move to a state machine eventually
         self.netWorker.fetchAcl()
 
     def __initPersonality__(self):
@@ -90,7 +99,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
     def __initSystem__(self):
         # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
-        self.netWorker = NetWorker(logger=self.logger, authDebug=self.config.value('Auth.Debug'))
+        self.netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'))
         self.netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
                                         caCertFile=self.config.value('SSL.CaCertFile'),
                                         clientCertFile=self.config.value('SSL.ClientCertFile'),
@@ -103,9 +112,8 @@ class RattAppEngine(QQmlApplicationEngine):
                                log=self.config.value('Auth.LogUrl'))
 
         # RFID reader
-        self.rfid = RFID(logger=self.logger,
-                         portName=self.config.value('RFID.SerialPort'),
-                         debug=self.config.value('RFID.Debug'))
+        self.rfid = RFID(portName=self.config.value('RFID.SerialPort'),
+                         loglevel=self.config.value('RFID.LogLevel'))
 
         # connect tagScan signal to our handler slot
         self.rfid.tagScan.connect(self.tagScanHandler)
