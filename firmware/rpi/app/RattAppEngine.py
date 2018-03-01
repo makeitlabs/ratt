@@ -43,6 +43,7 @@ from RattConfig import RattConfig
 from NetWorker import NetWorker
 from RFID import RFID
 from MemberRecord import MemberRecord
+from Logger import Logger
 import sys
 
 class RattAppEngine(QQmlApplicationEngine):
@@ -53,9 +54,43 @@ class RattAppEngine(QQmlApplicationEngine):
         QQmlApplicationEngine.__init__(self)
 
         self.config = RattConfig()
-        self.__initPersonality__()
+        self.logger = Logger(name='RATT', filename=self.config.value('Log.File'))
+        self.logger.info('Initializing RATT System')
 
-        self.netWorker = NetWorker(authDebug=self.config.value('Auth.Debug'))
+        self.__initPersonality__()
+        self.__initSystem__()
+
+        # create context properties so certain objects can be accessed from QML
+        self.rootContext().setContextProperty("appEngine", self)
+        self.rootContext().setContextProperty("config", self.config)
+        self.rootContext().setContextProperty("personality", self.personality)
+        self.rootContext().setContextProperty("netWorker", self.netWorker)
+        self.rootContext().setContextProperty("rfid", self.rfid)
+        self.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
+
+        qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
+
+
+        self.netWorker.fetchAcl()
+
+    def __initPersonality__(self):
+        # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
+        # implementation for a given tool
+        personalityClass = 'Personality' + self.config.value('Personality.Class')
+
+        try:
+            sys.path.append('personalities')
+            module = __import__(personalityClass)
+
+            self.personality = module.Personality(logger=self.logger)
+        except:
+            self.logger.error('could not establish personality: ' + personalityClass)
+            exit(-1)
+
+
+    def __initSystem__(self):
+        # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
+        self.netWorker = NetWorker(logger=self.logger, authDebug=self.config.value('Auth.Debug'))
         self.netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
                                         caCertFile=self.config.value('SSL.CaCertFile'),
                                         clientCertFile=self.config.value('SSL.ClientCertFile'),
@@ -67,42 +102,20 @@ class RattAppEngine(QQmlApplicationEngine):
         self.netWorker.setUrls(acl=self.config.value('Auth.AclUrl'),
                                log=self.config.value('Auth.LogUrl'))
 
-        self.rfid = RFID(portName=self.config.value('RFID.SerialPort'),
+        # RFID reader
+        self.rfid = RFID(logger=self.logger,
+                         portName=self.config.value('RFID.SerialPort'),
                          debug=self.config.value('RFID.Debug'))
 
-        self.activeMemberRecord = MemberRecord()
-
-        self.rootContext().setContextProperty("appEngine", self)
-        self.rootContext().setContextProperty("config", self.config)
-        self.rootContext().setContextProperty("netWorker", self.netWorker)
-        self.rootContext().setContextProperty("rfid", self.rfid)
-        self.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
-
-        qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
-
+        # connect tagScan signal to our handler slot
         self.rfid.tagScan.connect(self.tagScanHandler)
-
         self.rfid.monitor()
 
-        self.netWorker.fetchAcl()
-
-    def __initPersonality__(self):
-        personalityClass = 'Personality' + self.config.value('Personality.Class')
-
-        try:
-            sys.path.append('personalities')
-            module = __import__(personalityClass)
-
-            self.personality = module.Personality()
-        except:
-            print('could not establish personality: ' + personalityClass)
-            exit(-1)
-
-
-
+        # holds the currently active member record after RFID scan and ACL lookup
+        self.activeMemberRecord = MemberRecord()
 
     def tagScanHandler(self, tag, hash, time, debugText):
-        print('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
+        self.logger.debug('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
 
         result = self.netWorker.searchAcl(hash)
 
@@ -112,10 +125,10 @@ class RattAppEngine(QQmlApplicationEngine):
             if success:
                 self.validScan.emit(self.activeMemberRecord)
             else:
-                self.invalidScan.emit('could not create MemberRecord')
-                print('error making member record')
+                self.invalidScan.emit('error creating MemberRecord')
+                self.logger.error('error creating MemberRecord')
         else:
             self.activeMemberRecord.clearRecord()
             self.invalidScan.emit('unknown rfid tag')
-            print('unknown rfid tag')
+            self.logger.info('unknown rfid tag')
 

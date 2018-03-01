@@ -144,7 +144,6 @@ Item {
 
                     var errText = "Unknown error";
 
-                    console.log("error = " + error);
                     if (error === rfid.errPacket)
                         errText = "Packet structure error";
                     else if (error === rfid.errChecksum)
@@ -204,7 +203,6 @@ Item {
                     lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
                 }
                 onInvalidScan: {
-                    console.log("invalid scan")
                     lookupRect.border.color = "#999900"
                     invalidReason.text = reason;
                 }

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # --------------------------------------------------------------------------
 #  _____       ______________
@@ -37,14 +36,61 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-import sys
-from PyQt5.QtGui import QGuiApplication
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QUrl
-from RattAppEngine import RattAppEngine
+from PyQt5.QtCore import qInstallMessageHandler
+from PyQt5.QtCore import qDebug, QtInfoMsg, QtWarningMsg, QtCriticalMsg, QtFatalMsg
+import logging
 
-if __name__ == '__main__':
-    app = QGuiApplication(sys.argv)
-    engine = RattAppEngine()
-    engine.load(QUrl('main.qml'))
-    engine.quit.connect(app.quit)
-    sys.exit(app.exec_())
+class Logger():
+    def __init__(self, name='Logger', filename='logger.log'):
+        qInstallMessageHandler(self.qtDebugHandler)
+
+        self.log = logging.getLogger(name)
+
+        self.handler = logging.FileHandler(filename)
+
+        fmt = logging.Formatter('%(asctime)s: %(levelname)s %(message)s')
+        self.handler.setFormatter(fmt)
+
+        self.handler.setLevel(logging.INFO)
+        self.log.addHandler(self.handler)
+
+
+        console = logging.StreamHandler()
+        console.setLevel(logging.DEBUG)
+        fmt = logging.Formatter('%(name)s: %(levelname)-8s %(message)s')
+        console.setFormatter(fmt)
+        logging.getLogger('').addHandler(console)
+
+        self.log.setLevel(logging.DEBUG)
+
+    def info(self, msg):
+        self.log.info(msg)
+
+    def warning(self, msg):
+        self.log.warning(msg)
+
+    def error(self, msg):
+        self.log.error(msg)
+
+    def critical(self, msg):
+        self.log.critical(msg)
+
+    def exception(self, msg):
+        self.log.exception(msg)
+
+    def debug(self, msg):
+        self.log.debug(msg)
+
+    def qtDebugHandler(self, mode, context, message):
+        msg = '(Qt line: %d, func: %s(), file: %s): %s' % (context.line, context.function, context.file, message)
+
+        if mode == QtInfoMsg:
+            self.info(msg)
+        elif mode == QtWarningMsg:
+            self.warning(msg)
+        elif mode == QtCriticalMsg:
+            self.critical(msg)
+        elif mode == QtFatalMsg:
+            self.error(msg)
+        else:
+            self.debug(msg)

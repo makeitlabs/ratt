@@ -45,10 +45,13 @@ class NetWorker(QObject):
     aclUpdate = pyqtSignal(int, int, str, name='aclUpdate', arguments=['total', 'active', 'hash'])
     aclUpdateError = pyqtSignal(name='aclUpdateError')
 
-    def __init__(self, authDebug=False):
+    def __init__(self, logger, authDebug=False):
         QObject.__init__(self)
+        self.logger = logger
+        self.debug = authDebug
 
-        self.authDebug = authDebug
+        if self.debug:
+            self.logger.info('NetWorker debug enabled')
 
         self.mutex = QMutex()
         self.acl = json.loads('[]')
@@ -62,8 +65,7 @@ class NetWorker(QObject):
         self.setSSLCertConfig()
 
     def fetchAcl(self):
-        if self.authDebug:
-            print('downloading ACL from ' + self.AclUrl)
+        self.logger.info('downloading ACL from ' + self.AclUrl)
         self.get(url=self.AclUrl)
 
 
@@ -101,8 +103,7 @@ class NetWorker(QObject):
         return hash
 
     def log(self):
-        if self.authDebug:
-            print('logging to ' + self.LogUrl)
+        self.logger.debug('posting log to ' + self.LogUrl)
         self.post(url=self.LogUrl)
 
     def setUrls(self, acl = '', log = ''):
@@ -117,8 +118,6 @@ class NetWorker(QObject):
         self.sslEnabled = enabled
 
         if self.sslSupported and self.sslEnabled:
-            if self.authDebug:
-                print('SSL enabled')
             self.caCertFile = caCertFile
             self.clientCertFile = clientCertFile
             self.clientKeyFile = clientKeyFile
@@ -149,7 +148,7 @@ class NetWorker(QObject):
         self.mgr.post(req, ba)
         
     def get(self, url):
-        print('get url=%s' % (url))
+        self.logger.debug('get url=%s' % (url))
         req = QNetworkRequest(QUrl(url))
 
         self.mgr.finished.connect(self.handleGetResponse)
@@ -164,27 +163,25 @@ class NetWorker(QObject):
         
     def handleSSLErrors(self, reply, errors):
         for err in errors:
-            print('SSL errors:' + err.errorString())
+            self.logger.error('SSL errors:' + err.errorString())
         
     def handleAuthenticationRequired(self, reply, authenticator):
         if self.user == '' and self.password == '':
-            print('WARNING: authentication required and no user/password set')
+            self.logger.warning('authentication required and no user/password set')
 
         authenticator.setUser(self.user)
         authenticator.setPassword(self.password)
 
 
     def handlePostResponse(self, reply):
-        if self.authDebug:
-            print('handlePostResponse')
+        self.logger.debug('handlePostResponse')
         error = reply.error()
 
         if error == QNetworkReply.NoError:
-            print (reply.readAll())
+            self.logger.debug(reply.readAll())
             
         else:
-            print('NetWorker response error: ', error)
-            print(reply.errorString())
+            self.logger.error('NetWorker response error: %s (%s)' % (error, reply.errorString()))
 
         self.mgr.finished.disconnect(self.handlePostResponse)
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
@@ -193,8 +190,7 @@ class NetWorker(QObject):
 
 
     def handleGetResponse(self, reply):
-        if self.authDebug:
-            print('handleGetResponse')
+        self.logger.debug('handleGetResponse')
         error = reply.error()
 
         if error == QNetworkReply.NoError:
@@ -211,18 +207,16 @@ class NetWorker(QObject):
                 active = self.countAclActive()
                 hash = self.hashAcl()
 
-                if self.authDebug:
-                    print('json acl with %d entries, %d active, hash=%s' % (total, active, hash))
+                self.logger.info('parsed ACL with %d entries, %d active, hash=%s' % (total, active, hash))
 
                 self.aclUpdate.emit(total, active, hash)
             except:
-                print('json parse error')
+                self.logger.warning('json parse error')
                 self.aclUpdateError.emit()
 
             
         else:
-            print('NetWorker response error: ', error)
-            print(reply.errorString())
+            self.logger.error('NetWorker response error: %s (%s)', (error, reply.errorString()))
 
         self.mgr.finished.disconnect(self.handleGetResponse)
         self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
@@ -236,7 +230,7 @@ class NetWorker(QObject):
         privateKey = QSslKey(privateKeyFile, QSsl.Rsa)
 
         if privateKey.isNull():
-            print('  WARNING: private key is null')
+            self.logger.warning('SSL private key is null')
         else:
             self.sslConfig.setPrivateKey(privateKey)
             

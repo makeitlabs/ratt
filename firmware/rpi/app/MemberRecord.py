@@ -61,8 +61,6 @@ class MemberRecord(QObject):
         self.recordChanged.emit()
 
     def parseRecord(self, record):
-        print('parseRecord:')
-        print(record)
         try:
             self._member = record['member']
             self._nickname = record['nickname']
@@ -77,8 +75,6 @@ class MemberRecord(QObject):
 
         except:
             self.clearRecord()
-            print('parseRecord exception')
-
 
         return self._isValid
 

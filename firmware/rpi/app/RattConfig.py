@@ -111,6 +111,8 @@ class RattConfig(QObject):
         self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
 
+        self.addConfig('Log', 'File')
+
         self.addConfig('Personality', 'Class')
 
         self.addConfigBool('Auth', 'Debug')
@@ -133,11 +135,7 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'RFIDFailure')
         self.addConfig('Sound', 'RFIDError')
 
-
         self.configChanged.emit()
-
-        if self.General_Debug:
-            print(self.config)
 
 
 

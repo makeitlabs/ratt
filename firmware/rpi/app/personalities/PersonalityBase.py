@@ -40,9 +40,11 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 
 class PersonalityBase(QObject):
 
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
+
         QObject.__init__(self)
-        print(self.descr())
+        self.logger.info('Personality is ' + self.descr())
 
     def descr(self):
         return 'Personality base class.'

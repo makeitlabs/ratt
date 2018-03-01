@@ -51,4 +51,5 @@ DISTFILES += \
     personalities/PersonalityAutoLift.py \
     personalities/PersonalityBase.py \
     personalities/PersonalityLaserCutter.py \
-    personalities/PersonalitySimpleMotor.py
+    personalities/PersonalitySimpleMotor.py \
+    Logger.py

@@ -40,8 +40,8 @@ from PersonalityBase import PersonalityBase
 
 class Personality(PersonalityBase):
 
-    def __init__(self):
-        PersonalityBase.__init__(self)
+    def __init__(self, logger):
+        PersonalityBase.__init__(self, logger)
 
     def descr(self):
         return 'Laser Cutter'

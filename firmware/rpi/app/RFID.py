@@ -54,18 +54,19 @@ class RFID(QThread):
     def errChecksum(self):
         return -2
 
-    def __init__(self, portName='', debug=False):
+    def __init__(self, logger, portName='', debug=False):
         QThread.__init__(self)
 
+        self.logger = logger
         self.debug = debug
+        if self.debug:
+            self.logger.info('RFID debug enabled')
 
         self.cond = QWaitCondition()
         self.mutex = QMutex()
 
         self.portName = portName
         self.waitTimeout = 250
-
-        self.debug = False
 
         self.quit = False
 
@@ -108,24 +109,22 @@ class RFID(QThread):
             for i in range(1, 8):
                 checksum = checksum ^ ord(bytes[i])
                 if self.debug:
-                    print('rfid calc checksum byte %d (%2x), checksum = %2x' % (i, ord(bytes[i]), checksum))
+                    self.logger.debug('rfid calc checksum byte %d (%2x), checksum = %2x' % (i, ord(bytes[i]), checksum))
 
             if checksum == 0:
                 tag = (ord(bytes[4]) << 24) | (ord(bytes[5]) << 16) | (ord(bytes[6]) << 8) | ord(bytes[7])
 
                 if self.debug:
-                    print("rfid serial read: " + self.dump_pkt(bytes))
-                    print('rfid tag = %10.10d' % tag)
+                    self.logger.debug("rfid serial read: " + self.dump_pkt(bytes))
+                    self.logger.debug('rfid tag = %10.10d' % tag)
 
                 return tag
 
             else:
-                if self.debug:
-                    print("rfid: checksum error")
+                self.logger.warning("rfid: checksum error")
                 return self.errChecksum
         else:
-            if self.debug:
-                print("rfid: packet error")
+            self.logger.warning("rfid: packet error")
             return self.errPacket
 
     def hash_tag(self, tag):
@@ -135,7 +134,7 @@ class RFID(QThread):
         tag_hash = m.hexdigest()
 
         if self.debug:
-            print('rfid hash: %s' % tag_hash)
+            self.logger.debug('rfid hash: %s' % tag_hash)
 
         return tag_hash
 
@@ -145,7 +144,7 @@ class RFID(QThread):
         serial.setPortName(self.portName)
 
         if not serial.open(QIODevice.ReadOnly):
-            print("rfid: can't open serial port")
+            self.logger.error("rfid: can't open serial port")
             return;
 
         while not self.quit:
@@ -159,7 +158,7 @@ class RFID(QThread):
                 now = calendar.timegm(time.gmtime())
 
                 if self.debug:
-                    print("rfid: tag=%d, now=%d" % (tag, now))
+                    self.logger.debug("rfid: tag=%d, now=%d" % (tag, now))
 
                 if tag > 0:
                     self.tagScan.emit(tag, self.hash_tag(tag), now, self.dump_pkt(bytes))
