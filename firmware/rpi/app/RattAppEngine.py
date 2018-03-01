@@ -82,6 +82,8 @@ class RattAppEngine(QQmlApplicationEngine):
         # temporary for test; will move to a state machine eventually
         self.netWorker.fetchAcl()
 
+        self.personality.execute()
+
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
         # implementation for a given tool
@@ -93,7 +95,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
             self.personality = module.Personality(loglevel=self.config.value('Personality.LogLevel'))
         except:
-            self.logger.error('could not establish personality: ' + personalityClass)
+            self.logger.exception('could not establish personality: ' + personalityClass)
             exit(-1)
 
 

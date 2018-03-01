@@ -36,18 +36,165 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtCore import QThread, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from Logger import Logger
 
-class PersonalityBase(QObject):
+class PersonalityBase(QThread):
+    STATE_UNINITIALIZED = 'Uninitialized'
+    STATE_INIT = 'Init'
+    STATE_IDLE = 'Idle'
+    STATE_LOCKOUT_CHECK = 'LockoutCheck'
+    STATE_RFID_LOOKUP = 'RFIDLookup'
+    STATE_ACCESS_DENIED = 'AccessDenied'
+    STATE_ACCESS_ALLOWED = 'AccessAllowed'
+    STATE_SAFETY_CHECK = 'SafetyCheck'
+    STATE_SAFETY_CHECK_PASSED = 'SafetyCheckPassed'
+    STATE_SAFETY_CHECK_FAILED = 'SafetyCheckFailed'
+    STATE_TOOL_ENABLED_INACTIVE = 'ToolEnabledInactive'
+    STATE_TOOL_ENABLED_ACTIVE = 'ToolEnabledActive'
+    STATE_TOOL_TIMEOUT_WARNING = 'ToolTimeoutWarning'
+    STATE_TOOL_TIMEOUT = 'ToolTimeout'
+    STATE_TOOL_DISABLED = 'ToolDisabled'
+
+
+    PHASE_ENTER = 0
+    PHASE_ACTIVE = 1
+    PHASE_EXIT = 2
+
+    phaseLookup = { PHASE_ENTER : 'ENTER', PHASE_ACTIVE : 'ACTIVE', PHASE_EXIT : 'EXIT' }
+
+    stateChanged = pyqtSignal(str, int, name='stateChanged', arguments=['state', 'phase'])
+
+    @pyqtProperty(str, notify=stateChanged)
+    def currentState(self):
+        return self.stateName()
 
     def __init__(self, loglevel='WARNING'):
-        QObject.__init__(self)
+        QThread.__init__(self)
         self.logger = Logger(name='ratt.personality')
         self.logger.setLogLevelStr(loglevel)
 
         self.logger.info('Personality is ' + self.descr())
         self.debug = self.logger.isDebug()
 
+        self.quit = False
+
+        self.states = {self.STATE_UNINITIALIZED : self._stateUninitialized,
+                       self.STATE_INIT : self._stateInit,
+                       self.STATE_IDLE : self._stateIdle,
+                       self.STATE_LOCKOUT_CHECK : self._stateLockoutCheck,
+                       self.STATE_RFID_LOOKUP : self._stateRFIDLookup,
+                       self.STATE_ACCESS_DENIED : self._stateAccessDenied,
+                       self.STATE_ACCESS_ALLOWED : self._stateAccessAllowed,
+                       self.STATE_SAFETY_CHECK : self._stateSafetyCheck,
+                       self.STATE_SAFETY_CHECK_PASSED : self._stateSafetyCheckPassed,
+                       self.STATE_SAFETY_CHECK_FAILED : self._stateSafetyCheckFailed,
+                       self.STATE_TOOL_ENABLED_INACTIVE : self._stateToolEnabledInactive,
+                       self.STATE_TOOL_ENABLED_ACTIVE : self._stateToolEnabledActive,
+                       self.STATE_TOOL_TIMEOUT_WARNING : self._stateToolTimeoutWarning,
+                       self.STATE_TOOL_TIMEOUT : self._stateToolTimeout,
+                       self.STATE_TOOL_DISABLED : self._stateToolDisabled
+                       }
+
+        self.state = self.STATE_UNINITIALIZED
+        self.statephase = self.PHASE_ACTIVE
+
     def descr(self):
         return 'Personality base class.'
+
+    def execute(self):
+        if not self.isRunning():
+            self.start();
+
+    def run(self):
+        self.logger.debug('thread run')
+
+        self.setState(self.STATE_INIT, 0)
+
+        while not self.quit:
+            cur = self.states[self.state]
+            cur()
+            self.logger.debug('tick state=%s' % self.stateName())
+
+            self.usleep(1000000)
+
+
+    def stateName(self, state = None, phase = None):
+        if state == None or phase == None:
+            state = self.state
+            phase = self.statephase
+
+        return '%s.%s' % (state, self.phaseLookup[phase])
+
+    def setState(self, state, phase):
+        if state in self.states:
+            if state != self.state or phase != self.statephase:
+                self.logger.debug('state transition %s ==> %s' % (self.stateName(self.state, self.statephase), self.stateName(state, phase)))
+                self.state = state
+                self.statephase = phase
+
+                self.stateChanged.emit(self.state, self.statephase)
+            else:
+                self.logger.warning('tried to change to current state %s' % self.stateName(state, phase))
+        else:
+            self.logger.error('invalid state (%s)' % state)
+
+
+    def _stateUninitialized(self):
+        pass
+
+    def _stateInit(self):
+        if self.statephase is self.PHASE_ENTER:
+            self.logger.debug('init entered')
+            self.setState(self.STATE_INIT, self.PHASE_ACTIVE)
+        elif self.statephase is self.PHASE_ACTIVE:
+            self.logger.debug('init active')
+            self.setState(self.STATE_INIT, self.PHASE_EXIT)
+        elif self.statephase is self.PHASE_EXIT:
+            self.logger.debug('init exiting')
+            self.setState(self.STATE_IDLE, self.PHASE_ENTER)
+        pass
+
+    def _stateIdle(self):
+        if self.statephase is self.PHASE_ENTER:
+            self.logger.debug('idle entered')
+            self.setState(self.STATE_IDLE, self.PHASE_ACTIVE)
+        elif self.statephase is self.PHASE_ACTIVE:
+            self.logger.debug('idle active')
+        pass
+
+    def _stateLockoutCheck(self):
+        pass
+
+    def _stateRFIDLookup(self):
+        pass
+
+    def _stateAccessDenied(self):
+        pass
+
+    def _stateAccessAllowed(self):
+        pass
+
+    def _stateSafetyCheck(self):
+        pass
+
+    def _stateSafetyCheckPassed(self):
+        pass
+
+    def _stateSafetyCheckFailed(self):
+        pass
+
+    def _stateToolEnabledActive(self):
+        pass
+
+    def _stateToolEnabledInactive(self):
+        pass
+
+    def _stateToolTimeoutWarning(self):
+        pass
+
+    def _stateToolTimeout(self):
+        pass
+
+    def _stateToolDisabled(self):
+        pass

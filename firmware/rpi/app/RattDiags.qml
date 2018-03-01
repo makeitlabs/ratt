@@ -55,11 +55,34 @@ Item {
             }
         }
 
-        Label {
-            color: "cyan"
-            text: "personality=" + config.Personality_Class
-            font.pixelSize: 12
+
+        Rectangle {
+            id: personalityRect
+            color: "#444499"
+            width: 600
+            height: 100
+            border.width: 4
+            border.color: "#000000"
+
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 6
+                Label {
+                    text: "Personality (" + config.Personality_Class + ")"
+                    color: "white"
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+                Label {
+                    color: "cyan"
+                    text: "state=" + personality.currentState
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+            }
         }
+
 
         Rectangle {
             id: aclRect
