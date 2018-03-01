@@ -63,23 +63,23 @@ class Logger():
 
         self.log.setLevel(logging.DEBUG)
 
-    def info(self, msg):
-        self.log.info(msg)
+    def info(self, msg, *args, **kwargs):
+        self.log.info(msg, *args, **kwargs)
 
-    def warning(self, msg):
-        self.log.warning(msg)
+    def warning(self, msg, *args, **kwargs):
+        self.log.warning(msg, *args, **kwargs)
 
-    def error(self, msg):
-        self.log.error(msg)
+    def error(self, msg, *args, **kwargs):
+        self.log.error(msg, *args, **kwargs)
 
-    def critical(self, msg):
-        self.log.critical(msg)
+    def critical(self, msg, *args, **kwargs):
+        self.log.critical(msg, *args, **kwargs)
 
-    def exception(self, msg):
-        self.log.exception(msg)
+    def exception(self, msg, *args, **kwargs):
+        self.log.exception(msg, *args, **kwargs)
 
-    def debug(self, msg):
-        self.log.debug(msg)
+    def debug(self, msg, *args, **kwargs):
+        self.log.debug(msg, *args, **kwargs)
 
     def qtDebugHandler(self, mode, context, message):
         msg = '(Qt line: %d, func: %s(), file: %s): %s' % (context.line, context.function, context.file, message)
