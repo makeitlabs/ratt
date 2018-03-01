@@ -108,13 +108,18 @@ ApplicationWindow {
         }
     }
 
-    RattDiags {
-
+    Loader {
+        id: diagsLoader
         anchors.top: root.bottom
         anchors.left: parent.left
         width: parent.width
         height: parent.height - root.height
         anchors.margins: 4
 
+        Component.onCompleted: {
+            if (config.General_Diags) {
+                diagsLoader.source = "RattDiags.qml"
+            }
+        }
     }
 }

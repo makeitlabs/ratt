@@ -54,6 +54,10 @@ class RattConfig(QObject):
     def General_Debug(self):
         return self.config['General.Debug']
 
+    @pyqtProperty(QVariant, notify=configChanged)
+    def General_Diags(self):
+        return self.config['General.Diags']
+
     @pyqtProperty(str, notify=configChanged)
     def Personality_Class(self):
         return self.config['Personality.Class']
@@ -104,6 +108,7 @@ class RattConfig(QObject):
         self.config = { }
 
         self.addConfigBool('General', 'Debug')
+        self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
 
         self.addConfig('Personality', 'Class')
