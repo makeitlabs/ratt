@@ -60,14 +60,13 @@ class Logger():
 
         # create a stream stdout handler only if enabled
         if stream:
-            console = logging.StreamHandler()
-            console.setLevel(slevel)
+            self.console = logging.StreamHandler()
+            self.console.setLevel(slevel)
             fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
-            console.setFormatter(fmt)
-            logging.getLogger('').addHandler(console)
+            self.console.setFormatter(fmt)
+            logging.getLogger('').addHandler(self.console)
 
-            self.log.setLevel(logging.DEBUG)
-
+        # install Qt handler if enabled
         if qt:
             self.qtlog = logging.getLogger(name + '.qt')
             self.qtlog.setLevel(qtlevel)

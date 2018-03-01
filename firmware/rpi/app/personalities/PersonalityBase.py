@@ -37,14 +37,17 @@
 #
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from Logger import Logger
 
 class PersonalityBase(QObject):
 
-    def __init__(self, logger):
-        self.logger = logger
-
+    def __init__(self, loglevel='WARNING'):
         QObject.__init__(self)
+        self.logger = Logger(name='ratt.personality')
+        self.logger.setLogLevelStr(loglevel)
+
         self.logger.info('Personality is ' + self.descr())
+        self.debug = self.logger.isDebug()
 
     def descr(self):
         return 'Personality base class.'

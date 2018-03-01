@@ -40,8 +40,8 @@ from PersonalityBase import PersonalityBase
 
 class Personality(PersonalityBase):
 
-    def __init__(self, logger):
-        PersonalityBase.__init__(self, logger)
+    def __init__(self, loglevel):
+        PersonalityBase.__init__(self, loglevel)
 
     def descr(self):
         return 'Auto Lift'

@@ -117,6 +117,7 @@ class RattConfig(QObject):
         self.addConfig('Log', 'LogLevel')
 
         self.addConfig('Personality', 'Class')
+        self.addConfig('Personality', 'LogLevel')
 
         self.addConfig('Auth', 'LogLevel')
         self.addConfig('Auth', 'ResourceId')
