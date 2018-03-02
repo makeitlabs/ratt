@@ -92,7 +92,7 @@ class RattAppEngine(QQmlApplicationEngine):
             sys.path.append('personalities')
             module = __import__(personalityClass)
 
-            self.personality = module.Personality(loglevel=self.config.value('Personality.LogLevel'))
+            self.personality = module.Personality(loglevel=self.config.value('Personality.LogLevel'), app=self)
         except:
             self.logger.exception('could not establish personality: ' + personalityClass)
             exit(-1)

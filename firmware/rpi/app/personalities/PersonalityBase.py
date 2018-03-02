@@ -36,8 +36,10 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import QThread, QMutex, QWaitCondition, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtCore import QObject, QThread, QMutex, QWaitCondition, QTimer
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from Logger import Logger
+from MemberRecord import MemberRecord
 import qgpio as GPIO
 
 class PersonalityBase(QThread):
@@ -66,8 +68,11 @@ class PersonalityBase(QThread):
     REASON_NONE = 0
     REASON_TIMEOUT = 1
     REASON_GPIO = 2
+    REASON_VALID_SCAN = 3
+    REASON_INVALID_SCAN = 4
 
-    reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_GPIO : 'GPIO' }
+    reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_GPIO : 'GPIO' ,
+                     REASON_VALID_SCAN : 'VALID_SCAN', REASON_INVALID_SCAN : 'INVALID_SCAN'}
 
     stateChanged = pyqtSignal(str, int, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
@@ -76,8 +81,11 @@ class PersonalityBase(QThread):
     def currentState(self):
         return self.stateName()
 
-    def __init__(self, loglevel='WARNING'):
+    def __init__(self, loglevel='WARNING', app=None):
+
         QThread.__init__(self)
+
+
         self.cond = QWaitCondition()
         self.mutex = QMutex()
 
@@ -86,6 +94,13 @@ class PersonalityBase(QThread):
 
         self.logger.info('Personality is ' + self.descr())
         self.debug = self.logger.isDebug()
+
+        if app is None:
+            self.logger.error('must set app to QQmlApplicationEngine object')
+            exit(-1)
+
+        self.app = app
+
 
         self.quit = False
 
@@ -107,7 +122,7 @@ class PersonalityBase(QThread):
                        }
 
         self.state = self.STATE_UNINITIALIZED
-        self.statephase = self.PHASE_ACTIVE
+        self.statePhase = self.PHASE_ACTIVE
 
         self.wakereason = self.REASON_NONE
 
@@ -115,8 +130,19 @@ class PersonalityBase(QThread):
 
         self.gpio.available_pins = [496, 497, 498, 499, 500, 501, 502, 503]
 
-        self.opin = self.gpio.alloc_pin(496, GPIO.OUTPUT)
-        self.ipin = self.gpio.alloc_pin(500, GPIO.INPUT, self.pinchanged, GPIO.BOTH)
+        self.pins = []
+
+        self.pins.append(self.gpio.alloc_pin(496, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(497, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(498, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(499, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(500, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(501, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(502, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(503, GPIO.OUTPUT))
+
+    def descr(self):
+        return 'Personality base class.'
 
     def pinchanged(self, num, state):
         self.logger.debug('gpio pin changed %d %d' % (num, state))
@@ -125,8 +151,6 @@ class PersonalityBase(QThread):
         self.mutex.unlock()
         self.cond.wakeAll()
 
-    def descr(self):
-        return 'Personality base class.'
 
     def execute(self):
         if not self.isRunning():
@@ -137,22 +161,29 @@ class PersonalityBase(QThread):
 
         self.setState(self.STATE_INIT, 0)
 
+        # initialize
+        again = True
+        while again:
+            curStateFunc = self.states[self.state]
+            again = curStateFunc()
+
         while not self.quit:
             self.mutex.lock()
-            if not self.cond.wait(self.mutex, 1000):
-                self.wakereason = self.REASON_TIMEOUT
-
+            self.cond.wait(self.mutex)
             self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
-            curStateFunc = self.states[self.state]
-            curStateFunc()
 
-            self.wakereason = self.REASON_NONE
+            again = True
+            while again:
+                curStateFunc = self.states[self.state]
+                again = curStateFunc()
+                self.wakereason = self.REASON_NONE
+
             self.mutex.unlock()
 
     def stateName(self, state = None, phase = None):
         if state == None or phase == None:
             state = self.state
-            phase = self.statephase
+            phase = self.statePhase
 
         return '%s.%s' % (state, self.phaseLookup[phase])
 
@@ -164,40 +195,112 @@ class PersonalityBase(QThread):
 
     def setState(self, state, phase):
         if state in self.states:
-            if state != self.state or phase != self.statephase:
-                self.logger.debug('state transition %s ==> %s' % (self.stateName(self.state, self.statephase), self.stateName(state, phase)))
+            if state != self.state or phase != self.statePhase:
+                self.logger.debug('setState %s ==> %s' % (self.stateName(self.state, self.statePhase), self.stateName(state, phase)))
                 self.state = state
-                self.statephase = phase
+                self.statePhase = phase
 
-                self.stateChanged.emit(self.state, self.statephase)
+                self.stateChanged.emit(self.state, self.statePhase)
+                return True
             else:
                 self.logger.warning('tried to change to current state %s' % self.stateName(state, phase))
         else:
             self.logger.error('invalid state (%s)' % state)
 
+        return False
+
+
+    def setNextState(self, state, phase):
+        if state in self.states:
+            if state != self.state or phase != self.statePhase:
+                self.logger.debug('setNextState %s' % self.stateName(state, phase))
+                self.nextState = state
+                self.nextStatePhase = phase
+                return True
+            else:
+                self.logger.warning('tried to set next state to current state %s' % self.stateName(state, phase))
+        else:
+            self.logger.error('invalid state (%s)' % state)
+
+        return False
+
+    def goNextState(self):
+        self.logger.debug('goNextState %s ==> %s' % (self.stateName(self.state, self.statePhase), self.stateName(self.nextState, self.nextStatePhase)))
+        self.state = self.nextState
+        self.statePhase = self.nextStatePhase
+        self.stateChanged.emit(self.state, self.statePhase)
+        return True
+
+
+    # shortcut to set the enter phase of the next state and exits the current state through its exit phase
+    # (assumes the exit phase will transition to the next state)
+    # returns True on success
+    def exitAndGoto(self, state):
+        return self.setNextState(state, self.PHASE_ENTER) and self.setState(self.state, self.PHASE_EXIT)
+
+
+    '''
+    ---------------------------------------------------------------------------------------------------------------
+    '''
 
     def _stateUninitialized(self):
         pass
 
     def _stateInit(self):
-        if self.statephase is self.PHASE_ENTER:
-            self.logger.debug('init entered')
-            self.setState(self.STATE_INIT, self.PHASE_ACTIVE)
-        elif self.statephase is self.PHASE_ACTIVE:
-            self.logger.debug('init active')
-            self.setState(self.STATE_INIT, self.PHASE_EXIT)
-        elif self.statephase is self.PHASE_EXIT:
-            self.logger.debug('init exiting')
-            self.setState(self.STATE_IDLE, self.PHASE_ENTER)
-        pass
+        self.logger.debug('initialize')
+        self.pins[4].reset()
+        self.pins[5].reset()
+        self.pins[6].reset()
+        self.pins[7].reset()
+        return self.setState(self.STATE_IDLE, self.PHASE_ENTER)
+
+    def _validScanHandler(self, record):
+        self.logger.debug('scanned rfid')
+
+        self.mutex.lock()
+        if record.valid and record.allowed:
+            self.wakereason = self.REASON_VALID_SCAN
+        else:
+            self.wakereason = self.REASON_INVALID_SCAN
+
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
+    def _invalidScanHandler(self, reason):
+        self.logger.debug('invalid scan: %s' % reason)
+
+        self.mutex.lock()
+        self.wakereason = self.REASON_INVALID_SCAN
+        self.mutex.unlock()
+        self.cond.wakeAll()
 
     def _stateIdle(self):
-        if self.statephase is self.PHASE_ENTER:
-            self.logger.debug('idle entered')
-            self.setState(self.STATE_IDLE, self.PHASE_ACTIVE)
-        elif self.statephase is self.PHASE_ACTIVE:
-            self.logger.debug('idle active')
-        pass
+        if self.statePhase is self.PHASE_ENTER:
+            self.logger.debug('idle enter')
+            self.app.validScan.connect(self._validScanHandler)
+            self.app.invalidScan.connect(self._invalidScanHandler)
+            self.pins[4].set()
+            return self.setState(self.STATE_IDLE, self.PHASE_ACTIVE)
+
+        elif self.statePhase is self.PHASE_ACTIVE:
+            self.logger.debug('idle')
+
+            if self.wakereason == self.REASON_VALID_SCAN:
+                return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
+
+            if self.wakereason == self.REASON_INVALID_SCAN:
+                return self.exitAndGoto(self.STATE_ACCESS_DENIED)
+
+            # otherwise thread goes back to waiting
+            return False
+
+        elif self.statePhase is self.PHASE_EXIT:
+            self.logger.debug('idle exit')
+            self.app.validScan.disconnect(self._validScanHandler)
+            self.app.invalidScan.disconnect(self._invalidScanHandler)
+
+            return self.goNextState()
+
 
     def _stateLockoutCheck(self):
         pass
@@ -206,9 +309,23 @@ class PersonalityBase(QThread):
         pass
 
     def _stateAccessDenied(self):
-        pass
+        return self.setState(self.STATE_IDLE, self.PHASE_ENTER)
 
     def _stateAccessAllowed(self):
+        if self.statePhase is self.PHASE_ENTER:
+            self.pins[5].set()
+            return self.setState(self.STATE_ACCESS_ALLOWED, self.PHASE_ACTIVE)
+
+        elif self.statePhase is self.PHASE_ACTIVE:
+            self.logger.debug('access allowed')
+
+            if self.wakereason == self.REASON_GPIO and self.pins[0].read() == 0:
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+        elif self.statePhase is self.PHASE_EXIT:
+            self.pins[5].reset()
+            return self.goNextState()
         pass
 
     def _stateSafetyCheck(self):

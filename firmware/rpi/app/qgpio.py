@@ -228,27 +228,9 @@ class Pin(object):
 
 
 class Controller(QThread):
-    #'''
-    #A singleton class to provide access to SysFS GPIO pins
-    #'''
-    #def __new__(cls, *args, **kw):
-        #if not hasattr(cls, '_instance'):
-            #instance = super(Controller, cls).__new__(cls)
-            #instance._allocated_pins = {}
-            #instance._poll_queue = select.epoll()
-
-            #instance._available_pins = []
-            #instance._running = True
-
-            # Cleanup before stopping reactor
-            #reactor.addSystemEventTrigger('before', 'shutdown', instance.stop)
-
-            # Run the EPoll in a Thread, as it blocks.
-            #reactor.callInThread(instance._poll_queue_loop)
-
-            #cls._instance = instance
-        #return cls._instance
-
+    '''
+    A class to provide access to SysFS GPIO pins
+    '''
     def __init__(self, loglevel='DEBUG'):
         QThread.__init__(self)
         self.logger = Logger(name='ratt.qgpio')
@@ -274,6 +256,8 @@ class Controller(QThread):
                     self.logger.error(repr(error))
                     self._running = False
             if len(events) > 0:
+                # NOTE: this runs all the callbacks in this thread
+                # original spawned a new thread to handle each event, might revisit that
                 self._poll_queue_event(events)
 
     @property
@@ -296,7 +280,7 @@ class Controller(QThread):
 
     def alloc_pin(self, number, direction, callback=None, edge=None, active_low=0):
 
-        self.logger.debug('SysfsGPIO: alloc_pin(%d, %s, %s, %s, %s)'
+        self.logger.debug('alloc_pin(%d, %s, %s, %s, %s)'
                      % (number, direction, callback, edge, active_low))
 
         self._check_pin_validity(number)
@@ -312,7 +296,7 @@ class Controller(QThread):
             with open(SYSFS_EXPORT_PATH, 'w') as export:
                 export.write('%d' % number)
         else:
-            self.logger.debug("SysfsGPIO: Pin %d already exported" % number)
+            self.logger.debug("Pin %d already exported" % number)
 
         pin = Pin(number, direction, callback, edge, active_low)
 
@@ -331,7 +315,7 @@ class Controller(QThread):
 
     def dealloc_pin(self, number):
 
-        self.logger.debug('SysfsGPIO: dealloc_pin(%d)' % number)
+        self.logger.debug('dealloc_pin(%d)' % number)
 
         if number not in self._allocated_pins:
             raise Exception('Pin %d not allocated' % number)
@@ -348,13 +332,13 @@ class Controller(QThread):
 
     def get_pin(self, number):
 
-        self.logger.debug('SysfsGPIO: get_pin(%d)' % number)
+        self.logger.debug('get_pin(%d)' % number)
 
         return self._allocated_pins[number]
 
     def set_pin(self, number):
 
-        self.logger.debug('SysfsGPIO: set_pin(%d)' % number)
+        self.logger.debug('set_pin(%d)' % number)
 
         if number not in self._allocated_pins:
             raise Exception('Pin %d not allocated' % number)
@@ -363,7 +347,7 @@ class Controller(QThread):
 
     def reset_pin(self, number):
 
-        self.logger.debug('SysfsGPIO: reset_pin(%d)' % number)
+        self.logger.debug('reset_pin(%d)' % number)
 
         if number not in self._allocated_pins:
             raise Exception('Pin %d not allocated' % number)
@@ -372,7 +356,7 @@ class Controller(QThread):
 
     def get_pin_state(self, number):
 
-        self.logger.debug('SysfsGPIO: get_pin_state(%d)' % number)
+        self.logger.debug('get_pin_state(%d)' % number)
 
         if number not in self._allocated_pins:
             raise Exception('Pin %d not allocated' % number)
@@ -438,9 +422,6 @@ class Controller(QThread):
 
         if number in self._allocated_pins:
             raise Exception("Pin already allocated")
-
-# Create controller instance
-#Controller = Controller()
 
 if __name__ == '__main__':
     print("This module isn't intended to be run directly.")
