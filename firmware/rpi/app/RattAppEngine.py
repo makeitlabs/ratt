@@ -64,7 +64,6 @@ class RattAppEngine(QQmlApplicationEngine):
         self.logger.info('Initializing RATT System')
         self.debug = self.logger.isDebug()
 
-
         # iniialize the node personality and the other necessary modules
         self.__initPersonality__()
         self.__initSystem__()

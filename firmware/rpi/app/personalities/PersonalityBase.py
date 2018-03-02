@@ -36,8 +36,9 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import QThread, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtCore import QThread, QMutex, QWaitCondition, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from Logger import Logger
+import qgpio as GPIO
 
 class PersonalityBase(QThread):
     STATE_UNINITIALIZED = 'Uninitialized'
@@ -56,14 +57,20 @@ class PersonalityBase(QThread):
     STATE_TOOL_TIMEOUT = 'ToolTimeout'
     STATE_TOOL_DISABLED = 'ToolDisabled'
 
-
     PHASE_ENTER = 0
     PHASE_ACTIVE = 1
     PHASE_EXIT = 2
 
     phaseLookup = { PHASE_ENTER : 'ENTER', PHASE_ACTIVE : 'ACTIVE', PHASE_EXIT : 'EXIT' }
 
+    REASON_NONE = 0
+    REASON_TIMEOUT = 1
+    REASON_GPIO = 2
+
+    reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_GPIO : 'GPIO' }
+
     stateChanged = pyqtSignal(str, int, name='stateChanged', arguments=['state', 'phase'])
+    pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
 
     @pyqtProperty(str, notify=stateChanged)
     def currentState(self):
@@ -71,6 +78,9 @@ class PersonalityBase(QThread):
 
     def __init__(self, loglevel='WARNING'):
         QThread.__init__(self)
+        self.cond = QWaitCondition()
+        self.mutex = QMutex()
+
         self.logger = Logger(name='ratt.personality')
         self.logger.setLogLevelStr(loglevel)
 
@@ -99,6 +109,22 @@ class PersonalityBase(QThread):
         self.state = self.STATE_UNINITIALIZED
         self.statephase = self.PHASE_ACTIVE
 
+        self.wakereason = self.REASON_NONE
+
+        self.gpio = GPIO.Controller()
+
+        self.gpio.available_pins = [496, 497, 498, 499, 500, 501, 502, 503]
+
+        self.opin = self.gpio.alloc_pin(496, GPIO.OUTPUT)
+        self.ipin = self.gpio.alloc_pin(500, GPIO.INPUT, self.pinchanged, GPIO.BOTH)
+
+    def pinchanged(self, num, state):
+        self.logger.debug('gpio pin changed %d %d' % (num, state))
+        self.mutex.lock()
+        self.wakereason = self.REASON_GPIO
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
     def descr(self):
         return 'Personality base class.'
 
@@ -112,12 +138,16 @@ class PersonalityBase(QThread):
         self.setState(self.STATE_INIT, 0)
 
         while not self.quit:
-            cur = self.states[self.state]
-            cur()
-            self.logger.debug('tick state=%s' % self.stateName())
+            self.mutex.lock()
+            if not self.cond.wait(self.mutex, 1000):
+                self.wakereason = self.REASON_TIMEOUT
 
-            self.usleep(1000000)
+            self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
+            curStateFunc = self.states[self.state]
+            curStateFunc()
 
+            self.wakereason = self.REASON_NONE
+            self.mutex.unlock()
 
     def stateName(self, state = None, phase = None):
         if state == None or phase == None:
@@ -125,6 +155,12 @@ class PersonalityBase(QThread):
             phase = self.statephase
 
         return '%s.%s' % (state, self.phaseLookup[phase])
+
+    def reasonName(self, reason = None):
+        if reason == None:
+            reason = self.wakereason
+
+        return self.reasonLookup[reason]
 
     def setState(self, state, phase):
         if state in self.states:

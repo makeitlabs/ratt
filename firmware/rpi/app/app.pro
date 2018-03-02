@@ -52,4 +52,5 @@ DISTFILES += \
     personalities/PersonalityBase.py \
     personalities/PersonalityLaserCutter.py \
     personalities/PersonalitySimpleMotor.py \
-    Logger.py
+    Logger.py \
+    qgpio.py
