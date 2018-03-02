@@ -47,7 +47,6 @@ class PersonalityBase(QThread):
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
     STATE_LOCKOUT_CHECK = 'LockoutCheck'
-    STATE_RFID_LOOKUP = 'RFIDLookup'
     STATE_ACCESS_DENIED = 'AccessDenied'
     STATE_ACCESS_ALLOWED = 'AccessAllowed'
     STATE_SAFETY_CHECK = 'SafetyCheck'
@@ -61,18 +60,19 @@ class PersonalityBase(QThread):
 
     PHASE_ENTER = 0
     PHASE_ACTIVE = 1
-    PHASE_EXIT = 2
+    PHASE_EXIT = 100
 
     phaseLookup = { PHASE_ENTER : 'ENTER', PHASE_ACTIVE : 'ACTIVE', PHASE_EXIT : 'EXIT' }
 
     REASON_NONE = 0
     REASON_TIMEOUT = 1
-    REASON_GPIO = 2
-    REASON_VALID_SCAN = 3
-    REASON_INVALID_SCAN = 4
+    REASON_TIMER = 2
+    REASON_GPIO = 3
+    REASON_VALID_SCAN = 4
+    REASON_INVALID_SCAN = 5
 
-    reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_GPIO : 'GPIO' ,
-                     REASON_VALID_SCAN : 'VALID_SCAN', REASON_INVALID_SCAN : 'INVALID_SCAN'}
+    reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_TIMER : 'TIMER',
+                     REASON_GPIO : 'GPIO' , REASON_VALID_SCAN : 'VALID_SCAN', REASON_INVALID_SCAN : 'INVALID_SCAN'}
 
     stateChanged = pyqtSignal(str, int, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
@@ -82,9 +82,7 @@ class PersonalityBase(QThread):
         return self.stateName()
 
     def __init__(self, loglevel='WARNING', app=None):
-
         QThread.__init__(self)
-
 
         self.cond = QWaitCondition()
         self.mutex = QMutex()
@@ -101,24 +99,22 @@ class PersonalityBase(QThread):
 
         self.app = app
 
-
         self.quit = False
 
-        self.states = {self.STATE_UNINITIALIZED : self._stateUninitialized,
-                       self.STATE_INIT : self._stateInit,
-                       self.STATE_IDLE : self._stateIdle,
-                       self.STATE_LOCKOUT_CHECK : self._stateLockoutCheck,
-                       self.STATE_RFID_LOOKUP : self._stateRFIDLookup,
-                       self.STATE_ACCESS_DENIED : self._stateAccessDenied,
-                       self.STATE_ACCESS_ALLOWED : self._stateAccessAllowed,
-                       self.STATE_SAFETY_CHECK : self._stateSafetyCheck,
-                       self.STATE_SAFETY_CHECK_PASSED : self._stateSafetyCheckPassed,
-                       self.STATE_SAFETY_CHECK_FAILED : self._stateSafetyCheckFailed,
-                       self.STATE_TOOL_ENABLED_INACTIVE : self._stateToolEnabledInactive,
-                       self.STATE_TOOL_ENABLED_ACTIVE : self._stateToolEnabledActive,
-                       self.STATE_TOOL_TIMEOUT_WARNING : self._stateToolTimeoutWarning,
-                       self.STATE_TOOL_TIMEOUT : self._stateToolTimeout,
-                       self.STATE_TOOL_DISABLED : self._stateToolDisabled
+        self.states = {self.STATE_UNINITIALIZED : self.stateUninitialized,
+                       self.STATE_INIT : self.stateInit,
+                       self.STATE_IDLE : self.stateIdle,
+                       self.STATE_LOCKOUT_CHECK : self.stateLockoutCheck,
+                       self.STATE_ACCESS_DENIED : self.stateAccessDenied,
+                       self.STATE_ACCESS_ALLOWED : self.stateAccessAllowed,
+                       self.STATE_SAFETY_CHECK : self.stateSafetyCheck,
+                       self.STATE_SAFETY_CHECK_PASSED : self.stateSafetyCheckPassed,
+                       self.STATE_SAFETY_CHECK_FAILED : self.stateSafetyCheckFailed,
+                       self.STATE_TOOL_ENABLED_INACTIVE : self.stateToolEnabledInactive,
+                       self.STATE_TOOL_ENABLED_ACTIVE : self.stateToolEnabledActive,
+                       self.STATE_TOOL_TIMEOUT_WARNING : self.stateToolTimeoutWarning,
+                       self.STATE_TOOL_TIMEOUT : self.stateToolTimeout,
+                       self.STATE_TOOL_DISABLED : self.stateToolDisabled
                        }
 
         self.state = self.STATE_UNINITIALIZED
@@ -126,60 +122,22 @@ class PersonalityBase(QThread):
 
         self.wakereason = self.REASON_NONE
 
-        self.gpio = GPIO.Controller()
+        self.timer = QTimer()
+        self.timer.setInterval(250)
+        self.timer.setSingleShot(False)
+        self.timer.timeout.connect(self.__timerTick)
+        self.timer.start()
 
-        self.gpio.available_pins = [496, 497, 498, 499, 500, 501, 502, 503]
+        self.timerWake = False
 
-        self.pins = []
-
-        self.pins.append(self.gpio.alloc_pin(496, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(497, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(498, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(499, GPIO.INPUT, self.pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(500, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(501, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(502, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(503, GPIO.OUTPUT))
+        self.__init_gpio()
 
     def descr(self):
         return 'Personality base class.'
 
-    def pinchanged(self, num, state):
-        self.logger.debug('gpio pin changed %d %d' % (num, state))
-        self.mutex.lock()
-        self.wakereason = self.REASON_GPIO
-        self.mutex.unlock()
-        self.cond.wakeAll()
 
-
-    def execute(self):
-        if not self.isRunning():
-            self.start();
-
-    def run(self):
-        self.logger.debug('thread run')
-
-        self.setState(self.STATE_INIT, 0)
-
-        # initialize
-        again = True
-        while again:
-            curStateFunc = self.states[self.state]
-            again = curStateFunc()
-
-        while not self.quit:
-            self.mutex.lock()
-            self.cond.wait(self.mutex)
-            self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
-
-            again = True
-            while again:
-                curStateFunc = self.states[self.state]
-                again = curStateFunc()
-                self.wakereason = self.REASON_NONE
-
-            self.mutex.unlock()
-
+    # returns specified state/phase as a human-friendly string
+    # if state/phase not specified, will return the current state/phase string
     def stateName(self, state = None, phase = None):
         if state == None or phase == None:
             state = self.state
@@ -187,12 +145,15 @@ class PersonalityBase(QThread):
 
         return '%s.%s' % (state, self.phaseLookup[phase])
 
+    # returns the specified wake reason as a human-friendly string, or will return the current wakereason string
     def reasonName(self, reason = None):
         if reason == None:
             reason = self.wakereason
 
         return self.reasonLookup[reason]
 
+    # execute a state change to the specified state and phase
+    # emits the stateChanged signal upon change
     def setState(self, state, phase):
         if state in self.states:
             if state != self.state or phase != self.statePhase:
@@ -209,7 +170,7 @@ class PersonalityBase(QThread):
 
         return False
 
-
+    # store a state/phase for later use, typically for storing where to go after exiting current state
     def setNextState(self, state, phase):
         if state in self.states:
             if state != self.state or phase != self.statePhase:
@@ -224,6 +185,8 @@ class PersonalityBase(QThread):
 
         return False
 
+    # execute a state change to the stored next state/next phase
+    # emits the stateChanged signal upon change
     def goNextState(self):
         self.logger.debug('goNextState %s ==> %s' % (self.stateName(self.state, self.statePhase), self.stateName(self.nextState, self.nextStatePhase)))
         self.state = self.nextState
@@ -231,31 +194,134 @@ class PersonalityBase(QThread):
         self.stateChanged.emit(self.state, self.statePhase)
         return True
 
-
     # shortcut to set the enter phase of the next state and exits the current state through its exit phase
     # (assumes the exit phase will transition to the next state)
     # returns True on success
     def exitAndGoto(self, state):
         return self.setNextState(state, self.PHASE_ENTER) and self.setState(self.state, self.PHASE_EXIT)
 
+    # shortcut to directly go to a new state through its enter phase
+    def goto(self, state):
+        return self.setState(state, self.PHASE_ENTER)
+
+    # shortcut to directly go to the current state active phase (plus an optional active phase offset)
+    def goActive(self, active_phase = 0):
+        return self.setState(self.state, self.PHASE_ACTIVE + active_phase)
+
+    # shortcut conditional for PHASE_ENTER
+    def phENTER(self):
+        return self.statePhase is self.PHASE_ENTER
+
+    # shortcut conditional for PHASE_ACTIVE (with an optional active phase offset)
+    def phACTIVE(self, active_phase = 0):
+        return self.statePhase is (self.PHASE_ACTIVE + active_phase)
+
+    # shortcut conditional for PHASE_EXIT
+    def phEXIT(self):
+        return self.statePhase is self.PHASE_EXIT
+
+
+    def execute(self):
+        if not self.isRunning():
+            self.start();
+
+    def run(self):
+        self.logger.debug('thread run')
+
+        self.setState(self.STATE_INIT, 0)
+
+        # initialize by running through the initial states and phases until a False is returned
+        again = True
+        while again:
+            curStateFunc = self.states[self.state]
+            again = curStateFunc()
+
+        # main thread loop
+        while not self.quit:
+            # go to sleep until something interesting happens (RFID, GPIO, timeouts, etc)
+            # wait will release the lock on the mutex while it waits, but it won't wait if it isn't locked
+            # when it stops waiting we'll have the lock again
+            self.mutex.lock()
+            self.cond.wait(self.mutex)
+
+            self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
+
+            # run the state machine until a False is returned (meaning go back to waiting)
+            again = True
+            while again:
+                curStateFunc = self.states[self.state]
+                again = curStateFunc()
+                self.wakereason = self.REASON_NONE
+
+            self.mutex.unlock()
+
+
+    # 4Hz timer tick
+    def __timerTick(self):
+        self.mutex.lock()
+        wake = self.timerWake
+        if wake:
+            self.wakereason = self.REASON_TIMER
+        self.mutex.unlock()
+
+        if wake:
+            self.cond.wakeAll()
+
+    # gpio initialization
+    def __init_gpio(self):
+        self.gpio = GPIO.Controller()
+        self.pins = []
+        self._init_gpio_pins()
+
+    # this is the callback for when one of the specified GPIO input pins has changed state
+    # it wakes the thread with REASON_GPIO
+    def __pinchanged(self, num, state):
+        self.logger.debug('gpio pin changed %d %d' % (num, state))
+        self.mutex.lock()
+        self.wakereason = self.REASON_GPIO
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
+    #-----------------------------------------------------------------------------------------
+    # on the RATT platform the 16-bit I/O expander appears as /sys/class/gpio/gpiochip496
+    # the first 8 gpios are used for personality implementation (motor control, sensing, etc.)
+    #
+    # in most configurations the hardware forces 496..499 as inputs and 500..503 as outputs
+    # it is technically possible to use these in other configurations via the 2x8 I/O header
+    # since it just exposes the expander pins directly but it is better to stick to the
+    # convention if possible
+    #-----------------------------------------------------------------------------------------
+    def _init_gpio_pins(self):
+        self.gpio.available_pins = [496, 497, 498, 499, 500, 501, 502, 503]
+        self.pins.append(self.gpio.alloc_pin(496, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(497, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(498, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(499, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(500, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(501, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(502, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(503, GPIO.OUTPUT))
+
+
 
     '''
     ---------------------------------------------------------------------------------------------------------------
     '''
 
-    def _stateUninitialized(self):
+    def stateUninitialized(self):
         pass
 
-    def _stateInit(self):
+    def stateInit(self):
         self.logger.debug('initialize')
         self.pins[4].reset()
         self.pins[5].reset()
         self.pins[6].reset()
         self.pins[7].reset()
-        return self.setState(self.STATE_IDLE, self.PHASE_ENTER)
+        return self.goto(self.STATE_IDLE)
 
-    def _validScanHandler(self, record):
-        self.logger.debug('scanned rfid')
+    # slot to handle a valid RFID scan (whether that member is allowed or not)
+    def slotValidScan(self, record):
+        self.logger.debug('valid scan: %s (%s)' % (record.name, record.allowed))
 
         self.mutex.lock()
         if record.valid and record.allowed:
@@ -266,7 +332,8 @@ class PersonalityBase(QThread):
         self.mutex.unlock()
         self.cond.wakeAll()
 
-    def _invalidScanHandler(self, reason):
+    # slot to handle an invalid RFID scan (unknown tag, bad tag, error, etc.)
+    def slotInvalidScan(self, reason):
         self.logger.debug('invalid scan: %s' % reason)
 
         self.mutex.lock()
@@ -274,16 +341,15 @@ class PersonalityBase(QThread):
         self.mutex.unlock()
         self.cond.wakeAll()
 
-    def _stateIdle(self):
-        if self.statePhase is self.PHASE_ENTER:
-            self.logger.debug('idle enter')
-            self.app.validScan.connect(self._validScanHandler)
-            self.app.invalidScan.connect(self._invalidScanHandler)
+    def stateIdle(self):
+        if self.phENTER():
+            self.app.validScan.connect(self.slotValidScan)
+            self.app.invalidScan.connect(self.slotInvalidScan)
             self.pins[4].set()
-            return self.setState(self.STATE_IDLE, self.PHASE_ACTIVE)
 
-        elif self.statePhase is self.PHASE_ACTIVE:
-            self.logger.debug('idle')
+            return self.goActive()
+
+        elif self.phACTIVE():
 
             if self.wakereason == self.REASON_VALID_SCAN:
                 return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
@@ -294,60 +360,64 @@ class PersonalityBase(QThread):
             # otherwise thread goes back to waiting
             return False
 
-        elif self.statePhase is self.PHASE_EXIT:
-            self.logger.debug('idle exit')
-            self.app.validScan.disconnect(self._validScanHandler)
-            self.app.invalidScan.disconnect(self._invalidScanHandler)
+        elif self.phEXIT:
+            self.app.validScan.disconnect(self.slotValidScan)
+            self.app.invalidScan.disconnect(self.slotInvalidScan)
 
             return self.goNextState()
 
-
-    def _stateLockoutCheck(self):
+    def stateLockoutCheck(self):
         pass
 
-    def _stateRFIDLookup(self):
-        pass
+    def stateAccessDenied(self):
+        return self.goto(self.STATE_IDLE)
 
-    def _stateAccessDenied(self):
-        return self.setState(self.STATE_IDLE, self.PHASE_ENTER)
-
-    def _stateAccessAllowed(self):
-        if self.statePhase is self.PHASE_ENTER:
+    def stateAccessAllowed(self):
+        if self.phENTER():
+            self.timerWake = True
             self.pins[5].set()
-            return self.setState(self.STATE_ACCESS_ALLOWED, self.PHASE_ACTIVE)
+            return self.goActive()
 
-        elif self.statePhase is self.PHASE_ACTIVE:
-            self.logger.debug('access allowed')
+        elif self.phACTIVE():
 
             if self.wakereason == self.REASON_GPIO and self.pins[0].read() == 0:
                 return self.exitAndGoto(self.STATE_IDLE)
 
+            elif self.wakereason == self.REASON_TIMER:
+                if self.pins[7].read() == 0:
+                    self.pins[7].set()
+                else:
+                    self.pins[7].reset()
+
             return False
-        elif self.statePhase is self.PHASE_EXIT:
+        elif self.phEXIT():
             self.pins[5].reset()
+            self.pins[7].reset()
+            self.timerWake = False
+
             return self.goNextState()
+
+
+    def stateSafetyCheck(self):
         pass
 
-    def _stateSafetyCheck(self):
+    def stateSafetyCheckPassed(self):
         pass
 
-    def _stateSafetyCheckPassed(self):
+    def stateSafetyCheckFailed(self):
         pass
 
-    def _stateSafetyCheckFailed(self):
+    def stateToolEnabledActive(self):
         pass
 
-    def _stateToolEnabledActive(self):
+    def stateToolEnabledInactive(self):
         pass
 
-    def _stateToolEnabledInactive(self):
+    def stateToolTimeoutWarning(self):
         pass
 
-    def _stateToolTimeoutWarning(self):
+    def stateToolTimeout(self):
         pass
 
-    def _stateToolTimeout(self):
-        pass
-
-    def _stateToolDisabled(self):
+    def stateToolDisabled(self):
         pass

@@ -81,6 +81,7 @@ class RattAppEngine(QQmlApplicationEngine):
         # temporary for test; will move to a state machine eventually
         self.netWorker.fetchAcl()
 
+        # begin executing the personality state machine
         self.personality.execute()
 
     def __initPersonality__(self):
