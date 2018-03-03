@@ -40,7 +40,7 @@ from PyQt5.QtCore import QObject, QThread, QMutex, QWaitCondition, QTimer
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from Logger import Logger
 from MemberRecord import MemberRecord
-import qgpio as GPIO
+import QtGPIO as GPIO
 
 
 class PersonalityBase(QThread):

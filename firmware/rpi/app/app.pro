@@ -52,5 +52,5 @@ DISTFILES += \
     personalities/PersonalityBase.py \
     personalities/PersonalityLaserCutter.py \
     Logger.py \
-    qgpio.py \
-    personalities/PersonalitySimple.py
+    personalities/PersonalitySimple.py \
+    QtGPIO.py

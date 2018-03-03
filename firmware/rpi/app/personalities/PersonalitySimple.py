@@ -37,7 +37,7 @@
 #
 
 from PersonalityBase import PersonalityBase
-from qgpio import LOW, HIGH
+from QtGPIO import LOW, HIGH
 
 class Personality(PersonalityBase):
     #############################################
