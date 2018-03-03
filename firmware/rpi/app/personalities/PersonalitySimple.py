@@ -247,6 +247,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateReportIssue(self):
         if self.phENTER:
+            self.wakeOnRFID(True)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -256,5 +257,6 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.wakeOnRFID(False)
             return self.goNextState()
 

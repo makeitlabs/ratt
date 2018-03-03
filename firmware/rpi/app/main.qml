@@ -161,11 +161,6 @@ ApplicationWindow {
 
                 onCurrentItemChanged: {
                     currentItem.show();
-
-                    status.keyEscActive = currentItem.keyEscActive
-                    status.keyDownActive = currentItem.keyDownActive
-                    status.keyUpActive = currentItem.keyUpActive
-                    status.keyReturnActive = currentItem.keyReturnActive
                 }
                 focus: true
             }

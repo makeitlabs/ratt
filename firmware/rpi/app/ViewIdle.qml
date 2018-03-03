@@ -42,9 +42,6 @@ View {
     id: root
     name: "Idle"
 
-    keyEscActive: true
-
-
     function keyEscape(pressed) {
         if (pressed)
             issueTimer.start();
@@ -119,6 +116,7 @@ View {
     function _show() {
         animTimer.restart()
         root.state = "logo"
+        status.keyEscActive = true;
     }
 
 

@@ -43,18 +43,49 @@ View {
     id: root
     name: "Issue"
 
-    keyReturnActive: true
-    keyUpActive: true
-    keyDownActive: true
+    property string currentIssue: ""
 
     Keys.forwardTo: [issueTable]
+
+    Connections {
+        target: personality
+
+        onValidScan: {
+            if (root.state == "scan") {
+                root.state = "thank";
+                doneTimer.start();
+            }
+        }
+    }
+
+    function updateActiveKeys() {
+        switch(state) {
+        case "list":
+            status.setKeyActives(true, true, true, true);
+            break;
+        case "scan":
+            status.setKeyActives(true, false, false, false);
+            break;
+        case "thank":
+            status.setKeyActives(false, false, false, false);
+        }
+    }
+
+    onStateChanged: {
+        updateActiveKeys();
+    }
 
     function done() {
         appWindow.uiEvent('ReportIssueDone');
     }
 
+    function keyEscape(pressed) {
+        if (pressed && (state == "list" || state == "scan"))
+            done();
+        return true;
+    }
+
     function keyReturn(pressed) {
-        done();
         return false;
     }
 
@@ -71,6 +102,9 @@ View {
         issueTable.selection.clear();
         issueTable.selection.select(0, 0);
         issueTable.currentRow = 0;
+
+        root.state = "list"
+        updateActiveKeys();
     }
 
     function _hide() {
@@ -87,6 +121,30 @@ View {
             issueTable.forceActiveFocus();
         }
     }
+
+    Timer {
+        id: doneTimer
+        interval: 2500
+        running: false
+        repeat: false
+        onTriggered: {
+            done();
+        }
+    }
+
+
+    states: [
+        State {
+            name: "list"
+        },
+        State {
+            name: "scan"
+        },
+        State {
+            name: "thank"
+        }
+    ]
+
 
     ListModel {
         id: issuesModel
@@ -113,14 +171,15 @@ View {
 
     ColumnLayout {
         anchors.fill: parent
+        anchors.margins: 2
+
         Label {
             Layout.fillWidth: true
-            height: 12
             text: "Report an Issue"
-            horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 12
             font.weight: Font.DemiBold
-            color: "#000000"
+            color: "#003399"
+            horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
 
@@ -128,7 +187,8 @@ View {
             id: issueTable
             Layout.fillWidth: true
             Layout.fillHeight: true
-            enabled: true
+            visible: root.state == "list"
+
             model: issuesModel
 
             style: TableViewStyle { }
@@ -137,11 +197,17 @@ View {
 
             selectionMode: SelectionMode.SingleSelection
 
+            selection.onSelectionChanged: {
+                var foo;
+                issueTable.selection.forEach( function(rowIndex) { foo = rowIndex; } )
+                currentIssue = issuesModel.get(foo).name;
+                console.info("selectionchanged currentRow=" + issueTable.currentRow + " foo=" + foo + " currentIssue=" + currentIssue);
+            }
+
             TableViewColumn {
                 role: "name"
                 title: "Name"
             }
-
 
             itemDelegate: Text {
                 text: styleData.value
@@ -153,10 +219,68 @@ View {
             }
 
             Keys.onPressed: {
-                if (event.key !== Qt.Key_Up && event.key !== Qt.Key_Down) {
-                    event.accepted = false;
+                if (event.key === Qt.Key_Escape) {
+                    done();
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return) {
+                    if (root.state == "list")
+                        root.state = "scan";
+                    event.accepted = true;
                 }
             }
+        }
+
+        ColumnLayout {
+            id: colScan
+            visible: root.state == "scan" || root.state == "thank"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Label {
+                Layout.fillWidth: true
+                visible: root.state == "scan"
+                text: currentIssue
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 12
+                font.weight: Font.Normal
+                color: "#880000"
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Label {
+                Layout.fillWidth: true
+                visible: root.state == "scan"
+                text: "Please scan your RFID badge to report the issue."
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 10
+                font.weight: Font.Normal
+                color: "#000000"
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
+            }
+            Label {
+                Layout.fillWidth: true
+                visible: root.state == "thank"
+                text: activeMemberRecord.name
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 12
+                font.weight: Font.DemiBold
+                color: "#000099"
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
+            }
+            Label {
+                Layout.fillWidth: true
+                visible: root.state == "thank"
+                text: "Thanks for your report."
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 10
+                font.weight: Font.Normal
+                color: "#440099"
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
+            }
+
         }
     }
 }

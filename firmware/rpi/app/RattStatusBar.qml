@@ -54,6 +54,13 @@ StatusBar {
     property color activeKeyColor: "#000000"
     property color inactiveKeyColor: "#999999"
 
+    function setKeyActives(esc, down, up, ret) {
+        keyEscActive = esc;
+        keyDownActive = down;
+        keyUpActive = up;
+        keyReturnActive = ret;
+    }
+
     RowLayout {
         anchors.fill: parent
 

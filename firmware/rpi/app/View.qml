@@ -45,11 +45,6 @@ Rectangle {
     property bool shown: false
     property string name: "View"
 
-    property bool keyEscActive: false
-    property bool keyDownActive: false
-    property bool keyUpActive: false
-    property bool keyReturnActive: false
-
     color: "#dddddd"
 
     function show() {
@@ -93,13 +88,13 @@ Rectangle {
     }
 
     function keyHandler(event, pressed) {
-        if (keyEscActive && event.key === Qt.Key_Escape) {
+        if (status.keyEscActive && event.key === Qt.Key_Escape) {
             return keyEscape(pressed);
-        } else if (keyDownActive && event.key === Qt.Key_Down) {
+        } else if (status.keyDownActive && event.key === Qt.Key_Down) {
             return keyDown(pressed);
-        } else if (keyUpActive && event.key === Qt.Key_Up) {
+        } else if (status.keyUpActive && event.key === Qt.Key_Up) {
             return keyUp(pressed);
-        } else if (keyReturnActive && event.key === Qt.Key_Return) {
+        } else if (status.keyReturnActive && event.key === Qt.Key_Return) {
             return keyReturn(pressed);
         }
         return false;
