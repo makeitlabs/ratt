@@ -39,9 +39,10 @@
 from PersonalityBase import PersonalityBase
 
 class Personality(PersonalityBase):
+    #############################################
+    ## Tool Personality: Laser Cutter
+    #############################################
+    PERSONALITY_DESCRIPTION = 'Laser Cutter'
 
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
-
-    def descr(self):
-        return 'Laser Cutter'

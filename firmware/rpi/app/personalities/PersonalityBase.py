@@ -42,7 +42,10 @@ from Logger import Logger
 from MemberRecord import MemberRecord
 import qgpio as GPIO
 
+
 class PersonalityBase(QThread):
+    PERSONALITY_DESCRIPTION = 'Base'
+
     PHASE_ENTER = 0
     PHASE_ACTIVE = 1
     PHASE_EXIT = 100
@@ -104,7 +107,7 @@ class PersonalityBase(QThread):
         self.__init_gpio()
 
     def descr(self):
-        return 'Personality base class.'
+        return self.PERSONALITY_DESCRIPTION
 
 
     # returns specified state/phase as a human-friendly string

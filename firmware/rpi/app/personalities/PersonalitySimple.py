@@ -39,6 +39,15 @@
 from PersonalityBase import PersonalityBase
 
 class Personality(PersonalityBase):
+    #############################################
+    ## Tool Personality: Simple Tool
+    #############################################
+    PERSONALITY_DESCRIPTION = 'Simple'
+
+    #############################################
+    ## State definitions:
+    ##     STATE_NAME = 'StateName'
+    #############################################
     STATE_UNINITIALIZED = 'Uninitialized'
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
@@ -57,6 +66,9 @@ class Personality(PersonalityBase):
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
 
+        #############################################
+        ## Map states to state handler functions
+        #############################################
         self.states = {self.STATE_UNINITIALIZED : self.stateUninitialized,
                        self.STATE_INIT : self.stateInit,
                        self.STATE_IDLE : self.stateIdle,
@@ -73,17 +85,19 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_DISABLED : self.stateToolDisabled
                        }
 
+        # Set initial state and phase
         self.state = self.STATE_UNINITIALIZED
         self.statePhase = self.PHASE_ACTIVE
 
-
-    def descr(self):
-        return 'Simple'
-
-
+    #############################################
+    ## STATE_UNINITIALIZED
+    #############################################
     def stateUninitialized(self):
         pass
 
+    #############################################
+    ## STATE_INIT
+    #############################################
     def stateInit(self):
         self.logger.debug('initialize')
         self.pins[4].reset()
@@ -92,7 +106,9 @@ class Personality(PersonalityBase):
         self.pins[7].reset()
         return self.goto(self.STATE_IDLE)
 
-
+    #############################################
+    ## STATE_IDLE
+    #############################################
     def stateIdle(self):
         if self.phENTER():
             self.wakeOnRFID(True)
@@ -113,12 +129,21 @@ class Personality(PersonalityBase):
             self.wakeOnRFID(False)
             return self.goNextState()
 
+    #############################################
+    ## STATE_LOCKOUT_CHECK
+    #############################################
     def stateLockoutCheck(self):
         pass
 
+    #############################################
+    ## STATE_ACCESS_DENIED
+    #############################################
     def stateAccessDenied(self):
         return self.goto(self.STATE_IDLE)
 
+    #############################################
+    ## STATE_ACCESS_ALLOWED
+    #############################################
     def stateAccessAllowed(self):
         if self.phENTER():
             self.wakeOnTimer(enabled=True, interval=1000)
@@ -149,26 +174,50 @@ class Personality(PersonalityBase):
             return self.goNextState()
 
 
+    #############################################
+    ## STATE_SAFETY_CHECK
+    #############################################
     def stateSafetyCheck(self):
         pass
 
+    #############################################
+    ## STATE_SAFETY_CHECK_PASSED
+    #############################################
     def stateSafetyCheckPassed(self):
         pass
 
+    #############################################
+    ## STATE_SAFETY_CHECK_FAILED
+    #############################################
     def stateSafetyCheckFailed(self):
         pass
 
+    #############################################
+    ## STATE_TOOL_ENABLED_ACTIVE
+    #############################################
     def stateToolEnabledActive(self):
         pass
 
+    #############################################
+    ## STATE_TOOL_ENABLED_INACTIVE
+    #############################################
     def stateToolEnabledInactive(self):
         pass
 
+    #############################################
+    ## STATE_TOOL_TIMEOUT_WARNING
+    #############################################
     def stateToolTimeoutWarning(self):
         pass
 
+    #############################################
+    ## STATE_TOOL_TIMEOUT
+    #############################################
     def stateToolTimeout(self):
         pass
 
+    #############################################
+    ## STATE_TOOL_DISABLED
+    #############################################
     def stateToolDisabled(self):
         pass

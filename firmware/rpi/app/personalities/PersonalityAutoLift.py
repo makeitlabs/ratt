@@ -39,9 +39,10 @@
 from PersonalityBase import PersonalityBase
 
 class Personality(PersonalityBase):
+    #############################################
+    ## Tool Personality: Auto Lift
+    #############################################
+    PERSONALITY_DESCRIPTION = 'Auto Lift'
 
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
-
-    def descr(self):
-        return 'Auto Lift'
