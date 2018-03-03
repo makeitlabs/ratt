@@ -110,10 +110,12 @@ class PersonalityBase(QThread):
         self.timerStart.connect(self.timer.start)
         self.timerStop.connect(self.timer.stop)
 
-        self.app.rfid().tagScan.connect(self.tagScanHandler)
+        self.app.rfid.tagScan.connect(self.tagScanHandler)
 
         # holds the currently active member record after RFID scan and ACL lookup
         self.activeMemberRecord = MemberRecord()
+
+        # expose the active member record to QML
         self.app.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
         qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
 
@@ -304,7 +306,7 @@ class PersonalityBase(QThread):
     def tagScanHandler(self, tag, hash, time, debugText):
         self.logger.debug('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
 
-        result = self.app.netWorker().searchAcl(hash)
+        result = self.app.netWorker.searchAcl(hash)
 
         if result != []:
             record = MemberRecord()

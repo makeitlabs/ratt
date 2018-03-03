@@ -113,9 +113,11 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self._rfid.monitor()
 
+    @property
     def rfid(self):
         return self._rfid
 
+    @property
     def netWorker(self):
         return self._netWorker
 
