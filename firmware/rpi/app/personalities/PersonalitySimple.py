@@ -125,7 +125,7 @@ class Personality(PersonalityBase):
             # otherwise thread goes back to waiting
             return False
 
-        elif self.phEXIT:
+        elif self.phEXIT():
             self.wakeOnRFID(False)
             return self.goNextState()
 
