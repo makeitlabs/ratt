@@ -42,13 +42,10 @@ from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from RattConfig import RattConfig
 from NetWorker import NetWorker
 from RFID import RFID
-from MemberRecord import MemberRecord
 from Logger import Logger
 import sys
 
 class RattAppEngine(QQmlApplicationEngine):
-    validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
-    invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
@@ -64,22 +61,19 @@ class RattAppEngine(QQmlApplicationEngine):
         self.logger.info('Initializing RATT System')
         self.debug = self.logger.isDebug()
 
-        # iniialize the node personality and the other necessary modules
-        self.__initPersonality__()
+        # initialize the node personality and the other necessary modules
         self.__initSystem__()
+        self.__initPersonality__()
 
         # create context properties so certain objects can be accessed from QML
         self.rootContext().setContextProperty("appEngine", self)
         self.rootContext().setContextProperty("config", self.config)
         self.rootContext().setContextProperty("personality", self.personality)
-        self.rootContext().setContextProperty("netWorker", self.netWorker)
-        self.rootContext().setContextProperty("rfid", self.rfid)
-        self.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
-
-        qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
+        self.rootContext().setContextProperty("netWorker", self._netWorker)
+        self.rootContext().setContextProperty("rfid", self._rfid)
 
         # temporary for test; will move to a state machine eventually
-        self.netWorker.fetchAcl()
+        self._netWorker.fetchAcl()
 
         # begin executing the personality state machine
         self.personality.execute()
@@ -101,44 +95,30 @@ class RattAppEngine(QQmlApplicationEngine):
 
     def __initSystem__(self):
         # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
-        self.netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'))
-        self.netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
-                                        caCertFile=self.config.value('SSL.CaCertFile'),
-                                        clientCertFile=self.config.value('SSL.ClientCertFile'),
-                                        clientKeyFile=self.config.value('SSL.ClientKeyFile'))
+        self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'))
+        self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
+                                         caCertFile=self.config.value('SSL.CaCertFile'),
+                                         clientCertFile=self.config.value('SSL.ClientCertFile'),
+                                         clientKeyFile=self.config.value('SSL.ClientKeyFile'))
 
-        self.netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
-                               password=self.config.value('Auth.HttpAuthPassword'))
+        self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
+                                password=self.config.value('Auth.HttpAuthPassword'))
 
-        self.netWorker.setUrls(acl=self.config.value('Auth.AclUrl'),
-                               log=self.config.value('Auth.LogUrl'))
+        self._netWorker.setUrls(acl=self.config.value('Auth.AclUrl'),
+                                log=self.config.value('Auth.LogUrl'))
 
         # RFID reader
-        self.rfid = RFID(portName=self.config.value('RFID.SerialPort'),
+        self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),
                          loglevel=self.config.value('RFID.LogLevel'))
 
-        # connect tagScan signal to our handler slot
-        self.rfid.tagScan.connect(self.tagScanHandler)
-        self.rfid.monitor()
+        self._rfid.monitor()
 
-        # holds the currently active member record after RFID scan and ACL lookup
-        self.activeMemberRecord = MemberRecord()
+    def rfid(self):
+        return self._rfid
 
-    def tagScanHandler(self, tag, hash, time, debugText):
-        self.logger.debug('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
+    def netWorker(self):
+        return self._netWorker
 
-        result = self.netWorker.searchAcl(hash)
 
-        if result != []:
-            success = self.activeMemberRecord.parseRecord(result)
 
-            if success:
-                self.validScan.emit(self.activeMemberRecord)
-            else:
-                self.invalidScan.emit('error creating MemberRecord')
-                self.logger.error('error creating MemberRecord')
-        else:
-            self.activeMemberRecord.clearRecord()
-            self.invalidScan.emit('unknown rfid tag')
-            self.logger.info('unknown rfid tag')
 

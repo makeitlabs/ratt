@@ -61,7 +61,7 @@ Item {
     }
 
     Connections {
-        target: appEngine
+        target: personality
         onValidScan: {
             if (record.allowed) {
                 rfidSuccessAudio.play();

@@ -38,9 +38,12 @@
 
 from PyQt5.QtCore import QObject, QThread, QMutex, QWaitCondition, QTimer
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtQml import qmlRegisterType
 from Logger import Logger
+from RFID import RFID
 from MemberRecord import MemberRecord
 import QtGPIO as GPIO
+import copy
 
 
 class PersonalityBase(QThread):
@@ -67,6 +70,9 @@ class PersonalityBase(QThread):
 
     timerStart = pyqtSignal(int, name='timerStart', arguments=['msec'])
     timerStop = pyqtSignal()
+
+    validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
+    invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
     @pyqtProperty(str, notify=stateChanged)
     def currentState(self):
@@ -103,6 +109,13 @@ class PersonalityBase(QThread):
 
         self.timerStart.connect(self.timer.start)
         self.timerStop.connect(self.timer.stop)
+
+        self.app.rfid().tagScan.connect(self.tagScanHandler)
+
+        # holds the currently active member record after RFID scan and ACL lookup
+        self.activeMemberRecord = MemberRecord()
+        self.app.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
+        qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
 
         self.__init_gpio()
 
@@ -281,15 +294,37 @@ class PersonalityBase(QThread):
     def wakeOnRFID(self, enabled):
         self.logger.debug('wakeOnRFID enabled=%s' % enabled)
         if enabled:
-            self.app.validScan.connect(self.__slotValidScan)
-            self.app.invalidScan.connect(self.__slotInvalidScan)
+            self.validScan.connect(self.__slotValidScan)
+            self.invalidScan.connect(self.__slotInvalidScan)
         else:
-            self.app.validScan.disconnect(self.__slotValidScan)
-            self.app.invalidScan.disconnect(self.__slotInvalidScan)
+            self.validScan.disconnect(self.__slotValidScan)
+            self.invalidScan.disconnect(self.__slotInvalidScan)
+
+
+    def tagScanHandler(self, tag, hash, time, debugText):
+        self.logger.debug('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
+
+        result = self.app.netWorker().searchAcl(hash)
+
+        if result != []:
+            record = MemberRecord()
+            success = record.parseRecord(result)
+
+            if success:
+                self.validScan.emit(record)
+            else:
+                self.invalidScan.emit('error creating MemberRecord')
+                self.logger.error('error creating MemberRecord')
+        else:
+            self.invalidScan.emit('unknown rfid tag')
+            self.logger.info('unknown rfid tag')
+
 
     # slot to handle a valid RFID scan (whether that member is allowed or not)
     def __slotValidScan(self, record):
         self.logger.debug('valid scan: %s (%s)' % (record.name, record.allowed))
+
+        self.activeMemberRecord.copy(source=record)
 
         self.mutex.lock()
         if record.valid and record.allowed:

@@ -221,7 +221,7 @@ Item {
             border.color: "#000000"
 
             Connections {
-                target: appEngine
+                target: personality
                 onValidScan: {
                     lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
                 }
@@ -235,7 +235,7 @@ Item {
                 anchors.margins: 6
                 Label {
                     color: "white"
-                    text: "Last Record Lookup"
+                    text: "Active Member Record"
                     font.pixelSize: 12
                     font.bold: true
                 }

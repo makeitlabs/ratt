@@ -43,12 +43,25 @@ class MemberRecord(QObject):
 
     def __init__(self, initRecord = []):
         QObject.__init__(self)
-        self.clearRecord()
+        self.clear()
 
         if initRecord != []:
             self.parseRecord(initRecord)
 
-    def clearRecord(self):
+    def copy(self, source):
+        self._member = source.name
+        self._nickname = source.nickname
+        self._level = source.level
+        self._tagid = source.tag
+        self._lastaccessed = source.lastAccessed
+        self._warning = source.warningText
+        self._plan = source.plan
+        self._allowed = source.allowed
+        self._isValid = source.valid
+        self.recordChanged.emit()
+
+
+    def clear(self):
         self._member = ''
         self._nickname = ''
         self._level = -1
@@ -74,7 +87,7 @@ class MemberRecord(QObject):
             self.recordChanged.emit()
 
         except:
-            self.clearRecord()
+            self.clear()
 
         return self._isValid
 

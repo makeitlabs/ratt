@@ -112,6 +112,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateIdle(self):
         if self.phENTER:
+            self.activeMemberRecord.clear()
             self.wakeOnRFID(True)
             return self.goActive()
 
