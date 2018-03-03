@@ -93,7 +93,14 @@ Rectangle {
         }
     ]
 
+    function show() {
+        animTimer.restart()
+        root.state = "logo"
+    }
+
+
     Timer {
+        id: animTimer
         interval: 5000
         running: true
         repeat: true

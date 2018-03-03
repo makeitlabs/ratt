@@ -63,14 +63,18 @@ Item {
     Connections {
         target: personality
         onValidScan: {
-            if (record.allowed) {
-                rfidSuccessAudio.play();
-            } else {
-                rfidFailureAudio.play();
+            if (personality.currentState === "Idle.ACTIVE") {
+                if (record.allowed) {
+                    rfidSuccessAudio.play();
+                } else {
+                    rfidFailureAudio.play();
+                }
             }
         }
         onInvalidScan: {
-            rfidErrorAudio.play();
+            if (personality.currentState === "Idle.ACTIVE") {
+                rfidErrorAudio.play();
+            }
         }
     }
 }

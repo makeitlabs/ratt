@@ -46,8 +46,56 @@ ApplicationWindow {
     width: 1024
     height: 768
 
+    signal uiEvent(string evt)
+
+    Component.onCompleted: {
+        appWindow.uiEvent.connect(personality.slotUIEvent)
+    }
+
+    Connections {
+        target: personality
+
+        Component.onCompleted: {
+            console.info("pers current state" + personality.currentState);
+        }
+
+        onCurrentStateChanged: {
+            console.info("state changed " + personality.currentState);
+
+        }
+
+
+        function switchTo(newItem) {
+            if (stack.currentItem !== newItem)
+                stack.replace(newItem)
+        }
+
+        onStateChanged: {
+            console.info("current state changed " + state + ":" + phase);
+
+            switch (state) {
+            case "Idle":
+                switchTo(viewIdle)
+                break;
+            case "AccessAllowed":
+            case "AccessDenied":
+            case "RFIDError":
+                switchTo(viewAccess)
+                break;
+            }
+        }
+    }
+
     RattSounds {
         id: sound
+    }
+    ViewIdle {
+        id: viewIdle
+        visible: false
+    }
+    ViewAccess {
+        id: viewAccess
+        visible: false
     }
 
     Rectangle {
@@ -78,7 +126,7 @@ ApplicationWindow {
             }
 
             Keys.onPressed: {
-                sound.keyAudio.play();
+                //sound.keyAudio.play();
 
                 if (event.key === Qt.Key_Escape) {
                     console.log("esc");
@@ -89,13 +137,10 @@ ApplicationWindow {
                     console.log("up");
                 } else if (event.key === Qt.Key_Return) {
                     console.log("return");
+
                 }
             }
 
-            ViewIdle {
-                id: viewIdle
-                visible: false
-            }
 
             StackView {
                 id: stack
@@ -104,6 +149,10 @@ ApplicationWindow {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 initialItem: viewIdle
+
+                onCurrentItemChanged: {
+                    currentItem.show();
+                }
             }
         }
     }

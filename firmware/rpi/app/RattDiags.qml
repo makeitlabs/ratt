@@ -222,12 +222,21 @@ Item {
 
             Connections {
                 target: personality
-                onValidScan: {
-                    lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
-                }
                 onInvalidScan: {
                     lookupRect.border.color = "#999900"
                     invalidReason.text = reason;
+                }
+            }
+
+            Connections {
+                target: activeMemberRecord
+
+                onRecordChanged: {
+                    if (!activeMemberRecord.valid) {
+                        lookupRect.border.color = "#000000"
+                    } else {
+                        lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
+                    }
                 }
             }
             ColumnLayout {

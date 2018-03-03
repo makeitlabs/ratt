@@ -55,6 +55,7 @@ class Personality(PersonalityBase):
     STATE_LOCKOUT_CHECK = 'LockoutCheck'
     STATE_ACCESS_DENIED = 'AccessDenied'
     STATE_ACCESS_ALLOWED = 'AccessAllowed'
+    STATE_RFID_ERROR = 'RFIDError'
     STATE_SAFETY_CHECK = 'SafetyCheck'
     STATE_SAFETY_CHECK_PASSED = 'SafetyCheckPassed'
     STATE_SAFETY_CHECK_FAILED = 'SafetyCheckFailed'
@@ -76,6 +77,7 @@ class Personality(PersonalityBase):
                        self.STATE_LOCKOUT_CHECK : self.stateLockoutCheck,
                        self.STATE_ACCESS_DENIED : self.stateAccessDenied,
                        self.STATE_ACCESS_ALLOWED : self.stateAccessAllowed,
+                       self.STATE_RFID_ERROR : self.stateRFIDError,
                        self.STATE_SAFETY_CHECK : self.stateSafetyCheck,
                        self.STATE_SAFETY_CHECK_PASSED : self.stateSafetyCheckPassed,
                        self.STATE_SAFETY_CHECK_FAILED : self.stateSafetyCheckFailed,
@@ -117,11 +119,12 @@ class Personality(PersonalityBase):
             return self.goActive()
 
         elif self.phACTIVE:
-            if self.wakereason == self.REASON_VALID_SCAN:
+            if self.wakereason == self.REASON_RFID_ALLOWED:
                 return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
-
-            if self.wakereason == self.REASON_INVALID_SCAN:
+            elif self.wakereason == self.REASON_RFID_DENIED:
                 return self.exitAndGoto(self.STATE_ACCESS_DENIED)
+            elif self.wakereason == self.REASON_RFID_ERROR:
+                return self.exitAndGoto(self.STATE_RFID_ERROR)
 
             # otherwise thread goes back to waiting
             return False
@@ -139,37 +142,50 @@ class Personality(PersonalityBase):
     #############################################
     ## STATE_ACCESS_DENIED
     #############################################
+    def stateRFIDError(self):
+        if self.phENTER:
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
+
+    #############################################
+    ## STATE_ACCESS_DENIED
+    #############################################
     def stateAccessDenied(self):
-        return self.goto(self.STATE_IDLE)
+        if self.phENTER:
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
+
 
     #############################################
     ## STATE_ACCESS_ALLOWED
     #############################################
     def stateAccessAllowed(self):
         if self.phENTER:
-            self.wakeOnTimer(enabled=True, interval=1000)
             return self.goActive()
 
         elif self.phACTIVE:
-            if self.wakereason == self.REASON_GPIO and self.pins[1].get() == 0:
-                return self.goActive(1)
+            if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
+                return self.exitAndGoto(self.STATE_IDLE)
 
             return False
 
-        elif self.phACTIVEn(1):
-            if self.wakereason == self.REASON_GPIO and self.pins[0].get() == 0:
-                return self.exitAndGoto(self.STATE_IDLE)
-
-            if self.wakereason == self.REASON_TIMER:
-                if self.pins[7].get() == 0:
-                    self.pins[7].set(HIGH)
-                else:
-                    self.pins[7].set(LOW)
-
         elif self.phEXIT:
-            self.pins[7].set(LOW)
-            self.wakeOnTimer(enabled=False)
-
             return self.goNextState()
 
 

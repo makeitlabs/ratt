@@ -91,7 +91,6 @@ class MemberRecord(QObject):
 
         return self._isValid
 
-
     @pyqtProperty(str, notify=recordChanged)
     def name(self):
         return self._member

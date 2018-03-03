@@ -59,13 +59,18 @@ class PersonalityBase(QThread):
     REASON_TIMEOUT = 1
     REASON_TIMER = 2
     REASON_GPIO = 3
-    REASON_VALID_SCAN = 4
-    REASON_INVALID_SCAN = 5
+    REASON_RFID_ALLOWED = 4
+    REASON_RFID_DENIED = 5
+    REASON_RFID_ERROR = 6
+    REASON_UI = 7
 
     reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_TIMER : 'TIMER',
-                     REASON_GPIO : 'GPIO' , REASON_VALID_SCAN : 'VALID_SCAN', REASON_INVALID_SCAN : 'INVALID_SCAN'}
+                     REASON_GPIO : 'GPIO' ,
+                     REASON_RFID_ALLOWED : 'RFID_ALLOWED', REASON_RFID_DENIED : 'RFID_DENIED',
+                     REASON_RFID_ERROR : 'RFID_ERROR',
+                     REASON_UI : 'UI'}
 
-    stateChanged = pyqtSignal(str, int, name='stateChanged', arguments=['state', 'phase'])
+    stateChanged = pyqtSignal(str, str, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
 
     timerStart = pyqtSignal(int, name='timerStart', arguments=['msec'])
@@ -102,6 +107,7 @@ class PersonalityBase(QThread):
         self.statePhase = None
 
         self.wakereason = self.REASON_NONE
+        self.uievent = ''
 
         self.timer = QTimer()
         self.timer.setSingleShot(False)
@@ -110,8 +116,6 @@ class PersonalityBase(QThread):
         self.timerStart.connect(self.timer.start)
         self.timerStop.connect(self.timer.stop)
 
-        self.app.rfid.tagScan.connect(self.tagScanHandler)
-
         # holds the currently active member record after RFID scan and ACL lookup
         self.activeMemberRecord = MemberRecord()
 
@@ -119,10 +123,19 @@ class PersonalityBase(QThread):
         self.app.rootContext().setContextProperty("activeMemberRecord", self.activeMemberRecord)
         qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
 
+        self.app.rfid.tagScan.connect(self.__slotTagScan)
+
         self.__init_gpio()
 
     def descr(self):
         return self.PERSONALITY_DESCRIPTION
+
+    # returns specified phase as a human-friendly string
+    def phaseName(self, phase):
+        if phase in self.phaseLookup:
+            return self.phaseLookup[phase]
+        elif phase >= self.PHASE_ACTIVE and phase < self.PHASE_EXIT:
+            return '%s.%d' % (self.phaseLookup[self.PHASE_ACTIVE], phase - self.PHASE_ACTIVE)
 
 
     # returns specified state/phase as a human-friendly string
@@ -132,12 +145,7 @@ class PersonalityBase(QThread):
             state = self.state
             phase = self.statePhase
 
-        if phase in self.phaseLookup:
-            pname = self.phaseLookup[phase]
-        elif phase >= self.PHASE_ACTIVE and phase < self.PHASE_EXIT:
-            pname = '%s.%d' % (self.phaseLookup[self.PHASE_ACTIVE], phase - self.PHASE_ACTIVE)
-
-        return '%s.%s' % (state, pname)
+        return '%s.%s' % (state, self.phaseName(phase))
 
     # returns the specified wake reason as a human-friendly string, or will return the current wakereason string
     def reasonName(self, reason = None):
@@ -155,7 +163,7 @@ class PersonalityBase(QThread):
                 self.state = state
                 self.statePhase = phase
 
-                self.stateChanged.emit(self.state, self.statePhase)
+                self.stateChanged.emit(self.state, self.phaseName(self.statePhase))
                 return True
             else:
                 self.logger.warning('tried to change to current state %s' % self.stateName(state, phase))
@@ -185,7 +193,7 @@ class PersonalityBase(QThread):
         self.logger.debug('goNextState %s ==> %s' % (self.stateName(self.state, self.statePhase), self.stateName(self.nextState, self.nextStatePhase)))
         self.state = self.nextState
         self.statePhase = self.nextStatePhase
-        self.stateChanged.emit(self.state, self.statePhase)
+        self.stateChanged.emit(self.state, self.phaseName(self.statePhase))
         return True
 
     # shortcut to set the enter phase of the next state and exits the current state through its exit phase
@@ -245,7 +253,10 @@ class PersonalityBase(QThread):
             self.mutex.lock()
             self.cond.wait(self.mutex)
 
-            self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
+            if self.wakereason is self.REASON_UI:
+                self.logger.debug('%s woke up because %s:%s' % (self.stateName(), self.reasonName(), self.uievent))
+            else:
+                self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
 
             # run the state machine until a False is returned (meaning go back to waiting)
             again = True
@@ -303,7 +314,8 @@ class PersonalityBase(QThread):
             self.invalidScan.disconnect(self.__slotInvalidScan)
 
 
-    def tagScanHandler(self, tag, hash, time, debugText):
+    # slot to handle a valid RFID scan (whether that member is allowed or not)
+    def __slotTagScan(self, tag, hash, time, debugText):
         self.logger.debug('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
 
         result = self.app.netWorker.searchAcl(hash)
@@ -330,9 +342,9 @@ class PersonalityBase(QThread):
 
         self.mutex.lock()
         if record.valid and record.allowed:
-            self.wakereason = self.REASON_VALID_SCAN
+            self.wakereason = self.REASON_RFID_ALLOWED
         else:
-            self.wakereason = self.REASON_INVALID_SCAN
+            self.wakereason = self.REASON_RFID_DENIED
 
         self.mutex.unlock()
         self.cond.wakeAll()
@@ -342,7 +354,7 @@ class PersonalityBase(QThread):
         self.logger.debug('invalid scan: %s' % reason)
 
         self.mutex.lock()
-        self.wakereason = self.REASON_INVALID_SCAN
+        self.wakereason = self.REASON_RFID_ERROR
         self.mutex.unlock()
         self.cond.wakeAll()
 
@@ -360,5 +372,13 @@ class PersonalityBase(QThread):
     def __timerTick(self):
         self.mutex.lock()
         self.wakereason = self.REASON_TIMER
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
+    @pyqtSlot(str)
+    def slotUIEvent(self, evt):
+        self.mutex.lock()
+        self.wakereason = self.REASON_UI
+        self.uievent = evt
         self.mutex.unlock()
         self.cond.wakeAll()

@@ -53,4 +53,5 @@ DISTFILES += \
     personalities/PersonalityLaserCutter.py \
     Logger.py \
     personalities/PersonalitySimple.py \
-    QtGPIO.py
+    QtGPIO.py \
+    ViewAccess.qml
