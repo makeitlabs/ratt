@@ -1,32 +1,30 @@
-"""
-Modified to use Qt facilities instead of Twisted
-March 2018 by Steve Richardson (steve.richardson@makeitlabs.com)
-
-Linux SysFS-based native GPIO implementation.
-originally from https://github.com/derekstavis/python-sysfs-gpio
-
-The MIT License (MIT)
-
-Copyright (c) 2014 Derek Willian Stavis
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+# Modified to use Qt facilities instead of Twisted
+# March 2018 by Steve Richardson (steve.richardson@makeitlabs.com)
+#
+# Linux SysFS-based native GPIO implementation.
+# originally from https://github.com/derekstavis/python-sysfs-gpio
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2014 Derek Willian Stavis
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 __all__ = ('DIRECTIONS', 'INPUT', 'OUTPUT',
            'EDGES', 'RISING', 'FALLING', 'BOTH',
@@ -75,25 +73,21 @@ ACTIVE_LOW_MODES = (ACTIVE_LOW_ON, ACTIVE_LOW_OFF)
 
 
 class Pin(object):
-    """
-    Represent a pin in SysFS
-    """
+    # Represent a pin in SysFS
 
     def __init__(self, number, direction, callback=None, edge=None, active_low=0):
-        """
-        @type  number: int
-        @param number: The pin number
-        @type  direction: int
-        @param direction: Pin direction, enumerated by C{Direction}
-        @type  callback: callable
-        @param callback: Method be called when pin changes state
-        @type  edge: int
-        @param edge: The edge transition that triggers callback,
-                     enumerated by C{Edge}
-        @type active_low: int
-        @param active_low: Indicator of whether this pin uses inverted
-                           logic for HIGH-LOW transitions.
-        """
+        # @type  number: int
+        # @param number: The pin number
+        # @type  direction: int
+        # @param direction: Pin direction, enumerated by C{Direction}
+        # @type  callback: callable
+        # @param callback: Method be called when pin changes state
+        # @type  edge: int
+        # @param edge: The edge transition that triggers callback,
+        #              enumerated by C{Edge}
+        # @type active_low: int
+        # @param active_low: Indicator of whether this pin uses inverted
+        #                    logic for HIGH-LOW transitions.
         self._number = number
         self._direction = direction
         self._callback  = callback
@@ -119,71 +113,53 @@ class Pin(object):
 
     @property
     def callback(self):
-        """
-        Gets this pin callback
-        """
+        # Gets this pin callback
         return self._callback
 
     @callback.setter
     def callback(self, value):
-        """
-        Sets this pin callback
-        """
+        # Sets this pin callback
         self._callback = value
 
     @property
     def direction(self):
-        """
-        Pin direction
-        """
+        # Pin direction
         return self._direction
 
     @property
     def number(self):
-        """
-        Pin number
-        """
+        # Pin number
         return self._number
 
     @property
     def active_low(self):
-        """
-        Pin number
-        """
+        # Pin active logic
         return self._active_low
 
     def set(self):
-        """
-        Set pin to HIGH logic setLevel
-        """
+        # Set pin to HIGH logic setLevel
         self._fd.write(SYSFS_GPIO_VALUE_HIGH)
         self._fd.seek(0)
 
     def reset(self):
-        """
-        Set pin to LOW logic setLevel
-        """
+        # Set pin to LOW logic setLevel
         self._fd.write(SYSFS_GPIO_VALUE_LOW)
         self._fd.seek(0)
 
     def read(self):
-        """
-        Read pin value
-
-        @rtype: int
-        @return: I{0} when LOW, I{1} when HIGH
-        """
+        # Read pin value
+        #
+        # @rtype: int
+        # @return: I{0} when LOW, I{1} when HIGH
         val = self._fd.read()
         self._fd.seek(0)
         return int(val)
 
     def fileno(self):
-        """
-        Get the file descriptor associated with this pin.
-
-        @rtype: int
-        @return: File descriptor
-        """
+        # Get the file descriptor associated with this pin.
+        #
+        # @rtype: int
+        # @return: File descriptor
         return self._fd.fileno()
 
     def changed(self, state):
@@ -191,46 +167,36 @@ class Pin(object):
             self._callback(self.number, state)
 
     def _sysfs_gpio_value_path(self):
-        """
-        Get the file that represent the value of this pin.
-
-        @rtype: str
-        @return: the path to sysfs value file
-        """
+        # Get the file that represent the value of this pin.
+        #
+        # @rtype: str
+        # @return: the path to sysfs value file
         return SYSFS_GPIO_VALUE_PATH % self.number
 
     def _sysfs_gpio_direction_path(self):
-        """
-        Get the file that represent the direction of this pin.
-
-        @rtype: str
-        @return: the path to sysfs direction file
-        """
+        # Get the file that represent the direction of this pin.
+        #
+        # @rtype: str
+        # @return: the path to sysfs direction file
         return SYSFS_GPIO_DIRECTION_PATH % self.number
 
     def _sysfs_gpio_edge_path(self):
-        """
-        Get the file that represent the edge that will trigger an interrupt.
-
-        @rtype: str
-        @return: the path to sysfs edge file
-        """
+        # Get the file that represent the edge that will trigger an interrupt.
+        #
+        # @rtype: str
+        # @return: the path to sysfs edge file
         return SYSFS_GPIO_EDGE_PATH % self.number
 
     def _sysfs_gpio_active_low_path(self):
-        """
-        Get the file that represents the active_low setting for this pin.
-
-        @rtype: str
-        @return: the path to sysfs active_low file
-        """
+        # Get the file that represents the active_low setting for this pin.
+        #
+        # @rtype: str
+        # @return: the path to sysfs active_low file
         return SYSFS_GPIO_ACTIVE_LOW_PATH % self.number
 
 
 class Controller(QThread):
-    '''
-    A class to provide access to SysFS GPIO pins
-    '''
+    # A class to provide access to SysFS GPIO pins
     def __init__(self, loglevel='DEBUG'):
         QThread.__init__(self)
         self.logger = Logger(name='ratt.qgpio')
@@ -307,7 +273,7 @@ class Controller(QThread):
         return pin
 
     def _poll_queue_register_pin(self, pin):
-        ''' Pin responds to fileno(), so it's pollable. '''
+        # Pin responds to fileno(), so it's pollable.
         self._poll_queue.register(pin, (select.EPOLLPRI | select.EPOLLET))
 
     def _poll_queue_unregister_pin(self, pin):
@@ -376,13 +342,10 @@ class Controller(QThread):
         else:
             return True
 
-    ''' Private Methods '''
+    # Private Methods
 
     def _poll_queue_event(self, events):
-        """
-        EPoll event callback
-        """
-
+        # EPoll event callback
         for fd, event in events:
             if not (event & (select.EPOLLPRI | select.EPOLLET)):
                 continue
@@ -396,27 +359,21 @@ class Controller(QThread):
                     pin.changed(pin.read())
 
     def _check_pin_already_exported(self, number):
-        """
-        Check if this pin was already exported on sysfs.
-
-        @type  number: int
-        @param number: Pin number
-        @rtype: bool
-        @return: C{True} when it's already exported, otherwise C{False}
-        """
+        # Check if this pin was already exported on sysfs.
+        # @type  number: int
+        # @param number: Pin number
+        # @rtype: bool
+        # @return: C{True} when it's already exported, otherwise C{False}
         gpio_path = SYSFS_GPIO_PATH % number
         return os.path.isdir(gpio_path)
 
     def _check_pin_validity(self, number):
-        """
-        Check if pin number exists on this bus
-
-        @type  number: int
-        @param number: Pin number
-        @rtype: bool
-        @return: C{True} when valid, otherwise C{False}
-        """
-
+        # Check if pin number exists on this bus
+        #
+        # @type  number: int
+        # @param number: Pin number
+        # @rtype: bool
+        # @return: C{True} when valid, otherwise C{False}
         if number not in self._available_pins:
             raise Exception("Pin number out of range")
 
