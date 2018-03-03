@@ -67,6 +67,9 @@ BOTH    = 'both'
 ACTIVE_LOW_ON = 1
 ACTIVE_LOW_OFF = 0
 
+LOW = False
+HIGH = True
+
 DIRECTIONS = (INPUT, OUTPUT)
 EDGES = (RISING, FALLING, BOTH)
 ACTIVE_LOW_MODES = (ACTIVE_LOW_ON, ACTIVE_LOW_OFF)
@@ -136,17 +139,12 @@ class Pin(object):
         # Pin active logic
         return self._active_low
 
-    def set(self):
-        # Set pin to HIGH logic setLevel
-        self._fd.write(SYSFS_GPIO_VALUE_HIGH)
+    def set(self, value):
+        # Set pin to a value
+        self._fd.write(SYSFS_GPIO_VALUE_HIGH if value else SYSFS_GPIO_VALUE_LOW)
         self._fd.seek(0)
 
-    def reset(self):
-        # Set pin to LOW logic setLevel
-        self._fd.write(SYSFS_GPIO_VALUE_LOW)
-        self._fd.seek(0)
-
-    def read(self):
+    def get (self):
         # Read pin value
         #
         # @rtype: int
@@ -332,7 +330,7 @@ class Controller(QThread):
         if pin.direction == INPUT:
             self._poll_queue_unregister_pin(pin)
 
-        val = pin.read()
+        val = pin.get()
 
         if pin.direction == INPUT:
             self._poll_queue_register_pin(pin)
@@ -356,7 +354,7 @@ class Controller(QThread):
                 values = self._allocated_pins.values()
             for pin in values:
                 if pin.fileno() == fd:
-                    pin.changed(pin.read())
+                    pin.changed(pin.get())
 
     def _check_pin_already_exported(self, number):
         # Check if this pin was already exported on sysfs.

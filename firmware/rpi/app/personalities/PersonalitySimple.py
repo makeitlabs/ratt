@@ -37,6 +37,7 @@
 #
 
 from PersonalityBase import PersonalityBase
+from qgpio import LOW, HIGH
 
 class Personality(PersonalityBase):
     #############################################
@@ -100,10 +101,10 @@ class Personality(PersonalityBase):
     #############################################
     def stateInit(self):
         self.logger.debug('initialize')
-        self.pins[4].reset()
-        self.pins[5].reset()
-        self.pins[6].reset()
-        self.pins[7].reset()
+        self.pins[4].set(LOW)
+        self.pins[5].set(LOW)
+        self.pins[6].set(LOW)
+        self.pins[7].set(LOW)
         return self.goto(self.STATE_IDLE)
 
     #############################################
@@ -151,24 +152,18 @@ class Personality(PersonalityBase):
 
         elif self.phACTIVE():
 
-            if self.wakereason == self.REASON_GPIO and self.pins[0].read() == 0:
+            if self.wakereason == self.REASON_GPIO and self.pins[0].get() == 0:
                 return self.exitAndGoto(self.STATE_IDLE)
 
-            if self.wakereason == self.REASON_GPIO and self.pins[1].read() == 0:
-                self.wakeOnTimer(enabled=True, interval=500)
-
-            if self.wakereason == self.REASON_GPIO and self.pins[2].read() == 0:
-                self.wakeOnTimer(enabled=True, interval=5000, singleShot=True)
-
             elif self.wakereason == self.REASON_TIMER:
-                if self.pins[7].read() == 0:
-                    self.pins[7].set()
+                if self.pins[7].get() == 0:
+                    self.pins[7].set(HIGH)
                 else:
-                    self.pins[7].reset()
+                    self.pins[7].set(LOW)
 
             return False
         elif self.phEXIT():
-            self.pins[7].reset()
+            self.pins[7].set(LOW)
             self.wakeOnTimer(enabled=False)
 
             return self.goNextState()
