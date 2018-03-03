@@ -111,12 +111,11 @@ class Personality(PersonalityBase):
     ## STATE_IDLE
     #############################################
     def stateIdle(self):
-        if self.phENTER():
+        if self.phENTER:
             self.wakeOnRFID(True)
             return self.goActive()
 
-        elif self.phACTIVE():
-
+        elif self.phACTIVE:
             if self.wakereason == self.REASON_VALID_SCAN:
                 return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
 
@@ -126,7 +125,7 @@ class Personality(PersonalityBase):
             # otherwise thread goes back to waiting
             return False
 
-        elif self.phEXIT():
+        elif self.phEXIT:
             self.wakeOnRFID(False)
             return self.goNextState()
 
@@ -146,23 +145,27 @@ class Personality(PersonalityBase):
     ## STATE_ACCESS_ALLOWED
     #############################################
     def stateAccessAllowed(self):
-        if self.phENTER():
+        if self.phENTER:
             self.wakeOnTimer(enabled=True, interval=1000)
             return self.goActive()
 
-        elif self.phACTIVE():
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_GPIO and self.pins[1].get() == 0:
+                return self.goActive(1)
 
+            return False
+
+        elif self.phACTIVEn(1):
             if self.wakereason == self.REASON_GPIO and self.pins[0].get() == 0:
                 return self.exitAndGoto(self.STATE_IDLE)
 
-            elif self.wakereason == self.REASON_TIMER:
+            if self.wakereason == self.REASON_TIMER:
                 if self.pins[7].get() == 0:
                     self.pins[7].set(HIGH)
                 else:
                     self.pins[7].set(LOW)
 
-            return False
-        elif self.phEXIT():
+        elif self.phEXIT:
             self.pins[7].set(LOW)
             self.wakeOnTimer(enabled=False)
 

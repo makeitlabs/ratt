@@ -117,7 +117,12 @@ class PersonalityBase(QThread):
             state = self.state
             phase = self.statePhase
 
-        return '%s.%s' % (state, self.phaseLookup[phase])
+        if phase in self.phaseLookup:
+            pname = self.phaseLookup[phase]
+        elif phase >= self.PHASE_ACTIVE and phase < self.PHASE_EXIT:
+            pname = '%s.%d' % (self.phaseLookup[self.PHASE_ACTIVE], phase - self.PHASE_ACTIVE)
+
+        return '%s.%s' % (state, pname)
 
     # returns the specified wake reason as a human-friendly string, or will return the current wakereason string
     def reasonName(self, reason = None):
@@ -183,14 +188,21 @@ class PersonalityBase(QThread):
         return self.setState(self.state, self.PHASE_ACTIVE + active_phase)
 
     # shortcut conditional for PHASE_ENTER
+    @property
     def phENTER(self):
         return self.statePhase is self.PHASE_ENTER
 
-    # shortcut conditional for PHASE_ACTIVE (with an optional active phase offset)
-    def phACTIVE(self, active_phase = 0):
+    # shortcut conditional for PHASE_ACTIVE
+    @property
+    def phACTIVE(self):
+        return self.statePhase is self.PHASE_ACTIVE
+
+    # shortcut conditional for PHASE_ACTIVE with an optional active phase offset
+    def phACTIVEn(self, active_phase = 0):
         return self.statePhase is (self.PHASE_ACTIVE + active_phase)
 
     # shortcut conditional for PHASE_EXIT
+    @property
     def phEXIT(self):
         return self.statePhase is self.PHASE_EXIT
 
