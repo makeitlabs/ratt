@@ -41,10 +41,18 @@ import QtQuick.Layouts 1.2
 StatusBar {
     height: 20
 
-    property string keyEscLabel: "\u274e"
+    property string keyEscLabel: "\u2190"
     property string keyDownLabel: "\u25bc"
     property string keyUpLabel: "\u25b2"
-    property string keyReturnLabel: "\u2b55"
+    property string keyReturnLabel: "\u25cf"
+
+    property bool keyEscActive: false
+    property bool keyDownActive: false
+    property bool keyUpActive: false
+    property bool keyReturnActive: false
+
+    property color activeKeyColor: "#000000"
+    property color inactiveKeyColor: "#999999"
 
     RowLayout {
         anchors.fill: parent
@@ -56,6 +64,7 @@ StatusBar {
             text: keyEscLabel
             font.pointSize: 10
             font.weight: Font.Bold
+            color: keyEscActive ? activeKeyColor : inactiveKeyColor
         }
         Rectangle {
             Layout.fillHeight: true
@@ -67,8 +76,9 @@ StatusBar {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: keyDownLabel
-            font.pointSize: 8
+            font.pointSize: 10
             font.weight: Font.Bold
+            color: keyDownActive ? activeKeyColor : inactiveKeyColor
         }
         Rectangle {
             Layout.fillHeight: true
@@ -80,8 +90,9 @@ StatusBar {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: keyUpLabel
-            font.pointSize: 8
+            font.pointSize: 10
             font.weight: Font.Bold
+            color: keyUpActive ? activeKeyColor : inactiveKeyColor
         }
         Rectangle {
             Layout.fillHeight: true
@@ -93,8 +104,9 @@ StatusBar {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: keyReturnLabel
-            font.pointSize: 8
+            font.pointSize: 10
             font.weight: Font.Bold
+            color: keyReturnActive ? activeKeyColor : inactiveKeyColor
         }
     }
 }

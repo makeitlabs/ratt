@@ -38,13 +38,13 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 
-Item {
+View {
     id: root
-    anchors.fill: parent
+    name: "Access"
 
     property bool scrollReason: false
 
-    function show() {
+    function _show() {
         if (activeMemberRecord.valid && activeMemberRecord.allowed) {
             // valid and allowed, only briefly show the allowed screen
             showTimer.interval = 1500;

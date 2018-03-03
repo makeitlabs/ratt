@@ -55,39 +55,59 @@ ApplicationWindow {
     Connections {
         target: personality
 
+        function switchTo(newItem) {
+            if (stack.currentItem !== newItem) {
+                stack.currentItem.hide();
+                stack.replace(newItem);
+            }
+        }
+
+        function showCurrentStateView() {
+            var curState = personality.currentState;
+
+            var sp = curState.split(".");
+
+            if (sp.length >= 2) {
+                var state = sp[0];
+                var phase = sp[1];
+
+                switch (state) {
+                case "Idle":
+                    switchTo(viewIdle)
+                    break;
+                case "AccessAllowed":
+                case "AccessDenied":
+                case "RFIDError":
+                    switchTo(viewAccess)
+                    break;
+                case "ReportIssue":
+                    switchTo(viewIssue)
+                    break;
+                }
+            }
+        }
+
         Component.onCompleted: {
-            console.info("pers current state" + personality.currentState);
+            showCurrentStateView();
         }
 
         onCurrentStateChanged: {
-            console.info("state changed " + personality.currentState);
-
+            showCurrentStateView();
         }
 
-
-        function switchTo(newItem) {
-            if (stack.currentItem !== newItem)
-                stack.replace(newItem)
-        }
 
         onStateChanged: {
             console.info("current state changed " + state + ":" + phase);
 
-            switch (state) {
-            case "Idle":
-                switchTo(viewIdle)
-                break;
-            case "AccessAllowed":
-            case "AccessDenied":
-            case "RFIDError":
-                switchTo(viewAccess)
-                break;
-            }
         }
     }
 
     RattSounds {
         id: sound
+    }
+    ViewSplash {
+        id: viewSplash
+        visible: false
     }
     ViewIdle {
         id: viewIdle
@@ -95,6 +115,10 @@ ApplicationWindow {
     }
     ViewAccess {
         id: viewAccess
+        visible: false
+    }
+    ViewIssue {
+        id: viewIssue
         visible: false
     }
 
@@ -125,21 +149,6 @@ ApplicationWindow {
                 anchors.bottom: parent.bottom
             }
 
-            Keys.onPressed: {
-                //sound.keyAudio.play();
-
-                if (event.key === Qt.Key_Escape) {
-                    console.log("esc");
-                    appWindow.close();
-                } else if (event.key === Qt.Key_Down) {
-                    console.log("down");
-                } else if (event.key === Qt.Key_Up) {
-                    console.log("up");
-                } else if (event.key === Qt.Key_Return) {
-                    console.log("return");
-
-                }
-            }
 
 
             StackView {
@@ -148,11 +157,17 @@ ApplicationWindow {
                 anchors.bottom: status.top
                 anchors.left: parent.left
                 anchors.right: parent.right
-                initialItem: viewIdle
+                initialItem: viewSplash
 
                 onCurrentItemChanged: {
                     currentItem.show();
+
+                    status.keyEscActive = currentItem.keyEscActive
+                    status.keyDownActive = currentItem.keyDownActive
+                    status.keyUpActive = currentItem.keyUpActive
+                    status.keyReturnActive = currentItem.keyReturnActive
                 }
+                focus: true
             }
         }
     }

@@ -54,4 +54,6 @@ DISTFILES += \
     Logger.py \
     personalities/PersonalitySimple.py \
     QtGPIO.py \
-    ViewAccess.qml
+    ViewAccess.qml \
+    View.qml \
+    ViewIssue.qml

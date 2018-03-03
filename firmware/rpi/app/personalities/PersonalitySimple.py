@@ -64,6 +64,7 @@ class Personality(PersonalityBase):
     STATE_TOOL_TIMEOUT_WARNING = 'ToolTimeoutWarning'
     STATE_TOOL_TIMEOUT = 'ToolTimeout'
     STATE_TOOL_DISABLED = 'ToolDisabled'
+    STATE_REPORT_ISSUE = 'ReportIssue'
 
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
@@ -85,7 +86,8 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_ENABLED_ACTIVE : self.stateToolEnabledActive,
                        self.STATE_TOOL_TIMEOUT_WARNING : self.stateToolTimeoutWarning,
                        self.STATE_TOOL_TIMEOUT : self.stateToolTimeout,
-                       self.STATE_TOOL_DISABLED : self.stateToolDisabled
+                       self.STATE_TOOL_DISABLED : self.stateToolDisabled,
+                       self.STATE_REPORT_ISSUE : self.stateReportIssue
                        }
 
         # Set initial state and phase
@@ -125,6 +127,9 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_ACCESS_DENIED)
             elif self.wakereason == self.REASON_RFID_ERROR:
                 return self.exitAndGoto(self.STATE_RFID_ERROR)
+            elif self.wakereason == self.REASON_UI and self.uievent == 'ReportIssue':
+                return self.exitAndGoto(self.STATE_REPORT_ISSUE)
+
 
             # otherwise thread goes back to waiting
             return False
@@ -236,3 +241,20 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolDisabled(self):
         pass
+
+    #############################################
+    ## STATE_REPORT_ISSUE
+    #############################################
+    def stateReportIssue(self):
+        if self.phENTER:
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'ReportIssueDone':
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
+

@@ -38,10 +38,33 @@ import QtQuick 2.5
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.2
 
-Rectangle {
+View {
     id: root
-    anchors.fill: parent
-    color: "#eeeeee"
+    name: "Idle"
+
+    keyEscActive: true
+
+
+    function keyEscape(pressed) {
+        if (pressed)
+            issueTimer.start();
+        else
+            issueTimer.stop();
+
+        return true;
+    }
+
+    Timer {
+        id: issueTimer
+        interval: 2000
+        running: false
+        repeat: false
+        onTriggered: {
+            stop();
+            appWindow.uiEvent('ReportIssue');
+        }
+    }
+
 
     state: "logo"
 
@@ -93,10 +116,12 @@ Rectangle {
         }
     ]
 
-    function show() {
+    function _show() {
         animTimer.restart()
         root.state = "logo"
     }
+
+
 
 
     Timer {
