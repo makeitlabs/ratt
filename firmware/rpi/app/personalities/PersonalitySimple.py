@@ -92,34 +92,10 @@ class Personality(PersonalityBase):
         self.pins[7].reset()
         return self.goto(self.STATE_IDLE)
 
-    # slot to handle a valid RFID scan (whether that member is allowed or not)
-    def slotValidScan(self, record):
-        self.logger.debug('valid scan: %s (%s)' % (record.name, record.allowed))
-
-        self.mutex.lock()
-        if record.valid and record.allowed:
-            self.wakereason = self.REASON_VALID_SCAN
-        else:
-            self.wakereason = self.REASON_INVALID_SCAN
-
-        self.mutex.unlock()
-        self.cond.wakeAll()
-
-    # slot to handle an invalid RFID scan (unknown tag, bad tag, error, etc.)
-    def slotInvalidScan(self, reason):
-        self.logger.debug('invalid scan: %s' % reason)
-
-        self.mutex.lock()
-        self.wakereason = self.REASON_INVALID_SCAN
-        self.mutex.unlock()
-        self.cond.wakeAll()
 
     def stateIdle(self):
         if self.phENTER():
-            self.app.validScan.connect(self.slotValidScan)
-            self.app.invalidScan.connect(self.slotInvalidScan)
-            self.pins[4].set()
-
+            self.wakeOnRFID(True)
             return self.goActive()
 
         elif self.phACTIVE():
@@ -134,9 +110,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-            self.app.validScan.disconnect(self.slotValidScan)
-            self.app.invalidScan.disconnect(self.slotInvalidScan)
-
+            self.wakeOnRFID(False)
             return self.goNextState()
 
     def stateLockoutCheck(self):
@@ -147,14 +121,19 @@ class Personality(PersonalityBase):
 
     def stateAccessAllowed(self):
         if self.phENTER():
-            self.timerWake = True
-            self.pins[5].set()
+            self.wakeOnTimer(enabled=True, interval=1000)
             return self.goActive()
 
         elif self.phACTIVE():
 
             if self.wakereason == self.REASON_GPIO and self.pins[0].read() == 0:
                 return self.exitAndGoto(self.STATE_IDLE)
+
+            if self.wakereason == self.REASON_GPIO and self.pins[1].read() == 0:
+                self.wakeOnTimer(enabled=True, interval=500)
+
+            if self.wakereason == self.REASON_GPIO and self.pins[2].read() == 0:
+                self.wakeOnTimer(enabled=True, interval=5000, singleShot=True)
 
             elif self.wakereason == self.REASON_TIMER:
                 if self.pins[7].read() == 0:
@@ -164,9 +143,8 @@ class Personality(PersonalityBase):
 
             return False
         elif self.phEXIT():
-            self.pins[5].reset()
             self.pins[7].reset()
-            self.timerWake = False
+            self.wakeOnTimer(enabled=False)
 
             return self.goNextState()
 

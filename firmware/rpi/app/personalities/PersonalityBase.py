@@ -62,6 +62,9 @@ class PersonalityBase(QThread):
     stateChanged = pyqtSignal(str, int, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
 
+    timerStart = pyqtSignal(int, name='timerStart', arguments=['msec'])
+    timerStop = pyqtSignal()
+
     @pyqtProperty(str, notify=stateChanged)
     def currentState(self):
         return self.stateName()
@@ -92,12 +95,11 @@ class PersonalityBase(QThread):
         self.wakereason = self.REASON_NONE
 
         self.timer = QTimer()
-        self.timer.setInterval(250)
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.__timerTick)
-        self.timer.start()
 
-        self.timerWake = False
+        self.timerStart.connect(self.timer.start)
+        self.timerStop.connect(self.timer.stop)
 
         self.__init_gpio()
 
@@ -224,16 +226,7 @@ class PersonalityBase(QThread):
 
             self.mutex.unlock()
 
-    # 4Hz timer tick
-    def __timerTick(self):
-        self.mutex.lock()
-        wake = self.timerWake
-        if wake:
-            self.wakereason = self.REASON_TIMER
-        self.mutex.unlock()
 
-        if wake:
-            self.cond.wakeAll()
 
     # gpio initialization
     def __init_gpio(self):
@@ -244,7 +237,6 @@ class PersonalityBase(QThread):
     # this is the callback for when one of the specified GPIO input pins has changed state
     # it wakes the thread with REASON_GPIO
     def __pinchanged(self, num, state):
-        self.logger.debug('gpio pin changed %d %d' % (num, state))
         self.mutex.lock()
         self.wakereason = self.REASON_GPIO
         self.mutex.unlock()
@@ -270,5 +262,51 @@ class PersonalityBase(QThread):
         self.pins.append(self.gpio.alloc_pin(502, GPIO.OUTPUT))
         self.pins.append(self.gpio.alloc_pin(503, GPIO.OUTPUT))
 
+    # enable/disable waking thread on RFID read
+    def wakeOnRFID(self, enabled):
+        self.logger.debug('wakeOnRFID enabled=%s' % enabled)
+        if enabled:
+            self.app.validScan.connect(self.__slotValidScan)
+            self.app.invalidScan.connect(self.__slotInvalidScan)
+        else:
+            self.app.validScan.disconnect(self.__slotValidScan)
+            self.app.invalidScan.disconnect(self.__slotInvalidScan)
 
+    # slot to handle a valid RFID scan (whether that member is allowed or not)
+    def __slotValidScan(self, record):
+        self.logger.debug('valid scan: %s (%s)' % (record.name, record.allowed))
 
+        self.mutex.lock()
+        if record.valid and record.allowed:
+            self.wakereason = self.REASON_VALID_SCAN
+        else:
+            self.wakereason = self.REASON_INVALID_SCAN
+
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
+    # slot to handle an invalid RFID scan (unknown tag, bad tag, error, etc.)
+    def __slotInvalidScan(self, reason):
+        self.logger.debug('invalid scan: %s' % reason)
+
+        self.mutex.lock()
+        self.wakereason = self.REASON_INVALID_SCAN
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
+    # enable/disable waking the thread on the timer
+    def wakeOnTimer(self, enabled, interval=1000, singleShot=False):
+        self.logger.debug('wakeOnTimer enabled=%s interval=%d singleShot=%s' % (enabled, interval, singleShot))
+        if enabled:
+            self.timerStop.emit()
+            self.timer.setSingleShot(singleShot)
+            self.timerStart.emit(interval)
+        else:
+            self.timerStop.emit()
+
+    # slot to handle timer tick
+    def __timerTick(self):
+        self.mutex.lock()
+        self.wakereason = self.REASON_TIMER
+        self.mutex.unlock()
+        self.cond.wakeAll()
