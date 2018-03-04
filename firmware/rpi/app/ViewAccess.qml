@@ -43,6 +43,7 @@ View {
     name: "Access"
 
     property bool scrollReason: false
+    property string failureReason: ""
 
     function _show() {
         if (activeMemberRecord.valid && activeMemberRecord.allowed) {
@@ -82,6 +83,13 @@ View {
         running: false
         onTriggered: {
             scrollReason = true;
+        }
+    }
+
+    Connections {
+        target: personality
+        onInvalidScan: {
+            failureReason = reason.toUpperCase();
         }
     }
 
@@ -168,11 +176,20 @@ View {
 
             Label {
                 Layout.fillWidth: true
-                text: "RFID Read Error"
+                text: "RFID Read Failure"
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 12
                 font.weight: Font.Bold
                 color: "#ffffff"
+            }
+            Label {
+                Layout.fillWidth: true
+                text: failureReason
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 12
+                font.weight: Font.DemiBold
+                font.italic: true
+                color: "#ffff00"
             }
         }
     }
