@@ -42,6 +42,7 @@ from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from RattConfig import RattConfig
 from NetWorker import NetWorker
 from ACL import ACL
+from Telemetry import Telemetry
 from RFID import RFID
 from Logger import Logger
 import sys
@@ -106,15 +107,21 @@ class RattAppEngine(QQmlApplicationEngine):
         self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
                                 password=self.config.value('Auth.HttpAuthPassword'))
 
+        # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
                         netWorker=self._netWorker,
                         url=self.config.value('Auth.AclUrl'),
                         cacheFile=self.config.value('Auth.AclCacheFile'))
 
+        # telemetry module, for collecting and posting events back to the auth server
+        self._telemetry = Telemetry(loglevel=self.config.value('Telemetry.LogLevel'),
+                                    netWorker=self._netWorker,
+                                    url=self.config.value('Telemetry.EventUrl'),
+                                    cacheFile=self.config.value('Telemetry.EventCacheFile'))
+
         # RFID reader
         self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),
-                         loglevel=self.config.value('RFID.LogLevel'))
-
+                          loglevel=self.config.value('RFID.LogLevel'))
         self._rfid.monitor()
 
     @property
@@ -129,5 +136,7 @@ class RattAppEngine(QQmlApplicationEngine):
     def acl(self):
         return self._acl
 
-
+    @property
+    def telemetry(self):
+        return self._telemetry
 

@@ -81,18 +81,49 @@ class NetWorker(QObject):
             self.configureCerts()
 
     def get(self, url):
-        self.logger.debug('get url=%s' % (url))
+        self.logger.debug('get url=%s' % url.toString())
 
-        req = QNetworkRequest(QUrl(url))
-        req.setRawHeader("User-Agent", "RATT")
+        request = QNetworkRequest(QUrl(url))
+        request.setRawHeader("User-Agent", "RATT")
 
         if self.sslSupported and self.sslEnabled:
-            req.setSslConfiguration(self.sslConfig)
+            request.setSslConfiguration(self.sslConfig)
 
-        reply = self.mgr.get(req)
+        reply = self.mgr.get(request)
 
         if self.sslSupported and self.sslEnabled:
             reply.sslErrors.connect(self.handleSSLErrors)
+
+        return reply
+
+    def buildRequest(self, url):
+        request = QNetworkRequest(QUrl(url))
+        request.setHeader(QNetworkRequest.ContentTypeHeader, "application/x-www-form-urlencoded")
+
+        return request
+
+    def buildQuery(self, vars):
+        query = str()
+        for key in vars:
+            value = vars[key]
+            sep = '&' if query != '' else ''
+            query = query + '%s%s=%s' % (sep, key, value)
+
+        return query
+
+    def post(self, request, query):
+        self.logger.debug('post url=%s query=%s' % (request.url().toString(), query))
+
+        if self.sslSupported and self.sslEnabled:
+            request.setSslConfiguration(self.sslConfig)
+
+        bytearray = QByteArray()
+        bytearray.append(query)
+
+        reply = self.mgr.post(request, bytearray)
+
+        if self.sslSupported and self.sslEnabled:
+            self.mgr.sslErrors.connect(self.handleSSLErrors)
 
         return reply
 
@@ -134,44 +165,3 @@ class NetWorker(QObject):
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
 
-
-'''
-def post(self, url):
-    # there must be a nicer way to build the request
-    req = QNetworkRequest(QUrl(url))
-    req.setHeader(QNetworkRequest.ContentTypeHeader, "application/x-www-form-urlencoded")
-
-    now = QDateTime.currentDateTime()
-    unix_time = now.toMSecsSinceEpoch()
-    p = 'event_date=' + str(unix_time)
-
-    p = p + '&event_type=test&member=Ralph.Teste&message=RATT'
-
-    ba = QByteArray()
-    ba.append(p)
-
-    self.mgr.finished.connect(self.handlePostResponse)
-
-    if self.sslSupported and self.sslEnabled:
-        self.mgr.sslErrors.connect(self.handleSSLErrors)
-        req.setSslConfiguration(self.sslConfig)
-
-    self.mgr.post(req, ba)
-
-
-def handlePostResponse(self, reply):
-    self.logger.debug('handlePostResponse')
-    error = reply.error()
-
-    if error == QNetworkReply.NoError:
-        self.logger.debug(reply.readAll())
-
-    else:
-        self.logger.error('NetWorker response error: %s (%s)' % (error, reply.errorString()))
-
-    self.mgr.finished.disconnect(self.handlePostResponse)
-    if self.sslSupported and self.sslEnabled:
-        self.mgr.sslErrors.disconnect(self.handleSSLErrors)
-
-
-'''

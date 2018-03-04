@@ -101,8 +101,8 @@ class RattConfig(QObject):
             self.config['%s.%s' % (section, key)] = self.parser.getfloat(section, key)
 
     def loadConfig(self):
-        defaults = {}
-        self.parser = ConfigParser.ConfigParser(defaults)
+        self.parser = ConfigParser.ConfigParser()
+
         self.parser.read('ratt.ini')
 
         self.config = { }
@@ -125,6 +125,10 @@ class RattConfig(QObject):
         self.addConfig('Auth', 'HttpAuthPassword')
         self.addConfig('Auth', 'AclUrl')
         self.addConfig('Auth', 'AclCacheFile')
+
+        self.addConfig('Telemetry', 'LogLevel')
+        self.addConfig('Telemetry', 'EventUrl')
+        self.addConfig('Telemetry', 'EventCacheFile')
 
         self.addConfigBool('SSL', 'Enabled')
         self.addConfig('SSL', 'CaCertFile')

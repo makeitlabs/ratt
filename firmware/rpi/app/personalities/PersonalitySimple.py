@@ -145,7 +145,7 @@ class Personality(PersonalityBase):
         pass
 
     #############################################
-    ## STATE_ACCESS_DENIED
+    ## STATE_RFID_ERROR
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
@@ -165,6 +165,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessDenied(self):
         if self.phENTER:
+            self.telemetryEvent.emit('access_denied', self.activeMemberRecord.name)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -182,6 +183,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessAllowed(self):
         if self.phENTER:
+            self.telemetryEvent.emit('access_allowed', self.activeMemberRecord.name)
             return self.goActive()
 
         elif self.phACTIVE:

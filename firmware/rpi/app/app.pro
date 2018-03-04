@@ -57,4 +57,5 @@ DISTFILES += \
     ViewAccess.qml \
     View.qml \
     ViewIssue.qml \
-    ACL.py
+    ACL.py \
+    Telemetry.py

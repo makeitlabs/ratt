@@ -79,6 +79,8 @@ class PersonalityBase(QThread):
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
+    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['event_type', 'message'])
+
     @pyqtProperty(str, notify=stateChanged)
     def currentState(self):
         return self.stateName()
@@ -124,6 +126,8 @@ class PersonalityBase(QThread):
         qmlRegisterType(MemberRecord, 'RATT', 1, 0, 'MemberRecord')
 
         self.app.rfid.tagScan.connect(self.__slotTagScan)
+
+        self.telemetryEvent.connect(self.app.telemetry.logEvent)
 
         self.__init_gpio()
 
