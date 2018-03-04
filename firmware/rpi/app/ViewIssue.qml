@@ -198,10 +198,7 @@ View {
             selectionMode: SelectionMode.SingleSelection
 
             selection.onSelectionChanged: {
-                var foo;
-                issueTable.selection.forEach( function(rowIndex) { foo = rowIndex; } )
-                currentIssue = issuesModel.get(foo).name;
-                console.info("selectionchanged currentRow=" + issueTable.currentRow + " foo=" + foo + " currentIssue=" + currentIssue);
+                currentIssue = issuesModel.get(issueTable.currentRow).name;
             }
 
             TableViewColumn {
