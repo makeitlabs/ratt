@@ -59,7 +59,7 @@ class ACL(QObject):
     def numActiveRecords(self):
         return self._numActiveRecords
 
-    def __init__(self, loglevel='WARNING', netWorker = None, url=''):
+    def __init__(self, loglevel='WARNING', netWorker = None, url='', cacheFile=None):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.acl')
@@ -74,12 +74,63 @@ class ACL(QObject):
 
         self.url = url
 
+        self.cacheFile = cacheFile
+
         self.mutex = QMutex()
 
         self._acl = json.loads('[]')
         self._hash = ''
         self._numRecords = 0
         self._numActiveRecords = 0
+
+        self.loadFile(self.cacheFile)
+
+    def loadFile(self, filename=None):
+        self.logger.info('loading ACL file %s' % filename)
+        if filename is not None:
+            f = QFile(filename)
+
+            if not f.open(QIODevice.ReadOnly | QIODevice.Text):
+                self.logger.error('error opening ACL file %s for read' % filename)
+                return False
+
+            bytes = f.readAll()
+
+            if bytes.isEmpty():
+                self.logger.error('unabled to read from ACL file %s' % filename)
+                f.close()
+                return False
+
+            f.close()
+
+            return self.parseJSON(doc=str(bytes))
+
+        return False
+
+    def saveFile(self, filename=None):
+        self.logger.info('saving ACL file %s' % filename)
+        if filename is not None:
+
+            self.mutex.lock()
+            doc = json.dumps(self._acl)
+            self.mutex.unlock()
+
+            f = QFile(filename)
+
+            if not f.open(QIODevice.WriteOnly):
+                self.logger.error('error opening ACL file %s for write' % filename)
+                return False
+
+            if f.write(str(doc)) == -1:
+                f.close()
+                self.logger.error('unabled to write to ACL file %s' % filename)
+                return False
+
+            f.close()
+            return True
+
+        return False
+
 
     def download(self):
         self.logger.info('downloading ACL from ' + self.url)
@@ -135,16 +186,27 @@ class ACL(QObject):
             active = self.countActive(parsed)
             hash = self.calcHash(parsed)
 
-            self.mutex.lock()
-            self._acl = parsed
-            self._numRecords = count
-            self._numActiveRecords = active
-            self._hash = hash
-            self.mutex.unlock()
+            self.logger.debug('parseJSON hash=%s stored hash=%s' % (hash, self._hash))
+            if hash != self._hash:
+                self.mutex.lock()
+                self._acl = parsed
+                self._numRecords = count
+                self._numActiveRecords = active
+                self._hash = hash
+                self.mutex.unlock()
 
-            self.logger.info('parsed ACL with %d entries, %d active, hash=%s' % (self._numRecords, self._numActiveRecords, self._hash))
+                self.logger.info('updated ACL with %d entries, %d active, hash=%s' % (self._numRecords, self._numActiveRecords, self._hash))
+                self.update.emit()
 
-            self.update.emit()
+                self.saveFile(self.cacheFile)
+                return True
+
+            else:
+                self.logger.error('no ACL update because same hash=%s' % (self._hash))
+
         except:
-            self.logger.warning('json parse error')
+            self.logger.exception('json parse error')
             self.updateError.emit()
+
+        return False
+

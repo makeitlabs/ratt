@@ -108,7 +108,8 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
                         netWorker=self._netWorker,
-                        url=self.config.value('Auth.AclUrl'))
+                        url=self.config.value('Auth.AclUrl'),
+                        cacheFile=self.config.value('Auth.AclCacheFile'))
 
         # RFID reader
         self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),

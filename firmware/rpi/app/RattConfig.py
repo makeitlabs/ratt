@@ -121,10 +121,10 @@ class RattConfig(QObject):
 
         self.addConfig('Auth', 'LogLevel')
         self.addConfig('Auth', 'ResourceId')
-        self.addConfig('Auth', 'AclUrl')
-        self.addConfig('Auth', 'LogUrl')
         self.addConfig('Auth', 'HttpAuthUser')
         self.addConfig('Auth', 'HttpAuthPassword')
+        self.addConfig('Auth', 'AclUrl')
+        self.addConfig('Auth', 'AclCacheFile')
 
         self.addConfigBool('SSL', 'Enabled')
         self.addConfig('SSL', 'CaCertFile')
