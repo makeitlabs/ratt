@@ -96,6 +96,7 @@ View {
     Rectangle {
         anchors.fill: parent
         color: activeMemberRecord.allowed ? "#009900" : "#990000"
+        visible: shown
 
         ColumnLayout {
             anchors.fill: parent

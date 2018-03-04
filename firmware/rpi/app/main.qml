@@ -105,22 +105,6 @@ ApplicationWindow {
     RattSounds {
         id: sound
     }
-    ViewSplash {
-        id: viewSplash
-        visible: false
-    }
-    ViewIdle {
-        id: viewIdle
-        visible: false
-    }
-    ViewAccess {
-        id: viewAccess
-        visible: false
-    }
-    ViewIssue {
-        id: viewIssue
-        visible: false
-    }
 
     Rectangle {
         id: root
@@ -163,6 +147,24 @@ ApplicationWindow {
                     currentItem.show();
                 }
                 focus: true
+
+                ViewSplash {
+                    id: viewSplash
+                    visible: false
+                }
+                ViewIdle {
+                    id: viewIdle
+                    visible: false
+                }
+                ViewAccess {
+                    id: viewAccess
+                    visible: false
+                }
+                ViewIssue {
+                    id: viewIssue
+                    visible: false
+                }
+
             }
         }
     }

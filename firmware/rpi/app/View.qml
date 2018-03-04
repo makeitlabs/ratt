@@ -40,7 +40,6 @@ import QtQuick.Layouts 1.3
 
 Rectangle {
     id: root
-    anchors.fill: parent
 
     property bool shown: false
     property string name: "View"
