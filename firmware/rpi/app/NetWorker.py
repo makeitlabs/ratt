@@ -44,9 +44,6 @@ import simplejson as json
 import hashlib
 
 class NetWorker(QObject):
-    aclUpdate = pyqtSignal(int, int, str, name='aclUpdate', arguments=['total', 'active', 'hash'])
-    aclUpdateError = pyqtSignal(name='aclUpdateError')
-
     def __init__(self, loglevel='WARNING'):
         QObject.__init__(self)
 
@@ -54,63 +51,20 @@ class NetWorker(QObject):
         self.logger.setLogLevelStr(loglevel)
         self.debug = self.logger.isDebug()
 
-
-        self.mutex = QMutex()
-        self.acl = json.loads('[]')
-
         self.mgr = QNetworkAccessManager()
         self.sslConfig = QSslConfiguration()
         self.sslSupported = QSslSocket.supportsSsl()
 
         self.setAuth()
-        self.setUrls()
         self.setSSLCertConfig()
 
-    def fetchAcl(self):
-        self.logger.info('downloading ACL from ' + self.AclUrl)
-        self.get(url=self.AclUrl)
+        self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
 
 
-    def searchAcl(self, hash):
-        self.mutex.lock()
-        found_record = []
+    #def log(self):
+    #    self.logger.debug('posting log to ' + self.LogUrl)
+    #    self.post(url=self.LogUrl)
 
-        for record in self.acl:
-            if record['tagid'] == hash:
-                found_record = record
-                break
-
-        self.mutex.unlock()
-        return found_record
-
-    def countAclActive(self):
-        self.mutex.lock()
-        active = 0
-
-        for record in self.acl:
-            if record['allowed'] == 'allowed':
-                active = active + 1
-
-        self.mutex.unlock()
-        return active
-
-    def hashAcl(self):
-        self.mutex.lock()
-
-        m = hashlib.sha224()
-        m.update(str(self.acl).encode())
-        hash = m.hexdigest()
-
-        self.mutex.unlock()
-        return hash
-
-    def log(self):
-        self.logger.debug('posting log to ' + self.LogUrl)
-        self.post(url=self.LogUrl)
-
-    def setUrls(self, acl = '', log = ''):
-        self.AclUrl = acl
-        self.LogUrl = log
 
     def setAuth(self, user = '', password = ''):
         self.user = user
@@ -126,43 +80,22 @@ class NetWorker(QObject):
 
             self.configureCerts()
 
-    def post(self, url):
-        # there must be a nicer way to build the request
-        req = QNetworkRequest(QUrl(url))
-        req.setHeader(QNetworkRequest.ContentTypeHeader, "application/x-www-form-urlencoded")
-
-        now = QDateTime.currentDateTime()
-        unix_time = now.toMSecsSinceEpoch()
-        p = 'event_date=' + str(unix_time)
-
-        p = p + '&event_type=test&member=Ralph.Teste&message=RATT'
-
-        ba = QByteArray()
-        ba.append(p)
-        
-        self.mgr.finished.connect(self.handlePostResponse)
-        self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
-
-        if self.sslSupported and self.sslEnabled:
-            self.mgr.sslErrors.connect(self.handleSSLErrors)
-            req.setSslConfiguration(self.sslConfig)
-
-        self.mgr.post(req, ba)
-        
     def get(self, url):
         self.logger.debug('get url=%s' % (url))
-        req = QNetworkRequest(QUrl(url))
 
-        self.mgr.finished.connect(self.handleGetResponse)
-        self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
+        req = QNetworkRequest(QUrl(url))
+        req.setRawHeader("User-Agent", "RATT")
 
         if self.sslSupported and self.sslEnabled:
-            self.mgr.sslErrors.connect(self.handleSSLErrors)
             req.setSslConfiguration(self.sslConfig)
 
-        self.mgr.get(req)
-            
-        
+        reply = self.mgr.get(req)
+
+        if self.sslSupported and self.sslEnabled:
+            reply.sslErrors.connect(self.handleSSLErrors)
+
+        return reply
+
     def handleSSLErrors(self, reply, errors):
         for err in errors:
             self.logger.error('SSL errors:' + err.errorString())
@@ -174,57 +107,6 @@ class NetWorker(QObject):
         authenticator.setUser(self.user)
         authenticator.setPassword(self.password)
 
-
-    def handlePostResponse(self, reply):
-        self.logger.debug('handlePostResponse')
-        error = reply.error()
-
-        if error == QNetworkReply.NoError:
-            self.logger.debug(reply.readAll())
-            
-        else:
-            self.logger.error('NetWorker response error: %s (%s)' % (error, reply.errorString()))
-
-        self.mgr.finished.disconnect(self.handlePostResponse)
-        self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
-        if self.sslSupported and self.sslEnabled:
-            self.mgr.sslErrors.disconnect(self.handleSSLErrors)
-
-
-    def handleGetResponse(self, reply):
-        self.logger.debug('handleGetResponse')
-        error = reply.error()
-
-        if error == QNetworkReply.NoError:
-            doc = str(reply.readAll())
-
-            try:
-                j = json.loads(doc)
-
-                self.mutex.lock()
-                self.acl = j
-                total = len (self.acl)
-                self.mutex.unlock()
-
-                active = self.countAclActive()
-                hash = self.hashAcl()
-
-                self.logger.info('parsed ACL with %d entries, %d active, hash=%s' % (total, active, hash))
-
-                self.aclUpdate.emit(total, active, hash)
-            except:
-                self.logger.warning('json parse error')
-                self.aclUpdateError.emit()
-
-            
-        else:
-            self.logger.error('NetWorker response error: %s (%s)' % (error, reply.errorString()))
-
-        self.mgr.finished.disconnect(self.handleGetResponse)
-        self.mgr.authenticationRequired.disconnect(self.handleAuthenticationRequired)
-        if self.sslSupported and self.sslEnabled:
-            self.mgr.sslErrors.disconnect(self.handleSSLErrors)
-            
     def configureCerts(self):
         ## import the private client key
         privateKeyFile = QFile(self.clientKeyFile)
@@ -251,3 +133,45 @@ class NetWorker(QObject):
         caCertList = self.sslConfig.caCertificates()
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
+
+
+'''
+def post(self, url):
+    # there must be a nicer way to build the request
+    req = QNetworkRequest(QUrl(url))
+    req.setHeader(QNetworkRequest.ContentTypeHeader, "application/x-www-form-urlencoded")
+
+    now = QDateTime.currentDateTime()
+    unix_time = now.toMSecsSinceEpoch()
+    p = 'event_date=' + str(unix_time)
+
+    p = p + '&event_type=test&member=Ralph.Teste&message=RATT'
+
+    ba = QByteArray()
+    ba.append(p)
+
+    self.mgr.finished.connect(self.handlePostResponse)
+
+    if self.sslSupported and self.sslEnabled:
+        self.mgr.sslErrors.connect(self.handleSSLErrors)
+        req.setSslConfiguration(self.sslConfig)
+
+    self.mgr.post(req, ba)
+
+
+def handlePostResponse(self, reply):
+    self.logger.debug('handlePostResponse')
+    error = reply.error()
+
+    if error == QNetworkReply.NoError:
+        self.logger.debug(reply.readAll())
+
+    else:
+        self.logger.error('NetWorker response error: %s (%s)' % (error, reply.errorString()))
+
+    self.mgr.finished.disconnect(self.handlePostResponse)
+    if self.sslSupported and self.sslEnabled:
+        self.mgr.sslErrors.disconnect(self.handleSSLErrors)
+
+
+'''

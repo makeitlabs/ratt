@@ -47,7 +47,8 @@ ToolBar {
 
     Label {
         anchors.left: parent.left
-        font.pixelSize: 12
+        font.pixelSize: 10
+        font.weight: Font.DemiBold
         height: 12
         text: time
     }

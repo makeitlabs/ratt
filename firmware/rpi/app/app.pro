@@ -56,4 +56,5 @@ DISTFILES += \
     QtGPIO.py \
     ViewAccess.qml \
     View.qml \
-    ViewIssue.qml
+    ViewIssue.qml \
+    ACL.py

@@ -318,7 +318,7 @@ class PersonalityBase(QThread):
     def __slotTagScan(self, tag, hash, time, debugText):
         self.logger.debug('tag scanned tag=%d hash=%s time=%d debug=%s' % (tag, hash, time, debugText))
 
-        result = self.app.netWorker.searchAcl(hash)
+        result = self.app.acl.search(hash)
 
         if result != []:
             record = MemberRecord()

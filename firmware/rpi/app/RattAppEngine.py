@@ -41,6 +41,7 @@ from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from RattConfig import RattConfig
 from NetWorker import NetWorker
+from ACL import ACL
 from RFID import RFID
 from Logger import Logger
 import sys
@@ -70,10 +71,11 @@ class RattAppEngine(QQmlApplicationEngine):
         self.rootContext().setContextProperty("config", self.config)
         self.rootContext().setContextProperty("personality", self.personality)
         self.rootContext().setContextProperty("netWorker", self._netWorker)
+        self.rootContext().setContextProperty("acl", self._acl)
         self.rootContext().setContextProperty("rfid", self._rfid)
 
-        # temporary for test; will move to a state machine eventually
-        self._netWorker.fetchAcl()
+        # temporary for test; will move somewhere else eventually
+        self._acl.download()
 
         # begin executing the personality state machine
         self.personality.execute()
@@ -104,8 +106,9 @@ class RattAppEngine(QQmlApplicationEngine):
         self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
                                 password=self.config.value('Auth.HttpAuthPassword'))
 
-        self._netWorker.setUrls(acl=self.config.value('Auth.AclUrl'),
-                                log=self.config.value('Auth.LogUrl'))
+        self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
+                        netWorker=self._netWorker,
+                        url=self.config.value('Auth.AclUrl'))
 
         # RFID reader
         self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),
@@ -121,6 +124,9 @@ class RattAppEngine(QQmlApplicationEngine):
     def netWorker(self):
         return self._netWorker
 
+    @property
+    def acl(self):
+        return self._acl
 
 
 

@@ -93,15 +93,12 @@ Item {
             border.color: "#000000"
 
             Connections {
-                target: netWorker
-                onAclUpdate: {
-                    aclTotalText.text = "Total Records: " + total
-                    aclActiveText.text = "Active Records: " + active
-                    aclHash.text = "Hash: " + hash
+                target: acl
+                onUpdate: {
                     aclRect.border.color = "#009900"
                 }
 
-                onAclUpdateError: {
+                onUpdateError: {
                     aclRect.border.color = "#990000"
                 }
             }
@@ -116,19 +113,20 @@ Item {
                     font.bold: true
                 }
                 Label {
-                    id: aclTotalText
                     color: "#999999"
                     font.pixelSize: 12
+                    text: "Total Records: " + acl.numRecords
                 }
                 Label {
-                    id: aclActiveText
                     color: "#00f000"
                     font.pixelSize: 12
+                    text: "Active Records: " + acl.numActiveRecords
                 }
                 Label {
                     id: aclHash
                     color: "#777777"
                     font.pixelSize: 10
+                    text: "Hash: " + acl.hash
                 }
             }
         }
