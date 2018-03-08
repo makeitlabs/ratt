@@ -79,7 +79,7 @@ View {
             from: "logo"
             to: "text"
             PropertyAnimation {
-                target: logo
+                target: logoColumn
                 properties: "opacity"
                 from: 1.0
                 to: 0.0
@@ -104,7 +104,7 @@ View {
                 duration: 500
             }
             PropertyAnimation {
-                target: logo
+                target: logoColumn
                 properties: "opacity"
                 from: 0.0
                 to: 1.0
@@ -136,12 +136,35 @@ View {
         }
     }
 
-    Image {
-        id: logo
+    ColumnLayout {
+        id: logoColumn
         opacity: 1.0
         anchors.fill: parent
-        source: "images/makeit_logo_150.png"
-        fillMode: Image.PreserveAspectFit
+        anchors.margins: 4
+
+        Image {
+            id: logo
+            Layout.fillWidth: true
+            source: "images/makeit_logo_150.png"
+            fillMode: Image.PreserveAspectFit
+        }
+
+        Label {
+            Layout.fillWidth: true
+            text: "ESSID: " + netWorker.currentWifiESSID
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: "IP: " + netWorker.currentIfcAddr
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
     }
 
     ColumnLayout {

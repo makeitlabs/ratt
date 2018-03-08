@@ -53,9 +53,35 @@ ToolBar {
         text: time
     }
 
+    Connections {
+        target: netWorker
+
+        onWifiStatus: {
+            // 'essid', 'freq', 'quality', 'level'
+
+            if (essid == "") {
+                wifiSignal.source = "";
+            } else {
+                if (quality < 10) {
+                    wifiSignal.source = "images/wifi_0.png";
+                } else if (quality < 30) {
+                    wifiSignal.source = "images/wifi_1.png";
+                } else if (quality < 50) {
+                    wifiSignal.source = "images/wifi_2.png";
+                } else if (quality < 70) {
+                    wifiSignal.source = "images/wifi_3.png";
+                } else if (quality < 90) {
+                    wifiSignal.source = "images/wifi_4.png";
+                } else {
+                    wifiSignal.source = "images/wifi_5.png";
+                }
+            }
+        }
+    }
+
     Image {
+        id: wifiSignal
         anchors.right: parent.right
-        source: "images/wifi_3.png"
     }
 
     Timer {

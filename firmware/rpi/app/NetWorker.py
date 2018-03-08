@@ -36,7 +36,7 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, QTimer, pyqtSignal
+from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, QTimer, pyqtSignal, pyqtProperty
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
 from PyQt5.QtNetwork import QNetworkInterface, QNetworkAddressEntry, QHostAddress, QAbstractSocket
 from Logger import Logger
@@ -47,7 +47,29 @@ from commands import getoutput
 
 class NetWorker(QObject):
     ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
+    currentIfcAddrChanged = pyqtSignal()
     wifiStatus = pyqtSignal(str, str, int, int, name='wifiStatus', arguments=['essid', 'freq', 'quality', 'level'])
+    wifiStatusChanged = pyqtSignal()
+
+    @pyqtProperty(str, notify=currentIfcAddrChanged)
+    def currentIfcAddr(self):
+        return self.ifcAddr.toString()
+
+    @pyqtProperty(str, notify=wifiStatusChanged)
+    def currentWifiESSID(self):
+        return self.essid
+
+    @pyqtProperty(str, notify=wifiStatusChanged)
+    def currentWifiFreq(self):
+        return self.freq
+
+    @pyqtProperty(int, notify=wifiStatusChanged)
+    def currentWifiQuality(self):
+        return self.quality
+
+    @pyqtProperty(int, notify=wifiStatusChanged)
+    def currentWifiLevel(self):
+        return self.level
 
     def __init__(self, loglevel='WARNING', ifcName='wlan0'):
         QObject.__init__(self)
@@ -73,16 +95,27 @@ class NetWorker(QObject):
         self.statusTimer.timeout.connect(self.slotStatusTimer)
         self.statusTimer.start(5000)
 
+        self.essid = ''
+        self.freq = ''
+        self.quality = 0
+        self.level = 0
+
     def slotStatusTimer(self):
          ip = self.getIfcAddress(ifc=self.ifcName)
 
          if ip != self.ifcAddr:
              self.ifcAddr = ip
              self.ifcAddrChanged.emit(ip.toString())
+             self.currentIfcAddrChanged.emit()
 
          results = { }
          if self.getWifiStatus(results):
-             self.wifiStatus.emit(results['essid'], results['freq'], results['quality'], results['level'])
+             self.essid = results['essid']
+             self.freq = results['freq']
+             self.quality = results['quality']
+             self.level = results['level']
+             self.wifiStatus.emit(self.essid, self.freq, self.quality, self.level)
+             self.wifiStatusChanged.emit()
 
 
     # ['wlan0', 'IEEE', '802.11', 'ESSID:"FooBar"', 'Mode:Managed', 'Frequency:2.412',
