@@ -36,15 +36,20 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, pyqtSignal
+from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, QTimer, pyqtSignal
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QSsl, QSslConfiguration, QSslKey, QSslCertificate, QSslSocket
+from PyQt5.QtNetwork import QNetworkInterface, QNetworkAddressEntry, QHostAddress, QAbstractSocket
 from Logger import Logger
 import logging
 import simplejson as json
 import hashlib
+from commands import getoutput
 
 class NetWorker(QObject):
-    def __init__(self, loglevel='WARNING'):
+    ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
+    wifiStatus = pyqtSignal(str, str, int, int, name='wifiStatus', arguments=['essid', 'freq', 'quality', 'level'])
+
+    def __init__(self, loglevel='WARNING', ifcName='wlan0'):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.networker')
@@ -60,11 +65,65 @@ class NetWorker(QObject):
 
         self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
 
+        self.ifcName = ifcName
+        self.ifcAddr = QHostAddress()
 
-    #def log(self):
-    #    self.logger.debug('posting log to ' + self.LogUrl)
-    #    self.post(url=self.LogUrl)
+        self.statusTimer = QTimer()
+        self.statusTimer.setSingleShot(False)
+        self.statusTimer.timeout.connect(self.slotStatusTimer)
+        self.statusTimer.start(5000)
 
+    def slotStatusTimer(self):
+         ip = self.getIfcAddress(ifc=self.ifcName)
+
+         if ip != self.ifcAddr:
+             self.ifcAddr = ip
+             self.ifcAddrChanged.emit(ip.toString())
+
+         results = { }
+         if self.getWifiStatus(results):
+             self.wifiStatus.emit(results['essid'], results['freq'], results['quality'], results['level'])
+
+
+    # ['wlan0', 'IEEE', '802.11', 'ESSID:"FooBar"', 'Mode:Managed', 'Frequency:2.412',
+    # 'GHz', 'Access', 'Point:', '00:11:22:33:44:55', 'Bit', 'Rate=65', 'Mb/s', 'Tx-Power=31',
+    # 'dBm', 'Retry', 'short', 'limit:7', 'RTS', 'thr:off', 'Fragment', 'thr:off', 'Power',
+    # 'Management:on', 'Link', 'Quality=43/70', 'Signal', 'level=-67', 'dBm', 'Rx', 'invalid',
+    # 'nwid:0', 'Rx', 'invalid', 'crypt:0', 'Rx', 'invalid', 'frag:0', 'Tx', 'excessive', 'retries:113',
+    # 'Invalid', 'misc:0', 'Missed', 'beacon:0']
+    def getWifiStatus(self, res):
+        try:
+            iw = getoutput('/sbin/iwconfig %s' % self.ifcName)
+
+            fields = iw.split()
+
+            for field in fields:
+                if field.find('ESSID') != -1:
+                    res['essid'] = field.split('"')[1]
+                elif field.find('Frequency') != -1:
+                    res['freq'] = field.split(':')[1]
+                elif field.find('Quality') != -1:
+                    frac = field.split('=')[1]
+                    (n, d) = frac.split('/')
+                    q = int(n)*100 / int(d)
+                    res['quality'] = q
+                elif field.find('level') != -1:
+                    res['level'] = int(field.split('=')[1])
+        except:
+            return False
+
+        return True
+
+
+    def getIfcAddress(self, ifc):
+        myIfc = QNetworkInterface.interfaceFromName(ifc)
+        addrList = myIfc.addressEntries()
+
+        for addr in addrList:
+            if addr.ip().protocol() == QAbstractSocket.IPv4Protocol:
+                return addr.ip()
+
+        return QHostAddress()
 
     def setAuth(self, user = '', password = ''):
         self.user = user

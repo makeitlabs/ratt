@@ -107,6 +107,9 @@ class RattAppEngine(QQmlApplicationEngine):
         self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
                                 password=self.config.value('Auth.HttpAuthPassword'))
 
+        self._netWorker.ifcAddrChanged.connect(self.slotIfcAddrChanged)
+        self._netWorker.wifiStatus.connect(self.slotWifiStatus)
+
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
                         netWorker=self._netWorker,
@@ -123,6 +126,12 @@ class RattAppEngine(QQmlApplicationEngine):
         self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),
                           loglevel=self.config.value('RFID.LogLevel'))
         self._rfid.monitor()
+
+    def slotIfcAddrChanged(self, ipStr):
+        self.logger.debug("IP CHANGED %s" % ipStr)
+
+    def slotWifiStatus(self, essid, freq, quality, level):
+        self.logger.debug("WIFI STATUS %s %sGHz quality=%d%% level=%ddBm" % (essid, freq, quality, level))
 
     @property
     def rfid(self):
