@@ -149,6 +149,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
+            self.pins[4].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -158,6 +159,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pins[4].set(LOW)
             return self.goNextState()
 
     #############################################
@@ -166,6 +168,7 @@ class Personality(PersonalityBase):
     def stateAccessDenied(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_denied', self.activeMemberRecord.name)
+            self.pins[4].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -175,6 +178,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pins[4].set(LOW)
             return self.goNextState()
 
 
@@ -184,6 +188,7 @@ class Personality(PersonalityBase):
     def stateAccessAllowed(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_allowed', self.activeMemberRecord.name)
+            self.pins[6].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -193,6 +198,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+	    self.pins[6].set(LOW)
             return self.goNextState()
 
 

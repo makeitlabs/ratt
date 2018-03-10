@@ -63,12 +63,18 @@ class PersonalityBase(QThread):
     REASON_RFID_DENIED = 5
     REASON_RFID_ERROR = 6
     REASON_UI = 7
+    REASON_POWER_LOST = 100
+    REASON_POWER_RESTORED = 101
+    REASON_BATTERY_CHARGING = 102
+    REASON_BATTERY_CHARGED = 103
 
     reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_TIMER : 'TIMER',
                      REASON_GPIO : 'GPIO' ,
                      REASON_RFID_ALLOWED : 'RFID_ALLOWED', REASON_RFID_DENIED : 'RFID_DENIED',
                      REASON_RFID_ERROR : 'RFID_ERROR',
-                     REASON_UI : 'UI'}
+                     REASON_UI : 'UI',
+                     REASON_POWER_LOST : 'POWER_LOST', REASON_POWER_RESTORED : 'POWER_RESTORED',
+                     REASON_BATTERY_CHARGING : 'BATTERY_CHARGING', REASON_BATTERY_CHARGED : 'BATTERY_CHARGED'}
 
     stateChanged = pyqtSignal(str, str, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
@@ -287,6 +293,30 @@ class PersonalityBase(QThread):
         self.mutex.unlock()
         self.cond.wakeAll()
 
+    # this is a callback when any of the GPIOs which monitor the power and charge status changes state
+    def __power_event(self, num, state):
+        reason = self.REASON_NONE
+        if not state:
+            reason = self.REASON_POWER_LOST
+        else:
+            reason = self.REASON_POWER_RESTORED
+
+        self.mutex.lock()
+        self.wakereason = reason
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
+    def __charge_event(self, num, state):
+        if not state:
+            reason = self.REASON_BATTERY_CHARGED
+        else:
+            reason = self.REASON_BATTERY_CHARGING
+
+        self.mutex.lock()
+        self.wakereason = reason
+        self.mutex.unlock()
+        self.cond.wakeAll()
+
     #-----------------------------------------------------------------------------------------
     # on the RATT platform the 16-bit I/O expander appears as /sys/class/gpio/gpiochip496
     # the first 8 gpios are used for personality implementation (motor control, sensing, etc.)
@@ -297,7 +327,7 @@ class PersonalityBase(QThread):
     # convention if possible
     #-----------------------------------------------------------------------------------------
     def _init_gpio_pins(self):
-        self.gpio.available_pins = [496, 497, 498, 499, 500, 501, 502, 503]
+        self.gpio.available_pins = [12, 26, 27, 496, 497, 498, 499, 500, 501, 502, 503]
         self.pins.append(self.gpio.alloc_pin(496, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
         self.pins.append(self.gpio.alloc_pin(497, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
         self.pins.append(self.gpio.alloc_pin(498, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
@@ -306,6 +336,12 @@ class PersonalityBase(QThread):
         self.pins.append(self.gpio.alloc_pin(501, GPIO.OUTPUT))
         self.pins.append(self.gpio.alloc_pin(502, GPIO.OUTPUT))
         self.pins.append(self.gpio.alloc_pin(503, GPIO.OUTPUT))
+
+        self.pin_shutdown = self.gpio.alloc_pin(27, GPIO.OUTPUT)
+
+        self.pin_shutdown.set(GPIO.HIGH)
+        self.pin_powerloss = self.gpio.alloc_pin(26, GPIO.INPUT, self.__power_event, GPIO.BOTH)
+        self.pin_charge = self.gpio.alloc_pin(12, GPIO.INPUT, self.__charge_event, GPIO.BOTH)
 
     # enable/disable waking thread on RFID read
     def wakeOnRFID(self, enabled):
