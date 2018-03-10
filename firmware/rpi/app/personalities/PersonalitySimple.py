@@ -65,6 +65,9 @@ class Personality(PersonalityBase):
     STATE_TOOL_TIMEOUT = 'ToolTimeout'
     STATE_TOOL_DISABLED = 'ToolDisabled'
     STATE_REPORT_ISSUE = 'ReportIssue'
+    # defined in PersonalityBase
+    # STATE_POWER_LOSS
+    # STATE_SHUT_DOWN
 
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
@@ -87,7 +90,9 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_TIMEOUT_WARNING : self.stateToolTimeoutWarning,
                        self.STATE_TOOL_TIMEOUT : self.stateToolTimeout,
                        self.STATE_TOOL_DISABLED : self.stateToolDisabled,
-                       self.STATE_REPORT_ISSUE : self.stateReportIssue
+                       self.STATE_REPORT_ISSUE : self.stateReportIssue,
+                       self.STATE_POWER_LOSS : self.statePowerLoss,
+                       self.STATE_SHUT_DOWN : self.stateShutDown
                        }
 
         # Set initial state and phase
@@ -268,3 +273,32 @@ class Personality(PersonalityBase):
             self.wakeOnRFID(False)
             return self.goNextState()
 
+
+    #############################################
+    ## STATE_POWER_LOSS
+    #############################################
+    def statePowerLoss(self):
+        if self.phENTER:
+            self.pins[4].set(LOW)
+            self.pins[6].set(LOW)
+            self.wakeOnTimer(enabled=True, interval=10000, singleShot=True)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_TIMER:
+                return self.exitAndGoto(self.STATE_SHUT_DOWN)
+            elif self.wakereason == self.REASON_POWER_RESTORED:
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+
+        elif self.phEXIT:
+            self.wakeOnTimer(enabled=False)
+            return self.goNextState()
+
+
+    #############################################
+    ## STATE_SHUT_DOWN
+    #############################################
+    def stateShutDown(self):
+        return False

@@ -83,6 +83,11 @@ ApplicationWindow {
                 case "ReportIssue":
                     switchTo(viewIssue)
                     break;
+                case "PowerLoss":
+                    switchTo(viewPowerLoss)
+                    break;
+                case "ShutDown":
+                    break;
                 }
             }
         }
@@ -162,6 +167,10 @@ ApplicationWindow {
                 }
                 ViewIssue {
                     id: viewIssue
+                    visible: false
+                }
+                ViewPowerLoss {
+                    id: viewPowerLoss
                     visible: false
                 }
 

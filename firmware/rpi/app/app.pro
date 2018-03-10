@@ -58,4 +58,5 @@ DISTFILES += \
     View.qml \
     ViewIssue.qml \
     ACL.py \
-    Telemetry.py
+    Telemetry.py \
+    ViewPowerLoss.qml

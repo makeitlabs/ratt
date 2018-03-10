@@ -68,6 +68,9 @@ class PersonalityBase(QThread):
     REASON_BATTERY_CHARGING = 102
     REASON_BATTERY_CHARGED = 103
 
+    STATE_POWER_LOSS = 'PowerLoss'
+    STATE_SHUT_DOWN = 'ShutDown'
+
     reasonLookup = { REASON_NONE : 'NONE', REASON_TIMEOUT : 'TIMEOUT', REASON_TIMER : 'TIMER',
                      REASON_GPIO : 'GPIO' ,
                      REASON_RFID_ALLOWED : 'RFID_ALLOWED', REASON_RFID_DENIED : 'RFID_DENIED',
@@ -268,6 +271,10 @@ class PersonalityBase(QThread):
             else:
                 self.logger.debug('%s woke up because %s' % (self.stateName(), self.reasonName()))
 
+            if self.wakereason is self.REASON_POWER_LOST:
+                self.logger.info('Power loss detected, going to shutdown state.')
+                self.exitAndGoto(self.STATE_POWER_LOSS)
+
             # run the state machine until a False is returned (meaning go back to waiting)
             again = True
             while again:
@@ -340,8 +347,11 @@ class PersonalityBase(QThread):
         self.pin_shutdown = self.gpio.alloc_pin(27, GPIO.OUTPUT)
 
         self.pin_shutdown.set(GPIO.HIGH)
-        self.pin_powerloss = self.gpio.alloc_pin(26, GPIO.INPUT, self.__power_event, GPIO.BOTH)
-        self.pin_charge = self.gpio.alloc_pin(12, GPIO.INPUT, self.__charge_event, GPIO.BOTH)
+        self.pin_powerpresent = self.gpio.alloc_pin(26, GPIO.INPUT, self.__power_event, GPIO.BOTH)
+        self.pin_charge = self.gpio.alloc_pin(12, GPIO.INPUT)
+
+    def onBattery(self):
+        return not self.pin_powerpresent.read()
 
     # enable/disable waking thread on RFID read
     def wakeOnRFID(self, enabled):
