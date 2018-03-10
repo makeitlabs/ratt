@@ -42,7 +42,49 @@ View {
     id: root
     name: "Shutdown"
 
-    color: "#FFCC00"
+    readonly property int showfor: 10
+    property int countdown: showfor
+
+    SequentialAnimation {
+        running: shown
+        loops: Animation.Infinite
+        ColorAnimation {
+            target: root
+            property: "color"
+            from: "#ff0000"
+            to: "#ffff00"
+            duration: 2000
+        }
+        ColorAnimation {
+            target: root
+            property: "color"
+            from: "#ffff00"
+            to: "#ff0000"
+            duration: 2000
+        }
+    }
+
+    function _show() {
+        countdown = showfor;
+    }
+
+    function done() {
+        appWindow.uiEvent('PowerLossDone');
+    }
+
+    Timer {
+        interval: 1000
+        repeat: true
+        running: shown
+        onTriggered: {
+            if (countdown) {
+                countdown--;
+            } else {
+                done();
+            }
+        }
+    }
+
 
     ColumnLayout {
         anchors.fill: parent
@@ -51,16 +93,24 @@ View {
             text: "Power Lost!"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 16
-            font.weight: Font.DemiBold
-            color: "#222222"
+            font.weight: Font.Bold
+            color: "#ffffff"
         }
         Label {
             Layout.fillWidth: true
-            text: "Shutting Down"
+            text: "Shutting down in"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 16
-            font.weight: Font.Normal
-            color: "#222222"
+            font.weight: Font.DemiBold
+            color: "#ffffff"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: countdown + " seconds"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 16
+            font.weight: Font.DemiBold
+            color: "#ffffff"
         }
 
     }

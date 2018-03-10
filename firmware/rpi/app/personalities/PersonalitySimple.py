@@ -281,11 +281,10 @@ class Personality(PersonalityBase):
         if self.phENTER:
             self.pins[4].set(LOW)
             self.pins[6].set(LOW)
-            self.wakeOnTimer(enabled=True, interval=10000, singleShot=True)
             return self.goActive()
 
         elif self.phACTIVE:
-            if self.wakereason == self.REASON_TIMER:
+            if self.wakereason == self.REASON_UI and self.uievent == 'PowerLossDone':
                 return self.exitAndGoto(self.STATE_SHUT_DOWN)
             elif self.wakereason == self.REASON_POWER_RESTORED:
                 return self.exitAndGoto(self.STATE_IDLE)
@@ -301,4 +300,5 @@ class Personality(PersonalityBase):
     ## STATE_SHUT_DOWN
     #############################################
     def stateShutDown(self):
+        self.app.shutdown()
         return False

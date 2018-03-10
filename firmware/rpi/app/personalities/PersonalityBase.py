@@ -45,16 +45,30 @@ from MemberRecord import MemberRecord
 import QtGPIO as GPIO
 import copy
 
-
 class PersonalityBase(QThread):
     PERSONALITY_DESCRIPTION = 'Base'
 
+    # GPIO pin assignments
+    GPIO_PIN_SHUTDOWN = 27
+    GPIO_PIN_POWER_PRESENT = 26
+    GPIO_PIN_CHARGE_STATE = 12
+    GPIO_PIN_IN0 = 496
+    GPIO_PIN_IN1 = 497
+    GPIO_PIN_IN2 = 498
+    GPIO_PIN_IN3 = 499
+    GPIO_PIN_OUT0 = 500
+    GPIO_PIN_OUT1 = 501
+    GPIO_PIN_OUT2 = 502
+    GPIO_PIN_OUT3 = 503
+
+    # state phases
     PHASE_ENTER = 0
     PHASE_ACTIVE = 1
     PHASE_EXIT = 100
 
     phaseLookup = { PHASE_ENTER : 'ENTER', PHASE_ACTIVE : 'ACTIVE', PHASE_EXIT : 'EXIT' }
 
+    # thread wake reasons
     REASON_NONE = 0
     REASON_TIMEOUT = 1
     REASON_TIMER = 2
@@ -78,6 +92,9 @@ class PersonalityBase(QThread):
                      REASON_UI : 'UI',
                      REASON_POWER_LOST : 'POWER_LOST', REASON_POWER_RESTORED : 'POWER_RESTORED',
                      REASON_BATTERY_CHARGING : 'BATTERY_CHARGING', REASON_BATTERY_CHARGED : 'BATTERY_CHARGED'}
+
+
+
 
     stateChanged = pyqtSignal(str, str, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
@@ -139,6 +156,7 @@ class PersonalityBase(QThread):
         self.telemetryEvent.connect(self.app.telemetry.logEvent)
 
         self.__init_gpio()
+
 
     def descr(self):
         return self.PERSONALITY_DESCRIPTION
@@ -285,6 +303,10 @@ class PersonalityBase(QThread):
             self.mutex.unlock()
 
 
+    def deinit(self):
+        self.logger.info('Personality deinit')
+        self.__deinit_gpio_pins()
+
 
     # gpio initialization
     def __init_gpio(self):
@@ -334,24 +356,38 @@ class PersonalityBase(QThread):
     # convention if possible
     #-----------------------------------------------------------------------------------------
     def _init_gpio_pins(self):
-        self.gpio.available_pins = [12, 26, 27, 496, 497, 498, 499, 500, 501, 502, 503]
-        self.pins.append(self.gpio.alloc_pin(496, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(497, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(498, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(499, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(500, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(501, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(502, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(503, GPIO.OUTPUT))
+        self.gpio.available_pins = [self.GPIO_PIN_SHUTDOWN,
+                                    self.GPIO_PIN_POWER_PRESENT,
+                                    self.GPIO_PIN_CHARGE_STATE,
+                                    self.GPIO_PIN_IN0,
+                                    self.GPIO_PIN_IN1,
+                                    self.GPIO_PIN_IN2,
+                                    self.GPIO_PIN_IN3,
+                                    self.GPIO_PIN_OUT0,
+                                    self.GPIO_PIN_OUT1,
+                                    self.GPIO_PIN_OUT2,
+                                    self.GPIO_PIN_OUT3]
 
-        self.pin_shutdown = self.gpio.alloc_pin(27, GPIO.OUTPUT)
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN0, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN1, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN2, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN3, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT0, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT1, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT2, GPIO.OUTPUT))
+        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT3, GPIO.OUTPUT))
 
+        self.pin_shutdown = self.gpio.alloc_pin(self.GPIO_PIN_SHUTDOWN, GPIO.OUTPUT)
         self.pin_shutdown.set(GPIO.HIGH)
-        self.pin_powerpresent = self.gpio.alloc_pin(26, GPIO.INPUT, self.__power_event, GPIO.BOTH)
-        self.pin_charge = self.gpio.alloc_pin(12, GPIO.INPUT)
 
-    def onBattery(self):
-        return not self.pin_powerpresent.read()
+        self.pin_powerpresent = self.gpio.alloc_pin(self.GPIO_PIN_POWER_PRESENT, GPIO.INPUT, self.__power_event, GPIO.BOTH)
+        self.pin_charge_state = self.gpio.alloc_pin(self.GPIO_PIN_CHARGE_STATE, GPIO.INPUT)
+
+    # de-allocate the gpio pins, EXCEPT for the shutdown pin (because that would potentially turn RATT off)
+    def __deinit_gpio_pins(self):
+        for pin in self.gpio.available_pins:
+            if pin != self.GPIO_PIN_SHUTDOWN:
+                self.gpio.dealloc_pin(pin)
 
     # enable/disable waking thread on RFID read
     def wakeOnRFID(self, enabled):

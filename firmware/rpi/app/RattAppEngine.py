@@ -46,8 +46,10 @@ from Telemetry import Telemetry
 from RFID import RFID
 from Logger import Logger
 import sys
+from commands import getoutput
 
 class RattAppEngine(QQmlApplicationEngine):
+
 
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
@@ -80,6 +82,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
         # begin executing the personality state machine
         self.personality.execute()
+
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
@@ -133,6 +136,24 @@ class RattAppEngine(QQmlApplicationEngine):
     def slotWifiStatus(self, essid, freq, quality, level):
         self.logger.debug("WIFI STATUS %s %sGHz quality=%d%% level=%ddBm" % (essid, freq, quality, level))
 
+
+    def shutdown(self):
+        self.logger.info('Shutting down.')
+
+        # de-init the personality
+        self.personality.deinit()
+
+        # sync fs
+        getoutput('/bin/sync')
+        getoutput('/bin/sync')
+        getoutput('/bin/sync')
+
+        # shut down system
+        getoutput('/sbin/shutdown -h now')
+
+        self.quit.emit()
+
+
     @property
     def rfid(self):
         return self._rfid
@@ -148,4 +169,5 @@ class RattAppEngine(QQmlApplicationEngine):
     @property
     def telemetry(self):
         return self._telemetry
+
 
