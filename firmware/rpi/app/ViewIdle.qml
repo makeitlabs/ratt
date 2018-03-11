@@ -51,6 +51,12 @@ View {
         return true;
     }
 
+    function keyReturn(pressed) {
+        if (pressed) {
+            acl.download();
+        }
+    }
+
     Timer {
         id: issueTimer
         interval: 2000
@@ -71,65 +77,39 @@ View {
         },
         State {
             name: "text"
-        }
-    ]
-
-    transitions: [
-        Transition {
-            from: "logo"
-            to: "text"
-            PropertyAnimation {
-                target: logoColumn
-                properties: "opacity"
-                from: 1.0
-                to: 0.0
-                duration: 500
-            }
-            PropertyAnimation {
-                target: textColumn
-                properties: "opacity"
-                from: 0.0
-                to: 1.0
-                duration: 500
-            }
         },
-        Transition {
-            from: "text"
-            to: "logo"
-            PropertyAnimation {
-                target: textColumn
-                properties: "opacity"
-                from: 1.0
-                to: 0.0
-                duration: 500
-            }
-            PropertyAnimation {
-                target: logoColumn
-                properties: "opacity"
-                from: 0.0
-                to: 1.0
-                duration: 500
-            }
+        State {
+            name: "stats"
         }
+
     ]
 
     function _show() {
         animTimer.restart()
         root.state = "logo"
         status.keyEscActive = true;
+        status.keyReturnActive = true;
     }
 
-
+    Connections {
+        target: acl
+        onUpdate: {
+            root.state = "stats";
+            animTimer.restart();
+        }
+    }
 
 
     Timer {
         id: animTimer
-        interval: 5000
+        interval: 3000
         running: true
         repeat: true
         onTriggered: {
             if (root.state == "logo") {
-                root.state = "text"
+                root.state = "text";
+            } else if (root.state == "text") {
+                root.state = "stats";
             } else {
                 root.state = "logo";
             }
@@ -137,13 +117,11 @@ View {
     }
 
     ColumnLayout {
-        id: logoColumn
-        opacity: 1.0
+        visible: root.state == "logo"
         anchors.fill: parent
         anchors.margins: 4
 
         Image {
-            id: logo
             Layout.fillWidth: true
             source: "images/makeit_logo_150.png"
             fillMode: Image.PreserveAspectFit
@@ -168,8 +146,7 @@ View {
     }
 
     ColumnLayout {
-        id: textColumn
-        opacity: 0.0
+        visible: root.state == "text"
         anchors.fill: parent
         anchors.margins: 4
 
@@ -204,4 +181,52 @@ View {
             color: "#000077"
         }
     }
+
+    ColumnLayout {
+        visible: root.state == "stats"
+        anchors.fill: parent
+        anchors.margins: 4
+
+        Label {
+            Layout.fillWidth: true
+            text: "Members Allowed"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 8
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: acl.numActiveRecords + " / " + acl.numRecords + " total"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.Normal
+            color: "#000099"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: "Status"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 8
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: acl.status
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.Normal
+            color: "#000099"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: acl.date
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.Normal
+            color: "#000099"
+        }
+    }
+
 }
