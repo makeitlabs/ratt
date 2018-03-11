@@ -36,6 +36,7 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from PersonalityBase import PersonalityBase
 from QtGPIO import LOW, HIGH
 
@@ -69,6 +70,18 @@ class Personality(PersonalityBase):
     STATE_TOOL_DISABLED = 'ToolDisabled'
     STATE_REPORT_ISSUE = 'ReportIssue'
 
+    toolActiveFlagChanged = pyqtSignal()
+
+    @pyqtProperty(bool, notify=toolActiveFlagChanged)
+    def toolActiveFlag(self):
+        return self._toolActiveFlag
+
+    @toolActiveFlag.setter
+    def toolActiveFlag(self, value):
+        self._toolActiveFlag = value
+        self.toolActiveFlagChanged.emit()
+
+
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
 
@@ -99,6 +112,29 @@ class Personality(PersonalityBase):
         self.state = self.STATE_UNINITIALIZED
         self.statePhase = self.PHASE_ACTIVE
 
+        self._toolActiveFlag = False
+
+
+    # initialize gpio pins to a safe 'off' state
+    def initPins(self):
+        self.pins_out[0].set(LOW)
+        self.pins_out[1].set(LOW)
+        self.pins_out[2].set(LOW)
+        self.pins_out[3].set(LOW)
+
+    # enable tool
+    def enableTool(self):
+        self.pins_out[0].set(HIGH)
+
+    # disable tool
+    def disableTool(self):
+        self.pins_out[0].set(LOW)
+
+    # returns true if the tool is currently active
+    def toolActive(self):
+        return (self.pins_in[0].get() == 0)
+
+
     #############################################
     ## STATE_UNINITIALIZED
     #############################################
@@ -110,10 +146,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateInit(self):
         self.logger.debug('initialize')
-        self.pins_out[0].set(LOW)
-        self.pins_out[1].set(LOW)
-        self.pins_out[2].set(LOW)
-        self.pins_out[3].set(LOW)
+        self.initPins()
         return self.goto(self.STATE_IDLE)
 
     #############################################
@@ -154,7 +187,6 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
-            self.pins_out[0].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -164,7 +196,6 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-            self.pins_out[0].set(LOW)
             return self.goNextState()
 
     #############################################
@@ -173,7 +204,6 @@ class Personality(PersonalityBase):
     def stateAccessDenied(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_denied', self.activeMemberRecord.name)
-            self.pins_out[0].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -183,7 +213,6 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-            self.pins_out[0].set(LOW)
             return self.goNextState()
 
 
@@ -193,17 +222,15 @@ class Personality(PersonalityBase):
     def stateAccessAllowed(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_allowed', self.activeMemberRecord.name)
-            self.pins_out[2].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
             if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
-                return self.exitAndGoto(self.STATE_IDLE)
+                return self.exitAndGoto(self.STATE_SAFETY_CHECK)
 
             return False
 
         elif self.phEXIT:
-            self.pins_out[2].set(LOW)
             return self.goNextState()
 
 
@@ -211,31 +238,87 @@ class Personality(PersonalityBase):
     ## STATE_SAFETY_CHECK
     #############################################
     def stateSafetyCheck(self):
-        pass
+        if self.phENTER:
+            self.wakeOnTimer(enabled=True, interval=2000, singleShot=True)
+            self.enableTool()
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.toolActive():
+                self.disableTool()
+                return self.exitAndGoto(self.STATE_SAFETY_CHECK_FAILED)
+
+            if self.wakereason == self.REASON_TIMER:
+                return self.exitAndGoto(self.STATE_SAFETY_CHECK_PASSED)
+
+            return False
+
+        elif self.phEXIT:
+            self.wakeOnTimer(enabled=False)
+            return self.goNextState()
 
     #############################################
     ## STATE_SAFETY_CHECK_PASSED
     #############################################
     def stateSafetyCheckPassed(self):
-        pass
+        return self.goto(self.STATE_TOOL_ENABLED_INACTIVE)
 
     #############################################
     ## STATE_SAFETY_CHECK_FAILED
     #############################################
     def stateSafetyCheckFailed(self):
-        pass
+        if self.phENTER:
+            self.telemetryEvent.emit('safety_check_failed', self.activeMemberRecord.name)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'SafetyFailedDone':
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
 
     #############################################
     ## STATE_TOOL_ENABLED_ACTIVE
     #############################################
     def stateToolEnabledActive(self):
-        pass
+        if self.phENTER:
+            self.telemetryEvent.emit('tool_active', self.activeMemberRecord.name)
+            self.toolActiveFlag = True
+            return self.goActive()
+
+        elif self.phACTIVE:
+            self.logger.debug('is tool active %s' % self.toolActive())
+            if not self.toolActive():
+                return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
 
     #############################################
     ## STATE_TOOL_ENABLED_INACTIVE
     #############################################
     def stateToolEnabledInactive(self):
-        pass
+        if self.phENTER:
+            self.telemetryEvent.emit('tool_inactive', self.activeMemberRecord.name)
+            self.toolActiveFlag = False
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.toolActive():
+                return self.exitAndGoto(self.STATE_TOOL_ENABLED_ACTIVE)
+
+            if self.wakereason == self.REASON_UI and self.uievent == 'ToolEnabledDone':
+                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
 
     #############################################
     ## STATE_TOOL_TIMEOUT_WARNING
@@ -253,7 +336,8 @@ class Personality(PersonalityBase):
     ## STATE_TOOL_DISABLED
     #############################################
     def stateToolDisabled(self):
-        pass
+        self.disableTool()
+        return self.goto(self.STATE_IDLE)
 
     #############################################
     ## STATE_REPORT_ISSUE
@@ -279,11 +363,7 @@ class Personality(PersonalityBase):
     #############################################
     def statePowerLoss(self):
         if self.phENTER:
-            # turn off all outputs
-            self.pins_out[0].set(LOW)
-            self.pins_out[1].set(LOW)
-            self.pins_out[2].set(LOW)
-            self.pins_out[3].set(LOW)
+            self.initPins()
             return self.goActive()
 
         elif self.phACTIVE:

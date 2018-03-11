@@ -60,4 +60,7 @@ DISTFILES += \
     ACL.py \
     Telemetry.py \
     ViewPowerLoss.qml \
-    personalities/PersonalityStateMachine.py
+    personalities/PersonalityStateMachine.py \
+    ViewSafetyFailed.qml \
+    ViewEnabled.qml \
+    ViewSafetyCheck.qml

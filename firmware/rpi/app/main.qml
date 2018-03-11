@@ -55,6 +55,7 @@ ApplicationWindow {
     Connections {
         target: personality
 
+        // switch to the view if not already there
         function switchTo(newItem) {
             if (stack.currentItem !== newItem) {
                 stack.currentItem.hide();
@@ -73,18 +74,28 @@ ApplicationWindow {
 
                 switch (state) {
                 case "Idle":
-                    switchTo(viewIdle)
+                    switchTo(viewIdle);
                     break;
                 case "AccessAllowed":
                 case "AccessDenied":
                 case "RFIDError":
-                    switchTo(viewAccess)
+                    switchTo(viewAccess);
                     break;
                 case "ReportIssue":
-                    switchTo(viewIssue)
+                    switchTo(viewIssue);
+                    break;
+                case "SafetyCheck":
+                    switchTo(viewSafetyCheck);
+                    break;
+                case "SafetyCheckFailed":
+                    switchTo(viewSafetyFailed);
+                    break;
+                case "ToolEnabledInactive":
+                case "ToolEnabledActive":
+                    switchTo(viewEnabled);
                     break;
                 case "PowerLoss":
-                    switchTo(viewPowerLoss)
+                    switchTo(viewPowerLoss);
                     break;
                 case "ShutDown":
                     break;
@@ -99,7 +110,6 @@ ApplicationWindow {
         onCurrentStateChanged: {
             showCurrentStateView();
         }
-
 
         onStateChanged: {
             console.info("current state changed " + state + ":" + phase);
@@ -165,6 +175,19 @@ ApplicationWindow {
                     id: viewAccess
                     visible: false
                 }
+                ViewSafetyCheck {
+                    id: viewSafetyCheck
+                    visible: false
+                }
+                ViewSafetyFailed {
+                    id: viewSafetyFailed
+                    visible: false
+                }
+                ViewEnabled {
+                    id: viewEnabled
+                    visible: false
+                }
+
                 ViewIssue {
                     id: viewIssue
                     visible: false
