@@ -48,7 +48,7 @@ View {
     function _show() {
         if (activeMemberRecord.valid && activeMemberRecord.allowed) {
             // valid and allowed, only briefly show the allowed screen
-            showTimer.interval = 1500;
+            showTimer.interval = 1000;
             showTimer.start();
         } else if (activeMemberRecord.valid && !activeMemberRecord.allowed) {
             // valid but denied, pause and then run the scrolling animation for the reason text

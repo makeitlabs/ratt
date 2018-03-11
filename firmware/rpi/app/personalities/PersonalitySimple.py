@@ -239,7 +239,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateSafetyCheck(self):
         if self.phENTER:
-            self.wakeOnTimer(enabled=True, interval=2000, singleShot=True)
+            self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
             self.enableTool()
             return self.goActive()
 

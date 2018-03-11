@@ -44,8 +44,34 @@ View {
 
     color: "#000099"
 
+    property int enabledSecs: 0
+    property int activeSecs: 0
+    property int idleSecs: 0
+
+    property int idleWarningSecs: 30
+    property int idleTimeoutSecs: 60
+
+    property bool idleWarning: (idleSecs < idleWarningSecs)
+    property bool idleTimeout: (idleSecs == 0)
+
+    Connections {
+        target: personality
+        onToolActiveFlagChanged: {
+            var isActive = personality.toolActiveFlag;
+
+            status.keyEscActive = !isActive;
+
+            if (isActive)
+                idleSecs = idleTimeoutSecs;
+        }
+    }
+
     function _show() {
         status.setKeyActives(true, false, false, false);
+        enabledSecs = 0;
+        activeSecs = 0;
+        idleSecs = idleTimeoutSecs;
+        updateTime();
     }
 
     function keyEscape(pressed) {
@@ -54,17 +80,44 @@ View {
         }
     }
 
+
     function done() {
         appWindow.uiEvent('ToolEnabledDone');
+    }
+
+    function hhmmss(secs) {
+        var sec_num = parseInt(secs, 10);
+        var hours   = Math.floor(sec_num / 3600);
+        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours   < 10) {hours   = "0" + hours;}
+        if (minutes < 10) {minutes = "0" + minutes;}
+        if (seconds < 10) {seconds = "0" + seconds;}
+        return hours + ':' + minutes + ':' + seconds;
+    }
+
+    function updateTime() {
+        textActiveTime.text = hhmmss(activeSecs);
+        textEnabledTime.text=  hhmmss(enabledSecs);
+        textIdleTime.text = hhmmss(idleSecs);
     }
 
     Timer {
         id: idleTimer
         interval: 1000
         repeat: true
-        running: false
+        running: shown
         onTriggered: {
+            enabledSecs++;
+            if (personality.toolActiveFlag)
+                activeSecs++;
+            else if (idleSecs > 0)
+                idleSecs--;
+            else if (idleSecs == 0)
+                done();
 
+            updateTime();
         }
     }
 
@@ -72,30 +125,125 @@ View {
         anchors.fill: parent
         Label {
             Layout.fillWidth: true
-            text: "Tool Enabled"
+            text: activeMemberRecord.name
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 16
-            font.weight: Font.Bold
+            font.weight: Font.DemiBold
             color: "#00ffff"
         }
 
-        Label {
+        RowLayout {
             Layout.fillWidth: true
-            text: "00:00:00"
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 24
-            font.weight: Font.DemiBold
-            color: personality.toolActiveFlag ? "#00ff00" : "#777777"
+            Label {
+                Layout.preferredWidth: 35
+                text: "TOTAL"
+                font.pixelSize: 8
+                font.weight: Font.DemiBold
+                horizontalAlignment: Text.AlignRight
+                color: "#aaaaaa"
+            }
+
+            Label {
+                id: textEnabledTime
+                Layout.fillWidth: true
+                font.pixelSize: 22
+                font.weight: Font.DemiBold
+                color: "#aaaaaa"
+            }
         }
 
-        Label {
+        RowLayout {
             Layout.fillWidth: true
-            text: activeMemberRecord.name
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
-            font.weight: Font.DemiBold
-            color: "#dddddd"
+            visible: personality.toolActiveFlag
+            Label {
+                Layout.preferredWidth: 35
+                text: "ACTIVE"
+                font.pixelSize: 8
+                font.weight: Font.DemiBold
+                horizontalAlignment: Text.AlignRight
+                color: "#00ff00"
+            }
+
+            Label {
+                id: textActiveTime
+                Layout.fillWidth: true
+                font.pixelSize: 22
+                font.weight: Font.DemiBold
+                color: "#00ff00"
+            }
         }
+
+        SequentialAnimation {
+            running: !personality.toolActiveFlag && !idleWarning
+            loops: Animation.Infinite
+            PropertyAnimation {
+                target: textIdleTime
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 100
+            }
+            PauseAnimation {
+                duration: 900
+            }
+            PropertyAnimation {
+                target: textIdleTime
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+                duration: 100
+            }
+            PauseAnimation {
+                duration: 900
+            }
+        }
+
+        SequentialAnimation {
+            running: !personality.toolActiveFlag && idleWarning
+            loops: Animation.Infinite
+            PropertyAnimation {
+                target: textIdleTime
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 50
+            }
+            PauseAnimation {
+                duration: 250
+            }
+            PropertyAnimation {
+                target: textIdleTime
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+                duration: 50
+            }
+            PauseAnimation {
+                duration: 250
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            visible: !personality.toolActiveFlag
+            Label {
+                Layout.preferredWidth: 35
+                text: "IDLE"
+                font.pixelSize: 8
+                font.weight: Font.DemiBold
+                horizontalAlignment: Text.AlignRight
+                color: idleWarning ? "#ff3300" : "#aaaa00"
+            }
+
+            Label {
+                id: textIdleTime
+                Layout.fillWidth: true
+                font.pixelSize: 22
+                font.weight: Font.DemiBold
+                color: idleWarning ? "#ff3300" : "#aaaa00"
+            }
+        }
+
 
     }
 }
