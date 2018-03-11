@@ -49,8 +49,6 @@ import sys
 from commands import getoutput
 
 class RattAppEngine(QQmlApplicationEngine):
-
-
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
@@ -143,10 +141,8 @@ class RattAppEngine(QQmlApplicationEngine):
         # de-init the personality
         self.personality.deinit()
 
-        # sync fs
-        getoutput('/bin/sync')
-        getoutput('/bin/sync')
-        getoutput('/bin/sync')
+        # stop raspi2fb
+        getoutput('/etc/init.d/raspi2fb stop')
 
         # shut down system
         getoutput('/sbin/shutdown -h now')
