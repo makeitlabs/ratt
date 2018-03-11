@@ -439,6 +439,10 @@ class PersonalityBase(QThread):
     def __slotInvalidScan(self, reason):
         self.logger.debug('invalid scan: %s' % reason)
 
+        empty = MemberRecord()
+
+        self.activeMemberRecord.copy(source=empty)
+
         self.mutex.lock()
         self.wakereason = self.REASON_RFID_ERROR
         self.mutex.unlock()
