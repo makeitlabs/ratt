@@ -59,4 +59,5 @@ DISTFILES += \
     ViewIssue.qml \
     ACL.py \
     Telemetry.py \
-    ViewPowerLoss.qml
+    ViewPowerLoss.qml \
+    personalities/PersonalityStateMachine.py
