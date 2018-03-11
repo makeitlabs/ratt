@@ -84,13 +84,16 @@ class Telemetry(QObject):
 
 
     def slotLogEventFinished(self):
-        self.logger.info('log event finished')
-        error = self.reply.error()
+        try:
+            self.logger.info('log event finished')
+            error = self.reply.error()
 
-        if error == QNetworkReply.NoError:
-            self.logger.debug('no error, response: %s' % reply.readAll())
+            if error == QNetworkReply.NoError:
+                self.logger.debug('no error, response: %s' % reply.readAll())
 
-        else:
-            self.logger.error('NetWorker response error: %s (%s)' % (error, self.reply.errorString()))
+            else:
+                self.logger.error('NetWorker response error: %s (%s)' % (error, self.reply.errorString()))
 
-        self.reply.deleteLater()
+            self.reply.deleteLater()
+        except:
+            self.logger.exception('telemetry log event finished exception')
