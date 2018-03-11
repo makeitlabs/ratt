@@ -49,6 +49,9 @@ class Personality(PersonalityBase):
     ## State definitions:
     ##     STATE_NAME = 'StateName'
     #############################################
+    ## defined in PersonalityBase
+    ## STATE_POWER_LOSS
+    ## STATE_SHUT_DOWN
     STATE_UNINITIALIZED = 'Uninitialized'
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
@@ -65,9 +68,6 @@ class Personality(PersonalityBase):
     STATE_TOOL_TIMEOUT = 'ToolTimeout'
     STATE_TOOL_DISABLED = 'ToolDisabled'
     STATE_REPORT_ISSUE = 'ReportIssue'
-    # defined in PersonalityBase
-    # STATE_POWER_LOSS
-    # STATE_SHUT_DOWN
 
     def __init__(self, *args, **kwargs):
         PersonalityBase.__init__(self, *args, **kwargs)
@@ -110,10 +110,10 @@ class Personality(PersonalityBase):
     #############################################
     def stateInit(self):
         self.logger.debug('initialize')
-        self.pins[4].set(LOW)
-        self.pins[5].set(LOW)
-        self.pins[6].set(LOW)
-        self.pins[7].set(LOW)
+        self.pins_out[0].set(LOW)
+        self.pins_out[1].set(LOW)
+        self.pins_out[2].set(LOW)
+        self.pins_out[3].set(LOW)
         return self.goto(self.STATE_IDLE)
 
     #############################################
@@ -154,7 +154,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
-            self.pins[4].set(HIGH)
+            self.pins_out[0].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -164,7 +164,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-            self.pins[4].set(LOW)
+            self.pins_out[0].set(LOW)
             return self.goNextState()
 
     #############################################
@@ -173,7 +173,7 @@ class Personality(PersonalityBase):
     def stateAccessDenied(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_denied', self.activeMemberRecord.name)
-            self.pins[4].set(HIGH)
+            self.pins_out[0].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -183,7 +183,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-            self.pins[4].set(LOW)
+            self.pins_out[0].set(LOW)
             return self.goNextState()
 
 
@@ -193,7 +193,7 @@ class Personality(PersonalityBase):
     def stateAccessAllowed(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_allowed', self.activeMemberRecord.name)
-            self.pins[6].set(HIGH)
+            self.pins_out[2].set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -203,7 +203,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-	    self.pins[6].set(LOW)
+            self.pins_out[2].set(LOW)
             return self.goNextState()
 
 
@@ -279,15 +279,20 @@ class Personality(PersonalityBase):
     #############################################
     def statePowerLoss(self):
         if self.phENTER:
-            self.pins[4].set(LOW)
-            self.pins[6].set(LOW)
+            # turn off all outputs
+            self.pins_out[0].set(LOW)
+            self.pins_out[1].set(LOW)
+            self.pins_out[2].set(LOW)
+            self.pins_out[3].set(LOW)
             return self.goActive()
 
         elif self.phACTIVE:
+            # wait until the UI signals that it is time to shut down (countdown timer)
+            # or abort and re-initialize if power comes back before then
             if self.wakereason == self.REASON_UI and self.uievent == 'PowerLossDone':
                 return self.exitAndGoto(self.STATE_SHUT_DOWN)
             elif self.wakereason == self.REASON_POWER_RESTORED:
-                return self.exitAndGoto(self.STATE_IDLE)
+                return self.exitAndGoto(self.STATE_INIT)
 
             return False
 

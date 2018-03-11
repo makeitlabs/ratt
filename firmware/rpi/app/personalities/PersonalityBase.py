@@ -109,7 +109,8 @@ class PersonalityBase(PersonalityStateMachine):
     # gpio initialization
     def __init_gpio(self):
         self.gpio = GPIO.Controller()
-        self.pins = []
+        self.pins_in = []
+        self.pins_out = []
         self._init_gpio_pins()
 
     # callback for when one of the application GPIO input pins has changed state
@@ -156,14 +157,15 @@ class PersonalityBase(PersonalityStateMachine):
                                     self.GPIO_PIN_OUT2,
                                     self.GPIO_PIN_OUT3]
 
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN0, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN1, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN2, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_IN3, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT0, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT1, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT2, GPIO.OUTPUT))
-        self.pins.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT3, GPIO.OUTPUT))
+        self.pins_in.append(self.gpio.alloc_pin(self.GPIO_PIN_IN0, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins_in.append(self.gpio.alloc_pin(self.GPIO_PIN_IN1, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins_in.append(self.gpio.alloc_pin(self.GPIO_PIN_IN2, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+        self.pins_in.append(self.gpio.alloc_pin(self.GPIO_PIN_IN3, GPIO.INPUT, self.__pinchanged, GPIO.BOTH))
+
+        self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT0, GPIO.OUTPUT))
+        self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT1, GPIO.OUTPUT))
+        self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT2, GPIO.OUTPUT))
+        self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT3, GPIO.OUTPUT))
 
         self.pin_shutdown = self.gpio.alloc_pin(self.GPIO_PIN_SHUTDOWN, GPIO.OUTPUT)
         self.pin_shutdown.set(GPIO.HIGH)
