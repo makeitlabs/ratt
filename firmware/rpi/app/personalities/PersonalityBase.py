@@ -60,6 +60,8 @@ class PersonalityBase(PersonalityStateMachine):
     GPIO_PIN_OUT1 = 501
     GPIO_PIN_OUT2 = 502
     GPIO_PIN_OUT3 = 503
+    GPIO_PIN_LED1 = 508
+    GPIO_PIN_LED2 = 509
 
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
@@ -148,6 +150,8 @@ class PersonalityBase(PersonalityStateMachine):
         self.gpio.available_pins = [self.GPIO_PIN_SHUTDOWN,
                                     self.GPIO_PIN_POWER_PRESENT,
                                     self.GPIO_PIN_CHARGE_STATE,
+                                    self.GPIO_PIN_LED1,
+                                    self.GPIO_PIN_LED2,
                                     self.GPIO_PIN_IN0,
                                     self.GPIO_PIN_IN1,
                                     self.GPIO_PIN_IN2,
@@ -166,6 +170,9 @@ class PersonalityBase(PersonalityStateMachine):
         self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT1, GPIO.OUTPUT))
         self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT2, GPIO.OUTPUT))
         self.pins_out.append(self.gpio.alloc_pin(self.GPIO_PIN_OUT3, GPIO.OUTPUT))
+
+        self.pin_led1 = self.gpio.alloc_pin(self.GPIO_PIN_LED1, GPIO.OUTPUT, active_low=1)
+        self.pin_led2 = self.gpio.alloc_pin(self.GPIO_PIN_LED2, GPIO.OUTPUT, active_low=1)
 
         self.pin_shutdown = self.gpio.alloc_pin(self.GPIO_PIN_SHUTDOWN, GPIO.OUTPUT)
         self.pin_shutdown.set(GPIO.HIGH)

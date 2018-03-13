@@ -121,6 +121,8 @@ class Personality(PersonalityBase):
         self.pins_out[1].set(LOW)
         self.pins_out[2].set(LOW)
         self.pins_out[3].set(LOW)
+        self.pin_led1.set(LOW)
+        self.pin_led2.set(LOW)
 
     # enable tool
     def enableTool(self):
@@ -156,10 +158,19 @@ class Personality(PersonalityBase):
         if self.phENTER:
             self.activeMemberRecord.clear()
             self.wakeOnRFID(True)
+            self.pin_led1.set(HIGH)
+            self.wakeOnTimer(enabled=True, interval=500, singleShot=True)
             return self.goActive()
 
         elif self.phACTIVE:
-            if self.wakereason == self.REASON_RFID_ALLOWED:
+            if self.wakereason == self.REASON_TIMER:
+                if self.pin_led1.get() == LOW:
+                    self.pin_led1.set(HIGH)
+                    self.wakeOnTimer(enabled=True, interval=500, singleShot=True)
+                else:
+                    self.pin_led1.set(LOW)
+                    self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
+            elif self.wakereason == self.REASON_RFID_ALLOWED:
                 return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
             elif self.wakereason == self.REASON_RFID_DENIED:
                 return self.exitAndGoto(self.STATE_ACCESS_DENIED)
@@ -169,10 +180,13 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
 
+
             # otherwise thread goes back to waiting
             return False
 
         elif self.phEXIT:
+            self.pin_led1.set(LOW)
+            self.wakeOnTimer(False)
             self.wakeOnRFID(False)
             return self.goNextState()
 
@@ -187,6 +201,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
+            self.pin_led2.set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -196,6 +211,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pin_led2.set(LOW)
             return self.goNextState()
 
     #############################################
@@ -204,6 +220,7 @@ class Personality(PersonalityBase):
     def stateAccessDenied(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_denied', self.activeMemberRecord.name)
+            self.pin_led2.set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -213,6 +230,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pin_led2.set(LOW)
             return self.goNextState()
 
 
@@ -222,6 +240,7 @@ class Personality(PersonalityBase):
     def stateAccessAllowed(self):
         if self.phENTER:
             self.telemetryEvent.emit('access_allowed', self.activeMemberRecord.name)
+            self.pin_led1.set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -231,6 +250,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pin_led1.set(LOW)
             return self.goNextState()
 
 
@@ -241,6 +261,7 @@ class Personality(PersonalityBase):
         if self.phENTER:
             self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
             self.enableTool()
+            self.pin_led1.set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -255,6 +276,7 @@ class Personality(PersonalityBase):
 
         elif self.phEXIT:
             self.wakeOnTimer(enabled=False)
+            self.pin_led1.set(LOW)
             return self.goNextState()
 
     #############################################
@@ -269,6 +291,7 @@ class Personality(PersonalityBase):
     def stateSafetyCheckFailed(self):
         if self.phENTER:
             self.telemetryEvent.emit('safety_check_failed', self.activeMemberRecord.name)
+            self.pin_led2.set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -278,6 +301,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pin_led2.set(LOW)
             return self.goNextState()
 
     #############################################
@@ -287,16 +311,23 @@ class Personality(PersonalityBase):
         if self.phENTER:
             self.telemetryEvent.emit('tool_active', self.activeMemberRecord.name)
             self.toolActiveFlag = True
+            self.wakeOnTimer(enabled=True, interval=250, singleShot=False)
             return self.goActive()
 
         elif self.phACTIVE:
-            self.logger.debug('is tool active %s' % self.toolActive())
             if not self.toolActive():
                 return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+
+            if self.wakereason == self.REASON_TIMER:
+                if self.pin_led1.get() == LOW:
+                    self.pin_led1.set(HIGH)
+                else:
+                    self.pin_led1.set(LOW)
 
             return False
 
         elif self.phEXIT:
+            self.pin_led1.set(LOW)
             return self.goNextState()
 
     #############################################
@@ -306,6 +337,7 @@ class Personality(PersonalityBase):
         if self.phENTER:
             self.telemetryEvent.emit('tool_inactive', self.activeMemberRecord.name)
             self.toolActiveFlag = False
+            self.pin_led1.set(HIGH)
             return self.goActive()
 
         elif self.phACTIVE:
@@ -318,6 +350,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.pin_led1.set(LOW)
             return self.goNextState()
 
     #############################################

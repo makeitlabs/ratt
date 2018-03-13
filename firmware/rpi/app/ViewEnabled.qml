@@ -133,7 +133,7 @@ View {
             Layout.fillWidth: true
             text: activeMemberRecord.name
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 16
+            font.pixelSize: 12
             font.weight: Font.DemiBold
             color: "#00ffff"
         }
