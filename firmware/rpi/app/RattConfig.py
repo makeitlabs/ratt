@@ -62,6 +62,14 @@ class RattConfig(QObject):
     def Personality_Class(self):
         return self.config['Personality.Class']
 
+    @pyqtProperty(int, notify=configChanged)
+    def Personality_TimeoutSeconds(self):
+        return self.config['Personality.TimeoutSeconds']
+
+    @pyqtProperty(int, notify=configChanged)
+    def Personality_TimeoutWarningSeconds(self):
+        return self.config['Personality.TimeoutWarningSeconds']
+
     @pyqtProperty(str, notify=configChanged)
     def General_ToolDesc(self):
         return self.config['General.ToolDesc']
@@ -81,6 +89,23 @@ class RattConfig(QObject):
     @pyqtProperty(str, notify=configChanged)
     def Sound_RFIDError(self):
         return self.config['Sound.RFIDError']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_SafetyFailed(self):
+        return self.config['Sound.SafetyFailed']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_Enable(self):
+        return self.config['Sound.Enable']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_Disable(self):
+        return self.config['Sound.Disable']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_TimeoutWarning(self):
+        return self.config['Sound.TimeoutWarning']
+
     #---------------------------------------------------------------------------------------------
 
 
@@ -118,6 +143,8 @@ class RattConfig(QObject):
 
         self.addConfig('Personality', 'Class')
         self.addConfig('Personality', 'LogLevel')
+        self.addConfigInt('Personality', 'TimeoutSeconds')
+        self.addConfigInt('Personality', 'TimeoutWarningSeconds')
 
         self.addConfig('Auth', 'LogLevel')
         self.addConfig('Auth', 'ResourceId')
@@ -142,6 +169,10 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'RFIDSuccess')
         self.addConfig('Sound', 'RFIDFailure')
         self.addConfig('Sound', 'RFIDError')
+        self.addConfig('Sound', 'SafetyFailed')
+        self.addConfig('Sound', 'Enable')
+        self.addConfig('Sound', 'Disable')
+        self.addConfig('Sound', 'TimeoutWarning')
 
         self.configChanged.emit()
 

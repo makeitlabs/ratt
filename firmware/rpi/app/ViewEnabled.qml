@@ -48,8 +48,8 @@ View {
     property int activeSecs: 0
     property int idleSecs: 0
 
-    property int idleWarningSecs: 30
-    property int idleTimeoutSecs: 60
+    property int idleWarningSecs: config.Personality_TimeoutWarningSeconds
+    property int idleTimeoutSecs: config.Personality_TimeoutSeconds
 
     property bool idleWarning: (idleSecs < idleWarningSecs)
     property bool idleTimeout: (idleSecs == 0)
@@ -72,6 +72,8 @@ View {
         activeSecs = 0;
         idleSecs = idleTimeoutSecs;
         updateTime();
+
+        sound.enableAudio.play();
     }
 
     function keyEscape(pressed) {
@@ -82,6 +84,7 @@ View {
 
 
     function done() {
+        sound.disableAudio.play();
         appWindow.uiEvent('ToolEnabledDone');
     }
 
@@ -116,6 +119,9 @@ View {
                 idleSecs--;
             else if (idleSecs == 0)
                 done();
+
+            if (idleSecs == idleWarningSecs)
+                sound.timeoutWarningAudio.play();
 
             updateTime();
         }

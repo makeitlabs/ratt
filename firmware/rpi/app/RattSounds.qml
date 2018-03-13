@@ -42,6 +42,11 @@ import RATT 1.0
 
 Item {
     property alias keyAudio: keyAudio
+    property alias safetyFailedAudio: safetyFailedAudio
+    property alias enableAudio: enableAudio
+    property alias disableAudio: disableAudio
+
+    property alias timeoutWarningAudio: timeoutWarningAudio
 
     SoundEffect {
         id: keyAudio
@@ -58,6 +63,23 @@ Item {
     SoundEffect {
         id: rfidErrorAudio
         source: config.Sound_RFIDError
+    }
+    SoundEffect {
+        id: safetyFailedAudio
+        source: config.Sound_SafetyFailed
+        loops: 3
+    }
+    SoundEffect {
+        id: enableAudio
+        source: config.Sound_Enable
+    }
+    SoundEffect {
+        id: disableAudio
+        source: config.Sound_Disable
+    }
+    SoundEffect {
+        id: timeoutWarningAudio
+        source: config.Sound_TimeoutWarning
     }
 
     Connections {

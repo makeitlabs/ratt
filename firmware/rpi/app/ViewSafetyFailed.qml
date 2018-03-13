@@ -45,7 +45,8 @@ View {
     color: "#dd0000"
 
     function _show() {
-        showTimer.start()
+        showTimer.start();
+        sound.safetyFailedAudio.play();
     }
 
     function done() {
