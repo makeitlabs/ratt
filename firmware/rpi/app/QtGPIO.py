@@ -149,8 +149,15 @@ class Pin(object):
         #
         # @rtype: int
         # @return: I{0} when LOW, I{1} when HIGH
-        val = self._fd.read()
-        self._fd.seek(0)
+        val = ""
+        while val == "":
+            # the while loop was added due to occasional EOFs when reading during heavy GPIO activity
+            # not sure of the reason for the EOFs but this fixes it for now with the caveat that it could
+            # end up in an infinite loop if it goes EOF forever.. not implementing a retry count for now for
+            # efficiency sake
+            val = self._fd.read()
+            self._fd.seek(0)
+
         return int(val)
 
     def fileno(self):
