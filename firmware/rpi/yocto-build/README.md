@@ -4,7 +4,7 @@ Based on http://www.jumpnowtek.com/rpi/Raspberry-Pi-Systems-with-Yocto.html
 
 ## Pre-requisites
 
-Start with Ubuntu 16.04.3 LTS image running in a virtual machine.  Make sure you have enough disk space (at LEAST 50GB, preferably more).  If you are
+Start with Ubuntu 18.04.1 LTS image running in a virtual machine.  Make sure you have enough disk space (at LEAST 50GB, preferably more).  If you are
 doing a lot of building, you will want this on fast disk (SSD).  You will also want to give the Virtual Machine a lot of RAM and CPU cores if you can.
 I run with 16GB and 12 cores dedicated to the VM for faster builds.
 
@@ -16,9 +16,9 @@ I run with 16GB and 12 cores dedicated to the VM for faster builds.
 
 ### Install some pre-requisites for building:
 
-    sudo apt install build-essential chrpath diffstat gawk libncurses5-dev texinfo python2.7 git
+    sudo apt install python rename build-essential chrpath diffstat gawk libncurses5-dev texinfo python2.7 git
 
-### Ensure python2.7 has links (16.04.3 had them already):
+### Ensure python2.7 has links (18.04.1 did not until 'python' package installed):
 
     steve@ubuntu:~$ ls -al /usr/bin/python
     lrwxrwxrwx 1 root root 9 Feb  8 05:47 /usr/bin/python -> python2.7
@@ -49,24 +49,24 @@ separate from the rest of RATT._  `meta-ratt` is essentially the layer that defi
 stands on the shoulders of a lot of work from others for Raspberry Pi compatibility, and makes only specific tweaks where necessary to adjust
 the build to our needs.
 
-### Make a local clone of the Yocto poky-rocko branch from github
+### Make a local clone of the Yocto poky-sumo branch from github
 
-Poky is the name of the reference build of Yocto Project.  Rocko is the branch that RATT is based on, and was released in October of 2017.
-See https://www.yoctoproject.org/downloads/core/rocko24 for more info about the specific release.
+Poky is the name of the reference build of Yocto Project.  Sumo is the branch that RATT is based on, and was released in April of 2018.
+See https://www.yoctoproject.org/software-overview/downloads/ for more info about the release.
 
-I've included a script to do the dirty work of cloning Poky-Rocko.  This script will also set up a couple of directories in
+I've included a script to do the dirty work of cloning Poky-Sumo.  This script will also set up a couple of directories in
 /u/rpi that the build process will use for the downloaded sources cache as well as the temporary build directory.
 
     ~/ratt/firmware/rpi/yocto-build/scripts/setup-poky-build.sh
 
-**TODO: Maybe adjust the script to tie to specific SHAs for poky-rocko and its dependencies so we're not chasing updates.**
+**TODO: Maybe adjust the script to tie to specific SHAs for poky-sumo and its dependencies so we're not chasing updates.**
    
 
 ## Building
 
 ### Source the yocto environment before running bitbake
 
-    source /u/rpi/poky-rocko/oe-init-build-env ~/ratt/firmware/rpi/yocto-build
+    source /u/rpi/poky-sumo/oe-init-build-env ~/ratt/firmware/rpi/yocto-build
 
 _Ignore the common suggested build target text that is spit out here - we don't build those targets for RATT._
 
@@ -114,7 +114,9 @@ Example config for a WPA-PSK network, saved to `~/ratt/firmware/rpi/meta-ratt/sc
         psk="2secure4u"
     }
 
-    # open network
+
+
+# open network
     #network={
     #    key_mgmt=NONE
     #    ssid="<ssid>"
@@ -142,8 +144,9 @@ _SD device is `/dev/sdf` in the above example, but it will likely appear as a di
 
 Use the meta-rpi script to make the two necessary partitions on the SD card (need to know device above).
 
-    cd ~/ratt/firmware/rpi/meta-rpi/scripts
-    sudo ./mk2parts.sh sdf
+    cd ~/ratt/firmware/rpi/meta-ratt/scripts
+
+sudo ./mk2parts.sh sdf
 
 ### Make a temporary mount point
 
@@ -168,7 +171,7 @@ This script takes several args:
     copy_rootfs.sh [SD device] [image name minus the -image] [hostname]
 
 
-Note: This can be pretty slow to finish (minutes to potentially tens of minutes depending on quality of card).
+Note: This can be pretty slow to finish (minutes to potentially tens of minutes depending on quality of card and speed of your card reader/writer).
 
 # Yocto / OpenEmbedded References
 

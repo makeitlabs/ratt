@@ -1,6 +1,6 @@
 #!/bin/sh
 DEST_DIR="/u/rpi"
-POKY="poky-rocko"
+POKY="poky-sumo"
 SOURCES_DIR="oe-sources"
 TMP_DIR="tmp"
 
@@ -25,12 +25,12 @@ else
     echo "Cloning ${POKY} into ${DEST_DIR}/${POKY}..."
     mkdir -p ${DEST_DIR}
     cd ${DEST_DIR}
-    git clone -b rocko git://git.yoctoproject.org/poky.git ${POKY}
+    git clone -b sumo git://git.yoctoproject.org/poky.git ${POKY}
     cd ${POKY}
     echo "Cloning dependency directories..."
-    git clone -b rocko git://git.openembedded.org/meta-openembedded
-    git clone -b rocko https://github.com/meta-qt5/meta-qt5
-    git clone -b rocko git://git.yoctoproject.org/meta-security
-    git clone -b rocko git://git.yoctoproject.org/meta-raspberrypi
+    git clone -b sumo git://git.openembedded.org/meta-openembedded
+    git clone -b sumo https://github.com/meta-qt5/meta-qt5
+    git clone -b sumo git://git.yoctoproject.org/meta-security
+    git clone -b sumo git://git.yoctoproject.org/meta-raspberrypi
 fi
  
