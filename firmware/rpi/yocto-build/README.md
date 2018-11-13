@@ -1,6 +1,7 @@
-# Building RATT Image with Yocto/OpenEmbedded
+# Building RATT Image with Yocto/OpenEmbedded and Mender
 
 Based on http://www.jumpnowtek.com/rpi/Raspberry-Pi-Systems-with-Yocto.html
+Mender info at https://docs.mender.io/
 
 ## Pre-requisites
 
@@ -16,7 +17,7 @@ I run with 16GB and 12 cores dedicated to the VM for faster builds.
 
 ### Install some pre-requisites for building:
 
-    sudo apt install python rename build-essential chrpath diffstat gawk libncurses5-dev texinfo python2.7 git
+    sudo apt install python rename build-essential chrpath diffstat gawk libncurses5-dev texinfo python2.7 git python3-setuptools
 
 ### Ensure python2.7 has links (18.04.1 did not until 'python' package installed):
 
@@ -77,6 +78,8 @@ _Ignore the common suggested build target text that is spit out here - we don't 
 _Wait a long time..._  2-3 hours typically.  More RAM, faster disk, and more/faster cores will help but it's building a lot of stuff.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
 
 ## Copying to SD Card
+
+(Note: this section needs to be updated to reflect changes in the image now that Mender is integrated -- the following info is out of date)
 
 ### Configuration
 
