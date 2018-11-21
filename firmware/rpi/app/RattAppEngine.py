@@ -43,6 +43,7 @@ from RattConfig import RattConfig
 from NetWorker import NetWorker
 from ACL import ACL
 from Telemetry import Telemetry
+from MqttClient import MqttClient
 from RFID import RFID
 from Logger import Logger
 import sys
@@ -117,9 +118,16 @@ class RattAppEngine(QQmlApplicationEngine):
                         url=self.config.value('Auth.AclUrl'),
                         cacheFile=self.config.value('Auth.AclCacheFile'))
 
+        # MQTT module, for publishing and subscribing to the MQTT broker
+        self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
+                                hostname=self.config.value('MQTT.BrokerHost'),
+                                port=self.config.value('MQTT.BrokerPort'),
+                                reconnectTime=self.config.value('MQTT.ReconnectTime'))
+        
         # telemetry module, for collecting and posting events back to the auth server
         self._telemetry = Telemetry(loglevel=self.config.value('Telemetry.LogLevel'),
                                     netWorker=self._netWorker,
+                                    mqtt=self._mqtt,
                                     url=self.config.value('Telemetry.EventUrl'),
                                     cacheFile=self.config.value('Telemetry.EventCacheFile'))
 

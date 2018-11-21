@@ -44,7 +44,7 @@ import simplejson as json
 
 class Telemetry(QObject):
 
-    def __init__(self, loglevel='WARNING', netWorker = None, url='', cacheFile=None):
+    def __init__(self, loglevel='WARNING', netWorker = None, mqtt = None, url='', cacheFile=None):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.telemetry')
@@ -53,6 +53,10 @@ class Telemetry(QObject):
 
         if netWorker is None:
             self.logger.error('must set netWorker')
+            exit(-1)
+
+        if mqtt is None:
+            self.logger.error('must set mqtt')
             exit(-1)
 
         self.netWorker = netWorker
