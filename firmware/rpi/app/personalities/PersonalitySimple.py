@@ -53,6 +53,7 @@ class Personality(PersonalityBase):
     ## defined in PersonalityBase
     ## STATE_POWER_LOSS
     ## STATE_SHUT_DOWN
+    ## STATE_LOCK_OUT
     STATE_UNINITIALIZED = 'Uninitialized'
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
@@ -105,7 +106,8 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_DISABLED : self.stateToolDisabled,
                        self.STATE_REPORT_ISSUE : self.stateReportIssue,
                        self.STATE_POWER_LOSS : self.statePowerLoss,
-                       self.STATE_SHUT_DOWN : self.stateShutDown
+                       self.STATE_SHUT_DOWN : self.stateShutDown,
+                       self.STATE_LOCK_OUT : self.stateLockOut
                        }
 
         # Set initial state and phase
@@ -414,6 +416,21 @@ class Personality(PersonalityBase):
             return self.goNextState()
 
 
+    #############################################
+    ## STATE_LOCK_OUT
+    #############################################
+    def stateLockOut(self):
+        if self.phENTER:
+            return self.goActive()
+
+        elif self.phACTIVE:
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
+
+        
     #############################################
     ## STATE_SHUT_DOWN
     #############################################

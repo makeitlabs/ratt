@@ -95,6 +95,8 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.telemetryEvent.connect(self.app.telemetry.logEvent)
 
+        self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastEvent)
+        
         self.__init_gpio()
 
 
@@ -242,4 +244,20 @@ class PersonalityBase(PersonalityStateMachine):
         self.wakereason = self.REASON_RFID_ERROR
         self.mutex.unlock()
         self.cond.wakeAll()
+
+    # MQTT broadcast event
+    @pyqtSlot(str, str)
+    def __slotBroadcastEvent(self, subtopic, message):
+        self.logger.debug('MQTT broadcast ' + subtopic + ' -> ' + message)
+
+        if subtopic == 'lockout':
+            self.logger.debug('MQTT lockout')
+            self.mutex.lock()
+            if message == '1':
+                self.wakereason = self.REASON_LOCK_OUT
+            elif message == '0':
+                self.wakereason = self.REASON_LOCK_OUT_CANCELED
+                
+            self.mutex.unlock()
+            self.cond.wakeAll()
 

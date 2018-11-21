@@ -75,6 +75,7 @@ class RattAppEngine(QQmlApplicationEngine):
         self.rootContext().setContextProperty("netWorker", self._netWorker)
         self.rootContext().setContextProperty("acl", self._acl)
         self.rootContext().setContextProperty("rfid", self._rfid)
+        self.rootContext().setContextProperty("mqtt", self.mqtt)
 
         # temporary for test; will move somewhere else eventually
         self._acl.download()
@@ -174,4 +175,9 @@ class RattAppEngine(QQmlApplicationEngine):
     def telemetry(self):
         return self._telemetry
 
+    @property
+    def mqtt(self):
+        return self._mqtt
+
+    
 

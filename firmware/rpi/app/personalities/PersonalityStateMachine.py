@@ -57,6 +57,9 @@ class PersonalityStateMachine(QThread):
     REASON_RFID_DENIED = 5
     REASON_RFID_ERROR = 6
     REASON_UI = 7
+    REASON_MQTT = 10
+    REASON_LOCK_OUT = 20
+    REASON_LOCK_OUT_CANCELED = 21
     REASON_POWER_LOST = 100
     REASON_POWER_RESTORED = 101
     REASON_BATTERY_CHARGING = 102
@@ -67,12 +70,15 @@ class PersonalityStateMachine(QThread):
                      REASON_RFID_ALLOWED : 'RFID_ALLOWED', REASON_RFID_DENIED : 'RFID_DENIED',
                      REASON_RFID_ERROR : 'RFID_ERROR',
                      REASON_UI : 'UI',
+                     REASON_MQTT : 'MQTT',
+                     REASON_LOCK_OUT : 'LOCK_OUT', REASON_LOCK_OUT_CANCELED : 'LOCK_OUT_CANCELED',
                      REASON_POWER_LOST : 'POWER_LOST', REASON_POWER_RESTORED : 'POWER_RESTORED',
                      REASON_BATTERY_CHARGING : 'BATTERY_CHARGING', REASON_BATTERY_CHARGED : 'BATTERY_CHARGED'}
 
     # pre-defined states that are present in all implementations
     STATE_POWER_LOSS = 'PowerLoss'
     STATE_SHUT_DOWN = 'ShutDown'
+    STATE_LOCK_OUT = 'LockOut'
 
     stateChanged = pyqtSignal(str, str, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
@@ -150,6 +156,15 @@ class PersonalityStateMachine(QThread):
                 self.logger.info('Power loss detected, going to shutdown state.')
                 self.exitAndGoto(self.STATE_POWER_LOSS)
 
+            if self.wakereason is self.REASON_LOCK_OUT:
+                self.logger.info('Lockout state detected.')
+                self.exitAndGoto(self.STATE_LOCK_OUT)
+
+            if self.wakereason is self.REASON_LOCK_OUT_CANCELED:
+                self.logger.info('Lockout state detected.')
+                self.exitAndGoto(self.STATE_INIT)
+
+                
             # run the state machine until a False is returned (meaning go back to waiting)
             again = True
             while again:
@@ -278,3 +293,4 @@ class PersonalityStateMachine(QThread):
         self.uievent = evt
         self.mutex.unlock()
         self.cond.wakeAll()
+

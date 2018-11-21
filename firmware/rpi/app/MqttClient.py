@@ -59,7 +59,7 @@ class MqttClient(QObject):
     cleanSessionChanged = pyqtSignal(bool)
     protocolVersionChanged = pyqtSignal(int)
 
-    messageSignal = pyqtSignal(str)
+    broadcastEvent = pyqtSignal(str,str)
 
     def __init__(self, loglevel='WARNING', hostname="", port=1883, reconnectTime=1000):
         QObject.__init__(self)
@@ -203,4 +203,7 @@ class MqttClient(QObject):
 
     def on_message(self, client, userdata, message):
         self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
+        if message.topic.startswith('ratt/broadcast'):
+            subtopic = message.topic.replace('ratt/broadcast/', '')
+            self.broadcastEvent.emit(subtopic, message.payload)
 

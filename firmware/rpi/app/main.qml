@@ -99,6 +99,9 @@ ApplicationWindow {
                     break;
                 case "ShutDown":
                     break;
+		case "LockOut":
+		     switchTo(viewLockedOut);
+		     break;
                 }
             }
         }
@@ -196,6 +199,10 @@ ApplicationWindow {
                     id: viewPowerLoss
                     visible: false
                 }
+		ViewLockedOut {
+		    id: viewLockedOut
+		    visible: false
+		}
 
             }
         }
