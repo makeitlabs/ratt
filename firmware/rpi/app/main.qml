@@ -99,9 +99,9 @@ ApplicationWindow {
                     break;
                 case "ShutDown":
                     break;
-		case "LockOut":
-		     switchTo(viewLockedOut);
-		     break;
+                case "LockOut":
+		                switchTo(viewLockedOut);
+                    break;
                 }
             }
         }

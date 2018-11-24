@@ -55,6 +55,10 @@ class NetWorker(QObject):
     def currentIfcAddr(self):
         return self.ifcAddr.toString()
 
+    @pyqtProperty(str)
+    def currentHwAddr(self):
+        return self.hwAddr
+
     @pyqtProperty(str, notify=wifiStatusChanged)
     def currentWifiESSID(self):
         return self.essid
@@ -89,6 +93,7 @@ class NetWorker(QObject):
 
         self.ifcName = ifcName
         self.ifcAddr = QHostAddress()
+        self.hwAddr = self.getHwAddress(ifc=ifcName)
 
         self.statusTimer = QTimer()
         self.statusTimer.setSingleShot(False)
@@ -101,21 +106,21 @@ class NetWorker(QObject):
         self.level = 0
 
     def slotStatusTimer(self):
-         ip = self.getIfcAddress(ifc=self.ifcName)
+        ip = self.getIfcAddress(ifc=self.ifcName)
 
-         if ip != self.ifcAddr:
-             self.ifcAddr = ip
-             self.ifcAddrChanged.emit(ip.toString())
-             self.currentIfcAddrChanged.emit()
+        if ip != self.ifcAddr:
+            self.ifcAddr = ip
+            self.ifcAddrChanged.emit(ip.toString())
+            self.currentIfcAddrChanged.emit()
 
-         results = { }
-         if self.getWifiStatus(results):
-             self.essid = results['essid']
-             self.freq = results['freq']
-             self.quality = results['quality']
-             self.level = results['level']
-             self.wifiStatus.emit(self.essid, self.freq, self.quality, self.level)
-             self.wifiStatusChanged.emit()
+        results = { }
+        if self.getWifiStatus(results):
+            self.essid = results['essid']
+            self.freq = results['freq']
+            self.quality = results['quality']
+            self.level = results['level']
+            self.wifiStatus.emit(self.essid, self.freq, self.quality, self.level)
+            self.wifiStatusChanged.emit()
 
 
     # ['wlan0', 'IEEE', '802.11', 'ESSID:"FooBar"', 'Mode:Managed', 'Frequency:2.412',
@@ -157,6 +162,12 @@ class NetWorker(QObject):
                 return addr.ip()
 
         return QHostAddress()
+
+    def getHwAddress(self, ifc):
+        myIfc = QNetworkInterface.interfaceFromName(ifc)
+
+        return myIfc.hardwareAddress()
+
 
     def setAuth(self, user = '', password = ''):
         self.user = user
@@ -222,7 +233,7 @@ class NetWorker(QObject):
     def handleSSLErrors(self, reply, errors):
         for err in errors:
             self.logger.error('SSL errors:' + err.errorString())
-        
+
     def handleAuthenticationRequired(self, reply, authenticator):
         if self.user == '' and self.password == '':
             self.logger.warning('authentication required and no user/password set')
@@ -240,7 +251,7 @@ class NetWorker(QObject):
             self.logger.warning('SSL private key is null')
         else:
             self.sslConfig.setPrivateKey(privateKey)
-            
+
         ## import the client certificate
         certFile = QFile(self.clientCertFile)
         certFile.open(QIODevice.ReadOnly)
@@ -256,4 +267,3 @@ class NetWorker(QObject):
         caCertList = self.sslConfig.caCertificates()
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
-

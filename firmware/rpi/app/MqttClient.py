@@ -41,6 +41,9 @@ import paho.mqtt.client as mqtt
 from Logger import Logger
 
 class MqttClient(QObject):
+    TOPIC_BROADCAST = 'ratt/broadcast'
+    TOPIC_TARGETED = 'ratt/node'
+
     Disconnected = 0
     Connecting = 1
     Reconnecting = 2
@@ -60,14 +63,17 @@ class MqttClient(QObject):
     protocolVersionChanged = pyqtSignal(int)
 
     broadcastEvent = pyqtSignal(str,str)
+    targetedEvent = pyqtSignal(str,str)
 
-    def __init__(self, loglevel='WARNING', hostname="", port=1883, reconnectTime=1000):
+    def __init__(self, loglevel='WARNING', hostname='', port=1883, reconnectTime=1000, nodeId=''):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.mqtt')
         self.logger.setLogLevelStr(loglevel)
         self.debug = self.logger.isDebug()
-        
+
+        self.node_id = nodeId
+
         self._hostname = hostname
         self._port = port
         self._keepalive = 60
@@ -75,7 +81,7 @@ class MqttClient(QObject):
         self._protocol_version = MqttClient.MQTT_3_1
 
         self._reconnect_time = reconnectTime
-        
+
         self._state = MqttClient.Disconnected
 
         self.init_client()
@@ -85,12 +91,10 @@ class MqttClient(QObject):
     def init_client(self):
         self.logger.info('MQTT client initialized, broker host is ' + self._hostname + ':' + str(self._port))
 
-        
         self.m_client = mqtt.Client(clean_session=self._clean_session, protocol=self.protocolVersion)
         self.m_client.on_connect = self.on_connect
         self.m_client.on_message = self.on_message
         self.m_client.on_disconnect = self.on_disconnect
-
 
     @pyqtProperty(int, notify=stateChanged)
     def state(self):
@@ -100,7 +104,7 @@ class MqttClient(QObject):
     def state(self, state):
         if self._state == state: return
         self._state = state
-        self.stateChanged.emit(state) 
+        self.stateChanged.emit(state)
 
     @pyqtProperty(str, notify=hostnameChanged)
     def hostname(self):
@@ -156,9 +160,9 @@ class MqttClient(QObject):
     @pyqtSlot(str, str)
     def publish(self, topic, msg):
         print self.m_client.publish(topic, msg)
-        
-    
-            
+
+
+
     #################################################################
     @pyqtSlot()
     def connectToBroker(self):
@@ -180,30 +184,34 @@ class MqttClient(QObject):
         self.reconnTimer.setSingleShot(True)
         self.reconnTimer.timeout.connect(self.connectToBroker)
         self.reconnTimer.start(self._reconnect_time)
-                
 
     @pyqtSlot()
     def disconnectFromHost(self):
         self.m_client.disconnect()
 
-    def subscribe(self, path):
+    def subscribe(self, topic):
         if self.state == MqttClient.Connected:
-            self.m_client.subscribe(path)
-
+            self.logger.info('subscribe topic=' + topic)
+            self.m_client.subscribe(topic)
 
     def on_connect(self, client, userdata, flags, rc):
         self.state = MqttClient.Connected
         self.logger.info('on_connect')
-        self.subscribe('ratt/broadcast/#')
-        
+        self.subscribe(MqttClient.TOPIC_BROADCAST + '/#')
+        self.subscribe(MqttClient.TOPIC_TARGETED + '/' + self.node_id + '/#')
 
     def on_disconnect(self, client, userdata, rc):
         self.state = MqttClient.Disconnected
         self.logger.info('on_disconnect')
 
     def on_message(self, client, userdata, message):
-        self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
-        if message.topic.startswith('ratt/broadcast'):
-            subtopic = message.topic.replace('ratt/broadcast/', '')
-            self.broadcastEvent.emit(subtopic, message.payload)
+        topic_broadcast = MqttClient.TOPIC_BROADCAST + '/'
+        topic_targeted = MqttClient.TOPIC_TARGETED + '/' + self.node_id + '/'
 
+        self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
+        if message.topic.startswith(topic_broadcast):
+            subtopic = message.topic.replace(topic_broadcast, '')
+            self.broadcastEvent.emit(subtopic, message.payload)
+        elif message.topic.startswith(topic_targeted):
+            subtopic = message.topic.replace(topic_targeted, '')
+            self.targetedEvent.emit(subtopic, message.payload)

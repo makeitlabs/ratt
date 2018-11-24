@@ -95,8 +95,9 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.telemetryEvent.connect(self.app.telemetry.logEvent)
 
-        self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastEvent)
-        
+        self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
+        self.app.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
+
         self.__init_gpio()
 
 
@@ -247,8 +248,8 @@ class PersonalityBase(PersonalityStateMachine):
 
     # MQTT broadcast event
     @pyqtSlot(str, str)
-    def __slotBroadcastEvent(self, subtopic, message):
-        self.logger.debug('MQTT broadcast ' + subtopic + ' -> ' + message)
+    def __slotTargetedMQTTEvent(self, subtopic, message):
+        self.logger.debug('MQTT targeted ' + subtopic + ' -> ' + message)
 
         if subtopic == 'lockout':
             self.logger.debug('MQTT lockout')
@@ -257,7 +258,11 @@ class PersonalityBase(PersonalityStateMachine):
                 self.wakereason = self.REASON_LOCK_OUT
             elif message == '0':
                 self.wakereason = self.REASON_LOCK_OUT_CANCELED
-                
+
             self.mutex.unlock()
             self.cond.wakeAll()
 
+    # MQTT broadcast event
+    @pyqtSlot(str, str)
+    def __slotBroadcastMQTTEvent(self, subtopic, message):
+        self.logger.debug('MQTT broadcast ' + subtopic + ' -> ' + message)

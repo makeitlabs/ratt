@@ -123,8 +123,9 @@ class RattAppEngine(QQmlApplicationEngine):
         self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
                                 hostname=self.config.value('MQTT.BrokerHost'),
                                 port=self.config.value('MQTT.BrokerPort'),
-                                reconnectTime=self.config.value('MQTT.ReconnectTime'))
-        
+                                reconnectTime=self.config.value('MQTT.ReconnectTime'),
+                                nodeId=self._netWorker.currentHwAddr.lower().replace(':', ''))
+
         # telemetry module, for collecting and posting events back to the auth server
         self._telemetry = Telemetry(loglevel=self.config.value('Telemetry.LogLevel'),
                                     netWorker=self._netWorker,
@@ -151,7 +152,7 @@ class RattAppEngine(QQmlApplicationEngine):
         self.personality.deinit()
 
         # stop raspi2fb
-        getoutput('/etc/init.d/raspi2fb stop')
+        getoutput('systemctl stop raspi2fb')
 
         # shut down system
         getoutput('/sbin/shutdown -h now')
@@ -178,6 +179,3 @@ class RattAppEngine(QQmlApplicationEngine):
     @property
     def mqtt(self):
         return self._mqtt
-
-    
-
