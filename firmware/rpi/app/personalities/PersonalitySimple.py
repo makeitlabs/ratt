@@ -57,7 +57,6 @@ class Personality(PersonalityBase):
     STATE_UNINITIALIZED = 'Uninitialized'
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
-    STATE_LOCKOUT_CHECK = 'LockoutCheck'
     STATE_ACCESS_DENIED = 'AccessDenied'
     STATE_ACCESS_ALLOWED = 'AccessAllowed'
     STATE_RFID_ERROR = 'RFIDError'
@@ -92,7 +91,6 @@ class Personality(PersonalityBase):
         self.states = {self.STATE_UNINITIALIZED : self.stateUninitialized,
                        self.STATE_INIT : self.stateInit,
                        self.STATE_IDLE : self.stateIdle,
-                       self.STATE_LOCKOUT_CHECK : self.stateLockoutCheck,
                        self.STATE_ACCESS_DENIED : self.stateAccessDenied,
                        self.STATE_ACCESS_ALLOWED : self.stateAccessAllowed,
                        self.STATE_RFID_ERROR : self.stateRFIDError,
@@ -191,12 +189,6 @@ class Personality(PersonalityBase):
             self.wakeOnTimer(False)
             self.wakeOnRFID(False)
             return self.goNextState()
-
-    #############################################
-    ## STATE_LOCKOUT_CHECK
-    #############################################
-    def stateLockoutCheck(self):
-        pass
 
     #############################################
     ## STATE_RFID_ERROR
@@ -430,7 +422,7 @@ class Personality(PersonalityBase):
         elif self.phEXIT:
             return self.goNextState()
 
-        
+
     #############################################
     ## STATE_SHUT_DOWN
     #############################################

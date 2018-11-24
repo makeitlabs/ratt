@@ -114,6 +114,7 @@ class PersonalityStateMachine(QThread):
         self.timerStart.connect(self.timer.start)
         self.timerStop.connect(self.timer.stop)
 
+        self.lockoutPending = False
         self.quit = False
 
     # returns the specified wake reason as a human-friendly string, or will return the current wakereason string
@@ -157,14 +158,17 @@ class PersonalityStateMachine(QThread):
                 self.exitAndGoto(self.STATE_POWER_LOSS)
 
             if self.wakereason is self.REASON_LOCK_OUT:
-                self.logger.info('Lockout state detected.')
-                self.exitAndGoto(self.STATE_LOCK_OUT)
+                self.lockoutPending = True
 
             if self.wakereason is self.REASON_LOCK_OUT_CANCELED:
-                self.logger.info('Lockout state detected.')
-                self.exitAndGoto(self.STATE_INIT)
+                if self.state == self.STATE_LOCK_OUT:
+                    self.lockoutPending = False
+                    self.exitAndGoto(self.STATE_INIT)
 
-                
+            if self.lockoutPending and self.state == self.STATE_IDLE:
+                self.lockoutPending = False;
+                self.exitAndGoto(self.STATE_LOCK_OUT)
+
             # run the state machine until a False is returned (meaning go back to waiting)
             again = True
             while again:
@@ -293,4 +297,3 @@ class PersonalityStateMachine(QThread):
         self.uievent = evt
         self.mutex.unlock()
         self.cond.wakeAll()
-
