@@ -249,18 +249,19 @@ class PersonalityBase(PersonalityStateMachine):
     # MQTT broadcast event
     @pyqtSlot(str, str)
     def __slotTargetedMQTTEvent(self, subtopic, message):
-        self.logger.debug('MQTT targeted ' + subtopic + ' -> ' + message)
-
-        if subtopic == 'lockout':
-            self.logger.debug('MQTT lockout')
-            self.mutex.lock()
-            if message == '1':
+        if subtopic == 'personality':
+            self.logger.debug('MQTT personality command=' + message)
+            if message == 'lock':
+                self.mutex.lock()
                 self.wakereason = self.REASON_LOCK_OUT
-            elif message == '0':
+                self.mutex.unlock()
+                self.cond.wakeAll()
+            elif message == 'unlock':
+                self.mutex.lock()
                 self.wakereason = self.REASON_LOCK_OUT_CANCELED
+                self.mutex.unlock()
+                self.cond.wakeAll()
 
-            self.mutex.unlock()
-            self.cond.wakeAll()
 
     # MQTT broadcast event
     @pyqtSlot(str, str)

@@ -157,7 +157,8 @@ class RattConfig(QObject):
         self.addConfig('MQTT', 'BrokerHost')
         self.addConfigInt('MQTT', 'BrokerPort')
         self.addConfigInt('MQTT', 'ReconnectTime')
-        
+        self.addConfig('MQTT', 'BaseTopic')
+
         self.addConfig('Telemetry', 'LogLevel')
         self.addConfig('Telemetry', 'EventUrl')
         self.addConfig('Telemetry', 'EventCacheFile')
@@ -180,9 +181,3 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'TimeoutWarning')
 
         self.configChanged.emit()
-
-
-
-
-
-

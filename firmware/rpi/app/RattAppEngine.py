@@ -100,6 +100,10 @@ class RattAppEngine(QQmlApplicationEngine):
 
 
     def __initSystem__(self):
+        # MQTT module, for publishing and subscribing to the MQTT broker
+        self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
+                                baseTopic=self.config.value('MQTT.BaseTopic'))
+
         # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
         self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'))
         self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
@@ -116,15 +120,11 @@ class RattAppEngine(QQmlApplicationEngine):
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
                         netWorker=self._netWorker,
+                        mqtt=self._mqtt,
                         url=self.config.value('Auth.AclUrl'),
                         cacheFile=self.config.value('Auth.AclCacheFile'))
 
-        # MQTT module, for publishing and subscribing to the MQTT broker
-        self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
-                                hostname=self.config.value('MQTT.BrokerHost'),
-                                port=self.config.value('MQTT.BrokerPort'),
-                                reconnectTime=self.config.value('MQTT.ReconnectTime'),
-                                nodeId=self._netWorker.currentHwAddr.lower().replace(':', ''))
+
 
         # telemetry module, for collecting and posting events back to the auth server
         self._telemetry = Telemetry(loglevel=self.config.value('Telemetry.LogLevel'),
@@ -137,6 +137,13 @@ class RattAppEngine(QQmlApplicationEngine):
         self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),
                           loglevel=self.config.value('RFID.LogLevel'))
         self._rfid.monitor()
+
+        # Initialize and connect MQTT client
+        self._mqtt.init_client(hostname=self.config.value('MQTT.BrokerHost'),
+                               port=self.config.value('MQTT.BrokerPort'),
+                               reconnectTime=self.config.value('MQTT.ReconnectTime'),
+                               nodeId=self._netWorker.currentHwAddr.lower().replace(':', ''))
+
 
     def slotIfcAddrChanged(self, ipStr):
         self.logger.debug("IP CHANGED %s" % ipStr)

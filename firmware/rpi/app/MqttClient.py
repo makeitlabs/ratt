@@ -41,8 +41,8 @@ import paho.mqtt.client as mqtt
 from Logger import Logger
 
 class MqttClient(QObject):
-    TOPIC_BROADCAST = 'ratt/broadcast'
-    TOPIC_TARGETED = 'ratt/node'
+    TOPIC_BROADCAST = 'broadcast'
+    TOPIC_TARGETED = 'node'
 
     Disconnected = 0
     Connecting = 1
@@ -65,36 +65,40 @@ class MqttClient(QObject):
     broadcastEvent = pyqtSignal(str,str)
     targetedEvent = pyqtSignal(str,str)
 
-    def __init__(self, loglevel='WARNING', hostname='', port=1883, reconnectTime=1000, nodeId=''):
+    def __init__(self, loglevel='WARNING', baseTopic='ratt'):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.mqtt')
         self.logger.setLogLevelStr(loglevel)
         self.debug = self.logger.isDebug()
 
-        self.node_id = nodeId
-
-        self._hostname = hostname
-        self._port = port
+        self._hostname = 'localhost'
+        self._port = 1883
         self._keepalive = 60
         self._clean_session = True
         self._protocol_version = MqttClient.MQTT_3_1
 
-        self._reconnect_time = reconnectTime
+        self._reconnect_time = 60
 
         self._state = MqttClient.Disconnected
+        self._base_topic = baseTopic
 
-        self.init_client()
-
-        self.connectToBroker()
-
-    def init_client(self):
+    def init_client(self, hostname='localhost', port=1883, nodeId='', reconnectTime=60):
         self.logger.info('MQTT client initialized, broker host is ' + self._hostname + ':' + str(self._port))
+
+        self._node_id = nodeId
+
+        self._hostname = hostname
+        self._port = port
+        self._keepalive = 60
+        self._reconnect_time = reconnectTime
 
         self.m_client = mqtt.Client(clean_session=self._clean_session, protocol=self.protocolVersion)
         self.m_client.on_connect = self.on_connect
         self.m_client.on_message = self.on_message
         self.m_client.on_disconnect = self.on_disconnect
+
+        self.connectToBroker()
 
     @pyqtProperty(int, notify=stateChanged)
     def state(self):
@@ -197,16 +201,16 @@ class MqttClient(QObject):
     def on_connect(self, client, userdata, flags, rc):
         self.state = MqttClient.Connected
         self.logger.info('on_connect')
-        self.subscribe(MqttClient.TOPIC_BROADCAST + '/#')
-        self.subscribe(MqttClient.TOPIC_TARGETED + '/' + self.node_id + '/#')
+        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_BROADCAST + '/#')
+        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_TARGETED + '/' + self._node_id + '/#')
 
     def on_disconnect(self, client, userdata, rc):
         self.state = MqttClient.Disconnected
         self.logger.info('on_disconnect')
 
     def on_message(self, client, userdata, message):
-        topic_broadcast = MqttClient.TOPIC_BROADCAST + '/'
-        topic_targeted = MqttClient.TOPIC_TARGETED + '/' + self.node_id + '/'
+        topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST + '/'
+        topic_targeted = self._base_topic + '/' + MqttClient.TOPIC_TARGETED + '/' + self._node_id + '/'
 
         self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
         if message.topic.startswith(topic_broadcast):

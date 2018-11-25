@@ -99,7 +99,7 @@ class ACL(QObject):
         self.mutex.unlock()
         self.downloadActiveUpdate.emit()
 
-    def __init__(self, loglevel='WARNING', netWorker = None, url='', cacheFile=None):
+    def __init__(self, loglevel='WARNING', netWorker = None, mqtt = None, url = '', cacheFile = None):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.acl')
@@ -128,6 +128,10 @@ class ACL(QObject):
         self._status = 'initialized'
 
         self.loadFile(self.cacheFile)
+
+        self.mqtt = mqtt
+        self.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
+        self.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
 
     def loadFile(self, filename=None):
         self.logger.info('loading ACL file %s' % filename)
@@ -276,3 +280,19 @@ class ACL(QObject):
 
         return False
 
+
+    # MQTT broadcast event
+    @pyqtSlot(str, str)
+    def __slotTargetedMQTTEvent(self, subtopic, message):
+        if subtopic == 'acl':
+            self.logger.debug('MQTT targeted ACL command=' + message)
+            if message == 'update':
+                self.download()
+
+    # MQTT broadcast event
+    @pyqtSlot(str, str)
+    def __slotBroadcastMQTTEvent(self, subtopic, message):
+        if subtopic == 'acl':
+            self.logger.debug('MQTT broadcast ACL command=' + message)
+            if message == 'update':
+                self.download()
