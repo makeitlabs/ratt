@@ -42,6 +42,11 @@ View {
     id: root
     name: "Locked Out"
 
+    function _show() {
+        status.setKeyActives(false, false, false, false);
+    }
+
+
     SequentialAnimation {
         running: shown
         loops: Animation.Infinite
@@ -49,13 +54,13 @@ View {
             target: root
             property: "color"
             from: "#0000ff"
-            to: "#00ffff"
+            to: "#0000cc"
             duration: 3000
         }
         ColorAnimation {
             target: root
             property: "color"
-            from: "#00ffff"
+            from: "#0000cc"
             to: "#0000ff"
             duration: 3000
         }
@@ -69,7 +74,54 @@ View {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 16
             font.weight: Font.Bold
-            color: "#ffffff"
+            color: "#ffcc00"
+            topPadding: 2
+            bottomPadding: 1
+        }
+
+        ScrollView {
+            id: sv
+            Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
+            Layout.fillHeight: true
+            horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+            verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+
+            Text {
+                id: reasonText
+                width: sv.width
+                text: personality.lockReason
+                font.pixelSize: 12
+                font.weight: Font.DemiBold
+                wrapMode: Text.Wrap
+                color: "#ffffff"
+                leftPadding: 5
+                rightPadding: 5
+                elide: Text.ElideRight
+                maximumLineCount: 25
+            }
+
+            SequentialAnimation on flickableItem.contentY {
+                loops: Animation.Infinite
+                running: sv.flickableItem.contentHeight > sv.height
+                PropertyAnimation {
+                    duration: 5000
+                    from: 0
+                    to: sv.flickableItem.contentHeight - sv.height
+                    easing.type: Easing.InOutQuad
+                    easing.period: 100
+                }
+                PauseAnimation {
+                  duration: 1000
+                }
+                PropertyAnimation {
+                    duration: 1000
+                    from: sv.flickableItem.contentHeight - sv.height
+                    to: 0
+                    easing.type: Easing.InOutQuad
+                    easing.period: 100
+                }
+            }
         }
 
     }

@@ -68,6 +68,16 @@ class PersonalityBase(PersonalityStateMachine):
 
     telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['event_type', 'message'])
 
+
+    updateLockReason = pyqtSignal()
+
+    @pyqtProperty(str, notify=updateLockReason)
+    def lockReason(self):
+        self.mutex.lock()
+        s = self._lockReason
+        self.mutex.unlock()
+        return s
+
     def __init__(self, loglevel='WARNING', app=None):
 
         self.logger = Logger(name='ratt.personality')
@@ -94,6 +104,8 @@ class PersonalityBase(PersonalityStateMachine):
         self.app.rfid.tagScan.connect(self.__slotTagScan)
 
         self.telemetryEvent.connect(self.app.telemetry.logEvent)
+
+        self._lockReason = ''
 
         self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
         self.app.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
@@ -251,17 +263,21 @@ class PersonalityBase(PersonalityStateMachine):
     def __slotTargetedMQTTEvent(self, subtopic, message):
         if subtopic == 'personality':
             self.logger.debug('MQTT personality command=' + message)
-            if message == 'lock':
+            if message.startswith('lock'):
                 self.mutex.lock()
                 self.wakereason = self.REASON_LOCK_OUT
                 self.mutex.unlock()
                 self.cond.wakeAll()
+
+                if message.startswith('lock '):
+                    self._lockReason = message.replace('lock ', '')
+                    self.updateLockReason.emit()
+
             elif message == 'unlock':
                 self.mutex.lock()
                 self.wakereason = self.REASON_LOCK_OUT_CANCELED
                 self.mutex.unlock()
                 self.cond.wakeAll()
-
 
     # MQTT broadcast event
     @pyqtSlot(str, str)
