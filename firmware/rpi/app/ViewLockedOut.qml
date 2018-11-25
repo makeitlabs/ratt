@@ -41,11 +41,25 @@ import QtQuick.Layouts 1.3
 View {
     id: root
     name: "Locked Out"
+    anchors.fill: parent
 
     function _show() {
         status.setKeyActives(false, false, false, false);
+        loader.source = "ViewLockedOutLoaderContent.qml";
     }
 
+    function _hide() {
+      loader.sourceComponent = undefined;
+    }
+
+    Connections {
+      target: personality
+
+      onLockReasonChanged: {
+        loader.sourceComponent = undefined;
+        loader.source = "ViewLockedOutLoaderContent.qml"
+      }
+    }
 
     SequentialAnimation {
         running: shown
@@ -66,63 +80,11 @@ View {
         }
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        Label {
-            Layout.fillWidth: true
-            text: "Locked Out"
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 16
-            font.weight: Font.Bold
-            color: "#ffcc00"
-            topPadding: 2
-            bottomPadding: 1
-        }
-
-        ScrollView {
-            id: sv
-            Layout.fillWidth: true
-            Layout.preferredWidth: parent.width
-            Layout.fillHeight: true
-            horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-            verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-
-            Text {
-                id: reasonText
-                width: sv.width
-                text: personality.lockReason
-                font.pixelSize: 12
-                font.weight: Font.DemiBold
-                wrapMode: Text.Wrap
-                color: "#ffffff"
-                leftPadding: 5
-                rightPadding: 5
-                elide: Text.ElideRight
-                maximumLineCount: 25
-            }
-
-            SequentialAnimation on flickableItem.contentY {
-                loops: Animation.Infinite
-                running: sv.flickableItem.contentHeight > sv.height
-                PropertyAnimation {
-                    duration: 5000
-                    from: 0
-                    to: sv.flickableItem.contentHeight - sv.height
-                    easing.type: Easing.InOutQuad
-                    easing.period: 100
-                }
-                PauseAnimation {
-                  duration: 1000
-                }
-                PropertyAnimation {
-                    duration: 1000
-                    from: sv.flickableItem.contentHeight - sv.height
-                    to: 0
-                    easing.type: Easing.InOutQuad
-                    easing.period: 100
-                }
-            }
-        }
-
+    // this is loaded dynamically because the scroller wasn't properly re-scaling
+    // for larger messages... seems the scaling is set at load time, so forcing it
+    // to reload makes it work right.
+    Loader {
+      id: loader
+      anchors.fill: parent
     }
 }

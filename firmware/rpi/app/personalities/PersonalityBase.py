@@ -69,9 +69,9 @@ class PersonalityBase(PersonalityStateMachine):
     telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['event_type', 'message'])
 
 
-    updateLockReason = pyqtSignal()
+    lockReasonChanged = pyqtSignal()
 
-    @pyqtProperty(str, notify=updateLockReason)
+    @pyqtProperty(str, notify=lockReasonChanged)
     def lockReason(self):
         self.mutex.lock()
         s = self._lockReason
@@ -271,7 +271,7 @@ class PersonalityBase(PersonalityStateMachine):
 
                 if message.startswith('lock '):
                     self._lockReason = message.replace('lock ', '')
-                    self.updateLockReason.emit()
+                    self.lockReasonChanged.emit()
 
             elif message == 'unlock':
                 self.mutex.lock()
