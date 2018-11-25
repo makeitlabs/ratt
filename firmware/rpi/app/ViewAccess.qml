@@ -151,6 +151,8 @@ View {
                     font.weight: Font.DemiBold
                     wrapMode: Text.Wrap
                     color: "#ffff00"
+                    leftPadding: 10
+                    rightPadding: 10
                 }
 
                 SequentialAnimation on flickableItem.contentY {
