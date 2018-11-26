@@ -75,12 +75,14 @@ class NetWorker(QObject):
     def currentWifiLevel(self):
         return self.level
 
-    def __init__(self, loglevel='WARNING', ifcName='wlan0'):
+    def __init__(self, loglevel='WARNING', ifcName='wlan0', mqtt=None):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.networker')
         self.logger.setLogLevelStr(loglevel)
         self.debug = self.logger.isDebug()
+
+        self._mqtt = mqtt
 
         self.mgr = QNetworkAccessManager()
         self.sslConfig = QSslConfiguration()
@@ -98,12 +100,16 @@ class NetWorker(QObject):
         self.statusTimer = QTimer()
         self.statusTimer.setSingleShot(False)
         self.statusTimer.timeout.connect(self.slotStatusTimer)
-        self.statusTimer.start(5000)
+        self.statusTimer.start(15000)
 
         self.essid = ''
         self.freq = ''
         self.quality = 0
         self.level = 0
+
+        self.ifcAddrChanged.connect(self.slotIfcAddrChanged)
+        self.wifiStatus.connect(self.slotWifiStatus)
+
 
     def slotStatusTimer(self):
         ip = self.getIfcAddress(ifc=self.ifcName)
@@ -267,3 +273,13 @@ class NetWorker(QObject):
         caCertList = self.sslConfig.caCertificates()
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
+
+    def slotWifiStatus(self, essid, freq, quality, level):
+        self.logger.debug("WIFI STATUS %s %sGHz quality=%d%% level=%ddBm" % (essid, freq, quality, level))
+        self._mqtt.publish(subtopic='wifi/essid', msg=essid)
+        self._mqtt.publish(subtopic='wifi/freq', msg=freq)
+        self._mqtt.publish(subtopic='wifi/quality', msg=quality)
+        self._mqtt.publish(subtopic='wifi/level', msg=level)
+
+    def slotIfcAddrChanged(self, ipStr):
+        self.logger.debug("IP CHANGED %s" % ipStr)

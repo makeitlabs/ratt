@@ -41,8 +41,9 @@ import paho.mqtt.client as mqtt
 from Logger import Logger
 
 class MqttClient(QObject):
-    TOPIC_BROADCAST = 'broadcast'
-    TOPIC_TARGETED = 'node'
+    TOPIC_BROADCAST_CONTROL = 'control/broadcast'
+    TOPIC_TARGETED_CONTROL = 'control/node'
+    TOPIC_TARGETED_STATUS = 'status/node'
 
     Disconnected = 0
     Connecting = 1
@@ -162,8 +163,12 @@ class MqttClient(QObject):
             self.protocolVersionChanged.emit(protocolVersion)
 
     @pyqtSlot(str, str)
-    def publish(self, topic, msg):
-        print self.m_client.publish(topic, msg)
+    def publish(self, topic=None, subtopic=None, msg=None):
+        if topic is None and subtopic is not None:
+            t = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_STATUS + '/' + self._node_id + '/' + subtopic
+            self.m_client.publish(t, msg)
+        else:
+            self.m_client.publish(topic, msg)
 
 
 
@@ -201,16 +206,16 @@ class MqttClient(QObject):
     def on_connect(self, client, userdata, flags, rc):
         self.state = MqttClient.Connected
         self.logger.info('on_connect')
-        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_BROADCAST + '/#')
-        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_TARGETED + '/' + self._node_id + '/#')
+        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/#')
+        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/#')
 
     def on_disconnect(self, client, userdata, rc):
         self.state = MqttClient.Disconnected
         self.logger.info('on_disconnect')
 
     def on_message(self, client, userdata, message):
-        topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST + '/'
-        topic_targeted = self._base_topic + '/' + MqttClient.TOPIC_TARGETED + '/' + self._node_id + '/'
+        topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/'
+        topic_targeted = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/'
 
         self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
         if message.topic.startswith(topic_broadcast):

@@ -105,7 +105,9 @@ class RattAppEngine(QQmlApplicationEngine):
                                 baseTopic=self.config.value('MQTT.BaseTopic'))
 
         # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
-        self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'))
+        self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'),
+                                    mqtt=self._mqtt)
+
         self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
                                          caCertFile=self.config.value('SSL.CaCertFile'),
                                          clientCertFile=self.config.value('SSL.ClientCertFile'),
@@ -113,9 +115,6 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
                                 password=self.config.value('Auth.HttpAuthPassword'))
-
-        self._netWorker.ifcAddrChanged.connect(self.slotIfcAddrChanged)
-        self._netWorker.wifiStatus.connect(self.slotWifiStatus)
 
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
@@ -145,11 +144,6 @@ class RattAppEngine(QQmlApplicationEngine):
                                nodeId=self._netWorker.currentHwAddr.lower().replace(':', ''))
 
 
-    def slotIfcAddrChanged(self, ipStr):
-        self.logger.debug("IP CHANGED %s" % ipStr)
-
-    def slotWifiStatus(self, essid, freq, quality, level):
-        self.logger.debug("WIFI STATUS %s %sGHz quality=%d%% level=%ddBm" % (essid, freq, quality, level))
 
 
     def shutdown(self):
@@ -165,7 +159,6 @@ class RattAppEngine(QQmlApplicationEngine):
         getoutput('/sbin/shutdown -h now')
 
         self.quit.emit()
-
 
     @property
     def rfid(self):
