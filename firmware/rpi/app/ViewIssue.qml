@@ -198,7 +198,9 @@ View {
             selectionMode: SelectionMode.SingleSelection
 
             selection.onSelectionChanged: {
+              if (issuesModel && issueTable && issueTable.currentRow != -1) {
                 currentIssue = issuesModel.get(issueTable.currentRow).name;
+              }
             }
 
             TableViewColumn {
