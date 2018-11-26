@@ -67,8 +67,6 @@ class PersonalityBase(PersonalityStateMachine):
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
     telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['event_type', 'message'])
-
-
     lockReasonChanged = pyqtSignal()
 
     @pyqtProperty(str, notify=lockReasonChanged)
@@ -109,6 +107,8 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
         self.app.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
+
+        self.stateChanged.connect(self.__slotStateChanged)
 
         self.__init_gpio()
 
@@ -288,3 +288,8 @@ class PersonalityBase(PersonalityStateMachine):
     @pyqtSlot(str, str)
     def __slotBroadcastMQTTEvent(self, subtopic, message):
         self.logger.debug('MQTT broadcast ' + subtopic + ' -> ' + message)
+
+
+    @pyqtSlot(str, str)
+    def __slotStateChanged(self, state, phase):
+        self.app.mqtt.publish(subtopic='personality/state', msg=state + '.' + phase)
