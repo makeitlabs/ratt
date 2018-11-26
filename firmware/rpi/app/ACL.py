@@ -281,18 +281,24 @@ class ACL(QObject):
         return False
 
 
-    # MQTT broadcast event
+    # MQTT targeted event
     @pyqtSlot(str, str)
     def __slotTargetedMQTTEvent(self, subtopic, message):
-        if subtopic == 'acl':
-            self.logger.debug('MQTT targeted ACL command=' + message)
-            if message == 'update':
+        tsplit = subtopic.split('/')
+
+        if len(tsplit) >= 2 and tsplit[0] == 'acl':
+            cmd = tsplit[1]
+
+            if cmd == 'update':
                 self.download()
 
     # MQTT broadcast event
     @pyqtSlot(str, str)
     def __slotBroadcastMQTTEvent(self, subtopic, message):
-        if subtopic == 'acl':
-            self.logger.debug('MQTT broadcast ACL command=' + message)
-            if message == 'update':
+        tsplit = subtopic.split('/')
+
+        if len(tsplit) >= 2 and tsplit[0] == 'acl':
+            cmd = tsplit[1]
+
+            if cmd == 'update':
                 self.download()
