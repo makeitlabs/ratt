@@ -412,14 +412,30 @@ class Personality(PersonalityBase):
     ## STATE_LOCK_OUT
     #############################################
     def stateLockOut(self):
+
         if self.phENTER:
+            self.pin_led1.set(LOW)
+            self.pin_led2.set(HIGH)
+            self.wakeOnTimer(enabled=True, interval=250, singleShot=True)
             return self.goActive()
 
         elif self.phACTIVE:
+            if self.wakereason == self.REASON_TIMER:
+                if self.pin_led1.get() == LOW:
+                    self.pin_led1.set(HIGH)
+                    self.pin_led2.set(LOW)
+                    self.wakeOnTimer(enabled=True, interval=250, singleShot=True)
+                else:
+                    self.pin_led1.set(LOW)
+                    self.pin_led2.set(HIGH)
+                    self.wakeOnTimer(enabled=True, interval=250, singleShot=True)
 
             return False
 
         elif self.phEXIT:
+            self.wakeOnTimer(enabled=False)
+            self.pin_led2.set(LOW)
+            self.pin_led1.set(LOW)
             return self.goNextState()
 
 
