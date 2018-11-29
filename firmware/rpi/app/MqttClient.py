@@ -84,7 +84,10 @@ class MqttClient(QObject):
         self._state = MqttClient.Disconnected
         self._base_topic = baseTopic
 
-    def init_client(self, hostname='localhost', port=1883, nodeId='', reconnectTime=60):
+
+    def init_client(self, hostname='localhost', port=1883, nodeId='', reconnectTime=60,
+                    sslEnabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
+
         self.logger.info('MQTT client initialized, broker host is ' + self._hostname + ':' + str(self._port))
 
         self._node_id = nodeId
@@ -98,6 +101,14 @@ class MqttClient(QObject):
         self.m_client.on_connect = self.on_connect
         self.m_client.on_message = self.on_message
         self.m_client.on_disconnect = self.on_disconnect
+
+        if sslEnabled:
+            self.logger.info('SSL enabled, ca_cert=' + caCertFile + ' cert=' + clientCertFile + ' key=' + clientKeyFile)
+            self.m_client.tls_set(ca_certs=caCertFile,
+                                  certfile=clientCertFile,
+                                  keyfile=clientKeyFile)
+        else:
+            self.m_client.tls_set(ca_certs=None, certfile=None, keyfile=None)
 
         self.connectToBroker()
 
