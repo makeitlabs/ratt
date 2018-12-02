@@ -36,7 +36,7 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, pyqtSignal, pyqtProperty
+from PyQt5.QtCore import Qt, QObject, QUrl, QFile, QIODevice, QByteArray, QDateTime, QMutex, pyqtSignal, pyqtProperty, pyqtSlot
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from Logger import Logger
 import logging
@@ -67,6 +67,7 @@ class Telemetry(QObject):
 
         self.mutex = QMutex()
 
+    @pyqtSlot(str, str)
     def logEvent(self, event_type, message):
         self.logger.info('logging event to ' + self.url)
 

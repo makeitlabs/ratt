@@ -178,7 +178,6 @@ class MqttClient(QThread):
             self._protocol_version = protocolVersion
             self.protocolVersionChanged.emit(protocolVersion)
 
-    @pyqtSlot(str, str)
     def publish(self, topic=None, subtopic=None, msg=None):
         if topic is None and subtopic is not None:
             t = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_STATUS + '/' + self._node_id + '/' + subtopic
@@ -186,6 +185,9 @@ class MqttClient(QThread):
         else:
             self._client.publish(topic, msg)
 
+    @pyqtSlot(str, str)
+    def publishSubtopic(self, subtopic, msg):
+        self.publish(subtopic=subtopic, msg=msg)
 
 
     #################################################################

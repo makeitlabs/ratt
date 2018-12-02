@@ -66,7 +66,7 @@ class PersonalityBase(PersonalityStateMachine):
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
-    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['event_type', 'message'])
+    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['subtopic', 'message'])
     lockReasonChanged = pyqtSignal()
 
     @pyqtProperty(str, notify=lockReasonChanged)
@@ -101,7 +101,7 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.app.rfid.tagScan.connect(self.__slotTagScan)
 
-        self.telemetryEvent.connect(self.app.telemetry.logEvent)
+        self.telemetryEvent.connect(self.app.mqtt.publishSubtopic)
 
         self._lockReason = ''
 

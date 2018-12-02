@@ -213,7 +213,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessDenied(self):
         if self.phENTER:
-            self.telemetryEvent.emit('access_denied', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/denied', self.activeMemberRecord.name)
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -233,7 +233,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessAllowed(self):
         if self.phENTER:
-            self.telemetryEvent.emit('access_allowed', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/allowed', self.activeMemberRecord.name)
             self.pin_led1.set(HIGH)
             return self.goActive()
 
@@ -284,7 +284,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateSafetyCheckFailed(self):
         if self.phENTER:
-            self.telemetryEvent.emit('safety_check_failed', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/safety', self.activeMemberRecord.name)
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -303,7 +303,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledActive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('tool_active', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/active', self.activeMemberRecord.name)
             self.toolActiveFlag = True
             self.wakeOnTimer(enabled=True, interval=250, singleShot=False)
             return self.goActive()
@@ -329,7 +329,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledInactive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('tool_inactive', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/inactive', self.activeMemberRecord.name)
             self.toolActiveFlag = False
             self.pin_led1.set(HIGH)
             return self.goActive()
