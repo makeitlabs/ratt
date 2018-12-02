@@ -79,13 +79,15 @@ View {
 
     function keyEscape(pressed) {
         if (!personality.toolActiveFlag && pressed) {
-            done();
+          appWindow.mqttPublishSubtopicEvent('personality/exit', activeMemberRecord.name)
+          done();
         }
     }
 
 
     function done() {
         sound.disableAudio.play();
+        appWindow.mqttPublishSubtopicEvent('personality/usage', activeMemberRecord.name + ' ' + enabledSecs + ' ' + activeSecs + ' ' + (enabledSecs - activeSecs))
         appWindow.uiEvent('ToolEnabledDone');
     }
 
@@ -118,8 +120,10 @@ View {
                 activeSecs++;
             else if (idleSecs > 0)
                 idleSecs--;
-            else if (idleSecs == 0)
+            else if (idleSecs == 0) {
+                appWindow.mqttPublishSubtopicEvent('personality/timeout', activeMemberRecord.name)
                 done();
+            }
 
             if (idleSecs == idleWarningSecs)
                 sound.timeoutWarningAudio.play();

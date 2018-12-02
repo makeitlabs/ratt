@@ -47,9 +47,11 @@ ApplicationWindow {
     height: 768
 
     signal uiEvent(string evt)
+    signal mqttPublishSubtopicEvent(string subtopic, string msg)
 
     Component.onCompleted: {
         appWindow.uiEvent.connect(personality.slotUIEvent)
+        appWindow.mqttPublishSubtopicEvent.connect(mqtt.slotPublishSubtopic)
     }
 
     Connections {

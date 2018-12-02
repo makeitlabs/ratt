@@ -195,6 +195,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
+            self.telemetryEvent.emit('personality/rfid', 'error')
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -390,6 +391,7 @@ class Personality(PersonalityBase):
     #############################################
     def statePowerLoss(self):
         if self.phENTER:
+            self.telemetryEvent.emit('personality/power', 'lost')
             self.initPins()
             return self.goActive()
 
@@ -397,8 +399,10 @@ class Personality(PersonalityBase):
             # wait until the UI signals that it is time to shut down (countdown timer)
             # or abort and re-initialize if power comes back before then
             if self.wakereason == self.REASON_UI and self.uievent == 'PowerLossDone':
+                self.telemetryEvent.emit('personality/power', 'shutdown')
                 return self.exitAndGoto(self.STATE_SHUT_DOWN)
             elif self.wakereason == self.REASON_POWER_RESTORED:
+                self.telemetryEvent.emit('personality/power', 'restored')
                 return self.exitAndGoto(self.STATE_INIT)
 
             return False
@@ -414,6 +418,7 @@ class Personality(PersonalityBase):
     def stateLockOut(self):
 
         if self.phENTER:
+            self.telemetryEvent.emit('personality/lockout', 'locked')
             self.pin_led1.set(LOW)
             self.pin_led2.set(HIGH)
             self.wakeOnTimer(enabled=True, interval=250, singleShot=True)
@@ -433,6 +438,7 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.telemetryEvent.emit('personality/lockout', 'unlocked')
             self.wakeOnTimer(enabled=False)
             self.pin_led2.set(LOW)
             self.pin_led1.set(LOW)

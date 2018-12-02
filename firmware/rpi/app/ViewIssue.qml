@@ -76,6 +76,7 @@ View {
     }
 
     function done() {
+        appWindow.mqttPublishSubtopicEvent('system/issue', activeMemberRecord.name + " " + currentIssue)
         appWindow.uiEvent('ReportIssueDone');
     }
 

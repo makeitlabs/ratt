@@ -101,7 +101,7 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.app.rfid.tagScan.connect(self.__slotTagScan)
 
-        self.telemetryEvent.connect(self.app.mqtt.publishSubtopic)
+        self.telemetryEvent.connect(self.app.mqtt.slotPublishSubtopic)
 
         self._lockReason = ''
 
