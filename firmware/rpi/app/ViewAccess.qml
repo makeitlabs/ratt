@@ -37,6 +37,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
+import QtGraphicalEffects 1.0
 
 View {
     id: root
@@ -103,21 +104,62 @@ View {
             anchors.margins: 4
             visible: activeMemberRecord.valid && activeMemberRecord.allowed
 
-            Label {
-                Layout.fillWidth: true
-                text: activeMemberRecord.name
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 12
-                font.weight: Font.DemiBold
-                color: "#dddddd"
+            Item {
+              Layout.fillWidth: true
+              Layout.preferredHeight: 15
+              Label {
+                  id: memberNameLabel
+                  width: parent.width
+                  text: activeMemberRecord.name
+                  horizontalAlignment: Text.AlignHCenter
+                  font.pixelSize: 12
+                  font.weight: Font.DemiBold
+                  color: "#00ff00"
+              }
+              Glow {
+                anchors.fill: memberNameLabel
+                source: memberNameLabel
+                radius: 3
+                color: "black"
+              }
             }
-            Label {
-                Layout.fillWidth: true
-                text: "Plan: " + activeMemberRecord.plan
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 10
-                font.weight: Font.DemiBold
-                color: "#ffffff"
+            Item {
+              Layout.fillWidth: true
+              Layout.preferredHeight: 12
+              Label {
+                  id: memberTypeLabel
+                  width: parent.width
+                  text: "Membership Type"
+                  horizontalAlignment: Text.AlignHCenter
+                  font.pixelSize: 12
+                  font.weight: Font.DemiBold
+                  color: "#ffffff"
+              }
+              Glow {
+                anchors.fill: memberTypeLabel
+                source: memberTypeLabel
+                radius: 2
+                color: "black"
+              }
+            }
+            Item {
+              Layout.fillWidth: true
+              Layout.preferredHeight: 12
+              Label {
+                  id: memberPlanLabel
+                  width: parent.width
+                  text: activeMemberRecord.plan
+                  horizontalAlignment: Text.AlignHCenter
+                  font.pixelSize: 12
+                  font.weight: Font.DemiBold
+                  color: "#ffffff"
+              }
+              Glow {
+                anchors.fill: memberPlanLabel
+                source: memberPlanLabel
+                radius: 2
+                color: "black"
+              }
             }
         }
         ColumnLayout {

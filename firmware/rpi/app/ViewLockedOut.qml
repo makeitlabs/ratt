@@ -67,15 +67,15 @@ View {
         ColorAnimation {
             target: root
             property: "color"
-            from: "#0000ff"
-            to: "#0000cc"
+            from: "#ffa50a"
+            to: "#ff6a68"
             duration: 3000
         }
         ColorAnimation {
             target: root
             property: "color"
-            from: "#0000cc"
-            to: "#0000ff"
+            from: "#ff6868"
+            to: "#ffa50a"
             duration: 3000
         }
     }
