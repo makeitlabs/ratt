@@ -66,7 +66,7 @@ class PersonalityBase(PersonalityStateMachine):
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
-    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['event_type', 'message'])
+    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['subtopic', 'message'])
     lockReasonChanged = pyqtSignal()
 
     @pyqtProperty(str, notify=lockReasonChanged)
@@ -101,12 +101,13 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.app.rfid.tagScan.connect(self.__slotTagScan)
 
-        self.telemetryEvent.connect(self.app.telemetry.logEvent)
+        self.telemetryEvent.connect(self.app.mqtt.slotPublishSubtopic)
 
         self._lockReason = ''
 
         self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
         self.app.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
+        self.app.mqtt.brokerConnectionEvent.connect(self.__slotBrokerConnectionMQTTEvent)
 
         self.stateChanged.connect(self.__slotStateChanged)
 
@@ -289,6 +290,17 @@ class PersonalityBase(PersonalityStateMachine):
     def __slotBroadcastMQTTEvent(self, subtopic, message):
         self.logger.debug('MQTT broadcast ' + subtopic + ' -> ' + message)
 
+    # MQTT broker connection EnvironmentError
+    @pyqtSlot(bool)
+    def __slotBrokerConnectionMQTTEvent(self, connected):
+        self.logger.info('MQTT broker connection event, connection is ' + str(connected))
+        if connected:
+            # send out the current state upon broker (re-)connection
+            self.mutex.lock()
+            state = self.state
+            phase = self.phaseName(self.statePhase)
+            self.mutex.unlock()
+            self.app.mqtt.publish(subtopic='personality/state', msg=state + '.' + phase)
 
     @pyqtSlot(str, str)
     def __slotStateChanged(self, state, phase):

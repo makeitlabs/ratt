@@ -36,11 +36,11 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import Qt, QObject, QMutex, QTimer, pyqtSignal, pyqtSlot, pyqtProperty
+from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QTimer, pyqtSignal, pyqtSlot, pyqtProperty
 import paho.mqtt.client as mqtt
 from Logger import Logger
 
-class MqttClient(QObject):
+class MqttClient(QThread):
     TOPIC_BROADCAST_CONTROL = 'control/broadcast'
     TOPIC_TARGETED_CONTROL = 'control/node'
     TOPIC_TARGETED_STATUS = 'status/node'
@@ -65,13 +65,18 @@ class MqttClient(QObject):
 
     broadcastEvent = pyqtSignal(str,str)
     targetedEvent = pyqtSignal(str,str)
+    brokerConnectionEvent = pyqtSignal(bool)
 
     def __init__(self, loglevel='WARNING', baseTopic='ratt'):
-        QObject.__init__(self)
+        QThread.__init__(self)
 
         self.logger = Logger(name='ratt.mqtt')
         self.logger.setLogLevelStr(loglevel)
         self.debug = self.logger.isDebug()
+
+        self._quit = False
+        self.cond = QWaitCondition()
+        self.mutex = QMutex()
 
         self._hostname = 'localhost'
         self._port = 1883
@@ -79,16 +84,14 @@ class MqttClient(QObject):
         self._clean_session = True
         self._protocol_version = MqttClient.MQTT_3_1
 
-        self._reconnect_time = 60
+        self._reconnect_time = 10000
 
         self._state = MqttClient.Disconnected
         self._base_topic = baseTopic
 
-
     def init_client(self, hostname='localhost', port=1883, nodeId='', reconnectTime=60,
                     sslEnabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
 
-        self.logger.info('MQTT client initialized, broker host is ' + self._hostname + ':' + str(self._port))
 
         self._node_id = nodeId
 
@@ -97,19 +100,21 @@ class MqttClient(QObject):
         self._keepalive = 60
         self._reconnect_time = reconnectTime
 
-        self.m_client = mqtt.Client(clean_session=self._clean_session, protocol=self.protocolVersion)
-        self.m_client.on_connect = self.on_connect
-        self.m_client.on_message = self.on_message
-        self.m_client.on_disconnect = self.on_disconnect
+        self._client = mqtt.Client(clean_session=self._clean_session, protocol=self.protocolVersion)
+        self._client.on_connect = self.on_connect
+        self._client.on_message = self.on_message
+        self._client.on_disconnect = self.on_disconnect
+        self._client.on_log = self.on_log
 
         if sslEnabled:
             self.logger.info('SSL enabled, ca_cert=' + caCertFile + ' cert=' + clientCertFile + ' key=' + clientKeyFile)
-            self.m_client.tls_set(ca_certs=caCertFile,
+            self._client.tls_set(ca_certs=caCertFile,
                                   certfile=clientCertFile,
                                   keyfile=clientKeyFile)
         else:
-            self.m_client.tls_set(ca_certs=None, certfile=None, keyfile=None)
+            self._client.tls_set(ca_certs=None, certfile=None, keyfile=None)
 
+        self.logger.info('MQTT client initialized, broker host is ' + self._hostname + ':' + str(self._port))
         self.connectToBroker()
 
     @pyqtProperty(int, notify=stateChanged)
@@ -173,56 +178,79 @@ class MqttClient(QObject):
             self._protocol_version = protocolVersion
             self.protocolVersionChanged.emit(protocolVersion)
 
-    @pyqtSlot(str, str)
     def publish(self, topic=None, subtopic=None, msg=None):
         if topic is None and subtopic is not None:
             t = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_STATUS + '/' + self._node_id + '/' + subtopic
-            self.m_client.publish(t, msg)
+            self._client.publish(t, msg)
         else:
-            self.m_client.publish(topic, msg)
+            self._client.publish(topic, msg)
 
+    @pyqtSlot(str, str)
+    def slotPublishSubtopic(self, subtopic, msg):
+        self.publish(subtopic=subtopic, msg=msg)
 
 
     #################################################################
     @pyqtSlot()
     def connectToBroker(self):
-        if self._hostname:
-            try:
-                self.logger.info('MQTT client connecting to ' + self._hostname + ':' + str(self._port))
-                self.state = MqttClient.Connecting
-                self.m_client.connect(self._hostname, port=self._port, keepalive=self._keepalive)
-                self.m_client.loop_start()
-            except:
-                self.logger.info('MQTT could not connect, retrying...')
-                self.state = MqttClient.Reconnecting
-                self.m_client.disconnect()
-                self.init_client()
-                self.startReconnTimer()
+        if not self.isRunning():
+            self.start();
+        else:
+            self.cond.wakeOne();
 
-    def startReconnTimer(self):
-        self.reconnTimer = QTimer()
-        self.reconnTimer.setSingleShot(True)
-        self.reconnTimer.timeout.connect(self.connectToBroker)
-        self.reconnTimer.start(self._reconnect_time)
+    def run(self):
+        self.logger.info("thread run")
+        while not self._quit:
+
+            if self.state is MqttClient.Disconnected and self._hostname:
+                try:
+                    self.logger.info('client connecting to ' + self._hostname + ':' + str(self._port))
+                    self.state = MqttClient.Connecting
+                    self._client.loop_start()
+                    self._client.reconnect_delay_set(min_delay=1, max_delay=30)
+                    self._client.connect(self._hostname, port=self._port, keepalive=self._keepalive)
+                except:
+                    self.logger.info('could not connect, retrying in ' + str(self._reconnect_time / 1000) + ' seconds')
+                    self.state = MqttClient.Disconnected
+
+            self.msleep(self._reconnect_time)
+
+        self.logger.info("thread quit")
 
     @pyqtSlot()
-    def disconnectFromHost(self):
-        self.m_client.disconnect()
+    def disconnectFromBroker(self):
+        self._client.disconnect()
 
     def subscribe(self, topic):
         if self.state == MqttClient.Connected:
             self.logger.info('subscribe topic=' + topic)
-            self.m_client.subscribe(topic)
+            self._client.subscribe(topic)
+
+    def on_log(self, client, userdata, level, buf):
+        if level == mqtt.MQTT_LOG_ERR:
+            f = self.logger.error
+        elif level == mqtt.MQTT_LOG_WARNING:
+            f = self.logger.warning
+        elif level == mqtt.MQTT_LOG_NOTICE:
+            f = self.logger.info
+        elif level == mqtt.MQTT_LOG_INFO:
+            f = self.logger.info
+        else:
+            f = self.logger.debug
+
+        f(buf)
 
     def on_connect(self, client, userdata, flags, rc):
         self.state = MqttClient.Connected
         self.logger.info('on_connect')
         self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/#')
         self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/#')
+        self.brokerConnectionEvent.emit(True)
 
     def on_disconnect(self, client, userdata, rc):
         self.state = MqttClient.Disconnected
         self.logger.info('on_disconnect')
+        self.brokerConnectionEvent.emit(False)
 
     def on_message(self, client, userdata, message):
         topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/'
