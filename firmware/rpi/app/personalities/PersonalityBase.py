@@ -66,7 +66,6 @@ class PersonalityBase(PersonalityStateMachine):
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
-    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['subtopic', 'message'])
     lockReasonChanged = pyqtSignal()
 
     @pyqtProperty(str, notify=lockReasonChanged)
@@ -103,6 +102,7 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.telemetryEvent.connect(self.app.mqtt.slotPublishSubtopic)
 
+        self._rfidErrorReason = ''
         self._lockReason = ''
 
         self.app.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
@@ -243,6 +243,8 @@ class PersonalityBase(PersonalityStateMachine):
         else:
             self.wakereason = self.REASON_RFID_DENIED
 
+        self._rfidErrorReason = ''
+
         self.mutex.unlock()
         self.cond.wakeAll()
 
@@ -256,6 +258,7 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.mutex.lock()
         self.wakereason = self.REASON_RFID_ERROR
+        self._rfidErrorReason = reason
         self.mutex.unlock()
         self.cond.wakeAll()
 

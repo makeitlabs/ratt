@@ -195,7 +195,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/rfid', 'error')
+            self.telemetryEvent.emit('personality/login', 'error ' + self._rfidErrorReason)
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -214,7 +214,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessDenied(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/denied', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/login', 'denied ' + self.activeMemberRecord.name)
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -234,7 +234,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessAllowed(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/allowed', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/login', 'allowed ' + self.activeMemberRecord.name)
             self.pin_led1.set(HIGH)
             return self.goActive()
 
@@ -285,7 +285,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateSafetyCheckFailed(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/safety', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/error', 'safety ' + self.activeMemberRecord.name)
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -304,7 +304,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledActive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/active', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/activity', 'active ' + self.activeMemberRecord.name)
             self.toolActiveFlag = True
             self.wakeOnTimer(enabled=True, interval=250, singleShot=False)
             return self.goActive()
@@ -330,7 +330,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledInactive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/inactive', self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/activity', 'inactive ' + self.activeMemberRecord.name)
             self.toolActiveFlag = False
             self.pin_led1.set(HIGH)
             return self.goActive()
@@ -418,7 +418,6 @@ class Personality(PersonalityBase):
     def stateLockOut(self):
 
         if self.phENTER:
-            self.telemetryEvent.emit('personality/lockout', 'locked')
             self.pin_led1.set(LOW)
             self.pin_led2.set(HIGH)
             self.wakeOnTimer(enabled=True, interval=250, singleShot=True)
@@ -438,7 +437,6 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
-            self.telemetryEvent.emit('personality/lockout', 'unlocked')
             self.wakeOnTimer(enabled=False)
             self.pin_led2.set(LOW)
             self.pin_led1.set(LOW)

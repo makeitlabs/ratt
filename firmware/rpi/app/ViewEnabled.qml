@@ -55,6 +55,7 @@ View {
     property bool idleWarning: (idleSecs < idleWarningSecs)
     property bool idleTimeout: (idleSecs == 0)
 
+
     Connections {
         target: personality
         onToolActiveFlagChanged: {
@@ -79,15 +80,14 @@ View {
 
     function keyEscape(pressed) {
         if (!personality.toolActiveFlag && pressed) {
-          appWindow.mqttPublishSubtopicEvent('personality/exit', activeMemberRecord.name)
-          done();
+          done('explicit');
         }
     }
 
 
-    function done() {
+    function done(reason) {
         sound.disableAudio.play();
-        appWindow.mqttPublishSubtopicEvent('personality/usage', activeMemberRecord.name + ' ' + enabledSecs + ' ' + activeSecs + ' ' + (enabledSecs - activeSecs))
+        appWindow.mqttPublishSubtopicEvent('personality/logout', reason + ' ' + activeMemberRecord.name + ' ' + enabledSecs + ' ' + activeSecs + ' ' + (enabledSecs - activeSecs))
         appWindow.uiEvent('ToolEnabledDone');
     }
 
@@ -121,8 +121,7 @@ View {
             else if (idleSecs > 0)
                 idleSecs--;
             else if (idleSecs == 0) {
-                appWindow.mqttPublishSubtopicEvent('personality/timeout', activeMemberRecord.name)
-                done();
+                done('timeout');
             }
 
             if (idleSecs == idleWarningSecs)

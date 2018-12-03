@@ -86,6 +86,8 @@ class PersonalityStateMachine(QThread):
     timerStart = pyqtSignal(int, name='timerStart', arguments=['msec'])
     timerStop = pyqtSignal()
 
+    telemetryEvent = pyqtSignal(str, str, name='telemetryEvent', arguments=['subtopic', 'message'])
+
     @pyqtProperty(str, notify=stateChanged)
     def currentState(self):
         return self.stateName()
@@ -159,13 +161,18 @@ class PersonalityStateMachine(QThread):
 
             if self.wakereason is self.REASON_LOCK_OUT:
                 self.lockoutPending = True
+                self.telemetryEvent.emit('personality/lockout', 'pending')
 
             if self.wakereason is self.REASON_LOCK_OUT_CANCELED:
+                if self.lockoutPending:
+                    self.telemetryEvent.emit('personality/lockout', 'unlocked')
+
+                self.lockoutPending = False
                 if self.state == self.STATE_LOCK_OUT:
-                    self.lockoutPending = False
                     self.exitAndGoto(self.STATE_INIT)
 
             if self.lockoutPending and self.state == self.STATE_IDLE:
+                self.telemetryEvent.emit('personality/lockout', 'locked')
                 self.lockoutPending = False;
                 self.exitAndGoto(self.STATE_LOCK_OUT)
 
