@@ -42,8 +42,10 @@ from PyQt5.QtQml import qmlRegisterType
 from Logger import Logger
 from RFID import RFID
 from MemberRecord import MemberRecord
-import QtGPIO as GPIO
 import copy
+
+import QtGPIO as GPIO
+import QtSimGPIO as SimGPIO
 
 class PersonalityBase(PersonalityStateMachine):
     PERSONALITY_DESCRIPTION = 'Base'
@@ -76,7 +78,7 @@ class PersonalityBase(PersonalityStateMachine):
         return s
 
     def __init__(self, loglevel='WARNING', app=None):
-
+        
         self.logger = Logger(name='ratt.personality')
         self.logger.setLogLevelStr(loglevel)
 
@@ -126,7 +128,12 @@ class PersonalityBase(PersonalityStateMachine):
 
     # gpio initialization
     def __init_gpio(self):
-        self.gpio = GPIO.Controller()
+        if not self.app.config.value('GPIO.Simulated'):
+            self.gpio = GPIO.Controller()
+        else:
+            self.logger.warning('Using simulated GPIO')
+            self.gpio = SimGPIO.Controller()
+            
         self.pins_in = []
         self.pins_out = []
         self._init_gpio_pins()
