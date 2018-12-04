@@ -77,6 +77,10 @@ class RattConfig(QObject):
         return self.config['General.ToolDesc']
 
     @pyqtProperty(str, notify=configChanged)
+    def Sound_Silence(self):
+        return self.config['Sound.Silence']
+
+    @pyqtProperty(str, notify=configChanged)
     def Sound_KeyPress(self):
         return self.config['Sound.KeyPress']
 
@@ -173,6 +177,7 @@ class RattConfig(QObject):
         self.addConfig('RFID', 'LogLevel')
         self.addConfig('RFID', 'SerialPort')
 
+        self.addConfig('Sound', 'Silence')
         self.addConfig('Sound', 'KeyPress')
         self.addConfig('Sound', 'RFIDSuccess')
         self.addConfig('Sound', 'RFIDFailure')

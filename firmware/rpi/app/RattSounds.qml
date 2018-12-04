@@ -48,6 +48,16 @@ Item {
 
     property alias timeoutWarningAudio: timeoutWarningAudio
 
+    Component.onCompleted: {
+      silence.play()
+    }
+
+    SoundEffect {
+      id: silence
+      source: config.Sound_Silence
+      loops: SoundEffect.Infinite
+    }
+
     SoundEffect {
         id: keyAudio
         source: config.Sound_KeyPress
