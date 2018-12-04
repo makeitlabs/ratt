@@ -138,7 +138,7 @@ Item {
                     Rectangle {
                         width: 40
                         height: 20
-                        color: simLED1 ? "green" : "black"
+                        color: !simLED1 ? "green" : "black"
                         Label {
                             anchors.fill: parent
                             horizontalAlignment: Text.AlignHCenter
@@ -152,7 +152,7 @@ Item {
                     Rectangle {
                         width: 40
                         height: 20
-                        color: simLED2 ? "red" : "black"
+                        color: !simLED2 ? "red" : "black"
                         Label {
                             anchors.fill: parent
                             horizontalAlignment: Text.AlignHCenter
@@ -282,7 +282,7 @@ Item {
             id: rfidRect
             color: "#222222"
             width: 600
-            height: 100
+            height: 130
             border.width: 4
             border.color: "#000000"
 
@@ -353,6 +353,34 @@ Item {
                 Label {
                     id: tagDebugText
                     font.pixelSize: 10
+                }
+
+                RowLayout {
+                    Layout.preferredHeight: 25
+                    Layout.fillWidth: true
+                    Rectangle {
+                        height: 20
+                        width: 100
+                        color: "gray"
+                        TextInput {
+                            id: rfidText
+                            anchors.fill: parent
+                            text: "1234567890"
+                        }
+                    }
+                    Button {
+                        text: "Sim. Scan"
+                        onClicked: {
+                            rfid.simulateTagScan(rfidText.text)
+                        }
+                    }
+                    Button {
+                        text: "Sim. Scan Error"
+                        onClicked: {
+                            rfid.simulateScanError(rfidText)
+                        }
+                    }
+
                 }
             }
         }

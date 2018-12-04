@@ -36,7 +36,7 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QIODevice, QByteArray, pyqtSignal, pyqtProperty
+from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QIODevice, QByteArray, pyqtSlot, pyqtSignal, pyqtProperty
 from PyQt5.QtSerialPort import QSerialPort
 from Logger import Logger
 import logging
@@ -56,6 +56,17 @@ class RFID(QThread):
     def errChecksum(self):
         return -2
 
+    @pyqtSlot(int)
+    def simulateTagScan(self, tag):
+        hash = self.hash_tag(tag)
+        now = calendar.timegm(time.gmtime())
+        self.tagScan.emit(tag, hash, now, 'simulated')
+
+    @pyqtSlot()
+    def simulateScanError(self):
+        now = calendar.timegm(time.gmtime())
+        self.tagScanError.emit(0, now, 'simulated')
+        
     def __init__(self, portName='', loglevel='WARNING'):
         QThread.__init__(self)
 
@@ -70,7 +81,7 @@ class RFID(QThread):
         self.waitTimeout = 250
 
         self.quit = False
-
+        
     def monitor(self):
         if not self.isRunning():
             self.start();
