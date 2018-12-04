@@ -146,6 +146,8 @@ class RattConfig(QObject):
         self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
 
+        self.addConfigBool('GPIO', 'Simulated')
+        
         self.addConfig('Log', 'File')
         self.addConfigBool('Log', 'Console')
         self.addConfigBool('Log', 'Qt')
