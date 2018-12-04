@@ -47,7 +47,7 @@ View {
         Image {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            source: "../../../logo/ratt\ logo\ 256.png"
+            source: "images/ratt_logo_256.png"
             fillMode: Image.PreserveAspectFit
         }
     }
