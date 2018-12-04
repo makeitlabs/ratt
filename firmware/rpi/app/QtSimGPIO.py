@@ -30,7 +30,7 @@ __all__ = ('DIRECTIONS', 'INPUT', 'OUTPUT',
            'EDGES', 'RISING', 'FALLING', 'BOTH',
            'Controller')
 
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from Logger import Logger
 import logging
 import errno
@@ -64,10 +64,11 @@ EDGES = (RISING, FALLING, BOTH)
 ACTIVE_LOW_MODES = (ACTIVE_LOW_ON, ACTIVE_LOW_OFF)
 
 
-class Pin(object):
-    # Represent a pin in SysFS
-
+class Pin(QObject):
+    pinChanged = pyqtSignal(int, bool, arguments=['pin', 'value'])
+    
     def __init__(self, number, direction, callback=None, edge=None, active_low=0):
+        QObject.__init__(self)
         # @type  number: int
         # @param number: The pin number
         # @type  direction: int
@@ -116,7 +117,9 @@ class Pin(object):
         return self._active_low
 
     def set(self, value):
-        print('set pin=' + str(self._number) + ' value=' + str(value))
+        self.pinChanged.emit(self._number, self._val)
+            
+        self._val = value;
 
     def get (self):
         return int(self._val)

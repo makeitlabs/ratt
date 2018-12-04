@@ -40,6 +40,14 @@ import QtQuick.Layouts 1.2
 import RATT 1.0
 
 Item {
+    property bool simShutdown: False
+    property bool simLED1: False
+    property bool simLED2: False
+    property bool simOUT1: False
+    property bool simOUT2: False
+    property bool simOUT3: False
+    property bool simOUT4: False
+
     ColumnLayout {
         Label {
             color: "white"
@@ -64,6 +72,35 @@ Item {
             border.width: 4
             border.color: "#000000"
 
+            Connections {
+                target: personality
+
+                onSimGPIOPinChanged: {
+                    switch (pin) {
+                    case 27:
+                        simShutdown = value;
+                        break;
+                    case 500:
+                        simOUT1 = value;
+                        break;
+                    case 501:
+                        simOUT2 = value;
+                        break;
+                    case 502:
+                        simOUT3 = value;
+                        break;
+                    case 503:
+                        simOUT4 = value;
+                        break;
+                    case 508:
+                        simLED1 = value;
+                        break;
+                    case 509:
+                        simLED2 = value;
+                        break;
+                    }
+                }
+            }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -80,6 +117,116 @@ Item {
                     font.pixelSize: 12
                     font.bold: true
                 }
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simShutdown ? "orange" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "SHDN"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simLED1 ? "green" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "LED1"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simLED2 ? "red" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "LED2"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simOUT1 ? "blue" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "OUT1"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simOUT2 ? "blue" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "OUT2"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simOUT3 ? "blue" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "OUT3"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    Rectangle {
+                        width: 40
+                        height: 20
+                        color: simOUT4 ? "blue" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "OUT4"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+
+
+
+
+                }
+
             }
         }
 
