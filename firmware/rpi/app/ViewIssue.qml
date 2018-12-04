@@ -52,6 +52,7 @@ View {
 
         onValidScan: {
             if (root.state == "scan") {
+                sound.reportSuccessAudio.play()
                 root.state = "thank";
                 doneTimer.start();
             }

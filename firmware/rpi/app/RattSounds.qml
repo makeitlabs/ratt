@@ -45,10 +45,12 @@ Item {
     property alias safetyFailedAudio: safetyFailedAudio
     property alias enableAudio: enableAudio
     property alias disableAudio: disableAudio
-
     property alias timeoutWarningAudio: timeoutWarningAudio
+    property alias reportSuccessAudio: reportSuccessAudio
 
     Component.onCompleted: {
+      // play silence continually in background to work around the click/pop issue
+      // with the audio DAC+amp combo that powers down when not receiving i2s bitstream
       silence.play()
     }
 
@@ -90,6 +92,10 @@ Item {
     SoundEffect {
         id: timeoutWarningAudio
         source: config.Sound_TimeoutWarning
+    }
+    SoundEffect {
+        id: reportSuccessAudio
+        source: config.Sound_ReportSuccess
     }
 
     Connections {

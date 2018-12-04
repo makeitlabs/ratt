@@ -112,6 +112,10 @@ class RattConfig(QObject):
     def Sound_TimeoutWarning(self):
         return self.config['Sound.TimeoutWarning']
 
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_ReportSuccess(self):
+        return self.config['Sound.ReportSuccess']
+
     #---------------------------------------------------------------------------------------------
 
 
@@ -186,5 +190,6 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'Enable')
         self.addConfig('Sound', 'Disable')
         self.addConfig('Sound', 'TimeoutWarning')
+        self.addConfig('Sound', 'ReportSuccess')
 
         self.configChanged.emit()
