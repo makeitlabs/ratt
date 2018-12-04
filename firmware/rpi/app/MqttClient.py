@@ -92,7 +92,6 @@ class MqttClient(QThread):
     def init_client(self, hostname='localhost', port=1883, nodeId='', reconnectTime=60,
                     sslEnabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
 
-
         self._node_id = nodeId
 
         self._hostname = hostname
@@ -107,10 +106,16 @@ class MqttClient(QThread):
         self._client.on_log = self.on_log
 
         if sslEnabled:
-            self.logger.info('SSL enabled, ca_cert=' + caCertFile + ' cert=' + clientCertFile + ' key=' + clientKeyFile)
-            self._client.tls_set(ca_certs=caCertFile,
-                                  certfile=clientCertFile,
-                                  keyfile=clientKeyFile)
+            try:
+                self.logger.info('SSL enabled, ca_cert=' + caCertFile + ' cert=' + clientCertFile + ' key=' + clientKeyFile)
+                self._client.tls_set(ca_certs=caCertFile,
+                                     certfile=clientCertFile,
+                                     keyfile=clientKeyFile)
+            except IOError:
+                self.logger.error('Error loading SSL certificates!  Are the paths and filenames correct in the .ini file?')
+            except:
+                self.logger.error('Unknown error loading SSL certificates.')
+
         else:
             self._client.tls_set(ca_certs=None, certfile=None, keyfile=None)
 
