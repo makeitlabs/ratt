@@ -39,13 +39,14 @@
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 import ConfigParser
 
-RATT_INI_FILE = '/data/ratt/ratt.ini'
-
 class RattConfig(QObject):
     configChanged = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, inifile):
         QObject.__init__(self)
+
+        self._inifile = inifile
+        
         self.loadConfig()
 
     #---------------------------------------------------------------------------------------------
@@ -138,7 +139,7 @@ class RattConfig(QObject):
     def loadConfig(self):
         self.parser = ConfigParser.ConfigParser()
 
-        self.parser.read(RATT_INI_FILE)
+        self.parser.read(self._inifile)
 
         self.config = { }
 

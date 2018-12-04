@@ -36,6 +36,8 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
+#!/usr/bin/python
+
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant
 from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
@@ -47,14 +49,20 @@ from MqttClient import MqttClient
 from RFID import RFID
 from Logger import Logger
 import sys
+import argparse
 from commands import getoutput
 
 class RattAppEngine(QQmlApplicationEngine):
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
+        parser = argparse.ArgumentParser(description='RATT Application (Personality state machine and GUI).')
+        parser.add_argument('--ini', dest='inifile', default='/data/ratt/ratt.ini', help='path to .ini file e.g. /tmp/ratt-test.ini, default is /data/ratt/ratt.ini')
+
+        args = parser.parse_args()
+
         # load the config
-        self.config = RattConfig()
+        self.config = RattConfig(inifile=args.inifile)
 
         # create parent logger which will optionally log to file and console, and opionally enable Qt logging
         self.logger = Logger(name='ratt',
