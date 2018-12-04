@@ -40,13 +40,13 @@ import QtQuick.Layouts 1.2
 import RATT 1.0
 
 Item {
-    property bool simShutdown: False
-    property bool simLED1: False
-    property bool simLED2: False
-    property bool simOUT1: False
-    property bool simOUT2: False
-    property bool simOUT3: False
-    property bool simOUT4: False
+    property bool simShutdown: false
+    property bool simLED1: false
+    property bool simLED2: false
+    property bool simOUT1: false
+    property bool simOUT2: false
+    property bool simOUT3: false
+    property bool simOUT4: false
 
     ColumnLayout {
         Label {
@@ -365,7 +365,7 @@ Item {
                         TextInput {
                             id: rfidText
                             anchors.fill: parent
-                            text: "1234567890"
+                            text: config.RFID_SimulatedTag
                         }
                     }
                     Button {
