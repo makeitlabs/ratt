@@ -36,9 +36,11 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 1.3
+import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.2
 
 StatusBar {
+    id: root
     height: 20
 
     property string keyEscLabel: "\u2190"
@@ -61,59 +63,117 @@ StatusBar {
         keyReturnActive = ret;
     }
 
+
     RowLayout {
         anchors.fill: parent
 
-        Label {
+        Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            text: keyEscLabel
-            font.pointSize: 10
-            font.weight: Font.Bold
-            color: keyEscActive ? activeKeyColor : inactiveKeyColor
+
+            style: ButtonStyle {
+                background: Item {}
+                label: Label {
+                        text: keyEscLabel
+                        height: root.height
+                        width: control.width
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pointSize: 10
+                        font.weight: Font.Bold
+                        color: keyEscActive ? activeKeyColor : inactiveKeyColor
+                }
+            }
+
+            onPressedChanged: {
+                appEngine.syntheticKeypressHandler(Qt.Key_Escape, pressed)
+            }
+
         }
         Rectangle {
             Layout.fillHeight: true
             Layout.preferredWidth: 1
             color: "#000000"
         }
-        Label {
+
+        Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            text: keyDownLabel
-            font.pointSize: 10
-            font.weight: Font.Bold
-            color: keyDownActive ? activeKeyColor : inactiveKeyColor
+
+            style: ButtonStyle {
+                background: Item {}
+                label: Label {
+                        text: keyDownLabel
+                        height: root.height
+                        width: control.width
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pointSize: 10
+                        font.weight: Font.Bold
+                        color: keyDownActive ? activeKeyColor : inactiveKeyColor
+                }
+            }
+
+            onPressedChanged: {
+                appEngine.syntheticKeypressHandler(Qt.Key_Down, pressed)
+            }
         }
+
         Rectangle {
             Layout.fillHeight: true
             Layout.preferredWidth: 1
             color: "#000000"
         }
-        Label {
+
+        Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            text: keyUpLabel
-            font.pointSize: 10
-            font.weight: Font.Bold
-            color: keyUpActive ? activeKeyColor : inactiveKeyColor
+
+            style: ButtonStyle {
+                background: Item {}
+                label: Label {
+                        text: keyUpLabel
+                        height: root.height
+                        width: control.width
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pointSize: 10
+                        font.weight: Font.Bold
+                        color: keyUpActive ? activeKeyColor : inactiveKeyColor
+                }
+            }
+
+            onPressedChanged: {
+                appEngine.syntheticKeypressHandler(Qt.Key_Up, pressed)
+            }
         }
+
         Rectangle {
             Layout.fillHeight: true
             Layout.preferredWidth: 1
             color: "#000000"
         }
-        Label {
+        Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            text: keyReturnLabel
-            font.pointSize: 10
-            font.weight: Font.Bold
-            color: keyReturnActive ? activeKeyColor : inactiveKeyColor
+
+            style: ButtonStyle {
+                background: Item {}
+                label: Label {
+                        text: keyReturnLabel
+                        height: root.height
+                        width: control.width
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pointSize: 10
+                        font.weight: Font.Bold
+                        color: keyReturnActive ? activeKeyColor : inactiveKeyColor
+                }
+            }
+
+            onPressedChanged: {
+                appEngine.syntheticKeypressHandler(Qt.Key_Return, pressed)
+            }
         }
     }
 }

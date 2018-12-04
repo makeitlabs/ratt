@@ -38,9 +38,10 @@
 
 #!/usr/bin/python
 
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant, QEvent, Qt, QCoreApplication
 from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
+from PyQt5.QtGui import QKeyEvent
 from RattConfig import RattConfig
 from NetWorker import NetWorker
 from ACL import ACL
@@ -192,3 +193,13 @@ class RattAppEngine(QQmlApplicationEngine):
     @property
     def mqtt(self):
         return self._mqtt
+
+
+    @pyqtSlot(int, bool)
+    def syntheticKeypressHandler(self, keycode, pressed):
+        evt = QKeyEvent(QEvent.KeyPress if pressed else QEvent.KeyRelease, keycode, Qt.NoModifier)
+        objs = self.rootObjects()
+        if len(objs) == 1:
+            QCoreApplication.postEvent(objs[0], evt)
+
+
