@@ -46,7 +46,7 @@ class RattConfig(QObject):
         QObject.__init__(self)
 
         self._inifile = inifile
-        
+
         self.loadConfig()
 
     #---------------------------------------------------------------------------------------------
@@ -76,6 +76,14 @@ class RattConfig(QObject):
     @pyqtProperty(str, notify=configChanged)
     def General_ToolDesc(self):
         return self.config['General.ToolDesc']
+
+    @pyqtProperty(int, notify=configChanged)
+    def RFID_SimulatedTag(self):
+        return self.config['RFID.SimulatedTag']
+
+    @pyqtProperty(bool, notify=configChanged)
+    def Sound_EnableSilenceLoop(self):
+        return self.config['Sound.EnableSilenceLoop']
 
     @pyqtProperty(str, notify=configChanged)
     def Sound_Silence(self):
@@ -119,22 +127,32 @@ class RattConfig(QObject):
 
     #---------------------------------------------------------------------------------------------
 
-
-
     def value(self, key):
         return self.config[key]
 
-    def addConfig(self, section, key):
-        self.config['%s.%s' % (section, key)] = self.parser.get(section, key)
+    def addConfig(self, section, key, default=''):
+        try:
+            self.config['%s.%s' % (section, key)] = self.parser.get(section, key)
+        except ConfigParser.NoOptionError:
+            self.config['%s.%s' % (section, key)] = default
 
-    def addConfigBool(self, section, key):
+    def addConfigBool(self, section, key, default=False):
+        try:
             self.config['%s.%s' % (section, key)] = self.parser.getboolean(section, key)
+        except ConfigParser.NoOptionError:
+            self.config['%s.%s' % (section, key)] = default
 
-    def addConfigInt(self, section, key):
+    def addConfigInt(self, section, key, default=0):
+        try:
             self.config['%s.%s' % (section, key)] = self.parser.getint(section, key)
+        except ConfigParser.NoOptionError:
+            self.config['%s.%s' % (section, key)] = default
 
-    def addConfigFloat(self, section, key):
+    def addConfigFloat(self, section, key, default=0.0):
+        try:
             self.config['%s.%s' % (section, key)] = self.parser.getfloat(section, key)
+        except ConfigParser.NoOptionError:
+            self.config['%s.%s' % (section, key)] = default
 
     def loadConfig(self):
         self.parser = ConfigParser.ConfigParser()
@@ -146,8 +164,8 @@ class RattConfig(QObject):
         self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
 
-        self.addConfigBool('GPIO', 'Simulated')
-        
+        self.addConfigBool('GPIO', 'Simulated', False)
+
         self.addConfig('Log', 'File')
         self.addConfigBool('Log', 'Console')
         self.addConfigBool('Log', 'Qt')
@@ -155,24 +173,24 @@ class RattConfig(QObject):
         self.addConfig('Log', 'LogLevel')
 
         self.addConfig('Personality', 'Class')
-        self.addConfig('Personality', 'LogLevel')
+        self.addConfig('Personality', 'LogLevel', 'INFO')
         self.addConfigInt('Personality', 'TimeoutSeconds')
         self.addConfigInt('Personality', 'TimeoutWarningSeconds')
 
-        self.addConfig('Auth', 'LogLevel')
+        self.addConfig('Auth', 'LogLevel', 'INFO')
         self.addConfig('Auth', 'ResourceId')
         self.addConfig('Auth', 'HttpAuthUser')
         self.addConfig('Auth', 'HttpAuthPassword')
         self.addConfig('Auth', 'AclUrl')
         self.addConfig('Auth', 'AclCacheFile')
 
-        self.addConfig('MQTT', 'LogLevel')
+        self.addConfig('MQTT', 'LogLevel', 'INFO')
         self.addConfig('MQTT', 'BrokerHost')
         self.addConfigInt('MQTT', 'BrokerPort')
         self.addConfigInt('MQTT', 'ReconnectTime')
         self.addConfig('MQTT', 'BaseTopic')
 
-        self.addConfig('Telemetry', 'LogLevel')
+        self.addConfig('Telemetry', 'LogLevel', 'INFO')
         self.addConfig('Telemetry', 'EventUrl')
         self.addConfig('Telemetry', 'EventCacheFile')
 
@@ -183,7 +201,9 @@ class RattConfig(QObject):
 
         self.addConfig('RFID', 'LogLevel')
         self.addConfig('RFID', 'SerialPort')
+        self.addConfigInt('RFID', 'SimulatedTag', 0)
 
+        self.addConfigBool('Sound', 'EnableSilenceLoop', True)
         self.addConfig('Sound', 'Silence')
         self.addConfig('Sound', 'KeyPress')
         self.addConfig('Sound', 'RFIDSuccess')
