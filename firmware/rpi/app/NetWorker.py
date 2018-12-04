@@ -139,6 +139,13 @@ class NetWorker(QObject):
         try:
             iw = getoutput('/sbin/iwconfig %s' % self.ifcName)
 
+            if 'No such device' in iw:
+                res['essid'] = 'Simulator'
+                res['freq'] = '0.0'
+                res['quality'] = '0'
+                res['level'] = '100'
+                return True
+
             fields = iw.split()
 
             for field in fields:
