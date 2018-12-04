@@ -49,9 +49,11 @@ Item {
     property alias reportSuccessAudio: reportSuccessAudio
 
     Component.onCompleted: {
-      // play silence continually in background to work around the click/pop issue
-      // with the audio DAC+amp combo that powers down when not receiving i2s bitstream
-      silence.play()
+      if (config.Sound_EnableSilenceLoop) {
+        // play silence continually in background to work around the click/pop issue
+        // with the audio DAC+amp combo that powers down when not receiving i2s bitstream
+        silence.play()
+      }
     }
 
     SoundEffect {
