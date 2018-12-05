@@ -76,6 +76,7 @@ ApplicationWindow {
 
                 switch (state) {
                 case "Idle":
+                case "NotPowered":
                     switchTo(viewIdle);
                     break;
                 case "AccessAllowed":
