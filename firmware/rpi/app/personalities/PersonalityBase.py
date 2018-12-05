@@ -178,6 +178,12 @@ class PersonalityBase(PersonalityStateMachine):
         self._init_gpio_pins()
 
         if self._simGPIO:
+            # simulated GPIO output pins connect to a handler to generate
+            # a signal with a named pin and new value
+            #
+            # it may seem a bit backwards to be listening to changes on
+            # output pins but remember, this is for the diagnostics display
+            # for development, in lieu of actually outputting to a real pin
             self.pins_out[0].pinChanged.connect(self.slotSimGPIOPinChanged)
             self.pins_out[1].pinChanged.connect(self.slotSimGPIOPinChanged)
             self.pins_out[2].pinChanged.connect(self.slotSimGPIOPinChanged)
@@ -189,18 +195,22 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.simGPIOChanged.emit()
 
+    # this slot handles pin changes for simulated GPIO and regenerates
+    # a new signal with a named I/O pin for the Diags QML
     @pyqtSlot(int, bool)
     def slotSimGPIOPinChanged(self, pin, value):
         if pin in self.pinToName:
             pinName = self.pinToName[pin]
             self.simGPIOPinChanged.emit(pinName, value)
 
+    # the Diags QML calls this slot to set a simulated GPIO pin value
+    # again, this may seem backwards since this is used to set input pin values
+    # in the QML, but remember, this is for simulation to make onscreen controls
+    # appear to be actual GPIO inputs
     @pyqtSlot(str, bool)
     def slotSimGPIOChangePin(self, pinName, value):
         if pinName in self.nameToPinObject:
             self.nameToPinObject[pinName].set(value)
-        if pinName in self.nameToPin:
-            self.__pinchanged(self.nameToPin[pinName], value)
 
     # callback for when one of the application GPIO input pins has changed state
     # it wakes the thread with REASON_GPIO
