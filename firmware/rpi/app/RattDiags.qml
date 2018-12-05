@@ -43,10 +43,10 @@ Item {
     property bool simShutdown: false
     property bool simLED1: false
     property bool simLED2: false
+    property bool simOUT0: false
     property bool simOUT1: false
     property bool simOUT2: false
     property bool simOUT3: false
-    property bool simOUT4: false
 
     ColumnLayout {
         Label {
@@ -63,7 +63,6 @@ Item {
             }
         }
 
-
         Rectangle {
             id: personalityRect
             color: "#444499"
@@ -76,26 +75,26 @@ Item {
                 target: personality
 
                 onSimGPIOPinChanged: {
-                    switch (pin) {
-                    case 27:
+                    switch (pinName) {
+                    case 'SHUTDOWN':
                         simShutdown = value;
                         break;
-                    case 500:
+                    case 'OUT0':
+                        simOUT0 = value;
+                        break;
+                    case 'OUT1':
                         simOUT1 = value;
                         break;
-                    case 501:
+                    case 'OUT2':
                         simOUT2 = value;
                         break;
-                    case 502:
+                    case 'OUT3':
                         simOUT3 = value;
                         break;
-                    case 503:
-                        simOUT4 = value;
-                        break;
-                    case 508:
+                    case 'LED1':
                         simLED1 = value;
                         break;
-                    case 509:
+                    case 'LED2':
                         simLED2 = value;
                         break;
                     }
@@ -167,6 +166,20 @@ Item {
                     Rectangle {
                         width: 40
                         height: 20
+                        color: simOUT0 ? "blue" : "black"
+                        Label {
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: "white"
+                            text: "OUT0"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    Rectangle {
+                        width: 40
+                        height: 20
                         color: simOUT1 ? "blue" : "black"
                         Label {
                             anchors.fill: parent
@@ -206,27 +219,36 @@ Item {
                             font.bold: true
                         }
                     }
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: simOUT4 ? "blue" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "OUT4"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
+
+                    CheckBox {
+                      text: 'IN0'
+                      height: 20
+                      onCheckedChanged: {
+                        personality.slotSimGPIOChangePin('IN0', checked);
+                      }
                     }
-
-
-
-
-
+                    CheckBox {
+                      text: 'IN1'
+                      height: 20
+                      onCheckedChanged: {
+                        personality.slotSimGPIOChangePin('IN1', checked);
+                      }
+                    }
+                    CheckBox {
+                      text: 'IN2'
+                      height: 20
+                      onCheckedChanged: {
+                        personality.slotSimGPIOChangePin('IN2', checked);
+                      }
+                    }
+                    CheckBox {
+                      text: 'IN3'
+                      height: 20
+                      onCheckedChanged: {
+                        personality.slotSimGPIOChangePin('IN3', checked);
+                      }
+                    }
                 }
-
             }
         }
 

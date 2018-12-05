@@ -65,14 +65,42 @@ class PersonalityBase(PersonalityStateMachine):
     GPIO_PIN_LED1 = 508
     GPIO_PIN_LED2 = 509
 
+    pinToName = {GPIO_PIN_SHUTDOWN : 'SHUTDOWN',
+                 GPIO_PIN_POWER_PRESENT : 'POWER_PRESENT',
+                 GPIO_PIN_CHARGE_STATE : 'CHARGE_STATE',
+                 GPIO_PIN_LED1 : 'LED1',
+                 GPIO_PIN_LED2 : 'LED2',
+                 GPIO_PIN_IN0 : 'IN0',
+                 GPIO_PIN_IN1 : 'IN1',
+                 GPIO_PIN_IN2 : 'IN2',
+                 GPIO_PIN_IN3 : 'IN3',
+                 GPIO_PIN_OUT0 : 'OUT0',
+                 GPIO_PIN_OUT1 : 'OUT1',
+                 GPIO_PIN_OUT2 : 'OUT2',
+                 GPIO_PIN_OUT3 : 'OUT3'}
+
+    nameToPin = {'SHUTDOWN' : GPIO_PIN_SHUTDOWN,
+                 'POWER_PRESENT' : GPIO_PIN_POWER_PRESENT,
+                 'CHARGE_STATE' : GPIO_PIN_CHARGE_STATE,
+                 'LED1' : GPIO_PIN_LED1,
+                 'LED2' : GPIO_PIN_LED2,
+                 'IN0' : GPIO_PIN_IN0,
+                 'IN1' : GPIO_PIN_IN1,
+                 'IN2' : GPIO_PIN_IN2,
+                 'IN3' : GPIO_PIN_IN3,
+                 'OUT0' : GPIO_PIN_OUT0,
+                 'OUT1' : GPIO_PIN_OUT1,
+                 'OUT2' : GPIO_PIN_OUT2,
+                 'OUT3' : GPIO_PIN_OUT3}
+
     validScan = pyqtSignal(MemberRecord, name='validScan', arguments=['record'])
     invalidScan = pyqtSignal(str, name='invalidScan', arguments=['reason'])
 
     lockReasonChanged = pyqtSignal()
 
     simGPIOChanged = pyqtSignal()
-    simGPIOPinChanged = pyqtSignal(int, bool, arguments=['pin', 'value'])
-    
+    simGPIOPinChanged = pyqtSignal(str, bool, arguments=['pinName', 'value'])
+
     @pyqtProperty(str, notify=lockReasonChanged)
     def lockReason(self):
         self.mutex.lock()
@@ -84,9 +112,9 @@ class PersonalityBase(PersonalityStateMachine):
     def simGPIO(self):
         return self._simGPIO
 
-    
+
     def __init__(self, loglevel='WARNING', app=None):
-        
+
         self.logger = Logger(name='ratt.personality')
         self.logger.setLogLevelStr(loglevel)
 
@@ -137,29 +165,42 @@ class PersonalityBase(PersonalityStateMachine):
     # gpio initialization
     def __init_gpio(self):
         self._simGPIO = False
-        
+
         if not self.app.config.value('GPIO.Simulated'):
             self.gpio = GPIO.Controller()
         else:
             self.logger.warning('Using simulated GPIO')
             self.gpio = SimGPIO.Controller()
             self._simGPIO = True
-        
+
         self.pins_in = []
         self.pins_out = []
         self._init_gpio_pins()
 
         if self._simGPIO:
-            self.pins_out[0].pinChanged.connect(self.simGPIOPinChanged)
-            self.pins_out[1].pinChanged.connect(self.simGPIOPinChanged)
-            self.pins_out[2].pinChanged.connect(self.simGPIOPinChanged)
-            self.pins_out[3].pinChanged.connect(self.simGPIOPinChanged)
+            self.pins_out[0].pinChanged.connect(self.slotSimGPIOPinChanged)
+            self.pins_out[1].pinChanged.connect(self.slotSimGPIOPinChanged)
+            self.pins_out[2].pinChanged.connect(self.slotSimGPIOPinChanged)
+            self.pins_out[3].pinChanged.connect(self.slotSimGPIOPinChanged)
 
-            self.pin_led1.pinChanged.connect(self.simGPIOPinChanged)
-            self.pin_led2.pinChanged.connect(self.simGPIOPinChanged)
-            self.pin_shutdown.pinChanged.connect(self.simGPIOPinChanged)
+            self.pin_led1.pinChanged.connect(self.slotSimGPIOPinChanged)
+            self.pin_led2.pinChanged.connect(self.slotSimGPIOPinChanged)
+            self.pin_shutdown.pinChanged.connect(self.slotSimGPIOPinChanged)
 
         self.simGPIOChanged.emit()
+
+    @pyqtSlot(int, bool)
+    def slotSimGPIOPinChanged(self, pin, value):
+        if pin in self.pinToName:
+            pinName = self.pinToName[pin]
+            self.simGPIOPinChanged.emit(pinName, value)
+
+    @pyqtSlot(str, bool)
+    def slotSimGPIOChangePin(self, pinName, value):
+        if pinName in self.nameToPinObject:
+            self.nameToPinObject[pinName].set(value)
+        if pinName in self.nameToPin:
+            self.__pinchanged(self.nameToPin[pinName], value)
 
     # callback for when one of the application GPIO input pins has changed state
     # it wakes the thread with REASON_GPIO
@@ -225,6 +266,21 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.pin_powerpresent = self.gpio.alloc_pin(self.GPIO_PIN_POWER_PRESENT, GPIO.INPUT, self.__power_event, GPIO.BOTH)
         self.pin_charge_state = self.gpio.alloc_pin(self.GPIO_PIN_CHARGE_STATE, GPIO.INPUT)
+
+        self.nameToPinObject = {'SHUTDOWN' : self.pin_shutdown,
+                                'POWER_PRESENT' : self.pin_powerpresent,
+                                'CHARGE_STATE' : self.pin_charge_state,
+                                'LED1' : self.pin_led1,
+                                'LED2' : self.pin_led2,
+                                'IN0' : self.pins_in[0],
+                                'IN1' : self.pins_in[1],
+                                'IN2' : self.pins_in[2],
+                                'IN3' : self.pins_in[3],
+                                'OUT0' : self.pins_out[0],
+                                'OUT1' : self.pins_out[1],
+                                'OUT2' : self.pins_out[2],
+                                'OUT3' : self.pins_out[3]}
+
 
     # de-allocate the gpio pins, EXCEPT for the shutdown pin (because that would potentially turn RATT off)
     def __deinit_gpio_pins(self):
