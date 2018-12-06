@@ -51,27 +51,16 @@ from RFID import RFID
 from Logger import Logger
 import sys
 from commands import getoutput
-try:
-    import argparse
-    argParse = True
-except:
-    argParse = False
-
-class FakeArgs:
-    inifile = '/data/ratt/ratt.ini'
+import argparse
 
 class RattAppEngine(QQmlApplicationEngine):
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
+        parser = argparse.ArgumentParser(description='RATT Application (Personality state machine and GUI).')
+        parser.add_argument('--ini', dest='inifile', default='/data/ratt/ratt.ini', help='path to .ini file e.g. /tmp/ratt-test.ini, default is /data/ratt/ratt.ini')
 
-        if argParse:
-            parser = argparse.ArgumentParser(description='RATT Application (Personality state machine and GUI).')
-            parser.add_argument('--ini', dest='inifile', default='/data/ratt/ratt.ini', help='path to .ini file e.g. /tmp/ratt-test.ini, default is /data/ratt/ratt.ini')
-
-            args = parser.parse_args()
-        else:
-            args = FakeArgs()
+        args = parser.parse_args()
 
         # load the config
         self.config = RattConfig(inifile=args.inifile)
