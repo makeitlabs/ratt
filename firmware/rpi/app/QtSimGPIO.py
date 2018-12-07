@@ -66,7 +66,7 @@ ACTIVE_LOW_MODES = (ACTIVE_LOW_ON, ACTIVE_LOW_OFF)
 
 class Pin(QObject):
     pinChanged = pyqtSignal(int, bool, arguments=['pin', 'value'])
-    
+
     def __init__(self, number, direction, callback=None, edge=None, active_low=0):
         QObject.__init__(self)
         # @type  number: int
@@ -87,7 +87,7 @@ class Pin(QObject):
         self._active_low = active_low
 
         self._val = 0
-        
+
         if callback and not edge:
             raise Exception('You must supply a edge to trigger callback on')
 
@@ -118,8 +118,9 @@ class Pin(QObject):
 
     def set(self, value):
         self.pinChanged.emit(self._number, self._val)
-            
+
         self._val = value;
+        self.changed(value)
 
     def get (self):
         return int(self._val)

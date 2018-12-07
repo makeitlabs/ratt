@@ -37,8 +37,8 @@
 #
 
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
-from PersonalityBase import PersonalityBase
 from QtGPIO import LOW, HIGH
+from PersonalityBase import PersonalityBase
 
 class Personality(PersonalityBase):
     #############################################
@@ -57,6 +57,7 @@ class Personality(PersonalityBase):
     STATE_UNINITIALIZED = 'Uninitialized'
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
+    STATE_TOOL_NOT_POWERED = 'NotPowered'
     STATE_ACCESS_DENIED = 'AccessDenied'
     STATE_ACCESS_ALLOWED = 'AccessAllowed'
     STATE_RFID_ERROR = 'RFIDError'
@@ -91,6 +92,7 @@ class Personality(PersonalityBase):
         self.states = {self.STATE_UNINITIALIZED : self.stateUninitialized,
                        self.STATE_INIT : self.stateInit,
                        self.STATE_IDLE : self.stateIdle,
+                       self.STATE_TOOL_NOT_POWERED : self.stateToolNotPowered,
                        self.STATE_ACCESS_DENIED : self.stateAccessDenied,
                        self.STATE_ACCESS_ALLOWED : self.stateAccessAllowed,
                        self.STATE_RFID_ERROR : self.stateRFIDError,
@@ -114,6 +116,9 @@ class Personality(PersonalityBase):
 
         self._toolActiveFlag = False
 
+        self._performSafetyCheck = True
+        self._monitorToolPower = False
+
 
     # initialize gpio pins to a safe 'off' state
     def initPins(self):
@@ -136,6 +141,9 @@ class Personality(PersonalityBase):
     def toolActive(self):
         return (self.pins_in[0].get() == 0)
 
+    # returns true if the tool is currently powered up
+    def toolPowered(self):
+        return (self.pins_in[1].get() == 0)
 
     #############################################
     ## STATE_UNINITIALIZED
@@ -163,6 +171,10 @@ class Personality(PersonalityBase):
             return self.goActive()
 
         elif self.phACTIVE:
+
+            if self._monitorToolPower and not self.toolPowered():
+                return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED)
+
             if self.wakereason == self.REASON_TIMER:
                 if self.pin_led1.get() == LOW:
                     self.pin_led1.set(HIGH)
@@ -180,7 +192,6 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
 
-
             # otherwise thread goes back to waiting
             return False
 
@@ -189,6 +200,40 @@ class Personality(PersonalityBase):
             self.wakeOnTimer(False)
             self.wakeOnRFID(False)
             return self.goNextState()
+
+    #############################################
+    ## STATE_TOOL_NOT_POWERED
+    #############################################
+    def stateToolNotPowered(self):
+        if self.phENTER:
+            self.telemetryEvent.emit('personality/power', 'off')
+            self.pin_led1.set(HIGH)
+            self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_TIMER:
+                if self.pin_led1.get() == LOW:
+                    self.pin_led1.set(HIGH)
+                    self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
+                else:
+                    self.pin_led1.set(LOW)
+                    self.wakeOnTimer(enabled=True, interval=2500, singleShot=True)
+
+            elif self.wakereason == self.REASON_UI and self.uievent == 'ReportIssue':
+                return self.exitAndGoto(self.STATE_REPORT_ISSUE)
+
+            if self.toolPowered():
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            # otherwise thread goes back to waiting
+            return False
+
+        elif self.phEXIT:
+            self.telemetryEvent.emit('personality/power', 'on')
+            self.pin_led1.set(LOW)
+            return self.goNextState()
+
 
     #############################################
     ## STATE_RFID_ERROR
@@ -240,7 +285,11 @@ class Personality(PersonalityBase):
 
         elif self.phACTIVE:
             if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
-                return self.exitAndGoto(self.STATE_SAFETY_CHECK)
+                if self._performSafetyCheck:
+                    return self.exitAndGoto(self.STATE_SAFETY_CHECK)
+                else:
+                    self.enableTool()
+                    return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
 
             return False
 
@@ -319,6 +368,9 @@ class Personality(PersonalityBase):
                 else:
                     self.pin_led1.set(LOW)
 
+            if self._monitorToolPower and not self.toolPowered():
+                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+
             return False
 
         elif self.phEXIT:
@@ -340,6 +392,9 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_TOOL_ENABLED_ACTIVE)
 
             if self.wakereason == self.REASON_UI and self.uievent == 'ToolEnabledDone':
+                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+
+            if self._monitorToolPower and not self.toolPowered():
                 return self.exitAndGoto(self.STATE_TOOL_DISABLED)
 
             return False
@@ -372,6 +427,8 @@ class Personality(PersonalityBase):
     #############################################
     def stateReportIssue(self):
         if self.phENTER:
+            self.pin_led1.set(LOW)
+            self.pin_led2.set(LOW)
             self.wakeOnRFID(True)
             return self.goActive()
 

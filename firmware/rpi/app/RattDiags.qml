@@ -40,13 +40,13 @@ import QtQuick.Layouts 1.2
 import RATT 1.0
 
 Item {
-    property bool simShutdown: False
-    property bool simLED1: False
-    property bool simLED2: False
-    property bool simOUT1: False
-    property bool simOUT2: False
-    property bool simOUT3: False
-    property bool simOUT4: False
+    property bool simShutdown: false
+    property bool simLED1: false
+    property bool simLED2: false
+    property bool simOUT0: false
+    property bool simOUT1: false
+    property bool simOUT2: false
+    property bool simOUT3: false
 
     ColumnLayout {
         Label {
@@ -63,12 +63,11 @@ Item {
             }
         }
 
-
         Rectangle {
             id: personalityRect
             color: "#444499"
             width: 600
-            height: 100
+            height: 50
             border.width: 4
             border.color: "#000000"
 
@@ -76,26 +75,26 @@ Item {
                 target: personality
 
                 onSimGPIOPinChanged: {
-                    switch (pin) {
-                    case 27:
+                    switch (pinName) {
+                    case 'SHUTDOWN':
                         simShutdown = value;
                         break;
-                    case 500:
+                    case 'OUT0':
+                        simOUT0 = value;
+                        break;
+                    case 'OUT1':
                         simOUT1 = value;
                         break;
-                    case 501:
+                    case 'OUT2':
                         simOUT2 = value;
                         break;
-                    case 502:
+                    case 'OUT3':
                         simOUT3 = value;
                         break;
-                    case 503:
-                        simOUT4 = value;
-                        break;
-                    case 508:
+                    case 'LED1':
                         simLED1 = value;
                         break;
-                    case 509:
+                    case 'LED2':
                         simLED2 = value;
                         break;
                     }
@@ -117,119 +116,182 @@ Item {
                     font.pixelSize: 12
                     font.bold: true
                 }
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: simShutdown ? "orange" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "SHDN"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: !simLED1 ? "green" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "LED1"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: !simLED2 ? "red" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "LED2"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: simOUT1 ? "blue" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "OUT1"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: simOUT2 ? "blue" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "OUT2"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: simOUT3 ? "blue" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "OUT3"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-                    Rectangle {
-                        width: 40
-                        height: 20
-                        color: simOUT4 ? "blue" : "black"
-                        Label {
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            color: "white"
-                            text: "OUT4"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-
-
-
-
-
-                }
-
             }
         }
 
+
+        Rectangle {
+          id: simGPIORect
+          visible: personality.simGPIO
+          color: "#777777"
+          width: 600
+          height: personality.simGPIO ? 80 : 0
+          border.width: 4
+          border.color: "#000000"
+
+          ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 6
+
+            Label {
+                text: "Simulated GPIO"
+                color: "white"
+                font.pixelSize: 12
+                font.bold: true
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: simShutdown ? "orange" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "SHDN"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: !simLED1 ? "green" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "LED1"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: !simLED2 ? "red" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "LED2"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: simOUT0 ? "blue" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "OUT0"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: simOUT1 ? "blue" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "OUT1"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: simOUT2 ? "blue" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "OUT2"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                Rectangle {
+                    width: 40
+                    height: 20
+                    color: simOUT3 ? "blue" : "black"
+                    Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                        text: "OUT3"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+
+                CheckBox {
+                  text: 'POWER_PRESENT'
+                  height: 20
+                  onCheckedChanged: {
+                    personality.slotSimGPIOChangePin('POWER_PRESENT', checked);
+                  }
+                }
+                CheckBox {
+                  text: 'CHARGE_STATE'
+                  height: 20
+                  onCheckedChanged: {
+                    personality.slotSimGPIOChangePin('CHARGE_STATE', checked);
+                  }
+                }
+                CheckBox {
+                  text: 'IN0'
+                  height: 20
+                  onCheckedChanged: {
+                    personality.slotSimGPIOChangePin('IN0', checked);
+                  }
+                }
+                CheckBox {
+                  text: 'IN1'
+                  height: 20
+                  onCheckedChanged: {
+                    personality.slotSimGPIOChangePin('IN1', checked);
+                  }
+                }
+                CheckBox {
+                  text: 'IN2'
+                  height: 20
+                  onCheckedChanged: {
+                    personality.slotSimGPIOChangePin('IN2', checked);
+                  }
+                }
+                CheckBox {
+                  text: 'IN3'
+                  height: 20
+                  onCheckedChanged: {
+                    personality.slotSimGPIOChangePin('IN3', checked);
+                  }
+                }
+            }
+          }
+        }
 
         Rectangle {
             id: aclRect
@@ -365,7 +427,7 @@ Item {
                         TextInput {
                             id: rfidText
                             anchors.fill: parent
-                            text: "1234567890"
+                            text: config.RFID_SimulatedTag
                         }
                     }
                     Button {

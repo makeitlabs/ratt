@@ -50,8 +50,8 @@ from MqttClient import MqttClient
 from RFID import RFID
 from Logger import Logger
 import sys
-import argparse
 from commands import getoutput
+import argparse
 
 class RattAppEngine(QQmlApplicationEngine):
     def __init__(self):
@@ -201,5 +201,3 @@ class RattAppEngine(QQmlApplicationEngine):
         objs = self.rootObjects()
         if len(objs) == 1:
             QCoreApplication.postEvent(objs[0], evt)
-
-
