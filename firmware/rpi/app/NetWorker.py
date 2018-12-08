@@ -44,6 +44,7 @@ import logging
 import simplejson as json
 import hashlib
 from commands import getoutput
+import re
 
 class NetWorker(QObject):
     ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
@@ -134,12 +135,6 @@ class NetWorker(QObject):
             self.wifiStatus.emit(self.essid, self.ap, self.freq, self.quality, self.level)
             self.wifiStatusChanged.emit()
 
-    # ['wlan0', 'IEEE', '802.11', 'ESSID:"FooBar"', 'Mode:Managed', 'Frequency:2.412',
-    # 'GHz', 'Access', 'Point:', '00:11:22:33:44:55', 'Bit', 'Rate=65', 'Mb/s', 'Tx-Power=31',
-    # 'dBm', 'Retry', 'short', 'limit:7', 'RTS', 'thr:off', 'Fragment', 'thr:off', 'Power',
-    # 'Management:on', 'Link', 'Quality=43/70', 'Signal', 'level=-67', 'dBm', 'Rx', 'invalid',
-    # 'nwid:0', 'Rx', 'invalid', 'crypt:0', 'Rx', 'invalid', 'frag:0', 'Tx', 'excessive', 'retries:113',
-    # 'Invalid', 'misc:0', 'Missed', 'beacon:0']
     def getWifiStatus(self, res):
         try:
             iw = getoutput('/sbin/iwconfig %s' % self.ifcName)
@@ -147,7 +142,7 @@ class NetWorker(QObject):
             if 'No such device' or 'no wireless extensions' in iw:
                 res['quality'] = 75
                 res['level'] = -57
-                res['freq'] = '2.447 GHz'
+                res['freq'] = '2.447'
                 res['ap'] = '00:01:02:03:04:05'
                 res['essid'] = 'Simulator'
                 return True
@@ -157,7 +152,7 @@ class NetWorker(QObject):
             res['quality'] = int(n) * 100 / int(d)
             level = re.search('Signal level=[-]{0,1}[0-9]{0,3}', iw).group(0).split('=')[1]
             res['level'] = int(level)
-            res['freq'] = re.search('Frequency:.*?Hz', iw).group(0).split(':')[1]
+            res['freq'] = re.search('Frequency:.*?Hz', iw).group(0).split(':')[1].split(' ')[0]
             res['ap'] = re.search('Access Point: ([0-9A-Fa-f]{2}[:]{0,1}){6}', iw).group(0).split('Access Point: ')[1]
             res['essid'] = re.search('ESSID:\".[^"]*\"', iw).group(0).split(':')[1].replace('"', '')
 
