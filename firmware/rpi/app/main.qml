@@ -95,6 +95,7 @@ ApplicationWindow {
                     break;
                 case "ToolEnabledInactive":
                 case "ToolEnabledActive":
+                case "ToolEnabledNotPowered":
                     switchTo(viewEnabled);
                     break;
                 case "PowerLoss":

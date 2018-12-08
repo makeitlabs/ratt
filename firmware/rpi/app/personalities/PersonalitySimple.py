@@ -66,11 +66,11 @@ class Personality(PersonalityBase):
     STATE_SAFETY_CHECK_FAILED = 'SafetyCheckFailed'
     STATE_TOOL_ENABLED_INACTIVE = 'ToolEnabledInactive'
     STATE_TOOL_ENABLED_ACTIVE = 'ToolEnabledActive'
+    STATE_TOOL_ENABLED_NOT_POWERED = 'ToolEnabledNotPowered'
     STATE_TOOL_TIMEOUT_WARNING = 'ToolTimeoutWarning'
     STATE_TOOL_TIMEOUT = 'ToolTimeout'
     STATE_TOOL_DISABLED = 'ToolDisabled'
     STATE_REPORT_ISSUE = 'ReportIssue'
-
 
     toolActiveFlagChanged = pyqtSignal()
 
@@ -104,6 +104,7 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_ENABLED_ACTIVE : self.stateToolEnabledActive,
                        self.STATE_TOOL_TIMEOUT_WARNING : self.stateToolTimeoutWarning,
                        self.STATE_TOOL_TIMEOUT : self.stateToolTimeout,
+                       self.STATE_TOOL_ENABLED_NOT_POWERED : self.stateToolEnabledNotPowered,
                        self.STATE_TOOL_DISABLED : self.stateToolDisabled,
                        self.STATE_REPORT_ISSUE : self.stateReportIssue,
                        self.STATE_POWER_LOSS : self.statePowerLoss,
@@ -374,7 +375,7 @@ class Personality(PersonalityBase):
                     self.pin_led1.set(LOW)
 
             if self._monitorToolPower and not self.toolPowered():
-                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+                return self.exitAndGoto(self.STATE_TOOL_ENABLED_NOT_POWERED)
 
             return False
 
@@ -400,13 +401,31 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_TOOL_DISABLED)
 
             if self._monitorToolPower and not self.toolPowered():
-                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+                return self.exitAndGoto(self.STATE_TOOL_ENABLED_NOT_POWERED)
 
             return False
 
         elif self.phEXIT:
             self.pin_led1.set(LOW)
             return self.goNextState()
+
+    #############################################
+    ## STATE_TOOL_ENABLED_NOT_POWERED
+    #############################################
+    def stateToolEnabledNotPowered(self):
+        if self.phENTER:
+            self.disableTool()
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'ToolEnabledDone':
+                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
+
 
     #############################################
     ## STATE_TOOL_TIMEOUT_WARNING

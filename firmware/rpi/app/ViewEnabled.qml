@@ -55,7 +55,6 @@ View {
     property bool idleWarning: (idleSecs < idleWarningSecs)
     property bool idleTimeout: (idleSecs == 0)
 
-
     Connections {
         target: personality
         onToolActiveFlagChanged: {
@@ -66,7 +65,31 @@ View {
             if (isActive)
                 idleSecs = idleTimeoutSecs;
         }
+
+        function checkPersonalityState() {
+            var curState = personality.currentState;
+            var sp = curState.split(".");
+
+            if (sp.length >= 2) {
+                var state = sp[0];
+                var phase = sp[1];
+
+                if (state == "ToolEnabledNotPowered") {
+                    done('toolpower')
+                }
+            }
+        }
+
+        Component.onCompleted: {
+            checkPersonalityState();
+        }
+
+        onCurrentStateChanged: {
+            checkPersonalityState();
+        }
+
     }
+
 
     function _show() {
         status.setKeyActives(true, false, false, false);
@@ -78,12 +101,14 @@ View {
         sound.enableAudio.play();
     }
 
+    function _hide() {
+    }
+
     function keyEscape(pressed) {
         if (!personality.toolActiveFlag && pressed) {
           done('explicit');
         }
     }
-
 
     function done(reason) {
         sound.disableAudio.play();
