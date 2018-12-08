@@ -115,6 +115,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
         # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
         self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'),
+                                    ifcName=self.config.value('General.NetworkInterfaceName'),
                                     mqtt=self._mqtt)
 
         self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
@@ -147,10 +148,14 @@ class RattAppEngine(QQmlApplicationEngine):
         self._rfid.monitor()
 
         # Initialize and connect MQTT client
+        nid = self.config.value('MQTT.NodeId')
+        if nid is None:
+            nid = self._netWorker.currentHwAddr.lower().replace(':', '')
+
         self._mqtt.init_client(hostname=self.config.value('MQTT.BrokerHost'),
                                port=self.config.value('MQTT.BrokerPort'),
                                reconnectTime=self.config.value('MQTT.ReconnectTime'),
-                               nodeId=self._netWorker.currentHwAddr.lower().replace(':', ''),
+                               nodeId=nid,
                                sslEnabled=self.config.value('SSL.Enabled'),
                                caCertFile=self.config.value('SSL.CaCertFile'),
                                clientCertFile=self.config.value('SSL.ClientCertFile'),
