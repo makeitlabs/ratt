@@ -80,6 +80,10 @@ class PersonalityStateMachine(QThread):
     STATE_SHUT_DOWN = 'ShutDown'
     STATE_LOCK_OUT = 'LockOut'
 
+    # this list should be populated by the inheriting class with the valid states that allow immediate lockout
+    # at a minimum it's usually the idle state .. it's left empty here
+    validLockoutStates = []
+
     stateChanged = pyqtSignal(str, str, name='stateChanged', arguments=['state', 'phase'])
     pinChanged = pyqtSignal(int, int, name='pinChanged', arguments=['pin', 'state'])
 
@@ -171,7 +175,7 @@ class PersonalityStateMachine(QThread):
                 if self.state == self.STATE_LOCK_OUT:
                     self.exitAndGoto(self.STATE_INIT)
 
-            if self.lockoutPending and self.state == self.STATE_IDLE:
+            if self.lockoutPending and self.state in self.validLockoutStates:
                 self.telemetryEvent.emit('personality/lockout', 'locked')
                 self.lockoutPending = False;
                 self.exitAndGoto(self.STATE_LOCK_OUT)

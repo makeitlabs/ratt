@@ -71,6 +71,7 @@ class Personality(PersonalityBase):
     STATE_TOOL_DISABLED = 'ToolDisabled'
     STATE_REPORT_ISSUE = 'ReportIssue'
 
+
     toolActiveFlagChanged = pyqtSignal()
 
     @pyqtProperty(bool, notify=toolActiveFlagChanged)
@@ -109,6 +110,10 @@ class Personality(PersonalityBase):
                        self.STATE_SHUT_DOWN : self.stateShutDown,
                        self.STATE_LOCK_OUT : self.stateLockOut
                        }
+
+        # allow lockout to happen immediately when idle or not powered .. otherwise lockout pends
+        # until one of these states is reached, so that active use will not be disrupted
+        self.validLockoutStates = [self.STATE_IDLE, self.STATE_TOOL_NOT_POWERED]
 
         # Set initial state and phase
         self.state = self.STATE_UNINITIALIZED
