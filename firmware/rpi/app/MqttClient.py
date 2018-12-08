@@ -180,12 +180,15 @@ class MqttClient(QThread):
             self._protocol_version = protocolVersion
             self.protocolVersionChanged.emit(protocolVersion)
 
-    def publish(self, topic=None, subtopic=None, msg=None):
+    def publish(self, topic=None, subtopic=None, msg=None, qos=2, retain=False):
+        # "subtopic" is a shortcut way of not having to supply the prefix part of the topic
+        # for RATT; generally all messages should be published with this prefix
         if topic is None and subtopic is not None:
             t = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_STATUS + '/' + self._node_id + '/' + subtopic
-            self._client.publish(t, msg)
         else:
-            self._client.publish(topic, msg)
+            t = topic
+
+        self._client.publish(t, payload=msg, qos=qos, retain=retain)
 
     @pyqtSlot(str, str)
     def slotPublishSubtopic(self, subtopic, msg):
