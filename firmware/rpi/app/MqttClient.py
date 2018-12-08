@@ -116,9 +116,6 @@ class MqttClient(QThread):
             except:
                 self.logger.error('Unknown error loading SSL certificates.')
 
-        else:
-            self._client.tls_set(ca_certs=None, certfile=None, keyfile=None)
-
         self.logger.info('MQTT client initialized, broker host is ' + self._hostname + ':' + str(self._port))
         self.connectToBroker()
 
