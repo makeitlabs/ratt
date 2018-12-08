@@ -208,16 +208,17 @@ class MqttClient(QThread):
                 try:
                     self.logger.info('client connecting to ' + self._hostname + ':' + str(self._port))
                     self.state = MqttClient.Connecting
-                    self._client.loop_start()
                     self._client.reconnect_delay_set(min_delay=1, max_delay=30)
                     self._client.connect(self._hostname, port=self._port, keepalive=self._keepalive)
                 except:
                     self.logger.info('could not connect, retrying in ' + str(self._reconnect_time / 1000) + ' seconds')
                     self.state = MqttClient.Disconnected
+                    self.msleep(self._reconnect_time)
 
-            self.msleep(self._reconnect_time)
+            self._client.loop(timeout=1.0)
 
-        self.logger.info("thread quit")
+
+        self.logger.info("thread done")
 
     @pyqtSlot()
     def disconnectFromBroker(self):
