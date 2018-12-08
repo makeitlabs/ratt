@@ -163,6 +163,7 @@ class RattConfig(QObject):
 
         self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
+        self.addConfig('General', 'NetworkInterfaceName', 'wlan0')
 
         self.addConfigBool('GPIO', 'Simulated', False)
 
@@ -189,6 +190,7 @@ class RattConfig(QObject):
         self.addConfigInt('MQTT', 'BrokerPort')
         self.addConfigInt('MQTT', 'ReconnectTime')
         self.addConfig('MQTT', 'BaseTopic')
+        self.addConfig('MQTT', 'NodeId', None)
 
         self.addConfig('Telemetry', 'LogLevel', 'INFO')
         self.addConfig('Telemetry', 'EventUrl')
