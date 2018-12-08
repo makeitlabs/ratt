@@ -380,6 +380,14 @@ View {
         }
         Label {
             Layout.fillWidth: true
+            text: "AP: " + netWorker.currentWifiAP
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
+        Label {
+            Layout.fillWidth: true
             text: "IP: " + netWorker.currentIfcAddr
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 10

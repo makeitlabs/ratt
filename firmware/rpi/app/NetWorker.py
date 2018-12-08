@@ -48,7 +48,7 @@ from commands import getoutput
 class NetWorker(QObject):
     ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
     currentIfcAddrChanged = pyqtSignal()
-    wifiStatus = pyqtSignal(str, str, int, int, name='wifiStatus', arguments=['essid', 'freq', 'quality', 'level'])
+    wifiStatus = pyqtSignal(str, str, str, int, int, name='wifiStatus', arguments=['essid', 'ap', 'freq', 'quality', 'level'])
     wifiStatusChanged = pyqtSignal()
 
     @pyqtProperty(str, notify=currentIfcAddrChanged)
@@ -62,6 +62,10 @@ class NetWorker(QObject):
     @pyqtProperty(str, notify=wifiStatusChanged)
     def currentWifiESSID(self):
         return self.essid
+
+    @pyqtProperty(str, notify=wifiStatusChanged)
+    def currentWifiAP(self):
+        return self.ap
 
     @pyqtProperty(str, notify=wifiStatusChanged)
     def currentWifiFreq(self):
@@ -103,6 +107,7 @@ class NetWorker(QObject):
         self.statusTimer.start(15000)
 
         self.essid = ''
+        self.ap = ''
         self.freq = ''
         self.quality = 0
         self.level = 0
@@ -122,12 +127,12 @@ class NetWorker(QObject):
         results = { }
         if self.getWifiStatus(results):
             self.essid = results['essid']
+            self.ap = results['ap']
             self.freq = results['freq']
             self.quality = results['quality']
             self.level = results['level']
-            self.wifiStatus.emit(self.essid, self.freq, self.quality, self.level)
+            self.wifiStatus.emit(self.essid, self.ap, self.freq, self.quality, self.level)
             self.wifiStatusChanged.emit()
-
 
     # ['wlan0', 'IEEE', '802.11', 'ESSID:"FooBar"', 'Mode:Managed', 'Frequency:2.412',
     # 'GHz', 'Access', 'Point:', '00:11:22:33:44:55', 'Bit', 'Rate=65', 'Mb/s', 'Tx-Power=31',
@@ -139,27 +144,23 @@ class NetWorker(QObject):
         try:
             iw = getoutput('/sbin/iwconfig %s' % self.ifcName)
 
-            if 'No such device' in iw:
+            if 'No such device' or 'no wireless extensions' in iw:
+                res['quality'] = 75
+                res['level'] = -57
+                res['freq'] = '2.447 GHz'
+                res['ap'] = '00:01:02:03:04:05'
                 res['essid'] = 'Simulator'
-                res['freq'] = '0.0'
-                res['quality'] = '0'
-                res['level'] = '100'
                 return True
 
-            fields = iw.split()
+            qualityFrac = re.search('Link Quality=[0-9]{0,3}/[0-9]{0,3}', iw).group(0).split('=')[1]
+            (n, d) = qualityFrac.split('/')
+            res['quality'] = int(n) * 100 / int(d)
+            level = re.search('Signal level=[-]{0,1}[0-9]{0,3}', iw).group(0).split('=')[1]
+            res['level'] = int(level)
+            res['freq'] = re.search('Frequency:.*?Hz', iw).group(0).split(':')[1]
+            res['ap'] = re.search('Access Point: ([0-9A-Fa-f]{2}[:]{0,1}){6}', iw).group(0).split('Access Point: ')[1]
+            res['essid'] = re.search('ESSID:\".[^"]*\"', iw).group(0).split(':')[1].replace('"', '')
 
-            for field in fields:
-                if field.find('ESSID') != -1:
-                    res['essid'] = field.split('"')[1]
-                elif field.find('Frequency') != -1:
-                    res['freq'] = field.split(':')[1]
-                elif field.find('Quality') != -1:
-                    frac = field.split('=')[1]
-                    (n, d) = frac.split('/')
-                    q = int(n)*100 / int(d)
-                    res['quality'] = q
-                elif field.find('level') != -1:
-                    res['level'] = int(field.split('=')[1])
         except:
             return False
 
@@ -281,9 +282,10 @@ class NetWorker(QObject):
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
 
-    def slotWifiStatus(self, essid, freq, quality, level):
-        self.logger.debug("WIFI STATUS %s %sGHz quality=%d%% level=%ddBm" % (essid, freq, quality, level))
+    def slotWifiStatus(self, essid, ap, freq, quality, level):
+        self.logger.debug("WIFI STATUS %s %s %s quality=%d%% level=%ddBm" % (essid, ap, freq, quality, level))
         self._mqtt.publish(subtopic='wifi/essid', msg=essid)
+        self._mqtt.publish(subtopic='wifi/ap', msg=ap)
         self._mqtt.publish(subtopic='wifi/freq', msg=freq)
         self._mqtt.publish(subtopic='wifi/quality', msg=quality)
         self._mqtt.publish(subtopic='wifi/level', msg=level)
