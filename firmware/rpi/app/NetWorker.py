@@ -139,7 +139,7 @@ class NetWorker(QObject):
         try:
             iw = getoutput('/sbin/iwconfig %s' % self.ifcName)
 
-            if 'No such device' or 'no wireless extensions' in iw:
+            if ('No such device' in iw) or ('no wireless extensions' in iw):
                 res['quality'] = 75
                 res['level'] = -57
                 res['freq'] = '2.447'
