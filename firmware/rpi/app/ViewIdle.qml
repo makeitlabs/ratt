@@ -148,7 +148,7 @@ View {
 
     Timer {
         id: animTimer
-        interval: isToolPowered ? 3000 : 1500
+        interval: 2500
         running: true
         repeat: true
         onTriggered: {
@@ -176,6 +176,13 @@ View {
 
         Image {
             Layout.fillWidth: true
+            visible: !isToolPowered
+            source: "images/bed.png"
+            fillMode: Image.PreserveAspectFit
+        }
+        Image {
+            Layout.fillWidth: true
+            visible: isToolPowered
             source: "images/makeit_logo_150.png"
             fillMode: Image.PreserveAspectFit
         }
@@ -186,7 +193,16 @@ View {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
             font.weight: Font.DemiBold
-            color: "#000000"
+            color: "#000088"
+        }
+        Label {
+            visible: !isToolPowered
+            Layout.fillWidth: true
+            text: "POWERED OFF"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 14
+            font.weight: Font.Bold
+            color: "#990000"
         }
 
     }
@@ -196,68 +212,56 @@ View {
         anchors.fill: parent
         anchors.margins: 4
 
-        RowLayout {
+        Image {
+          visible: isToolPowered
+          source: "images/rfidlogo.png"
+          Layout.fillWidth: true
+          Layout.preferredHeight: 50
+          fillMode: Image.PreserveAspectFit
+        }
+        Label {
           visible: isToolPowered
           Layout.fillWidth: true
-          Layout.fillHeight: true
-          Layout.topMargin: 10
-
-          Image {
-              source: "images/rfid_card.png"
-              fillMode: Image.PreserveAspectFit
-          }
-
-          ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Label {
-                Layout.fillWidth: true
-                text: "Scan RFID"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignTop
-                font.pixelSize: 14
-                font.weight: Font.Bold
-                color: "#000077"
-            }
-            Label {
-                Layout.fillWidth: true
-                text: "Tag Below"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignTop
-                font.pixelSize: 14
-                font.weight: Font.Bold
-                color: "#000077"
-            }
-          }
+          text: "Scan RFID Tag Below"
+          horizontalAlignment: Text.AlignHCenter
+          font.pixelSize: 12
+          font.weight: Font.Bold
+          color: "#000077"
         }
 
-        Image {
-            Layout.fillWidth: true
-            visible: !isToolPowered
-            source: "images/bed.png"
-            fillMode: Image.PreserveAspectFit
-        }
-
-        Rectangle {
-            color: "transparent"
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-        }
         Label {
             visible: !isToolPowered
             Layout.fillWidth: true
-            text: "TOOL POWERED OFF"
+            text: "POWERED OFF"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 13
+            font.pixelSize: 14
             font.weight: Font.Bold
-            color: "#770000"
+            color: "#990000"
         }
         Label {
             visible: !isToolPowered
             Layout.fillWidth: true
-            text: "POWER ON BEFORE SCAN"
+            text: "Turn on power"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 10
+            font.pixelSize: 12
+            font.weight: Font.Bold
+            color: "#222222"
+        }
+        Label {
+            visible: !isToolPowered
+            Layout.fillWidth: true
+            text: "before you scan"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 12
+            font.weight: Font.Bold
+            color: "#222222"
+        }
+        Label {
+            visible: !isToolPowered
+            Layout.fillWidth: true
+            text: "your RFID tag."
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 12
             font.weight: Font.Bold
             color: "#222222"
         }
@@ -322,7 +326,7 @@ View {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
             font.weight: Font.DemiBold
-            color: "#770000"
+            color: "#888800"
         }
 
         RowLayout {
@@ -347,7 +351,7 @@ View {
             Layout.fillWidth: true
             Label {
                 Layout.fillWidth: true
-                text: "HOLD DOWN"
+                text: "Hold down yellow"
                 horizontalAlignment: Text.AlignLeft
                 font.pixelSize: 12
                 font.weight: Font.Bold
@@ -355,7 +359,7 @@ View {
             }
             Label {
                 Layout.fillWidth: true
-                text: "YELLOW BUTTON"
+                text: "button for menu."
                 horizontalAlignment: Text.AlignLeft
                 font.pixelSize: 12
                 font.weight: Font.Bold
