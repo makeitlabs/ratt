@@ -240,6 +240,7 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
             if self.toolPowered():
+                self.telemetryEvent.emit('personality/power', 'on')
                 return self.exitAndGoto(self.STATE_IDLE)
 
             # otherwise thread goes back to waiting
@@ -247,7 +248,6 @@ class Personality(PersonalityBase):
 
         elif self.phEXIT:
             self.wakeOnTimer(enabled=False)
-            self.telemetryEvent.emit('personality/power', 'on')
             self.pin_led1.set(LOW)
             return self.goNextState()
 
