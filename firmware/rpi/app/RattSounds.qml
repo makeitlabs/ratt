@@ -47,6 +47,9 @@ Item {
     property alias disableAudio: disableAudio
     property alias timeoutWarningAudio: timeoutWarningAudio
     property alias reportSuccessAudio: reportSuccessAudio
+    property alias rfidSuccessAudio: rfidSuccessAudio
+    property alias rfidFailureAudio: rfidFailureAudio
+    property alias rfidErrorAudio: rfidErrorAudio
 
     Component.onCompleted: {
       if (config.Sound_EnableSilenceLoop) {
@@ -98,23 +101,5 @@ Item {
     SoundEffect {
         id: reportSuccessAudio
         source: config.Sound_ReportSuccess
-    }
-
-    Connections {
-        target: personality
-        onValidScan: {
-            if (personality.currentState === "Idle.ACTIVE") {
-                if (record.allowed) {
-                    rfidSuccessAudio.play();
-                } else {
-                    rfidFailureAudio.play();
-                }
-            }
-        }
-        onInvalidScan: {
-            if (personality.currentState === "Idle.ACTIVE") {
-                rfidErrorAudio.play();
-            }
-        }
     }
 }
