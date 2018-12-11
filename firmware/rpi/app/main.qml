@@ -79,6 +79,9 @@ ApplicationWindow {
                 case "NotPowered":
                     switchTo(viewIdle);
                     break;
+                case "NotPoweredDenied":
+                    switchTo(viewAccess);
+                    break;
                 case "AccessAllowed":
                 case "AccessDenied":
                 case "RFIDError":

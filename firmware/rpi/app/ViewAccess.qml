@@ -44,22 +44,41 @@ View {
     name: "Access"
 
     property bool scrollReason: false
+    property bool valid: false
+    property bool allowed: false
+    property string warningText: ""
     property string failureReason: ""
 
     function _show() {
-        if (activeMemberRecord.valid && activeMemberRecord.allowed) {
-            // valid and allowed, only briefly show the allowed screen
-            showTimer.interval = 1000;
-            showTimer.start();
-        } else if (activeMemberRecord.valid && !activeMemberRecord.allowed) {
-            // valid but denied, pause and then run the scrolling animation for the reason text
-            scrollReason = false;
-            delayTimer.start();
-            showTimer.interval = 1500;
+
+        valid = activeMemberRecord.valid;
+        allowed = activeMemberRecord.allowed;
+        warningText = activeMemberRecord.warningText;
+
+        var curState = personality.currentState;
+        if (curState.startsWith("NotPoweredDenied")) {
+          allowed = false;
+          warningText = "Tool is not powered.  Please turn on the tool before scanning your RFID tag."
+          scrollReason = false;
+          showTimer.interval = 1500;
+          delayTimer.start();
+          sound.rfidFailureAudio.play();
+        } else if (valid && allowed) {
+          // valid and allowed, only briefly show the allowed screen
+          showTimer.interval = 1000;
+          showTimer.start();
+          sound.rfidSuccessAudio.play();
+        } else if (valid && !allowed) {
+          // valid but denied, pause and then run the scrolling animation for the reason text
+          scrollReason = false;
+          delayTimer.start();
+          showTimer.interval = 1500;
+          sound.rfidFailureAudio.play();
         } else {
-            // RFID error, show it for a medium time period
-            showTimer.interval = 2500;
-            showTimer.start();
+          // RFID error, show it for a medium time period
+          showTimer.interval = 2500;
+          showTimer.start();
+          sound.rfidErrorAudio.play();
         }
     }
 
@@ -96,13 +115,13 @@ View {
 
     Rectangle {
         anchors.fill: parent
-        color: activeMemberRecord.allowed ? "#009900" : "#990000"
+        color: allowed ? "#009900" : "#990000"
         visible: shown
 
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 4
-            visible: activeMemberRecord.valid && activeMemberRecord.allowed
+            visible: valid && allowed
 
             Item {
               Layout.fillWidth: true
@@ -166,7 +185,7 @@ View {
             id: colDenied
             anchors.fill: parent
             anchors.margins: 4
-            visible: activeMemberRecord.valid && !activeMemberRecord.allowed
+            visible: valid && !allowed
 
             Label {
                 Layout.fillWidth: true
@@ -188,7 +207,7 @@ View {
                     id: reasonText
                     width: sv.width
                     Layout.fillHeight: true
-                    text: activeMemberRecord.warningText
+                    text: warningText
                     font.pixelSize: 14
                     font.weight: Font.DemiBold
                     wrapMode: Text.Wrap
@@ -217,7 +236,7 @@ View {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 4
-            visible: !activeMemberRecord.valid
+            visible: !valid
 
             Label {
                 Layout.fillWidth: true

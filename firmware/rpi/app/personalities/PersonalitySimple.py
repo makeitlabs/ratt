@@ -58,6 +58,7 @@ class Personality(PersonalityBase):
     STATE_INIT = 'Init'
     STATE_IDLE = 'Idle'
     STATE_TOOL_NOT_POWERED = 'NotPowered'
+    STATE_TOOL_NOT_POWERED_DENIED = 'NotPoweredDenied'
     STATE_ACCESS_DENIED = 'AccessDenied'
     STATE_ACCESS_ALLOWED = 'AccessAllowed'
     STATE_RFID_ERROR = 'RFIDError'
@@ -94,6 +95,7 @@ class Personality(PersonalityBase):
                        self.STATE_INIT : self.stateInit,
                        self.STATE_IDLE : self.stateIdle,
                        self.STATE_TOOL_NOT_POWERED : self.stateToolNotPowered,
+                       self.STATE_TOOL_NOT_POWERED_DENIED : self.stateToolNotPoweredDenied,
                        self.STATE_ACCESS_DENIED : self.stateAccessDenied,
                        self.STATE_ACCESS_ALLOWED : self.stateAccessAllowed,
                        self.STATE_RFID_ERROR : self.stateRFIDError,
@@ -214,6 +216,7 @@ class Personality(PersonalityBase):
         if self.phENTER:
             self.telemetryEvent.emit('personality/power', 'off')
             self.pin_led1.set(HIGH)
+            self.wakeOnRFID(True)
             self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
             return self.goActive()
 
@@ -226,6 +229,13 @@ class Personality(PersonalityBase):
                     self.pin_led1.set(LOW)
                     self.wakeOnTimer(enabled=True, interval=2500, singleShot=True)
 
+            elif (self.wakereason == self.REASON_RFID_ALLOWED):
+                return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED_DENIED)
+            elif self.wakereason == self.REASON_RFID_DENIED:
+                return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED_DENIED)
+            elif self.wakereason == self.REASON_RFID_ERROR:
+                return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED_DENIED)
+
             elif self.wakereason == self.REASON_UI and self.uievent == 'ReportIssue':
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
@@ -236,9 +246,28 @@ class Personality(PersonalityBase):
             return False
 
         elif self.phEXIT:
+            self.wakeOnTimer(enabled=False)
             self.telemetryEvent.emit('personality/power', 'on')
             self.pin_led1.set(LOW)
             return self.goNextState()
+
+    #############################################
+    ## STATE_TOOL_NOT_POWERED_DENIED
+    #############################################
+    def stateToolNotPoweredDenied(self):
+        if self.phENTER:
+            self.pin_led2.set(HIGH)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
+                return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED)
+            return False
+
+        elif self.phEXIT:
+            self.pin_led2.set(LOW)
+            return self.goNextState()
+
 
 
     #############################################
