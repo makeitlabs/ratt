@@ -168,7 +168,7 @@ class PersonalityStateMachine(QThread):
                 self.telemetryEvent.emit('personality/lockout', 'pending')
 
             if self.wakereason is self.REASON_LOCK_OUT_CANCELED:
-                if self.lockoutPending:
+                if self.lockoutPending or self.state == self.STATE_LOCK_OUT:
                     self.telemetryEvent.emit('personality/lockout', 'unlocked')
 
                 self.lockoutPending = False
