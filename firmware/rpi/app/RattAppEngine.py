@@ -156,7 +156,7 @@ class RattAppEngine(QQmlApplicationEngine):
                                port=self.config.value('MQTT.BrokerPort'),
                                reconnectTime=self.config.value('MQTT.ReconnectTime'),
                                nodeId=nid,
-                               sslEnabled=self.config.value('SSL.Enabled'),
+                               sslEnabled=self.config.value('MQTT.SSL'),
                                caCertFile=self.config.value('SSL.CaCertFile'),
                                clientCertFile=self.config.value('SSL.ClientCertFile'),
                                clientKeyFile=self.config.value('SSL.ClientKeyFile'))

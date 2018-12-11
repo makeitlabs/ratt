@@ -185,6 +185,7 @@ class RattConfig(QObject):
         self.addConfig('Auth', 'AclUrl')
         self.addConfig('Auth', 'AclCacheFile')
 
+        self.addConfig('MQTT', 'SSL', False)
         self.addConfig('MQTT', 'LogLevel', 'INFO')
         self.addConfig('MQTT', 'BrokerHost')
         self.addConfigInt('MQTT', 'BrokerPort')
