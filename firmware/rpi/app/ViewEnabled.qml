@@ -112,7 +112,15 @@ View {
 
     function done(reason) {
         sound.disableAudio.play();
-        appWindow.mqttPublishSubtopicEvent('personality/logout', reason + ' ' + activeMemberRecord.name + ' ' + enabledSecs + ' ' + activeSecs + ' ' + (enabledSecs - activeSecs))
+        // TODO emit a telemetry event instead
+
+        var jo = {reason: reason,
+                  member: activeMemberRecord.name,
+                  enabledSecs: enabledSecs,
+                  activeSecs: activeSecs,
+                  idleSecs: (enabledSecs - activeSecs)
+                  };
+        appWindow.mqttPublishSubtopicEvent('personality/logout', JSON.stringify(jo));
         appWindow.uiEvent('ToolEnabledDone');
     }
 

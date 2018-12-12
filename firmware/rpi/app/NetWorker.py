@@ -134,6 +134,7 @@ class NetWorker(QObject):
             self.level = results['level']
             self.wifiStatus.emit(self.essid, self.ap, self.freq, self.quality, self.level)
             self.wifiStatusChanged.emit()
+            self._mqtt.publish(subtopic='wifi/status', msg=json.dumps(results))
 
     def getWifiStatus(self, res):
         try:
@@ -279,11 +280,6 @@ class NetWorker(QObject):
 
     def slotWifiStatus(self, essid, ap, freq, quality, level):
         self.logger.debug("WIFI STATUS %s %s %s quality=%d%% level=%ddBm" % (essid, ap, freq, quality, level))
-        self._mqtt.publish(subtopic='wifi/essid', msg=essid)
-        self._mqtt.publish(subtopic='wifi/ap', msg=ap)
-        self._mqtt.publish(subtopic='wifi/freq', msg=freq)
-        self._mqtt.publish(subtopic='wifi/quality', msg=quality)
-        self._mqtt.publish(subtopic='wifi/level', msg=level)
 
     def slotIfcAddrChanged(self, ipStr):
         self.logger.debug("IP CHANGED %s" % ipStr)

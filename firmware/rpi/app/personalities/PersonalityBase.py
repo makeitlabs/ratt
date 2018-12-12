@@ -43,6 +43,7 @@ from Logger import Logger
 from RFID import RFID
 from MemberRecord import MemberRecord
 import copy
+import simplejson as json
 
 import QtGPIO as GPIO
 import QtSimGPIO as SimGPIO
@@ -399,8 +400,8 @@ class PersonalityBase(PersonalityStateMachine):
             state = self.state
             phase = self.phaseName(self.statePhase)
             self.mutex.unlock()
-            self.app.mqtt.publish(subtopic='personality/state', msg=state + '.' + phase)
+            self.__slotStateChanged(state, phase)
 
     @pyqtSlot(str, str)
     def __slotStateChanged(self, state, phase):
-        self.app.mqtt.publish(subtopic='personality/state', msg=state + '.' + phase)
+        self.telemetryEvent.emit('personality/state', json.dumps({ 'state': state, 'phase': phase}))

@@ -39,6 +39,7 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from QtGPIO import LOW, HIGH
 from PersonalityBase import PersonalityBase
+import simplejson as json
 
 class Personality(PersonalityBase):
     #############################################
@@ -214,7 +215,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolNotPowered(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/power', 'off')
+            self.telemetryEvent.emit('personality/power', json.dumps({'powered': False}))
             self.pin_led1.set(HIGH)
             self.wakeOnRFID(True)
             self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
@@ -240,7 +241,7 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
             if self.toolPowered():
-                self.telemetryEvent.emit('personality/power', 'on')
+                self.telemetryEvent.emit('personality/power', json.dumps({'powered': True}))
                 return self.exitAndGoto(self.STATE_IDLE)
 
             # otherwise thread goes back to waiting
@@ -275,7 +276,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateRFIDError(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/login', 'error ' + self._rfidErrorReason)
+            self.telemetryEvent.emit('personality/login', json.dumps({'error': True, 'errorText': self._rfidErrorReason}))
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -294,7 +295,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessDenied(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/login', 'denied ' + self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/login', json.dumps({'allowed': False, 'member': self.activeMemberRecord.name}))
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -314,7 +315,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateAccessAllowed(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/login', 'allowed ' + self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/login', json.dumps({'allowed': True, 'member': self.activeMemberRecord.name}))
             self.pin_led1.set(HIGH)
             return self.goActive()
 
@@ -369,7 +370,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateSafetyCheckFailed(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/error', 'safety ' + self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/safety', json.dumps({'reason':'Safety check failed', 'member': self.activeMemberRecord.name}))
             self.pin_led2.set(HIGH)
             return self.goActive()
 
@@ -388,7 +389,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledActive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/activity', 'active ' + self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/activity', json.dumps({'active ': True, 'member': self.activeMemberRecord.name}))
             self.toolActiveFlag = True
             self.wakeOnTimer(enabled=True, interval=250, singleShot=False)
             return self.goActive()
@@ -417,7 +418,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledInactive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/activity', 'inactive ' + self.activeMemberRecord.name)
+            self.telemetryEvent.emit('personality/activity', json.dumps({'active ': False, 'member': self.activeMemberRecord.name}))
             self.toolActiveFlag = False
             self.pin_led1.set(HIGH)
             return self.goActive()
@@ -501,7 +502,7 @@ class Personality(PersonalityBase):
     #############################################
     def statePowerLoss(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/power', 'lost')
+            self.telemetryEvent.emit('system/power', json.dumps({'state': 'lost'}))
             self.initPins()
             return self.goActive()
 
@@ -509,10 +510,10 @@ class Personality(PersonalityBase):
             # wait until the UI signals that it is time to shut down (countdown timer)
             # or abort and re-initialize if power comes back before then
             if self.wakereason == self.REASON_UI and self.uievent == 'PowerLossDone':
-                self.telemetryEvent.emit('personality/power', 'shutdown')
+                self.telemetryEvent.emit('system/power', json.dumps({'state': 'shutdown'}))
                 return self.exitAndGoto(self.STATE_SHUT_DOWN)
             elif self.wakereason == self.REASON_POWER_RESTORED:
-                self.telemetryEvent.emit('personality/power', 'restored')
+                self.telemetryEvent.emit('system/power', json.dumps({'state': 'restored'}))
                 return self.exitAndGoto(self.STATE_INIT)
 
             return False

@@ -77,8 +77,9 @@ View {
     }
 
     function done() {
-        appWindow.mqttPublishSubtopicEvent('system/issue', activeMemberRecord.name + " " + currentIssue)
-        appWindow.uiEvent('ReportIssueDone');
+      var jo = { issue: currentIssue, member: activeMemberRecord.name }
+      appWindow.mqttPublishSubtopicEvent('system/issue', JSON.stringify(jo))
+      appWindow.uiEvent('ReportIssueDone');
     }
 
     function keyEscape(pressed) {

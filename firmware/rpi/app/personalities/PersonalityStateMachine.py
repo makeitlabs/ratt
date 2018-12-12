@@ -39,6 +39,7 @@
 from PyQt5.QtCore import QThread, QMutex, QWaitCondition, QTimer
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from Logger import Logger
+import simplejson as json
 
 class PersonalityStateMachine(QThread):
     # state phases
@@ -165,18 +166,18 @@ class PersonalityStateMachine(QThread):
 
             if self.wakereason is self.REASON_LOCK_OUT:
                 self.lockoutPending = True
-                self.telemetryEvent.emit('personality/lockout', 'pending')
+                self.telemetryEvent.emit('personality/lockout', json.dumps({'state': 'pending', 'reason': self._lockReason}))
 
             if self.wakereason is self.REASON_LOCK_OUT_CANCELED:
                 if self.lockoutPending or self.state == self.STATE_LOCK_OUT:
-                    self.telemetryEvent.emit('personality/lockout', 'unlocked')
+                    self.telemetryEvent.emit('personality/lockout', json.dumps({'state': 'unlocked'}))
 
                 self.lockoutPending = False
                 if self.state == self.STATE_LOCK_OUT:
                     self.exitAndGoto(self.STATE_INIT)
 
             if self.lockoutPending and self.state in self.validLockoutStates:
-                self.telemetryEvent.emit('personality/lockout', 'locked')
+                self.telemetryEvent.emit('personality/lockout', json.dumps({'state': 'locked', 'reason': self._lockReason}))
                 self.lockoutPending = False;
                 self.exitAndGoto(self.STATE_LOCK_OUT)
 
