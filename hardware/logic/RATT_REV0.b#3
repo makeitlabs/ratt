@@ -58,8 +58,8 @@
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="17" fill="1" visible="yes" active="yes"/>
-<layer number="52" name="bDocu" color="63" fill="1" visible="yes" active="yes"/>
+<layer number="51" name="tDocu" color="17" fill="1" visible="no" active="yes"/>
+<layer number="52" name="bDocu" color="63" fill="1" visible="no" active="yes"/>
 <layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
 <layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
@@ -8447,7 +8447,6 @@
 <wire x1="124.968" y1="17.78" x2="126.492" y2="17.78" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="10.16" x2="126.492" y2="10.16" width="0.3048" layer="21"/>
 <wire x1="124.968" y1="2.54" x2="126.492" y2="2.54" width="0.3048" layer="21"/>
-<text x="45.3263" y="83.2612" size="2.54" layer="21" font="vector" ratio="16" rot="R90">RATT V1.0</text>
 <text x="2.54" y="2.032" size="1.27" layer="21" font="vector" ratio="16" rot="R90">A. Shrey</text>
 <text x="67.056" y="1.778" size="0.85" layer="21" ratio="16" rot="R180">https://github.com/makeitlabs/ratt/</text>
 <rectangle x1="52.657375" y1="13.122275" x2="52.663725" y2="13.128625" layer="21"/>
@@ -19170,12 +19169,10 @@
 <rectangle x1="63.566675" y1="20.805775" x2="63.674625" y2="20.812125" layer="21"/>
 <text x="90.424" y="3.302" size="1.016" layer="21" font="vector" ratio="16">Ver 1.0</text>
 <text x="90.424" y="1.778" size="1.016" layer="21" font="vector" ratio="16">2/26/2018</text>
-<polygon width="0.6096" layer="21">
-<vertex x="22.86" y="75.438"/>
-<vertex x="22.86" y="58.42"/>
-<vertex x="27.686" y="58.42"/>
-<vertex x="27.686" y="75.438"/>
-</polygon>
+<wire x1="22.86" y1="57.658" x2="22.86" y2="75.692" width="0.1524" layer="21"/>
+<wire x1="22.86" y1="75.692" x2="28.194" y2="75.692" width="0.1524" layer="21"/>
+<wire x1="28.194" y1="75.692" x2="28.194" y2="57.658" width="0.1524" layer="21"/>
+<wire x1="28.194" y1="57.658" x2="22.86" y2="57.658" width="0.1524" layer="21"/>
 </plain>
 <libraries>
 <library name="MakeItLabs">
@@ -22992,6 +22989,42 @@ As defined by Onsemi for BZX84CVxxxLT1G Series</description>
 <wire x1="17.85" y1="-26.5" x2="17.6" y2="-27" width="0.127" layer="52"/>
 <wire x1="17.6" y1="-27" x2="25.6" y2="-27" width="0.127" layer="52"/>
 <wire x1="25.6" y1="-27" x2="25.35" y2="-26.5" width="0.127" layer="52"/>
+<circle x="-29" y="-23" radius="3.1" width="0.127" layer="22"/>
+<circle x="29" y="-23" radius="3.1" width="0.127" layer="22"/>
+<circle x="29" y="0" radius="3.1" width="0.127" layer="22"/>
+<circle x="-29" y="0" radius="3.1" width="0.127" layer="22"/>
+<wire x1="-32.5" y1="-23.5" x2="-29.5" y2="-26.5" width="0.254" layer="22" curve="90"/>
+<wire x1="-29.5" y1="-26.5" x2="-25.65" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-18.15" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="-18.15" y1="-26.5" x2="29.5" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="29.5" y1="-26.5" x2="32.5" y2="-23.5" width="0.254" layer="22" curve="90"/>
+<wire x1="32.5" y1="-23.5" x2="32.5" y2="0.5" width="0.254" layer="22"/>
+<wire x1="32.5" y1="0.5" x2="29.5" y2="3.5" width="0.254" layer="22" curve="90"/>
+<wire x1="29.5" y1="3.5" x2="-29.5" y2="3.5" width="0.254" layer="22"/>
+<wire x1="-29.5" y1="3.5" x2="-32.5" y2="0.5" width="0.254" layer="22" curve="90"/>
+<wire x1="-32.5" y1="0.5" x2="-32.5" y2="-23.5" width="0.254" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-25.65" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="-25.65" y1="-20.75" x2="-18.15" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="-18.15" y1="-20.75" x2="-18.15" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-25.9" y2="-27" width="0.127" layer="22"/>
+<wire x1="-25.9" y1="-27" x2="-17.9" y2="-27" width="0.127" layer="22"/>
+<wire x1="-17.9" y1="-27" x2="-18.15" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="4.4" y1="-26.5" x2="5.25" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="12.75" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="5.25" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="5.25" y1="-20.75" x2="12.75" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="12.75" y1="-20.75" x2="12.75" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="5" y2="-27" width="0.127" layer="22"/>
+<wire x1="5" y1="-27" x2="13" y2="-27" width="0.127" layer="22"/>
+<wire x1="13" y1="-27" x2="12.75" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="17" y1="-26.5" x2="17.85" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="25.35" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="17.85" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="17.85" y1="-20.75" x2="25.35" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="25.35" y1="-20.75" x2="25.35" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="17.6" y2="-27" width="0.127" layer="22"/>
+<wire x1="17.6" y1="-27" x2="25.6" y2="-27" width="0.127" layer="22"/>
+<wire x1="25.6" y1="-27" x2="25.35" y2="-26.5" width="0.127" layer="22"/>
 </package>
 <package name="1206-RES">
 <wire x1="-2.073" y1="0.983" x2="2.073" y2="0.983" width="0.0508" layer="39"/>
@@ -23857,19 +23890,19 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="NAME" x="5.3848" y="36.9062" size="0.85" layer="25" ratio="16" rot="SR90"/>
 <attribute name="VALUE" x="2.794" y="44.6024" size="0.85" layer="27" ratio="16" rot="SR270"/>
 </element>
-<element name="R8" library="MakeItLabs" package="0603-RES" value="10k" x="10.414" y="38.608" smashed="yes" rot="R270">
+<element name="R8" library="MakeItLabs" package="0603-RES" value="10K" x="10.414" y="38.608" smashed="yes" rot="R270">
 <attribute name="NAME" x="11.276" y="39.543" size="0.85" layer="25" font="vector" ratio="16" rot="R270"/>
 <attribute name="VALUE" x="8.371" y="39.824" size="0.85" layer="27" font="vector" ratio="16" rot="R270"/>
 </element>
-<element name="R6" library="MakeItLabs" package="0603-RES" value="10k" x="5.842" y="44.196" smashed="yes">
+<element name="R6" library="MakeItLabs" package="0603-RES" value="10K" x="5.842" y="44.196" smashed="yes">
 <attribute name="NAME" x="4.653" y="45.058" size="0.85" layer="25" font="vector" ratio="16"/>
 <attribute name="VALUE" x="4.626" y="42.153" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>
-<element name="R4" library="MakeItLabs" package="0603-RES" value="1k" x="4.572" y="42.418" smashed="yes">
+<element name="R4" library="MakeItLabs" package="0603-RES" value="270R" x="4.572" y="42.418" smashed="yes">
 <attribute name="NAME" x="3.383" y="43.28" size="0.85" layer="25" font="vector" ratio="16"/>
 <attribute name="VALUE" x="3.356" y="40.375" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>
-<element name="R12" library="MakeItLabs" package="0603-RES" value="10k" x="19.812" y="46.482" smashed="yes">
+<element name="R12" library="MakeItLabs" package="0603-RES" value="10K" x="19.812" y="46.482" smashed="yes">
 <attribute name="NAME" x="18.623" y="47.344" size="0.85" layer="25" font="vector" ratio="16"/>
 <attribute name="VALUE" x="18.596" y="44.439" size="0.85" layer="27" font="vector" ratio="16"/>
 </element>

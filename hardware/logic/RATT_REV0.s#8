@@ -533,7 +533,8 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <rectangle x1="-1.4605" y1="1.905" x2="-1.0795" y2="3.048" layer="51" rot="R180"/>
 <text x="-2.54" y="5.08" size="1.27" layer="25" font="vector" align="center-left">&gt;NAME</text>
 <text x="-2.54" y="-5.08" size="1.27" layer="27" font="vector" align="center-left">&gt;VALUE</text>
-<text x="-1.778" y="1.016" size="1.27" layer="21" font="vector" align="center-left">+ -</text>
+<text x="-1.5" y="0.9" size="0.85" layer="21" ratio="16">+</text>
+<text x="1" y="0.9" size="0.85" layer="21" ratio="16">-</text>
 </package>
 <package name="1.8TFT_CHI_2.0">
 <wire x1="22.6" y1="-16.891" x2="22.6" y2="16.891" width="0" layer="21"/>
@@ -560,25 +561,24 @@ Source: https://www.phoenixcontact.com/us/products/1803484</description>
 <pad name="14" x="-23.85" y="14.17" drill="1.016" diameter="1.778" shape="octagon"/>
 <pad name="15" x="-23.85" y="16.71" drill="1.016" diameter="1.778" shape="octagon"/>
 <pad name="16" x="-23.85" y="19.25" drill="1.016" diameter="1.778" shape="octagon"/>
-<text x="-11.049" y="-14.8336" size="1.27" layer="21" font="vector">160x128 TFT display
+<text x="-10.033" y="-10.2616" size="1.27" layer="51" font="vector">160x128 TFT display
 Chinafruit 2.0</text>
-<text x="-19.05" y="-19.739" size="1.27" layer="21" font="vector">Gnd</text>
-<text x="-19.05" y="-17.199" size="1.27" layer="21" font="vector">VCC</text>
-<text x="-19.05" y="-7.039" size="1.27" layer="21" font="vector">RESET</text>
-<text x="-19.05" y="-4.499" size="1.27" layer="21" font="vector">A0</text>
-<text x="-19.05" y="-1.959" size="1.27" layer="21" font="vector">TFT_MOSI</text>
-<text x="-19.05" y="0.581" size="1.27" layer="21" font="vector">TFT_CLK</text>
-<text x="-19.05" y="3.121" size="1.27" layer="21" font="vector">TFT_CS</text>
-<text x="-19.05" y="5.661" size="1.27" layer="21" font="vector">SD_SCK</text>
-<text x="-19.05" y="8.201" size="1.27" layer="21" font="vector">SD_MISO</text>
-<text x="-19.05" y="10.741" size="1.27" layer="21" font="vector">SD_MOSI</text>
-<text x="-19.05" y="-14.659" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-12.119" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="-9.579" size="1.27" layer="21" font="vector">NC</text>
-<text x="-19.05" y="13.281" size="1.27" layer="21" font="vector">SD_CS</text>
-<text x="-19.05" y="15.821" size="1.27" layer="21" font="vector">LED+</text>
-<text x="-19.05" y="18.361" size="1.27" layer="21" font="vector">LED-</text>
-<text x="-8.89" y="-20.32" size="1.27" layer="21">KMR-1.8 SPI</text>
+<text x="-34.29" y="-19.485" size="1.27" layer="21" font="vector" rot="SR0">Gnd</text>
+<text x="-34.29" y="-16.945" size="1.27" layer="21" font="vector" rot="SR0">VCC</text>
+<text x="-34.29" y="-6.785" size="1.27" layer="21" font="vector" rot="SR0">RESET</text>
+<text x="-34.29" y="-4.245" size="1.27" layer="21" font="vector" rot="SR0">A0</text>
+<text x="-34.29" y="-1.705" size="1.27" layer="21" font="vector" rot="SR0">TFT_MOSI</text>
+<text x="-34.29" y="0.835" size="1.27" layer="21" font="vector" rot="SR0">TFT_CLK</text>
+<text x="-34.29" y="3.375" size="1.27" layer="21" font="vector" rot="SR0">TFT_CS</text>
+<text x="-34.29" y="5.915" size="1.27" layer="21" font="vector" rot="SR0">SD_SCK</text>
+<text x="-34.29" y="8.455" size="1.27" layer="21" font="vector" rot="SR0">SD_MISO</text>
+<text x="-34.29" y="10.995" size="1.27" layer="21" font="vector" rot="SR0">SD_MOSI</text>
+<text x="-34.29" y="-14.405" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-11.865" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="-9.325" size="1.27" layer="21" font="vector" rot="SR0">NC</text>
+<text x="-34.29" y="13.535" size="1.27" layer="21" font="vector" rot="SR0">SD_CS</text>
+<text x="-34.29" y="16.075" size="1.27" layer="21" font="vector" rot="SR0">LED+</text>
+<text x="-34.29" y="18.615" size="1.27" layer="21" font="vector" rot="SR0">LED-</text>
 <hole x="19.9" y="20.2" drill="3.3"/>
 <hole x="-21.1" y="-19.8" drill="3.3"/>
 <hole x="-21.1" y="20.2" drill="3.3"/>
@@ -3226,6 +3226,8 @@ Chinafruit 2.0</text>
 <rectangle x1="-1.74625" y1="2.581909375" x2="-1.01473125" y2="2.604765625" layer="51"/>
 <rectangle x1="-1.609090625" y1="2.60476875" x2="-1.129034375" y2="2.62763125" layer="51"/>
 <rectangle x1="-1.47193125" y1="2.62763125" x2="-1.26619375" y2="2.6504875" layer="51"/>
+<text x="-10.414" y="19.812" size="0.85" layer="25" ratio="16">&gt;NAME</text>
+<text x="-16.51" y="-20.574" size="0.85" layer="27" ratio="16">&gt;VALUE</text>
 </package>
 <package name="1.8TFT_CHI">
 <wire x1="23" y1="-17" x2="23" y2="-16.9683" width="0" layer="20"/>
@@ -6829,7 +6831,6 @@ It has a reduced top mask to make it harder to install upside-down.</description
 <wire x1="-6.35" y1="6.35" x2="6.35" y2="6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="6.35" x2="6.35" y2="-6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="-6.35" x2="-6.35" y2="-6.35" width="0.8128" layer="21"/>
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
 <hole x="-3.81" y="-3.81" drill="1"/>
@@ -8221,7 +8222,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="2.2606" y1="1.5494" x2="0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="1.5494" x2="-2.2606" y2="1.5494" width="0.1524" layer="21"/>
-<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0" layer="21" curve="-180"/>
+<wire x1="0.3048" y1="1.5494" x2="-0.3048" y2="1.5494" width="0.1524" layer="21" curve="-180"/>
 <smd name="1" x="-2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="2" x="-2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="3" x="-2.921" y="-0.3302" dx="1.4732" dy="0.3556" layer="1"/>
@@ -8231,9 +8232,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <smd name="7" x="2.921" y="0.3302" dx="1.4732" dy="0.3556" layer="1"/>
 <smd name="8" x="2.921" y="0.9652" dx="1.4732" dy="0.3556" layer="1"/>
 <text x="-3.7592" y="1.1938" size="1.27" layer="51" ratio="6" rot="SR0">*</text>
-<text x="-3.7592" y="1.1938" size="1.27" layer="21" ratio="6" rot="SR0">*</text>
 <text x="-4.7498" y="2.4892" size="2.0828" layer="25" ratio="10" rot="SR0">&gt;NAME</text>
 <text x="-5.4864" y="-4.572" size="2.0828" layer="27" ratio="10" rot="SR0">&gt;VALUE</text>
+<circle x="-2.921" y="1.905" radius="0.179603125" width="0.127" layer="21"/>
 </package>
 <package name="SOP65P640X120-24N">
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="21" curve="-180"/>
@@ -8297,12 +8298,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0.1524" layer="21"/>
 <wire x1="-0.3048" y1="3.9624" x2="-1.9304" y2="3.9624" width="0.1524" layer="21"/>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="21" curve="-180"/>
-<wire x1="-4.1656" y1="-2.0828" x2="-4.1656" y2="-2.4638" width="0.1524" layer="21"/>
-<wire x1="-4.1656" y1="-2.4638" x2="-3.9116" y2="-2.4638" width="0.1524" layer="21"/>
-<wire x1="-3.9116" y1="-2.4638" x2="-3.9116" y2="-2.0828" width="0.1524" layer="21"/>
-<wire x1="4.1656" y1="1.1684" x2="4.1656" y2="0.7874" width="0.1524" layer="21"/>
-<wire x1="4.1656" y1="0.7874" x2="3.9116" y2="0.7874" width="0.1524" layer="21"/>
-<wire x1="3.9116" y1="0.7874" x2="3.9116" y2="1.1684" width="0.1524" layer="21"/>
 <wire x1="-2.2606" y1="3.429" x2="-2.2606" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="-2.2606" y1="3.7338" x2="-3.302" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="-3.302" y1="3.7338" x2="-3.302" y2="3.429" width="0.1524" layer="51"/>
@@ -8400,16 +8395,25 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="3.302" y1="3.429" x2="3.302" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="3.302" y1="3.7338" x2="2.2606" y2="3.7338" width="0.1524" layer="51"/>
 <wire x1="-2.2606" y1="-3.9624" x2="2.2606" y2="-3.9624" width="0.1524" layer="51"/>
-<wire x1="2.2606" y1="-2.1336" x2="2.2606" y2="2.1336" width="0.1524" layer="51"/>
+<wire x1="2.2606" y1="-1.778" x2="2.2606" y2="1.778" width="0.1524" layer="51"/>
 <wire x1="2.2606" y1="3.9624" x2="0.3048" y2="3.9624" width="0.1524" layer="51"/>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0.1524" layer="51"/>
 <wire x1="-0.3048" y1="3.9624" x2="-2.2606" y2="3.9624" width="0.1524" layer="51"/>
-<wire x1="-2.2606" y1="3.429" x2="-2.2606" y2="-3.429" width="0.1524" layer="51"/>
+<wire x1="-2.2606" y1="3.0734" x2="-2.2606" y2="-3.0734" width="0.1524" layer="51"/>
 <wire x1="0.3048" y1="3.9624" x2="-0.3048" y2="3.9624" width="0" layer="51" curve="-180"/>
 <text x="-3.7592" y="3.81" size="1.27" layer="21" ratio="6" rot="SR0">*</text>
 <text x="-3.7592" y="3.81" size="1.27" layer="51" ratio="6" rot="SR0">*</text>
 <text x="-4.699" y="4.9022" size="2.0828" layer="25" ratio="10" rot="SR0">&gt;NAME</text>
 <text x="-5.6642" y="-6.6802" size="2.0828" layer="27" ratio="10" rot="SR0">&gt;VALUE</text>
+<wire x1="-1.778" y1="4.064" x2="-0.508" y2="4.064" width="0.127" layer="21"/>
+<wire x1="-0.508" y1="4.064" x2="0.508" y2="4.064" width="0.127" layer="21"/>
+<wire x1="0.508" y1="4.064" x2="1.778" y2="4.064" width="0.127" layer="21"/>
+<wire x1="1.778" y1="4.064" x2="1.778" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="1.778" y1="-4.064" x2="-1.778" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="-1.778" y1="-4.064" x2="-1.778" y2="4.064" width="0.127" layer="21"/>
+<wire x1="-0.508" y1="4.064" x2="0" y2="3.556" width="0.127" layer="21" curve="90"/>
+<wire x1="0" y1="3.556" x2="0.508" y2="4.064" width="0.127" layer="21" curve="90"/>
+<circle x="-2.794" y="4.318" radius="0.254" width="0.127" layer="21"/>
 </package>
 <package name="SOT23-5">
 <description>&lt;b&gt;Small Outline Transistor&lt;/b&gt;</description>
@@ -11330,6 +11334,7 @@ or by the Pi Module</text>
 <wire x1="116.84" y1="256.54" x2="0" y2="256.54" width="0.1524" layer="97" style="longdash"/>
 <text x="12.7" y="264.16" size="6.35" layer="97">MakeIt Labs RATT</text>
 <text x="12.7" y="205.74" size="1.27" layer="97">Not Used</text>
+<text x="391.16" y="139.7" size="1.778" layer="97">DNP R19 for 3.3V RFID</text>
 </plain>
 <instances>
 <instance part="IC3" gate="G$1" x="50.8" y="33.02" smashed="yes">

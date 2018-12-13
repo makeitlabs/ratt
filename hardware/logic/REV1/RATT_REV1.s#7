@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -6823,7 +6823,6 @@ It has a reduced top mask to make it harder to install upside-down.</description
 <rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <pad name="1" x="-3.81" y="3.81" drill="1.22"/>
 <pad name="3" x="1.27" y="-1.27" drill="1.22"/>
-<text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
 <text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
 <hole x="-3.81" y="-3.81" drill="1"/>
 <hole x="3.81" y="1.27" drill="1"/>
@@ -6831,11 +6830,7 @@ It has a reduced top mask to make it harder to install upside-down.</description
 <wire x1="-6.35" y1="6.35" x2="6.35" y2="6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="6.35" x2="6.35" y2="-6.35" width="0.8128" layer="21"/>
 <wire x1="6.35" y1="-6.35" x2="-6.35" y2="-6.35" width="0.8128" layer="21"/>
-<rectangle x1="-6.35" y1="-6.35" x2="6.35" y2="6.35" layer="39"/>
 <text x="-6.35" y="7.62" size="1.27" layer="25" font="vector" ratio="10">&gt;NAME</text>
-<text x="-6.35" y="-8.89" size="1.27" layer="27" font="vector" ratio="10">&gt;VALUE</text>
-<hole x="-3.81" y="-3.81" drill="1"/>
-<hole x="3.81" y="1.27" drill="1"/>
 </package>
 <package name="QFN16_3MM">
 <circle x="-2.1" y="1.4" radius="0.14141875" width="0.3048" layer="21"/>
@@ -8572,6 +8567,42 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="17.85" y1="-26.5" x2="17.6" y2="-27" width="0.127" layer="52"/>
 <wire x1="17.6" y1="-27" x2="25.6" y2="-27" width="0.127" layer="52"/>
 <wire x1="25.6" y1="-27" x2="25.35" y2="-26.5" width="0.127" layer="52"/>
+<circle x="-29" y="-23" radius="3.1" width="0.127" layer="22"/>
+<circle x="29" y="-23" radius="3.1" width="0.127" layer="22"/>
+<circle x="29" y="0" radius="3.1" width="0.127" layer="22"/>
+<circle x="-29" y="0" radius="3.1" width="0.127" layer="22"/>
+<wire x1="-32.5" y1="-23.5" x2="-29.5" y2="-26.5" width="0.254" layer="22" curve="90"/>
+<wire x1="-29.5" y1="-26.5" x2="-25.65" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-18.15" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="-18.15" y1="-26.5" x2="29.5" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="29.5" y1="-26.5" x2="32.5" y2="-23.5" width="0.254" layer="22" curve="90"/>
+<wire x1="32.5" y1="-23.5" x2="32.5" y2="0.5" width="0.254" layer="22"/>
+<wire x1="32.5" y1="0.5" x2="29.5" y2="3.5" width="0.254" layer="22" curve="90"/>
+<wire x1="29.5" y1="3.5" x2="-29.5" y2="3.5" width="0.254" layer="22"/>
+<wire x1="-29.5" y1="3.5" x2="-32.5" y2="0.5" width="0.254" layer="22" curve="90"/>
+<wire x1="-32.5" y1="0.5" x2="-32.5" y2="-23.5" width="0.254" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-25.65" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="-25.65" y1="-20.75" x2="-18.15" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="-18.15" y1="-20.75" x2="-18.15" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="-25.65" y1="-26.5" x2="-25.9" y2="-27" width="0.127" layer="22"/>
+<wire x1="-25.9" y1="-27" x2="-17.9" y2="-27" width="0.127" layer="22"/>
+<wire x1="-17.9" y1="-27" x2="-18.15" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="4.4" y1="-26.5" x2="5.25" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="12.75" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="5.25" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="5.25" y1="-20.75" x2="12.75" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="12.75" y1="-20.75" x2="12.75" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="5.25" y1="-26.5" x2="5" y2="-27" width="0.127" layer="22"/>
+<wire x1="5" y1="-27" x2="13" y2="-27" width="0.127" layer="22"/>
+<wire x1="13" y1="-27" x2="12.75" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="17" y1="-26.5" x2="17.85" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="25.35" y2="-26.5" width="0.254" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="17.85" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="17.85" y1="-20.75" x2="25.35" y2="-20.75" width="0.127" layer="22"/>
+<wire x1="25.35" y1="-20.75" x2="25.35" y2="-26.5" width="0.127" layer="22"/>
+<wire x1="17.85" y1="-26.5" x2="17.6" y2="-27" width="0.127" layer="22"/>
+<wire x1="17.6" y1="-27" x2="25.6" y2="-27" width="0.127" layer="22"/>
+<wire x1="25.6" y1="-27" x2="25.35" y2="-26.5" width="0.127" layer="22"/>
 </package>
 <package name="2X08_SHROUD">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
@@ -11044,7 +11075,7 @@ Test Pad&lt;br&gt;
 <part name="IC4" library="MakeItLabs" deviceset="V_REG_LDO" device="SMD" value="AP2112K-3.3V">
 <attribute name="PROD_ID" value="VREG-12457"/>
 </part>
-<part name="R2" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="2.0k"/>
+<part name="R2" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="2K"/>
 <part name="C2" library="MakeItLabs" deviceset="CAP" device="0603" value="4.7uF"/>
 <part name="LED3" library="MakeItLabs" deviceset="LED-RED" device="0603" value="RED"/>
 <part name="R7" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1K"/>
@@ -11104,8 +11135,8 @@ Test Pad&lt;br&gt;
 <part name="SW102" library="MakeItLabs" deviceset="ESWITCH_320" device=""/>
 <part name="SW101" library="MakeItLabs" deviceset="ESWITCH_320" device=""/>
 <part name="SW100" library="MakeItLabs" deviceset="ESWITCH_320" device=""/>
-<part name="R21" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="750R"/>
-<part name="R19" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1.5K"/>
+<part name="R21" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1K"/>
+<part name="R19" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="2K"/>
 <part name="Q1" library="MakeItLabs" deviceset="NMOSSOT23" device="" value="2N7002"/>
 <part name="SUPPLY28" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="R15" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
@@ -11199,7 +11230,7 @@ Test Pad&lt;br&gt;
 <part name="LED2" library="MakeItLabs" deviceset="LED-RED" device="0603" value="RED"/>
 <part name="SUPPLY56" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="LED4" library="MakeItLabs" deviceset="LED-RED" device="0603" value="RED"/>
-<part name="R17" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1k"/>
+<part name="R17" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1K"/>
 <part name="SUPPLY67" library="MakeItLabs" deviceset="+5VIN" device=""/>
 <part name="SUPPLY69" library="MakeItLabs" deviceset="+5VIN" device=""/>
 <part name="SUPPLY11" library="MakeItLabs" deviceset="+5VB" device=""/>
@@ -11234,12 +11265,11 @@ Test Pad&lt;br&gt;
 <part name="SUPPLY1" library="MakeItLabs" deviceset="+5VIN" device=""/>
 <part name="SUPPLY13" library="MakeItLabs" deviceset="+5VB" device=""/>
 <part name="SUPPLY16" library="MakeItLabs" deviceset="GND" device=""/>
-<part name="R8" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10k"/>
-<part name="R6" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10k"/>
-<part name="R4" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="1k"/>
-<part name="R12" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10k"/>
+<part name="R8" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R6" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
+<part name="R4" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="270R"/>
+<part name="R12" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="SUPPLY27" library="MakeItLabs" deviceset="GND" device=""/>
-<part name="SUPPLY66" library="MakeItLabs" deviceset="+5VB" device=""/>
 <part name="C8" library="MakeItLabs" deviceset="CAP" device="0603" value="0.1uF"/>
 <part name="SUPPLY74" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="C3" library="MakeItLabs" deviceset="CAP" device="0603" value="0.1uF"/>
@@ -11860,7 +11890,6 @@ or by the Pi Module</text>
 <instance part="SUPPLY27" gate="GND" x="152.4" y="208.28" smashed="yes">
 <attribute name="VALUE" x="150.495" y="205.105" size="1.27" layer="96" font="vector"/>
 </instance>
-<instance part="SUPPLY66" gate="G$1" x="144.78" y="236.22"/>
 <instance part="C8" gate="G$1" x="172.72" y="251.46" smashed="yes">
 <attribute name="NAME" x="174.244" y="254.381" size="1.778" layer="95" font="vector"/>
 <attribute name="VALUE" x="174.244" y="249.301" size="1.778" layer="96" font="vector"/>
@@ -11899,7 +11928,7 @@ or by the Pi Module</text>
 <instance part="R14" gate="G$1" x="55.88" y="99.06"/>
 <instance part="SUPPLY25" gate="G$1" x="332.74" y="182.88"/>
 <instance part="SUPPLY86" gate="G$1" x="388.62" y="160.02"/>
-<instance part="J1" gate="G$1" x="111.76" y="40.64" rot="R180"/>
+<instance part="J1" gate="G$1" x="111.76" y="38.1" rot="MR0"/>
 <instance part="J7" gate="A" x="274.32" y="25.4"/>
 <instance part="SUPPLY94" gate="GND" x="297.18" y="22.86" smashed="yes">
 <attribute name="VALUE" x="295.275" y="19.685" size="1.778" layer="96"/>
@@ -12535,9 +12564,9 @@ or by the Pi Module</text>
 <wire x1="78.74" y1="38.1" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="1"/>
 <wire x1="101.6" y1="35.56" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="38.1" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
+<pinref part="J1" gate="G$1" pin="1"/>
+<wire x1="101.6" y1="38.1" x2="104.14" y2="38.1" width="0.1524" layer="91"/>
 <junction x="101.6" y="38.1"/>
-<pinref part="J1" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$7" class="0">
@@ -12546,9 +12575,9 @@ or by the Pi Module</text>
 <wire x1="73.66" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <pinref part="C4" gate="G$1" pin="1"/>
 <wire x1="93.98" y1="35.56" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
-<wire x1="93.98" y1="40.64" x2="104.14" y2="40.64" width="0.1524" layer="91"/>
+<pinref part="J1" gate="G$1" pin="2"/>
+<wire x1="104.14" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <junction x="93.98" y="40.64"/>
-<pinref part="J1" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -13696,15 +13725,6 @@ or by the Pi Module</text>
 <wire x1="213.36" y1="238.76" x2="213.36" y2="254" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC2" gate="A" pin="D0"/>
-<pinref part="R8" gate="G$1" pin="2"/>
-<wire x1="175.26" y1="231.14" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
-<wire x1="144.78" y1="231.14" x2="144.78" y2="226.06" width="0.1524" layer="91"/>
-<pinref part="SUPPLY66" gate="G$1" pin="+5VB"/>
-<wire x1="144.78" y1="236.22" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
-<junction x="144.78" y="231.14"/>
-</segment>
-<segment>
 <pinref part="TP3" gate="G$1" pin="TP"/>
 <pinref part="SUPPLY97" gate="G$1" pin="+5VB"/>
 <wire x1="386.08" y1="208.28" x2="386.08" y2="210.82" width="0.1524" layer="91"/>
@@ -13886,18 +13906,18 @@ or by the Pi Module</text>
 </net>
 <net name="SHUTDOWN" class="0">
 <segment>
-<pinref part="IC2" gate="A" pin="D1"/>
-<wire x1="175.26" y1="228.6" x2="152.4" y2="228.6" width="0.1524" layer="91"/>
-<pinref part="R6" gate="G$1" pin="2"/>
-<wire x1="152.4" y1="228.6" x2="152.4" y2="226.06" width="0.1524" layer="91"/>
-<wire x1="152.4" y1="228.6" x2="139.7" y2="228.6" width="0.1524" layer="91"/>
-<junction x="152.4" y="228.6"/>
-<label x="139.7" y="228.6" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="J100" gate="G$1" pin="GPIO27/GEN2"/>
 <wire x1="38.1" y1="215.9" x2="33.02" y2="215.9" width="0.1524" layer="91"/>
 <label x="33.02" y="215.9" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="A" pin="D0"/>
+<pinref part="R8" gate="G$1" pin="2"/>
+<wire x1="175.26" y1="231.14" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="231.14" x2="144.78" y2="226.06" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="231.14" x2="142.24" y2="231.14" width="0.1524" layer="91"/>
+<junction x="144.78" y="231.14"/>
+<label x="142.24" y="231.14" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$10" class="0">
@@ -13912,6 +13932,14 @@ or by the Pi Module</text>
 <pinref part="LCD100" gate="G$1" pin="LED+"/>
 <pinref part="R14" gate="G$1" pin="2"/>
 <wire x1="60.96" y1="99.06" x2="63.5" y2="99.06" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$26" class="0">
+<segment>
+<pinref part="R6" gate="G$1" pin="2"/>
+<wire x1="152.4" y1="226.06" x2="152.4" y2="228.6" width="0.1524" layer="91"/>
+<pinref part="IC2" gate="A" pin="D1"/>
+<wire x1="152.4" y1="228.6" x2="175.26" y2="228.6" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
