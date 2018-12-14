@@ -389,7 +389,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledActive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/activity', json.dumps({'active ': True, 'member': self.activeMemberRecord.name}))
+            self.telemetryEvent.emit('personality/activity', json.dumps({'active': True, 'member': self.activeMemberRecord.name}))
             self.toolActiveFlag = True
             self.wakeOnTimer(enabled=True, interval=250, singleShot=False)
             return self.goActive()
@@ -418,7 +418,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolEnabledInactive(self):
         if self.phENTER:
-            self.telemetryEvent.emit('personality/activity', json.dumps({'active ': False, 'member': self.activeMemberRecord.name}))
+            self.telemetryEvent.emit('personality/activity', json.dumps({'active': False, 'member': self.activeMemberRecord.name}))
             self.toolActiveFlag = False
             self.pin_led1.set(HIGH)
             return self.goActive()
