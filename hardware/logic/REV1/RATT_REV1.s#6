@@ -16697,6 +16697,10 @@ Test Pad&lt;br&gt;
 <part name="C20" library="MakeItLabs" deviceset="CPOL-US" device="D"/>
 <part name="SUPPLY103" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="SUPPLY104" library="MakeItLabs" deviceset="+5VIN" device=""/>
+<part name="SJ7" library="MakeItLabs" deviceset="SOLDERJUMPER_CLOSED" device="10MIL" value="JUMPER-PAD-2-NC_BY_TRACE"/>
+<part name="SJ8" library="MakeItLabs" deviceset="SOLDERJUMPER_CLOSED" device="10MIL" value="JUMPER-PAD-2-NC_BY_TRACE"/>
+<part name="SUPPLY105" library="MakeItLabs" deviceset="GND" device=""/>
+<part name="SUPPLY106" library="MakeItLabs" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -17377,6 +17381,18 @@ or by the Pi Module</text>
 <attribute name="VALUE" x="229.235" y="197.485" size="1.27" layer="96" font="vector"/>
 </instance>
 <instance part="SUPPLY104" gate="G$1" x="241.3" y="218.44"/>
+<instance part="SJ7" gate="G$1" x="233.68" y="124.46" smashed="yes" rot="R270">
+<attribute name="NAME" x="228.6" y="127" size="1.778" layer="95" rot="R270"/>
+</instance>
+<instance part="SJ8" gate="G$1" x="238.76" y="124.46" smashed="yes" rot="R270">
+<attribute name="NAME" x="241.3" y="127" size="1.778" layer="95" rot="R270"/>
+</instance>
+<instance part="SUPPLY105" gate="GND" x="238.76" y="114.3" smashed="yes">
+<attribute name="VALUE" x="236.855" y="111.125" size="1.27" layer="96" font="vector"/>
+</instance>
+<instance part="SUPPLY106" gate="GND" x="233.68" y="114.3" smashed="yes">
+<attribute name="VALUE" x="231.775" y="111.125" size="1.27" layer="96" font="vector"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -17951,6 +17967,16 @@ or by the Pi Module</text>
 <pinref part="SUPPLY100" gate="GND" pin="GND"/>
 <pinref part="C19" gate="G$1" pin="-"/>
 <wire x1="241.3" y1="205.74" x2="241.3" y2="208.28" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SJ8" gate="G$1" pin="2"/>
+<pinref part="SUPPLY105" gate="GND" pin="GND"/>
+<wire x1="238.76" y1="116.84" x2="238.76" y2="119.38" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SJ7" gate="G$1" pin="2"/>
+<pinref part="SUPPLY106" gate="GND" pin="GND"/>
+<wire x1="233.68" y1="116.84" x2="233.68" y2="119.38" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -18934,6 +18960,9 @@ or by the Pi Module</text>
 <pinref part="R25" gate="G$1" pin="1"/>
 <wire x1="210.82" y1="132.08" x2="238.76" y2="132.08" width="0.1524" layer="91"/>
 <wire x1="238.76" y1="132.08" x2="238.76" y2="137.16" width="0.1524" layer="91"/>
+<pinref part="SJ8" gate="G$1" pin="1"/>
+<wire x1="238.76" y1="132.08" x2="238.76" y2="129.54" width="0.1524" layer="91"/>
+<junction x="238.76" y="132.08"/>
 </segment>
 </net>
 <net name="N$13" class="0">
@@ -18942,6 +18971,9 @@ or by the Pi Module</text>
 <pinref part="IC5" gate="A" pin="P16"/>
 <wire x1="233.68" y1="137.16" x2="233.68" y2="134.62" width="0.1524" layer="91"/>
 <wire x1="233.68" y1="134.62" x2="210.82" y2="134.62" width="0.1524" layer="91"/>
+<pinref part="SJ7" gate="G$1" pin="1"/>
+<wire x1="233.68" y1="134.62" x2="233.68" y2="129.54" width="0.1524" layer="91"/>
+<junction x="233.68" y="134.62"/>
 </segment>
 </net>
 <net name="N$51" class="0">

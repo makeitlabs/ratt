@@ -12923,6 +12923,25 @@ diameter 5 mm, grid 2.54 mm</description>
 <rectangle x1="-1.651" y1="-0.127" x2="-0.889" y2="0.635" layer="51"/>
 <rectangle x1="0" y1="1.6002" x2="0.4318" y2="3.4798" layer="21"/>
 </package>
+<package name="FIDUCIAL-1.5X3">
+<circle x="0" y="0" radius="0.9055" width="1.27" layer="29"/>
+<smd name="1" x="0" y="0" dx="1.5" dy="1.5" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="FIDUCIAL-1X2">
+<smd name="1" x="0" y="0" dx="1" dy="1" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="FIDUCIAL-1X2.5">
+<circle x="0" y="0" radius="0.9" width="1.27" layer="29"/>
+<smd name="1" x="0" y="0" dx="1" dy="1" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="MICRO-FIDUCIAL">
+<smd name="1" x="0" y="0" dx="0.635" dy="0.635" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="FIDUCIAL-40MILX80MIL">
+<circle x="0" y="0" radius="1.016" width="0" layer="29"/>
+<smd name="1" x="0" y="0" dx="1.016" dy="1.016" layer="1" roundness="100" cream="no"/>
+<circle x="0" y="0" radius="1.27" width="0" layer="41"/>
+</package>
 </packages>
 <symbols>
 <symbol name="GROVE-CONNECTOR-DIP">
@@ -13766,6 +13785,11 @@ Op. Temp:</text>
 <rectangle x1="-1.872" y1="0.287" x2="-1.745" y2="1.176" layer="94"/>
 <pin name="+" x="0" y="2.54" visible="off" length="short" direction="pas" swaplevel="1" rot="R270"/>
 <pin name="-" x="0" y="-5.08" visible="off" length="short" direction="pas" swaplevel="1" rot="R90"/>
+</symbol>
+<symbol name="FIDUCIAL">
+<wire x1="-0.762" y1="0.762" x2="0.762" y2="-0.762" width="0.254" layer="94"/>
+<wire x1="0.762" y1="0.762" x2="-0.762" y2="-0.762" width="0.254" layer="94"/>
+<circle x="0" y="0" radius="1.27" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -16428,6 +16452,40 @@ Test Pad&lt;br&gt;
 </device>
 </devices>
 </deviceset>
+<deviceset name="FIDUCIAL" prefix="FID">
+<description>&lt;b&gt;Fiducial Alignment Points&lt;/b&gt;
+Various fiducial points for machine vision alignment.</description>
+<gates>
+<gate name="G$1" symbol="FIDUCIAL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="1.5X3" package="FIDUCIAL-1.5X3">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="1X2" package="FIDUCIAL-1X2">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="1X2.5" package="FIDUCIAL-1X2.5">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="UFIDUCIAL" package="MICRO-FIDUCIAL">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="40MILX80MIL" package="FIDUCIAL-40MILX80MIL">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -16697,6 +16755,9 @@ Test Pad&lt;br&gt;
 <part name="C20" library="MakeItLabs" deviceset="CPOL-US" device="D"/>
 <part name="SUPPLY103" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="SUPPLY104" library="MakeItLabs" deviceset="+5VIN" device=""/>
+<part name="FID1" library="MakeItLabs" deviceset="FIDUCIAL" device="40MILX80MIL"/>
+<part name="FID2" library="MakeItLabs" deviceset="FIDUCIAL" device="40MILX80MIL"/>
+<part name="FID3" library="MakeItLabs" deviceset="FIDUCIAL" device="40MILX80MIL"/>
 </parts>
 <sheets>
 <sheet>
@@ -17389,6 +17450,9 @@ or by the Pi Module</text>
 <attribute name="VALUE" x="229.235" y="197.485" size="1.27" layer="96" font="vector"/>
 </instance>
 <instance part="SUPPLY104" gate="G$1" x="241.3" y="218.44"/>
+<instance part="FID1" gate="G$1" x="426.72" y="190.5"/>
+<instance part="FID2" gate="G$1" x="426.72" y="185.42"/>
+<instance part="FID3" gate="G$1" x="426.72" y="180.34"/>
 </instances>
 <busses>
 </busses>

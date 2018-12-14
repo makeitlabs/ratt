@@ -16758,6 +16758,7 @@ Various fiducial points for machine vision alignment.</description>
 <part name="FID1" library="MakeItLabs" deviceset="FIDUCIAL" device="40MILX80MIL"/>
 <part name="FID2" library="MakeItLabs" deviceset="FIDUCIAL" device="40MILX80MIL"/>
 <part name="FID3" library="MakeItLabs" deviceset="FIDUCIAL" device="40MILX80MIL"/>
+<part name="SUPPLY105" library="MakeItLabs" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -17046,13 +17047,13 @@ or by the Pi Module</text>
 <instance part="SW100" gate="G$1" x="276.86" y="106.68"/>
 <instance part="R21" gate="G$1" x="383.54" y="157.48" rot="MR90"/>
 <instance part="R19" gate="G$1" x="383.54" y="142.24" rot="MR90"/>
-<instance part="Q1" gate="A" x="60.96" y="88.9"/>
-<instance part="SUPPLY28" gate="GND" x="60.96" y="76.2" smashed="yes">
-<attribute name="VALUE" x="59.055" y="73.025" size="1.778" layer="96"/>
+<instance part="Q1" gate="A" x="27.94" y="86.36"/>
+<instance part="SUPPLY28" gate="GND" x="27.94" y="73.66" smashed="yes">
+<attribute name="VALUE" x="26.035" y="70.485" size="1.778" layer="96"/>
 </instance>
-<instance part="R15" gate="G$1" x="53.34" y="81.28" smashed="yes" rot="R180">
-<attribute name="NAME" x="58.42" y="80.01" size="1.27" layer="95" font="vector" rot="R180"/>
-<attribute name="VALUE" x="53.34" y="83.82" size="1.27" layer="96" font="vector" rot="R180"/>
+<instance part="R15" gate="G$1" x="20.32" y="78.74" smashed="yes" rot="R180">
+<attribute name="NAME" x="25.4" y="77.47" size="1.27" layer="95" font="vector" rot="R180"/>
+<attribute name="VALUE" x="20.32" y="81.28" size="1.27" layer="96" font="vector" rot="R180"/>
 </instance>
 <instance part="J100" gate="G$1" x="60.96" y="200.66"/>
 <instance part="R13" gate="G$1" x="269.24" y="218.44" rot="MR270"/>
@@ -17453,6 +17454,9 @@ or by the Pi Module</text>
 <instance part="FID1" gate="G$1" x="426.72" y="190.5"/>
 <instance part="FID2" gate="G$1" x="426.72" y="185.42"/>
 <instance part="FID3" gate="G$1" x="426.72" y="180.34"/>
+<instance part="SUPPLY105" gate="GND" x="60.96" y="91.44" smashed="yes">
+<attribute name="VALUE" x="59.055" y="88.265" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -17773,11 +17777,11 @@ or by the Pi Module</text>
 <segment>
 <pinref part="Q1" gate="A" pin="S"/>
 <pinref part="SUPPLY28" gate="GND" pin="GND"/>
-<wire x1="60.96" y1="78.74" x2="60.96" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="76.2" x2="27.94" y2="78.74" width="0.1524" layer="91"/>
 <pinref part="R15" gate="G$1" pin="1"/>
-<wire x1="60.96" y1="81.28" x2="60.96" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="81.28" x2="60.96" y2="81.28" width="0.1524" layer="91"/>
-<junction x="60.96" y="81.28"/>
+<wire x1="27.94" y1="78.74" x2="27.94" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="78.74" x2="27.94" y2="78.74" width="0.1524" layer="91"/>
+<junction x="27.94" y="78.74"/>
 </segment>
 <segment>
 <pinref part="IC6" gate="D" pin="E"/>
@@ -18027,6 +18031,12 @@ or by the Pi Module</text>
 <pinref part="SUPPLY100" gate="GND" pin="GND"/>
 <pinref part="C19" gate="G$1" pin="-"/>
 <wire x1="241.3" y1="205.74" x2="241.3" y2="208.28" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<wire x1="63.5" y1="96.52" x2="60.96" y2="96.52" width="0.1524" layer="91"/>
+<pinref part="LCD100" gate="G$1" pin="LED-"/>
+<pinref part="SUPPLY105" gate="GND" pin="GND"/>
+<wire x1="60.96" y1="93.98" x2="60.96" y2="96.52" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -18286,13 +18296,13 @@ or by the Pi Module</text>
 <pinref part="SJ1" gate="G$1" pin="1"/>
 <pinref part="Q1" gate="A" pin="G"/>
 <wire x1="40.64" y1="111.76" x2="38.1" y2="111.76" width="0.1524" layer="91"/>
-<wire x1="55.88" y1="86.36" x2="45.72" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="45.72" y1="86.36" x2="40.64" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="40.64" y1="86.36" x2="40.64" y2="111.76" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="83.82" x2="12.7" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="83.82" x2="7.62" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="7.62" y1="83.82" x2="40.64" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="R15" gate="G$1" pin="2"/>
-<wire x1="48.26" y1="81.28" x2="45.72" y2="81.28" width="0.1524" layer="91"/>
-<wire x1="45.72" y1="81.28" x2="45.72" y2="86.36" width="0.1524" layer="91"/>
-<junction x="45.72" y="86.36"/>
+<wire x1="15.24" y1="78.74" x2="12.7" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="78.74" x2="12.7" y2="83.82" width="0.1524" layer="91"/>
+<junction x="12.7" y="83.82"/>
 </segment>
 </net>
 <net name="5V_RFID_TX" class="0">
@@ -18306,14 +18316,6 @@ or by the Pi Module</text>
 <label x="317.5" y="172.72" size="1.27" layer="95" rot="R180" xref="yes"/>
 <wire x1="381" y1="172.72" x2="317.5" y2="172.72" width="0.1524" layer="91"/>
 <pinref part="J4" gate="G$1" pin="3"/>
-</segment>
-</net>
-<net name="N$34" class="0">
-<segment>
-<wire x1="63.5" y1="96.52" x2="60.96" y2="96.52" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="96.52" x2="60.96" y2="93.98" width="0.1524" layer="91"/>
-<pinref part="Q1" gate="A" pin="D"/>
-<pinref part="LCD100" gate="G$1" pin="LED-"/>
 </segment>
 </net>
 <net name="!PWR_LOSS" class="0">
@@ -19280,13 +19282,8 @@ or by the Pi Module</text>
 <junction x="15.24" y="149.86"/>
 <wire x1="22.86" y1="132.08" x2="22.86" y2="149.86" width="0.1524" layer="91"/>
 <pinref part="SUPPLY83" gate="G$1" pin="+3.3V"/>
-<wire x1="63.5" y1="132.08" x2="43.18" y2="132.08" width="0.1524" layer="91"/>
-<wire x1="43.18" y1="99.06" x2="43.18" y2="132.08" width="0.1524" layer="91"/>
-<junction x="43.18" y="132.08"/>
 <pinref part="LCD100" gate="G$1" pin="VCC"/>
-<wire x1="22.86" y1="132.08" x2="43.18" y2="132.08" width="0.1524" layer="91"/>
-<pinref part="R14" gate="G$1" pin="1"/>
-<wire x1="43.18" y1="99.06" x2="50.8" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="132.08" x2="63.5" y2="132.08" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R13" gate="G$1" pin="1"/>
@@ -19468,6 +19465,12 @@ or by the Pi Module</text>
 <wire x1="152.4" y1="226.06" x2="152.4" y2="228.6" width="0.1524" layer="91"/>
 <pinref part="IC2" gate="A" pin="D1"/>
 <wire x1="152.4" y1="228.6" x2="175.26" y2="228.6" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="R14" gate="G$1" pin="1"/>
+<wire x1="43.18" y1="99.06" x2="50.8" y2="99.06" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

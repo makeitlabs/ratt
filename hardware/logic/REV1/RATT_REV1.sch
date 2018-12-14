@@ -17529,8 +17529,8 @@ or by the Pi Module</text>
 </net>
 <net name="LCD_BACKLIGHT" class="0">
 <segment>
-<wire x1="17.78" y1="99.06" x2="12.7" y2="99.06" width="0.1524" layer="91"/>
-<label x="12.7" y="99.06" size="1.27" layer="95" font="vector" rot="R180" xref="yes"/>
+<wire x1="17.78" y1="99.06" x2="15.24" y2="99.06" width="0.1524" layer="91"/>
+<label x="15.24" y="99.06" size="1.27" layer="95" font="vector" rot="R180" xref="yes"/>
 <pinref part="SJ1" gate="G$1" pin="2"/>
 </segment>
 <segment>
@@ -18268,14 +18268,12 @@ or by the Pi Module</text>
 <net name="N$33" class="0">
 <segment>
 <pinref part="SJ1" gate="G$1" pin="1"/>
-<wire x1="38.1" y1="99.06" x2="35.56" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="R15" gate="G$1" pin="2"/>
 <wire x1="35.56" y1="99.06" x2="33.02" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="33.02" y1="99.06" x2="27.94" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="33.02" y1="101.6" x2="33.02" y2="99.06" width="0.1524" layer="91"/>
 <junction x="33.02" y="99.06"/>
 <pinref part="Q1" gate="G$1" pin="G"/>
-<junction x="35.56" y="99.06"/>
 </segment>
 </net>
 <net name="5V_RFID_TX" class="0">
@@ -19465,13 +19463,6 @@ or by the Pi Module</text>
 <errors>
 <approved hash="102,1,86.36,231.14,5V0,+5VB,,,,"/>
 <approved hash="102,1,86.36,228.6,5V0,+5VB,,,,"/>
-<approved hash="104,1,35.56,27.94,IC300,VDD,+5VB,,,"/>
-<approved hash="104,1,287.02,246.38,IC13,VBAT,V_BATT,,,"/>
-<approved hash="104,1,266.7,246.38,IC13,VIN,+5VIN,,,"/>
-<approved hash="104,1,287.02,241.3,IC13,VSS,GND,,,"/>
-<approved hash="104,1,175.26,172.72,IC16,VCC,+3.3V,,,"/>
-<approved hash="104,1,175.26,238.76,IC200,IN1,V_BATT,,,"/>
-<approved hash="104,1,175.26,236.22,IC200,IN2,+5VIN,,,"/>
 <approved hash="208,1,33.02,55.88,+5VB,sup,,,,"/>
 <approved hash="208,1,15.24,33.02,+5VB,sup,,,,"/>
 <approved hash="208,1,83.82,30.48,+5VB,sup,,,,"/>
@@ -19491,7 +19482,6 @@ or by the Pi Module</text>
 <approved hash="208,1,347.98,248.92,+5VB,sup,,,,"/>
 <approved hash="208,1,210.82,238.76,+5VB,out,,,,"/>
 <approved hash="208,1,213.36,254,+5VB,sup,,,,"/>
-<approved hash="208,1,144.78,236.22,+5VB,sup,,,,"/>
 <approved hash="106,1,38.1,205.74,LCD_MISO,,,,,"/>
 </errors>
 </schematic>

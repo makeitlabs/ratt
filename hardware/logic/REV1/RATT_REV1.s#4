@@ -17067,10 +17067,22 @@ or by the Pi Module</text>
 <attribute name="NAME" x="303.3014" y="74.93" size="1.27" layer="95" font="vector" rot="R90"/>
 <attribute name="VALUE" x="307.594" y="80.01" size="1.27" layer="96" font="vector" rot="R90"/>
 </instance>
-<instance part="J5" gate="G$1" x="182.88" y="96.52"/>
-<instance part="J8" gate="G$1" x="182.88" y="76.2"/>
-<instance part="J9" gate="G$1" x="182.88" y="55.88"/>
-<instance part="J6" gate="G$1" x="182.88" y="35.56"/>
+<instance part="J5" gate="G$1" x="182.88" y="96.52" smashed="yes">
+<attribute name="NAME" x="186.69" y="94.996" size="1.27" layer="95" ratio="10"/>
+<attribute name="VALUE" x="181.61" y="101.6" size="1.27" layer="96" ratio="10"/>
+</instance>
+<instance part="J8" gate="G$1" x="182.88" y="76.2" smashed="yes">
+<attribute name="NAME" x="186.182" y="74.676" size="1.27" layer="95" ratio="10"/>
+<attribute name="VALUE" x="181.61" y="81.28" size="1.27" layer="96" ratio="10"/>
+</instance>
+<instance part="J9" gate="G$1" x="182.88" y="55.88" smashed="yes">
+<attribute name="NAME" x="186.182" y="54.102" size="1.27" layer="95" ratio="10"/>
+<attribute name="VALUE" x="181.61" y="60.96" size="1.27" layer="96" ratio="10"/>
+</instance>
+<instance part="J6" gate="G$1" x="182.88" y="35.56" smashed="yes">
+<attribute name="NAME" x="186.436" y="33.528" size="1.27" layer="95" ratio="10"/>
+<attribute name="VALUE" x="181.61" y="40.64" size="1.27" layer="96" ratio="10"/>
+</instance>
 <instance part="SUPPLY31" gate="GND" x="167.64" y="25.4" smashed="yes">
 <attribute name="VALUE" x="165.735" y="22.225" size="1.778" layer="96"/>
 </instance>

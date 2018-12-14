@@ -11270,7 +11270,6 @@ Test Pad&lt;br&gt;
 <part name="R4" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="270R"/>
 <part name="R12" library="MakeItLabs" deviceset="RESISTOR" device="0603" value="10K"/>
 <part name="SUPPLY27" library="MakeItLabs" deviceset="GND" device=""/>
-<part name="SUPPLY66" library="MakeItLabs" deviceset="+5VB" device=""/>
 <part name="C8" library="MakeItLabs" deviceset="CAP" device="0603" value="0.1uF"/>
 <part name="SUPPLY74" library="MakeItLabs" deviceset="GND" device=""/>
 <part name="C3" library="MakeItLabs" deviceset="CAP" device="0603" value="0.1uF"/>
@@ -11891,7 +11890,6 @@ or by the Pi Module</text>
 <instance part="SUPPLY27" gate="GND" x="152.4" y="208.28" smashed="yes">
 <attribute name="VALUE" x="150.495" y="205.105" size="1.27" layer="96" font="vector"/>
 </instance>
-<instance part="SUPPLY66" gate="G$1" x="144.78" y="236.22"/>
 <instance part="C8" gate="G$1" x="172.72" y="251.46" smashed="yes">
 <attribute name="NAME" x="174.244" y="254.381" size="1.778" layer="95" font="vector"/>
 <attribute name="VALUE" x="174.244" y="249.301" size="1.778" layer="96" font="vector"/>
@@ -13727,15 +13725,6 @@ or by the Pi Module</text>
 <wire x1="213.36" y1="238.76" x2="213.36" y2="254" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="IC2" gate="A" pin="D0"/>
-<pinref part="R8" gate="G$1" pin="2"/>
-<wire x1="175.26" y1="231.14" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
-<wire x1="144.78" y1="231.14" x2="144.78" y2="226.06" width="0.1524" layer="91"/>
-<pinref part="SUPPLY66" gate="G$1" pin="+5VB"/>
-<wire x1="144.78" y1="236.22" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
-<junction x="144.78" y="231.14"/>
-</segment>
-<segment>
 <pinref part="TP3" gate="G$1" pin="TP"/>
 <pinref part="SUPPLY97" gate="G$1" pin="+5VB"/>
 <wire x1="386.08" y1="208.28" x2="386.08" y2="210.82" width="0.1524" layer="91"/>
@@ -13917,18 +13906,18 @@ or by the Pi Module</text>
 </net>
 <net name="SHUTDOWN" class="0">
 <segment>
-<pinref part="IC2" gate="A" pin="D1"/>
-<wire x1="175.26" y1="228.6" x2="152.4" y2="228.6" width="0.1524" layer="91"/>
-<pinref part="R6" gate="G$1" pin="2"/>
-<wire x1="152.4" y1="228.6" x2="152.4" y2="226.06" width="0.1524" layer="91"/>
-<wire x1="152.4" y1="228.6" x2="139.7" y2="228.6" width="0.1524" layer="91"/>
-<junction x="152.4" y="228.6"/>
-<label x="139.7" y="228.6" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="J100" gate="G$1" pin="GPIO27/GEN2"/>
 <wire x1="38.1" y1="215.9" x2="33.02" y2="215.9" width="0.1524" layer="91"/>
 <label x="33.02" y="215.9" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="A" pin="D0"/>
+<pinref part="R8" gate="G$1" pin="2"/>
+<wire x1="175.26" y1="231.14" x2="144.78" y2="231.14" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="231.14" x2="144.78" y2="226.06" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="231.14" x2="142.24" y2="231.14" width="0.1524" layer="91"/>
+<junction x="144.78" y="231.14"/>
+<label x="142.24" y="231.14" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$10" class="0">
@@ -13943,6 +13932,14 @@ or by the Pi Module</text>
 <pinref part="LCD100" gate="G$1" pin="LED+"/>
 <pinref part="R14" gate="G$1" pin="2"/>
 <wire x1="60.96" y1="99.06" x2="63.5" y2="99.06" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$26" class="0">
+<segment>
+<pinref part="R6" gate="G$1" pin="2"/>
+<wire x1="152.4" y1="226.06" x2="152.4" y2="228.6" width="0.1524" layer="91"/>
+<pinref part="IC2" gate="A" pin="D1"/>
+<wire x1="152.4" y1="228.6" x2="175.26" y2="228.6" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
