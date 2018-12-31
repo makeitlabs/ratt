@@ -38,16 +38,30 @@
 #
 
 import sys
-from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtGui import QGuiApplication, QFont
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QUrl
 from RattAppEngine import RattAppEngine
 
 if __name__ == '__main__':
+    # turn on backlight
     fd = open('/sys/class/backlight/fb_st7735r/bl_power', 'w+')
     fd.write('1')
     fd.close()
 
     app = QGuiApplication(sys.argv)
+
+    # Available fonts on RATT image:
+    # AR PL UMing CN, AR PL UMing HK, AR PL UMing TW, AR PL UMing TW MBE,
+    # Bitstream Vera Sans, Bitstream Vera Sans Mono, Bitstream Vera Serif,
+    # DejaVu Sans, DejaVu Sans Condensed, DejaVu Sans Mono,
+    # Liberation Mono, Liberation Sans,
+    # Monospace, Sans Serif, Serif,
+    # Sazanami Gothic, Sazanami Mincho,
+    # Ubuntu, Ubuntu Condensed, Ubuntu Light,Ubuntu Mono
+    font = QFont("Ubuntu", 12)
+    app.setFont(font)
+
+
     engine = RattAppEngine()
     engine.load(QUrl('main.qml'))
     engine.quit.connect(app.quit)
