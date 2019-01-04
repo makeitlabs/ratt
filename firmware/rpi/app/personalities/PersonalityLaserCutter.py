@@ -43,7 +43,7 @@ class Personality(PersonalitySimple):
     #############################################
     ## Tool Personality: Laser Cutter
     #############################################
-    PERSONALITY_DESCRIPTION = 'Laser Cutter'
+    PERSONALITY_DESCRIPTION = 'LaserCutter'
 
     def __init__(self, *args, **kwargs):
         PersonalitySimple.__init__(self, *args, **kwargs)
