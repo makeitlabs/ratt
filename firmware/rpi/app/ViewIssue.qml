@@ -148,30 +148,6 @@ View {
         }
     ]
 
-
-    ListModel {
-        id: issuesModel
-
-        ListElement {
-            name: "Acting funny"
-        }
-        ListElement {
-            name: "Needs maintenance"
-        }
-        ListElement {
-            name: "Does not function"
-        }
-        ListElement {
-            name: "Caught fire"
-        }
-        ListElement {
-            name: "Exploded"
-        }
-        ListElement {
-            name: "Exploded Twice"
-        }
-    }
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 2
@@ -192,7 +168,7 @@ View {
             Layout.fillHeight: true
             visible: root.state == "list"
 
-            model: issuesModel
+            model: config.Issues
 
             style: TableViewStyle { }
             headerVisible: false
@@ -201,8 +177,8 @@ View {
             selectionMode: SelectionMode.SingleSelection
 
             selection.onSelectionChanged: {
-              if (issuesModel && issueTable && issueTable.currentRow != -1) {
-                currentIssue = issuesModel.get(issueTable.currentRow).name;
+              if (config.Issues && issueTable && issueTable.currentRow != -1) {
+                currentIssue = config.Issues[issueTable.currentRow].name;
               }
             }
 

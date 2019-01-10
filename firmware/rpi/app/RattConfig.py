@@ -37,7 +37,26 @@
 #
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtQml import QQmlListProperty, qmlRegisterType
 import ConfigParser
+
+class Issue(QObject):
+    nameChanged = pyqtSignal()
+
+    def __init__(self, name='', *args, **kwargs):
+        super(Issue, self).__init__(*args, **kwargs)
+        self._name = name
+
+    @pyqtProperty('QString', notify=nameChanged)
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        if name != self._name:
+            self._name = name
+            self.nameChanged.emit()
+
 
 class RattConfig(QObject):
     configChanged = pyqtSignal()
@@ -47,6 +66,7 @@ class RattConfig(QObject):
 
         self._inifile = inifile
 
+        qmlRegisterType(Issue, 'RATT', 1, 0, 'Channel')
         self.loadConfig()
 
     #---------------------------------------------------------------------------------------------
@@ -157,6 +177,17 @@ class RattConfig(QObject):
     def Sound_LiftIncorrect(self):
         return self.config['Sound.LiftIncorrect']
 
+    @pyqtProperty(str, notify=configChanged)
+    def Issues_Count(self):
+        return len(self.parser.items('Issues'))
+
+    @pyqtProperty(QQmlListProperty, notify=configChanged)
+    def Issues(self):
+        list = []
+        for pair in self.parser.items('Issues'):
+            (name, descr) = pair
+            list.append(Issue(name=descr))
+        return QQmlListProperty(Issue, self, list)
 
     #---------------------------------------------------------------------------------------------
 
@@ -258,5 +289,9 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'LiftInstructions', '')
         self.addConfig('Sound', 'LiftCorrect', '')
         self.addConfig('Sound', 'LiftIncorrect', '')
+
+        for i in self.parser.items('Issues'):
+            (n, v) = i
+            self.addConfig('Issues', n)
 
         self.configChanged.emit()
