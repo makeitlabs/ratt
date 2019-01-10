@@ -300,8 +300,18 @@ class Personality(PersonalityBase):
             return self.goActive()
 
         elif self.phACTIVE:
-            if self.wakereason == self.REASON_UI and self.uievent == 'AccessDone':
-                return self.exitAndGoto(self.STATE_IDLE)
+            if self.wakereason == self.REASON_UI:
+                if self.uievent == 'AccessDone' or self.uievent == 'PasswordIncorrect':
+                    self.telemetryEvent.emit('personality/login', json.dumps({'allowed': False, 'member': self.activeMemberRecord.name, 'usedPassword': True}))
+                    return self.exitAndGoto(self.STATE_IDLE)
+                if self.uievent == 'PasswordCorrect':
+                    self.telemetryEvent.emit('personality/login', json.dumps({'allowed': True, 'member': self.activeMemberRecord.name, 'usedPassword': True}))
+                    if self._performSafetyCheck:
+                        return self.exitAndGoto(self.STATE_SAFETY_CHECK)
+                    else:
+                        self.enableTool()
+                        return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+
 
             return False
 

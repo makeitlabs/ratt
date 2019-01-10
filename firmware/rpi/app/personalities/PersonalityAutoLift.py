@@ -36,13 +36,17 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PersonalityBase import PersonalityBase
+from QtGPIO import LOW, HIGH
+from PersonalitySimple import Personality as PersonalitySimple
 
-class Personality(PersonalityBase):
+class Personality(PersonalitySimple):
     #############################################
     ## Tool Personality: Auto Lift
     #############################################
-    PERSONALITY_DESCRIPTION = 'Auto Lift'
+    PERSONALITY_DESCRIPTION = 'AutoLift'
 
     def __init__(self, *args, **kwargs):
-        PersonalityBase.__init__(self, *args, **kwargs)
+        PersonalitySimple.__init__(self, *args, **kwargs)
+
+        self._performSafetyCheck = False
+        self._monitorToolPower = False

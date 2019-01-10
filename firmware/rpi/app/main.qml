@@ -83,10 +83,16 @@ ApplicationWindow {
                     switchTo(viewAccess);
                     break;
                 case "AccessAllowed":
-                case "AccessDenied":
                 case "RFIDError":
                     switchTo(viewAccess);
                     break;
+                case "AccessDenied":
+                  if (config.Personality_PasswordEnabled) {
+                    switchTo(viewPassword);
+                  } else {
+                    switchTo(viewAccess);
+                  }
+                  break;
                 case "ReportIssue":
                     switchTo(viewIssue);
                     break;
@@ -183,6 +189,10 @@ ApplicationWindow {
                 }
                 ViewAccess {
                     id: viewAccess
+                    visible: false
+                }
+                ViewPassword {
+                    id: viewPassword
                     visible: false
                 }
                 ViewSafetyCheck {

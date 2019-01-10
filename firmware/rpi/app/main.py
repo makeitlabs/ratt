@@ -43,10 +43,13 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QUrl
 from RattAppEngine import RattAppEngine
 
 if __name__ == '__main__':
-    # turn on backlight
-    fd = open('/sys/class/backlight/fb_st7735r/bl_power', 'w+')
-    fd.write('1')
-    fd.close()
+    try:
+        # turn on backlight
+        fd = open('/sys/class/backlight/fb_st7735r/bl_power', 'w+')
+        fd.write('1')
+        fd.close()
+    except:
+        pass
 
     app = QGuiApplication(sys.argv)
 

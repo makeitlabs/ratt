@@ -74,6 +74,26 @@ class RattConfig(QObject):
         return self.config['Personality.TimeoutWarningSeconds']
 
     @pyqtProperty(str, notify=configChanged)
+    def Personality_Password(self):
+        return self.config['Personality.Password']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Personality_PasswordPrompt(self):
+        return self.config['Personality.PasswordPrompt']
+
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_PasswordEnabled(self):
+        return self.config['Personality.PasswordEnabled']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Personality_PasswordCorrectText(self):
+        return self.config['Personality.PasswordCorrectText']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Personality_PasswordIncorrectText(self):
+        return self.config['Personality.PasswordIncorrectText']
+
+    @pyqtProperty(str, notify=configChanged)
     def General_ToolDesc(self):
         return self.config['General.ToolDesc']
 
@@ -177,6 +197,11 @@ class RattConfig(QObject):
         self.addConfig('Personality', 'LogLevel', 'INFO')
         self.addConfigInt('Personality', 'TimeoutSeconds')
         self.addConfigInt('Personality', 'TimeoutWarningSeconds')
+        self.addConfigBool('Personality', 'PasswordEnabled', False)
+        self.addConfig('Personality', 'Password', 'RATT')
+        self.addConfig('Personality', 'PasswordPrompt', 'Password')
+        self.addConfig('Personality', 'PasswordCorrectText', 'Thank you, that is correct.')
+        self.addConfig('Personality', 'PasswordIncorrectText', 'Sorry, that is incorrect.')
 
         self.addConfig('Auth', 'LogLevel', 'INFO')
         self.addConfig('Auth', 'ResourceId')
