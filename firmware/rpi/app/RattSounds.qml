@@ -50,6 +50,9 @@ Item {
     property alias rfidSuccessAudio: rfidSuccessAudio
     property alias rfidFailureAudio: rfidFailureAudio
     property alias rfidErrorAudio: rfidErrorAudio
+    property alias liftInstructionsAudio: liftInstructionsAudio
+    property alias liftCorrectAudio: liftCorrectAudio
+    property alias liftIncorrectAudio: liftIncorrectAudio
 
     Component.onCompleted: {
       if (config.Sound_EnableSilenceLoop) {
@@ -102,4 +105,17 @@ Item {
         id: reportSuccessAudio
         source: config.Sound_ReportSuccess
     }
+    SoundEffect {
+        id: liftInstructionsAudio
+        source: config.Sound_LiftInstructions
+    }
+    SoundEffect {
+        id: liftCorrectAudio
+        source: config.Sound_LiftCorrect
+    }
+    SoundEffect {
+        id: liftIncorrectAudio
+        source: config.Sound_LiftIncorrect
+    }
+
 }

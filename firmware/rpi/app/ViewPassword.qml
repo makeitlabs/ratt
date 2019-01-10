@@ -60,6 +60,29 @@ View {
         }
     ]
 
+    function keyUp() {
+      sound.liftInstructionsAudio.stop();
+      timeoutTimer.restart();
+      return true;
+    }
+    function keyDown() {
+      sound.liftInstructionsAudio.stop();
+      timeoutTimer.restart();
+      return true;
+    }
+
+    function keyEscape() {
+      sound.liftInstructionsAudio.stop();
+      timeoutTimer.restart();
+      return true;
+    }
+    function keyReturn() {
+      sound.liftInstructionsAudio.stop();
+      timeoutTimer.restart();
+      return true;
+    }
+
+
     function updateActiveKeys() {
         switch(state) {
         case "pw":
@@ -98,6 +121,10 @@ View {
       updateActiveKeys();
 
       root.state = "pw";
+
+      sound.liftInstructionsAudio.play();
+
+      timeoutTimer.start();
     }
 
     function _hide() {
@@ -106,25 +133,29 @@ View {
         tableC.focus = false;
         tableD.focus = false;
         root.focus = false;
+        timeoutTimer.stop();
     }
 
     function checkPassword() {
       var pw = tableA.getValue() + tableB.getValue() + tableC.getValue() + tableD.getValue();
+
+      sound.liftInstructionsAudio.stop();
+
       if (pw == config.Personality_Password) {
         root.state = 'correct';
         messageText = config.Personality_PasswordCorrectText
         scrollReason = false;
-        showTimer.interval = 1500;
+        showTimer.interval = 2500;
         delayTimer.start();
-        sound.rfidSuccessAudio.play();
+        sound.liftCorrectAudio.play();
 
       } else {
         root.state = 'incorrect';
         messageText = config.Personality_PasswordIncorrectText
         scrollReason = false;
-        showTimer.interval = 1500;
+        showTimer.interval = 2500;
         delayTimer.start();
-        sound.rfidFailureAudio.play();
+        sound.liftIncorrectAudio.play();
       }
     }
 
@@ -148,7 +179,19 @@ View {
         }
     }
 
+    Timer {
+        id: timeoutTimer
+        interval: 60000
+        repeat: false
+        running: false
+        onTriggered: {
+            done();
+        }
+    }
+
+
     function done() {
+        sound.liftInstructionsAudio.stop();
         resetTables();
 
         if (root.state == "correct")
@@ -268,11 +311,12 @@ View {
               Layout.preferredHeight: 45
               Keys.onPressed: {
                   if (event.key === Qt.Key_Escape) {
-                      done();
-                      event.accepted = true;
+                    sound.keyAudio.play();
+                    done();
+                    event.accepted = true;
                   } else if (event.key === Qt.Key_Return) {
+                    sound.keyAudio.play();
                     tableB.forceActiveFocus();
-
                     event.accepted = true;
                   }
               }
@@ -283,9 +327,11 @@ View {
               Layout.preferredHeight: 45
               Keys.onPressed: {
                   if (event.key === Qt.Key_Escape) {
+                    sound.keyAudio.play();
                     tableA.forceActiveFocus();
                     event.accepted = true;
                   } else if (event.key === Qt.Key_Return) {
+                    sound.keyAudio.play();
                     tableC.forceActiveFocus();
                     event.accepted = true;
                   }
@@ -297,9 +343,11 @@ View {
               Layout.preferredHeight: 45
               Keys.onPressed: {
                   if (event.key === Qt.Key_Escape) {
+                    sound.keyAudio.play();
                     tableB.forceActiveFocus();
                     event.accepted = true;
                   } else if (event.key === Qt.Key_Return) {
+                    sound.keyAudio.play();
                     tableD.forceActiveFocus();
                     event.accepted = true;
                   }
@@ -311,9 +359,11 @@ View {
               Layout.preferredHeight: 45
               Keys.onPressed: {
                   if (event.key === Qt.Key_Escape) {
+                    sound.keyAudio.play();
                     tableC.forceActiveFocus();
                     event.accepted = true;
                   } else if (event.key === Qt.Key_Return) {
+                    sound.keyAudio.play();
                     checkPassword();
                     event.accepted = true;
                   }

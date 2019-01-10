@@ -145,6 +145,19 @@ class RattConfig(QObject):
     def Sound_ReportSuccess(self):
         return self.config['Sound.ReportSuccess']
 
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_LiftInstructions(self):
+        return self.config['Sound.LiftInstructions']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_LiftCorrect(self):
+        return self.config['Sound.LiftCorrect']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_LiftIncorrect(self):
+        return self.config['Sound.LiftIncorrect']
+
+
     #---------------------------------------------------------------------------------------------
 
     def value(self, key):
@@ -242,5 +255,8 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'Disable')
         self.addConfig('Sound', 'TimeoutWarning')
         self.addConfig('Sound', 'ReportSuccess')
+        self.addConfig('Sound', 'LiftInstructions', '')
+        self.addConfig('Sound', 'LiftCorrect', '')
+        self.addConfig('Sound', 'LiftIncorrect', '')
 
         self.configChanged.emit()
