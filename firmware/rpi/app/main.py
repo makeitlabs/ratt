@@ -46,7 +46,7 @@ if __name__ == '__main__':
     try:
         # turn on backlight
         fd = open('/sys/class/backlight/fb_st7735r/bl_power', 'w+')
-        fd.write('1')
+        fd.write('0')
         fd.close()
     except:
         pass
