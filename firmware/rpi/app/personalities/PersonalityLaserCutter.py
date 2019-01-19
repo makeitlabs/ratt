@@ -93,7 +93,7 @@ class Personality(PersonalitySimple):
                     return self.exitAndGoto(self.STATE_HOMING_FAILED)
 
             if self.wakereason == self.REASON_UI:
-                if self.uievent == 'HomingAborted':
+                if self.uievent == 'HomingAborted' or self.uievent == 'HomingTimeout':
                     return self.exitAndGoto(self.STATE_IDLE)
                 elif self.uievent == 'HomingOverride':
                     return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)

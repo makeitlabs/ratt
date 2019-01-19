@@ -43,51 +43,66 @@ View {
     name: "Homing"
 
     function _show() {
-        status.keyEscActive = true;
-        status.keyReturnActive = true;
-        status.keyUpActive = false;
-        status.keyDownActive = false;
+      status.keyEscActive = true;
+      status.keyReturnActive = true;
+      status.keyUpActive = false;
+      status.keyDownActive = false;
 
-        gentleReminderTimer.start();
-        audioInstructionTimer.start();
+      sound.generalAlertAudio.play();
+      gentleReminderTimer.start();
+      audioInstructionTimer.start();
+      timeoutTimer.start();
     }
 
     function _hide() {
-        audioInstructionTimer.stop();
-        gentleReminderTimer.stop();
-        sound.homingInstructionsAudio.stop();
+      timeoutTimer.stop();
+      audioInstructionTimer.stop();
+      gentleReminderTimer.stop();
+      sound.homingInstructionsAudio.stop();
     }
 
     function keyEscape(pressed) {
-        overrideTimer.stop();
-        appWindow.uiEvent('HomingAborted');
+      overrideTimer.stop();
+      appWindow.uiEvent('HomingAborted');
 
-        return true;
+      return true;
     }
 
     function keyReturn(pressed) {
-        if (pressed)
-          overrideTimer.start();
-        else
-          overrideTimer.stop();
+      if (pressed)
+        overrideTimer.start();
+      else
+        overrideTimer.stop();
 
-        return true;
+      return true;
     }
 
     Timer {
-        id: overrideTimer
-        interval: 3000
-        running: false
-        repeat: false
-        onTriggered: {
-            stop();
-            appWindow.uiEvent('HomingOverride');
-        }
+      id: overrideTimer
+      interval: 3000
+      running: false
+      repeat: false
+      onTriggered: {
+          stop();
+          appWindow.uiEvent('HomingOverride');
+      }
     }
+
+    Timer {
+      id: timeoutTimer
+      interval: 60000
+      running: false
+      repeat: false
+      onTriggered: {
+          stop();
+          appWindow.uiEvent('HomingTimeout');
+      }
+    }
+
 
     Timer {
       id: gentleReminderTimer
-      interval: 2000
+      interval: 3000
       running: false
       repeat: true
       onTriggered: {
@@ -96,14 +111,14 @@ View {
     }
 
     Timer {
-        id: audioInstructionTimer
-        interval: 15000
-        running: false
-        repeat: true
-        onTriggered: {
-          sound.homingInstructionsAudio.play();
-          interval = 30000;
-        }
+      id: audioInstructionTimer
+      interval: 15000
+      running: false
+      repeat: true
+      onTriggered: {
+        sound.homingInstructionsAudio.play();
+        interval = 30000;
+      }
     }
 
     Connections {
