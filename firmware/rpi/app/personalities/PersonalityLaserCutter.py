@@ -83,6 +83,9 @@ class Personality(PersonalitySimple):
             return self.goActive()
 
         elif self.phACTIVE:
+            if self._monitorToolPower and not self.toolPowered():
+                return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED)
+
             if self.wakereason == self.REASON_GPIO:
                 if self.toolHomed():
                     return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
