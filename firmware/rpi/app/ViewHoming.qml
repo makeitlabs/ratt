@@ -44,7 +44,7 @@ View {
 
     function _show() {
       status.keyEscActive = true;
-      status.keyReturnActive = true;
+      status.keyReturnActive = config.Personality_HomingManualOverrideEnabled;
       status.keyUpActive = false;
       status.keyDownActive = false;
 
@@ -69,10 +69,12 @@ View {
     }
 
     function keyReturn(pressed) {
-      if (pressed)
-        overrideTimer.start();
-      else
-        overrideTimer.stop();
+      if (config.Personality_HomingManualOverrideEnabled) {
+        if (pressed)
+          overrideTimer.start();
+        else
+          overrideTimer.stop();
+      }
 
       return true;
     }

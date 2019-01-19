@@ -64,9 +64,15 @@ class Personality(PersonalitySimple):
 
         self._needsHoming = True
 
-    # returns true if the tool is currently active
+    # returns true if the tool is currently homed (generally connected to the
+    # Y limit switch on a laser gantry)
     def toolHomed(self):
         return (self.pins_in[2].get() == 0)
+
+    # returns true if homing requirement should be overridden because of an external
+    # condition like using the rotary attachment
+    def toolHomingOverride(self):
+        return (self.pins_in[3].get() == 0)
 
     #############################################
     ## STATE_TOOL_NOT_POWERED
@@ -101,6 +107,8 @@ class Personality(PersonalitySimple):
             self.pin_led1.set(HIGH)
             if self.toolActive():
                 return self.exitAndGoto(self.STATE_HOMING_FAILED)
+            elif self.toolHomingOverride() and self.app.config.value('Personality.HomingExternalOverrideEnabled'):
+                return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
             elif self.toolHomed():
                 return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
             return self.goActive()
@@ -113,13 +121,15 @@ class Personality(PersonalitySimple):
                 if self.toolHomed():
                     self._needsHoming = False
                     return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+                elif self.toolHomingOverride() and self.app.config.value('Personality.HomingExternalOverrideEnabled'):
+                    return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
                 elif self.toolActive():
                     return self.exitAndGoto(self.STATE_HOMING_FAILED)
 
             if self.wakereason == self.REASON_UI:
                 if self.uievent == 'HomingAborted' or self.uievent == 'HomingTimeout':
                     return self.exitAndGoto(self.STATE_IDLE)
-                elif self.uievent == 'HomingOverride':
+                elif self.uievent == 'HomingOverride' and self.app.config.value('Personality.HomingManualOverrideEnabled'):
                     return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
 
             return False
