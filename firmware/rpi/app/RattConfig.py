@@ -142,6 +142,10 @@ class RattConfig(QObject):
         return self.config['Sound.KeyPress']
 
     @pyqtProperty(str, notify=configChanged)
+    def Sound_GeneralAlert(self):
+        return self.config['Sound.GeneralAlert']
+
+    @pyqtProperty(str, notify=configChanged)
     def Sound_RFIDSuccess(self):
         return self.config['Sound.RFIDSuccess']
 
@@ -184,6 +188,18 @@ class RattConfig(QObject):
     @pyqtProperty(str, notify=configChanged)
     def Sound_LiftIncorrect(self):
         return self.config['Sound.LiftIncorrect']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_HomingInstructions(self):
+        return self.config['Sound.HomingInstructions']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_HomingWarning(self):
+        return self.config['Sound.HomingWarning']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_HomingOverride(self):
+        return self.config['Sound.HomingOverride']
 
     @pyqtProperty(str, notify=configChanged)
     def Issues_Count(self):
@@ -286,19 +302,23 @@ class RattConfig(QObject):
         self.addConfigInt('RFID', 'SimulatedTag', 0)
 
         self.addConfigBool('Sound', 'EnableSilenceLoop', True)
-        self.addConfig('Sound', 'Silence')
-        self.addConfig('Sound', 'KeyPress')
-        self.addConfig('Sound', 'RFIDSuccess')
-        self.addConfig('Sound', 'RFIDFailure')
-        self.addConfig('Sound', 'RFIDError')
-        self.addConfig('Sound', 'SafetyFailed')
-        self.addConfig('Sound', 'Enable')
-        self.addConfig('Sound', 'Disable')
-        self.addConfig('Sound', 'TimeoutWarning')
-        self.addConfig('Sound', 'ReportSuccess')
+        self.addConfig('Sound', 'Silence', '')
+        self.addConfig('Sound', 'KeyPress', '')
+        self.addConfig('Sound', 'GeneralAlert', '')
+        self.addConfig('Sound', 'RFIDSuccess', '')
+        self.addConfig('Sound', 'RFIDFailure', '')
+        self.addConfig('Sound', 'RFIDError', '')
+        self.addConfig('Sound', 'SafetyFailed', '')
+        self.addConfig('Sound', 'Enable', '')
+        self.addConfig('Sound', 'Disable', '')
+        self.addConfig('Sound', 'TimeoutWarning', '')
+        self.addConfig('Sound', 'ReportSuccess', '')
         self.addConfig('Sound', 'LiftInstructions', '')
         self.addConfig('Sound', 'LiftCorrect', '')
         self.addConfig('Sound', 'LiftIncorrect', '')
+        self.addConfig('Sound', 'HomingInstructions', '')
+        self.addConfig('Sound', 'HomingWarning', '')
+        self.addConfig('Sound', 'HomingOverride', '')
 
         for i in self.parser.items('Issues'):
             (n, v) = i

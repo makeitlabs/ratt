@@ -42,6 +42,7 @@ import RATT 1.0
 
 Item {
     property alias keyAudio: keyAudio
+    property alias generalAlertAudio: generalAlertAudio
     property alias safetyFailedAudio: safetyFailedAudio
     property alias enableAudio: enableAudio
     property alias disableAudio: disableAudio
@@ -53,6 +54,9 @@ Item {
     property alias liftInstructionsAudio: liftInstructionsAudio
     property alias liftCorrectAudio: liftCorrectAudio
     property alias liftIncorrectAudio: liftIncorrectAudio
+    property alias homingInstructionsAudio: homingInstructionsAudio
+    property alias homingWarningAudio: homingWarningAudio
+    property alias homingOverrideAudio: homingOverrideAudio
 
     Component.onCompleted: {
       if (config.Sound_EnableSilenceLoop) {
@@ -71,6 +75,10 @@ Item {
     SoundEffect {
         id: keyAudio
         source: config.Sound_KeyPress
+    }
+    SoundEffect {
+        id: generalAlertAudio
+        source: config.Sound_GeneralAlert
     }
     SoundEffect {
         id: rfidSuccessAudio
@@ -117,5 +125,16 @@ Item {
         id: liftIncorrectAudio
         source: config.Sound_LiftIncorrect
     }
-
+    SoundEffect {
+        id: homingInstructionsAudio
+        source: config.Sound_HomingInstructions
+    }
+    SoundEffect {
+        id: homingWarningAudio
+        source: config.Sound_HomingWarning
+    }
+    SoundEffect {
+        id: homingOverrideAudio
+        source: config.Sound_HomingOverride
+    }
 }

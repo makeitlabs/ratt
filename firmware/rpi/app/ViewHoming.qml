@@ -47,6 +47,15 @@ View {
         status.keyReturnActive = true;
         status.keyUpActive = false;
         status.keyDownActive = false;
+
+        gentleReminderTimer.start();
+        audioInstructionTimer.start();
+    }
+
+    function _hide() {
+        audioInstructionTimer.stop();
+        gentleReminderTimer.stop();
+        sound.homingInstructionsAudio.stop();
     }
 
     function keyEscape(pressed) {
@@ -76,23 +85,75 @@ View {
         }
     }
 
+    Timer {
+      id: gentleReminderTimer
+      interval: 2000
+      running: false
+      repeat: true
+      onTriggered: {
+        sound.generalAlertAudio.play();
+      }
+    }
+
+    Timer {
+        id: audioInstructionTimer
+        interval: 15000
+        running: false
+        repeat: true
+        onTriggered: {
+          sound.homingInstructionsAudio.play();
+          interval = 30000;
+        }
+    }
+
+    Connections {
+      target: sound.homingInstructionsAudio
+
+      onPlayingChanged: {
+        if (target.playing) {
+          gentleReminderTimer.stop();
+        } else {
+          gentleReminderTimer.start();
+        }
+      }
+    }
+
+    SequentialAnimation {
+        running: shown
+        loops: Animation.Infinite
+        ColorAnimation {
+            target: root
+            property: "color"
+            from: "#cc0000"
+            to: "#0000cc"
+            duration: 1000
+        }
+        ColorAnimation {
+            target: root
+            property: "color"
+            from: "#0000cc"
+            to: "#cc0000"
+            duration: 1000
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         Label {
             Layout.fillWidth: true
-            text: "HOME LASER NOW"
+            text: "HOME GANTRY"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 16
+            font.pixelSize: 18
             font.weight: Font.Bold
-            color: "#000000"
+            color: "#ffffff"
         }
         Label {
             Layout.fillWidth: true
             text: "PRESS XY-0"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
+            font.pixelSize: 20
             font.weight: Font.DemiBold
-            color: "#000099"
+            color: "#ffff00"
         }
     }
 }

@@ -46,7 +46,7 @@ View {
 
     function _show() {
         showTimer.start();
-        sound.safetyFailedAudio.play();
+        sound.homingOverrideAudio.play();
     }
 
     function done() {
