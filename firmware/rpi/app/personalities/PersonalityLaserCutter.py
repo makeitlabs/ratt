@@ -43,6 +43,10 @@ import simplejson as json
 class Personality(PersonalitySimple):
     #############################################
     ## Tool Personality: Laser Cutter
+    ##
+    ## Supports forcing homing after power-up via detection of the Y limit switch
+    ## Homing is enabled via Personality.SafetyCheckEnabled in the .ini
+    ## Requires that Personality.MonitorToolPowerEnabled is also enabled
     #############################################
     PERSONALITY_DESCRIPTION = 'LaserCutter'
 
@@ -58,22 +62,41 @@ class Personality(PersonalitySimple):
         self.states[self.STATE_HOMING_FAILED] = self.stateHomingFailed
         self.states[self.STATE_HOMING_OVERRIDE] = self.stateHomingOverride
 
+        self._needsHoming = True
+
     # returns true if the tool is currently active
     def toolHomed(self):
         return (self.pins_in[2].get() == 0)
 
     #############################################
+    ## STATE_TOOL_NOT_POWERED
+    ## For laser cutters, we hook into the tool not powered idle state to
+    ## set the 'homing required' flag, so that at next power-up homing must
+    ## be done
+    #############################################
+    def stateToolNotPowered(self):
+        if self.phENTER:
+            self.logger.info('laser stateToolNotPowered enter')
+            self._needsHoming = True
+
+        return super(Personality, self).stateToolNotPowered()
+
+    #############################################
     ## STATE_SAFETY_CHECK
-    ## For laser cutters we hook into the safety check to perform XY homing check
+    ## For laser cutters we steal the safety check state to perform XY homing check if needed
     #############################################
     def stateSafetyCheck(self):
-        return self.goto(self.STATE_HOMING)
+        if self._needsHoming:
+            return self.goto(self.STATE_HOMING)
+        else:
+            return self.goto(self.STATE_TOOL_ENABLED_INACTIVE)
 
     #############################################
     ## STATE_HOMING
+    ## once homed we set the 'needs homing' flag to false since homing will be
+    ## valid for the remainder of the time the laser remains powered up
     #############################################
     def stateHoming(self):
-
         if self.phENTER:
             self.pin_led1.set(HIGH)
             if self.toolActive():
@@ -88,6 +111,7 @@ class Personality(PersonalitySimple):
 
             if self.wakereason == self.REASON_GPIO:
                 if self.toolHomed():
+                    self._needsHoming = False
                     return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
                 elif self.toolActive():
                     return self.exitAndGoto(self.STATE_HOMING_FAILED)

@@ -99,7 +99,6 @@ View {
       }
     }
 
-
     Timer {
       id: gentleReminderTimer
       interval: 3000

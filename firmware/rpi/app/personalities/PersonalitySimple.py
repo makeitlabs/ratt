@@ -173,6 +173,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateIdle(self):
         if self.phENTER:
+            self.logger.info('simple stateIdle enter')
             self.activeMemberRecord.clear()
             self.wakeOnRFID(True)
             self.pin_led1.set(HIGH)
@@ -215,6 +216,7 @@ class Personality(PersonalityBase):
     #############################################
     def stateToolNotPowered(self):
         if self.phENTER:
+            self.logger.info('simple stateToolNotPowered enter')
             self.telemetryEvent.emit('personality/power', json.dumps({'powered': False}))
             self.pin_led1.set(HIGH)
             self.wakeOnRFID(True)
