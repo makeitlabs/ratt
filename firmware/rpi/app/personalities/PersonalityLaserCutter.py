@@ -38,6 +38,7 @@
 
 from QtGPIO import LOW, HIGH
 from PersonalitySimple import Personality as PersonalitySimple
+import simplejson as json
 
 class Personality(PersonalitySimple):
     #############################################
@@ -45,8 +46,96 @@ class Personality(PersonalitySimple):
     #############################################
     PERSONALITY_DESCRIPTION = 'LaserCutter'
 
+    STATE_HOMING = 'Homing'
+    STATE_HOMING_FAILED = 'HomingFailed'
+    STATE_HOMING_OVERRIDE = 'HomingOverride'
+
     def __init__(self, *args, **kwargs):
         PersonalitySimple.__init__(self, *args, **kwargs)
 
-        self._performSafetyCheck = False
-        self._monitorToolPower = True
+        # register extra states for this personality
+        self.states[self.STATE_HOMING] = self.stateHoming
+        self.states[self.STATE_HOMING_FAILED] = self.stateHomingFailed
+        self.states[self.STATE_HOMING_OVERRIDE] = self.stateHomingOverride
+
+    # returns true if the tool is currently active
+    def toolHomed(self):
+        return (self.pins_in[2].get() == 0)
+
+    #############################################
+    ## STATE_SAFETY_CHECK
+    ## For laser cutters we hook into the safety check to perform XY homing check
+    #############################################
+    def stateSafetyCheck(self):
+        return self.goto(self.STATE_HOMING)
+
+    #############################################
+    ## STATE_HOMING
+    #############################################
+    def stateHoming(self):
+
+        if self.phENTER:
+            self.pin_led1.set(HIGH)
+            if self.toolActive():
+                return self.exitAndGoto(self.STATE_HOMING_FAILED)
+            elif self.toolHomed():
+                return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_GPIO:
+                if self.toolHomed():
+                    return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+                elif self.toolActive():
+                    return self.exitAndGoto(self.STATE_HOMING_FAILED)
+
+            if self.wakereason == self.REASON_UI:
+                if self.uievent == 'HomingAborted':
+                    return self.exitAndGoto(self.STATE_IDLE)
+                elif self.uievent == 'HomingOverride':
+                    return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
+
+            return False
+
+        elif self.phEXIT:
+            self.pin_led1.set(LOW)
+            return self.goNextState()
+
+    #############################################
+    ## STATE_HOMING_FAILED
+    #############################################
+    def stateHomingFailed(self):
+        if self.phENTER:
+            self.telemetryEvent.emit('personality/safety', json.dumps({'reason':'Did not home before activating tool', 'member': self.activeMemberRecord.name}))
+            self.pin_led2.set(HIGH)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'HomingFailedDone':
+                return self.exitAndGoto(self.STATE_IDLE)
+
+            return False
+
+        elif self.phEXIT:
+            self.pin_led2.set(LOW)
+            return self.goNextState()
+
+    #############################################
+    ## STATE_HOMING_OVERRIDE
+    #############################################
+    def stateHomingOverride(self):
+        if self.phENTER:
+            self.telemetryEvent.emit('personality/safety', json.dumps({'reason':'Homing override activated', 'member': self.activeMemberRecord.name}))
+            self.pin_led1.set(HIGH)
+            self.pin_led2.set(HIGH)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'HomingOverrideDone':
+                return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+            return False
+
+        elif self.phEXIT:
+            self.pin_led1.set(LOW)
+            self.pin_led2.set(LOW)
+            return self.goNextState()

@@ -322,18 +322,27 @@ View {
 
         Label {
             Layout.fillWidth: true
-            text: "REPORT AN ISSUE"
+            text: "Found a problem?"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 12
+            font.weight: Font.DemiBold
+            color: "#990000"
+        }
+
+        Label {
+            Layout.fillWidth: true
+            text: "REPORT AN ISSUE!"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
             font.weight: Font.DemiBold
-            color: "#888800"
+            color: "#990000"
         }
 
         RowLayout {
           Layout.fillWidth: true
           Rectangle {
-            width: 32
-            height: 32
+            width: 28
+            height: 28
             radius: 4
             color: "yellow"
             border.color: "black"
@@ -359,7 +368,7 @@ View {
             }
             Label {
                 Layout.fillWidth: true
-                text: "button for menu."
+                text: "button to file report"
                 horizontalAlignment: Text.AlignLeft
                 font.pixelSize: 12
                 font.weight: Font.Bold

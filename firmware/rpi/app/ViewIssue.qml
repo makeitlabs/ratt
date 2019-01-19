@@ -41,7 +41,7 @@ import QtQuick.Controls.Styles 1.4
 
 View {
     id: root
-    name: "Issue"
+    name: "Issue Report"
 
     property string currentIssue: ""
 
@@ -154,7 +154,7 @@ View {
 
         Label {
             Layout.fillWidth: true
-            text: "Report an Issue"
+            text: "Select Issue From List"
             font.pixelSize: 12
             font.weight: Font.DemiBold
             color: "#003399"

@@ -40,7 +40,7 @@ import QtQuick.Layouts 1.3
 
 View {
     id: root
-    name: "Shutdown"
+    name: "Safety Check"
 
     ColumnLayout {
         anchors.fill: parent

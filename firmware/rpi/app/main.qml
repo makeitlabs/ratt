@@ -96,6 +96,15 @@ ApplicationWindow {
                 case "ReportIssue":
                     switchTo(viewIssue);
                     break;
+                case "Homing":
+                    switchTo(viewHoming);
+                    break;
+                case "HomingFailed":
+                    switchTo(viewHomingFailed);
+                    break;
+                case "HomingOverride":
+                    switchTo(viewHomingOverride);
+                    break;
                 case "SafetyCheck":
                     switchTo(viewSafetyCheck);
                     break;
@@ -193,6 +202,18 @@ ApplicationWindow {
                 }
                 ViewPassword {
                     id: viewPassword
+                    visible: false
+                }
+                ViewHoming {
+                    id: viewHoming
+                    visible: false
+                }
+                ViewHomingFailed {
+                    id: viewHomingFailed
+                    visible: false
+                }
+                ViewHomingOverride {
+                    id: viewHomingOverride
                     visible: false
                 }
                 ViewSafetyCheck {
