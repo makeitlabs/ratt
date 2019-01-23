@@ -40,17 +40,17 @@ import QtQuick.Layouts 1.3
 
 View {
     id: root
-    name: "Safety Failed"
+    name: "Homing Failed"
 
     color: "#dd0000"
 
     function _show() {
         showTimer.start();
-        sound.safetyFailedAudio.play();
+        sound.homingWarningAudio.play();
     }
 
     function done() {
-        appWindow.uiEvent('SafetyFailedDone');
+        appWindow.uiEvent('HomingFailedDone');
     }
 
     Timer {
@@ -63,12 +63,11 @@ View {
         }
     }
 
-
     ColumnLayout {
         anchors.fill: parent
         Label {
             Layout.fillWidth: true
-            text: "Safety Check Failed"
+            text: "Homing Failed"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
             font.weight: Font.Bold
@@ -76,25 +75,25 @@ View {
         }
         Label {
             Layout.fillWidth: true
-            text: "Tool power switch"
+            text: "Laser must be"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
+            font.pixelSize: 14
             font.weight: Font.DemiBold
             color: "#ffffff"
         }
         Label {
             Layout.fillWidth: true
-            text: "must be OFF"
+            text: "homed in XY before"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
+            font.pixelSize: 14
             font.weight: Font.DemiBold
             color: "#ffffff"
         }
         Label {
             Layout.fillWidth: true
-            text: "before tagging in."
+            text: "running a job."
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
+            font.pixelSize: 14
             font.weight: Font.DemiBold
             color: "#ffffff"
         }

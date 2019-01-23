@@ -40,22 +40,22 @@ import QtQuick.Layouts 1.3
 
 View {
     id: root
-    name: "Safety Failed"
+    name: "Homing Override"
 
-    color: "#dd0000"
+    color: "#440044"
 
     function _show() {
         showTimer.start();
-        sound.safetyFailedAudio.play();
+        sound.homingOverrideAudio.play();
     }
 
     function done() {
-        appWindow.uiEvent('SafetyFailedDone');
+        appWindow.uiEvent('HomingOverrideDone');
     }
 
     Timer {
         id: showTimer
-        interval: 5000
+        interval: 8000
         repeat: false
         running: false
         onTriggered: {
@@ -63,40 +63,39 @@ View {
         }
     }
 
-
     ColumnLayout {
         anchors.fill: parent
         Label {
             Layout.fillWidth: true
-            text: "Safety Check Failed"
+            text: "HOMING OVERRIDE"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
             font.weight: Font.Bold
+            color: "#ff0000"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: "Not homed in XY!"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 12
+            font.weight: Font.DemiBold
+            color: "#ffffff"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: "PROCEED WITH"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 14
+            font.weight: Font.DemiBold
             color: "#ffff00"
         }
         Label {
             Layout.fillWidth: true
-            text: "Tool power switch"
+            text: "EXTREME CAUTION!"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
+            font.pixelSize: 14
             font.weight: Font.DemiBold
-            color: "#ffffff"
-        }
-        Label {
-            Layout.fillWidth: true
-            text: "must be OFF"
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
-            font.weight: Font.DemiBold
-            color: "#ffffff"
-        }
-        Label {
-            Layout.fillWidth: true
-            text: "before tagging in."
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
-            font.weight: Font.DemiBold
-            color: "#ffffff"
+            color: "#ffff00"
         }
 
     }

@@ -37,7 +37,26 @@
 #
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtQml import QQmlListProperty, qmlRegisterType
 import ConfigParser
+
+class Issue(QObject):
+    nameChanged = pyqtSignal()
+
+    def __init__(self, name='', *args, **kwargs):
+        super(Issue, self).__init__(*args, **kwargs)
+        self._name = name
+
+    @pyqtProperty('QString', notify=nameChanged)
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        if name != self._name:
+            self._name = name
+            self.nameChanged.emit()
+
 
 class RattConfig(QObject):
     configChanged = pyqtSignal()
@@ -47,6 +66,7 @@ class RattConfig(QObject):
 
         self._inifile = inifile
 
+        qmlRegisterType(Issue, 'RATT', 1, 0, 'Channel')
         self.loadConfig()
 
     #---------------------------------------------------------------------------------------------
@@ -72,6 +92,22 @@ class RattConfig(QObject):
     @pyqtProperty(int, notify=configChanged)
     def Personality_TimeoutWarningSeconds(self):
         return self.config['Personality.TimeoutWarningSeconds']
+
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_SafetyCheckEnabled(self):
+        return self.config['Personality.SafetyCheckEnabled']
+
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_MonitorToolPowerEnabled(self):
+        return self.config['Personality.MonitorToolPowerEnabled']
+
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_HomingManualOverrideEnabled(self):
+        return self.config['Personality.HomingManualOverrideEnabled']
+
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_HomingExternalOverrideEnabled(self):
+        return self.config['Personality.HomingExternalOverrideEnabled']
 
     @pyqtProperty(str, notify=configChanged)
     def Personality_Password(self):
@@ -114,6 +150,10 @@ class RattConfig(QObject):
         return self.config['Sound.KeyPress']
 
     @pyqtProperty(str, notify=configChanged)
+    def Sound_GeneralAlert(self):
+        return self.config['Sound.GeneralAlert']
+
+    @pyqtProperty(str, notify=configChanged)
     def Sound_RFIDSuccess(self):
         return self.config['Sound.RFIDSuccess']
 
@@ -144,6 +184,42 @@ class RattConfig(QObject):
     @pyqtProperty(str, notify=configChanged)
     def Sound_ReportSuccess(self):
         return self.config['Sound.ReportSuccess']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_LiftInstructions(self):
+        return self.config['Sound.LiftInstructions']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_LiftCorrect(self):
+        return self.config['Sound.LiftCorrect']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_LiftIncorrect(self):
+        return self.config['Sound.LiftIncorrect']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_HomingInstructions(self):
+        return self.config['Sound.HomingInstructions']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_HomingWarning(self):
+        return self.config['Sound.HomingWarning']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Sound_HomingOverride(self):
+        return self.config['Sound.HomingOverride']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Issues_Count(self):
+        return len(self.parser.items('Issues'))
+
+    @pyqtProperty(QQmlListProperty, notify=configChanged)
+    def Issues(self):
+        list = []
+        for pair in self.parser.items('Issues'):
+            (name, descr) = pair
+            list.append(Issue(name=descr))
+        return QQmlListProperty(Issue, self, list)
 
     #---------------------------------------------------------------------------------------------
 
@@ -197,6 +273,11 @@ class RattConfig(QObject):
         self.addConfig('Personality', 'LogLevel', 'INFO')
         self.addConfigInt('Personality', 'TimeoutSeconds')
         self.addConfigInt('Personality', 'TimeoutWarningSeconds')
+        self.addConfigBool('Personality', 'SafetyCheckEnabled', False)
+        self.addConfigBool('Personality', 'MonitorToolPowerEnabled', False)
+        self.addConfigBool('Personality', 'HomingManualOverrideEnabled', False)
+        self.addConfigBool('Personality', 'HomingExternalOverrideEnabled', False)
+
         self.addConfigBool('Personality', 'PasswordEnabled', False)
         self.addConfig('Personality', 'Password', 'RATT')
         self.addConfig('Personality', 'PasswordPrompt', 'Password')
@@ -232,15 +313,26 @@ class RattConfig(QObject):
         self.addConfigInt('RFID', 'SimulatedTag', 0)
 
         self.addConfigBool('Sound', 'EnableSilenceLoop', True)
-        self.addConfig('Sound', 'Silence')
-        self.addConfig('Sound', 'KeyPress')
-        self.addConfig('Sound', 'RFIDSuccess')
-        self.addConfig('Sound', 'RFIDFailure')
-        self.addConfig('Sound', 'RFIDError')
-        self.addConfig('Sound', 'SafetyFailed')
-        self.addConfig('Sound', 'Enable')
-        self.addConfig('Sound', 'Disable')
-        self.addConfig('Sound', 'TimeoutWarning')
-        self.addConfig('Sound', 'ReportSuccess')
+        self.addConfig('Sound', 'Silence', '')
+        self.addConfig('Sound', 'KeyPress', '')
+        self.addConfig('Sound', 'GeneralAlert', '')
+        self.addConfig('Sound', 'RFIDSuccess', '')
+        self.addConfig('Sound', 'RFIDFailure', '')
+        self.addConfig('Sound', 'RFIDError', '')
+        self.addConfig('Sound', 'SafetyFailed', '')
+        self.addConfig('Sound', 'Enable', '')
+        self.addConfig('Sound', 'Disable', '')
+        self.addConfig('Sound', 'TimeoutWarning', '')
+        self.addConfig('Sound', 'ReportSuccess', '')
+        self.addConfig('Sound', 'LiftInstructions', '')
+        self.addConfig('Sound', 'LiftCorrect', '')
+        self.addConfig('Sound', 'LiftIncorrect', '')
+        self.addConfig('Sound', 'HomingInstructions', '')
+        self.addConfig('Sound', 'HomingWarning', '')
+        self.addConfig('Sound', 'HomingOverride', '')
+
+        for i in self.parser.items('Issues'):
+            (n, v) = i
+            self.addConfig('Issues', n)
 
         self.configChanged.emit()
