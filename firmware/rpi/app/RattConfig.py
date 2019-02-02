@@ -215,7 +215,7 @@ class RattConfig(QObject):
 
     @pyqtProperty(QQmlListProperty, notify=configChanged)
     def Issues(self):
-        list = []
+        list = [Issue('Exit (no issue to report)')]
         for pair in self.parser.items('Issues'):
             (name, descr) = pair
             list.append(Issue(name=descr))

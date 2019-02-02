@@ -76,15 +76,17 @@ View {
         updateActiveKeys();
     }
 
-    function done() {
-      var jo = { issue: currentIssue, member: activeMemberRecord.name }
-      appWindow.mqttPublishSubtopicEvent('system/issue', JSON.stringify(jo))
+    function done(report) {
+      if (report) {
+        var jo = { issue: currentIssue, member: activeMemberRecord.name }
+        appWindow.mqttPublishSubtopicEvent('system/issue', JSON.stringify(jo))
+      }
       appWindow.uiEvent('ReportIssueDone');
     }
 
     function keyEscape(pressed) {
         if (pressed && (state == "list" || state == "scan"))
-            done();
+            done(false);
         return true;
     }
 
@@ -131,7 +133,7 @@ View {
         running: false
         repeat: false
         onTriggered: {
-            done();
+            done(true);
         }
     }
 
@@ -186,7 +188,7 @@ View {
             selectionMode: SelectionMode.SingleSelection
 
             selection.onSelectionChanged: {
-              if (config.Issues && issueTable && issueTable.currentRow != -1) {
+              if (config.Issues && currentRow != -1) {
                 currentIssue = config.Issues[issueTable.currentRow].name;
               }
             }
@@ -208,12 +210,17 @@ View {
             Keys.onPressed: {
               timeoutTimer.restart();
               if (event.key === Qt.Key_Escape) {
-                  done();
-                  event.accepted = true;
+                done(false);
+                event.accepted = true;
               } else if (event.key === Qt.Key_Return) {
-                  if (root.state == "list")
-                      root.state = "scan";
-                  event.accepted = true;
+                if (currentRow == 0) {
+                  done(false);
+                }
+
+                if (root.state == "list")
+                  root.state = "scan";
+
+                event.accepted = true;
               }
             }
         }
