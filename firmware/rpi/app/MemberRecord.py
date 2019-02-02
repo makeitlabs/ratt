@@ -58,8 +58,8 @@ class MemberRecord(QObject):
         self._plan = source.plan
         self._allowed = source.allowed
         self._isValid = source.valid
+        self._isLoggedIn = source.loggedIn
         self.recordChanged.emit()
-
 
     def clear(self):
         self._member = ''
@@ -71,7 +71,9 @@ class MemberRecord(QObject):
         self._plan = ''
         self._allowed = False
         self._isValid = False
+        self._isLoggedIn = False
         self.recordChanged.emit()
+
 
     def parseRecord(self, record):
         try:
@@ -126,3 +128,12 @@ class MemberRecord(QObject):
     @pyqtProperty(bool, notify=recordChanged)
     def valid(self):
         return self._isValid
+
+    @pyqtProperty(bool, notify=recordChanged)
+    def loggedIn(self):
+        return self._isLoggedIn
+
+    @loggedIn.setter
+    def loggedIn(self, value):
+        self._isLoggedIn = value
+        self.recordChanged.emit()

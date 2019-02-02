@@ -62,6 +62,7 @@ class Personality(PersonalityBase):
     STATE_TOOL_NOT_POWERED_DENIED = 'NotPoweredDenied'
     STATE_ACCESS_DENIED = 'AccessDenied'
     STATE_ACCESS_ALLOWED = 'AccessAllowed'
+    STATE_ACCESS_ALLOWED_PASSWORD = 'AccessAllowedPassword'
     STATE_RFID_ERROR = 'RFIDError'
     STATE_SAFETY_CHECK = 'SafetyCheck'
     STATE_SAFETY_CHECK_PASSED = 'SafetyCheckPassed'
@@ -99,6 +100,7 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_NOT_POWERED_DENIED : self.stateToolNotPoweredDenied,
                        self.STATE_ACCESS_DENIED : self.stateAccessDenied,
                        self.STATE_ACCESS_ALLOWED : self.stateAccessAllowed,
+                       self.STATE_ACCESS_ALLOWED_PASSWORD : self.stateAccessAllowedPassword,
                        self.STATE_RFID_ERROR : self.stateRFIDError,
                        self.STATE_SAFETY_CHECK : self.stateSafetyCheck,
                        self.STATE_SAFETY_CHECK_PASSED : self.stateSafetyCheckPassed,
@@ -174,6 +176,8 @@ class Personality(PersonalityBase):
     def stateIdle(self):
         if self.phENTER:
             self.logger.info('simple stateIdle enter')
+            if self.activeMemberRecord.loggedIn:
+                self.telemetryEvent.emit('personality/logout', json.dumps({'member': self.activeMemberRecord.name, 'reason': 'other'}))
             self.activeMemberRecord.clear()
             self.wakeOnRFID(True)
             self.pin_led1.set(HIGH)
@@ -307,13 +311,7 @@ class Personality(PersonalityBase):
                     self.telemetryEvent.emit('personality/login', json.dumps({'allowed': False, 'member': self.activeMemberRecord.name, 'usedPassword': True}))
                     return self.exitAndGoto(self.STATE_IDLE)
                 if self.uievent == 'PasswordCorrect':
-                    self.telemetryEvent.emit('personality/login', json.dumps({'allowed': True, 'member': self.activeMemberRecord.name, 'usedPassword': True}))
-                    if self._performSafetyCheck:
-                        return self.exitAndGoto(self.STATE_SAFETY_CHECK)
-                    else:
-                        self.enableTool()
-                        return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
-
+                    return self.exitAndGoto(self.STATE_ACCESS_ALLOWED_PASSWORD)
 
             return False
 
@@ -328,6 +326,7 @@ class Personality(PersonalityBase):
     def stateAccessAllowed(self):
         if self.phENTER:
             self.telemetryEvent.emit('personality/login', json.dumps({'allowed': True, 'member': self.activeMemberRecord.name}))
+            self.activeMemberRecord.loggedIn = True
             self.pin_led1.set(HIGH)
             return self.goActive()
 
@@ -345,6 +344,17 @@ class Personality(PersonalityBase):
             self.pin_led1.set(LOW)
             return self.goNextState()
 
+    #############################################
+    ## STATE_ACCESS_ALLOWED_PASSWORD
+    #############################################
+    def stateAccessAllowedPassword(self):
+        self.telemetryEvent.emit('personality/login', json.dumps({'allowed': True, 'member': self.activeMemberRecord.name, 'usedPassword': True}))
+        self.activeMemberRecord.loggedIn = True
+        if self._performSafetyCheck:
+            return self.exitAndGoto(self.STATE_SAFETY_CHECK)
+        else:
+            self.enableTool()
+            return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
 
     #############################################
     ## STATE_SAFETY_CHECK

@@ -493,6 +493,12 @@ Item {
                 Label {
                     font.pixelSize: 10
                     color: "white"
+                    text: "logged in: " + activeMemberRecord.loggedIn
+                    visible: activeMemberRecord.valid
+                }
+                Label {
+                    font.pixelSize: 10
+                    color: "white"
                     text: activeMemberRecord.name
                     visible: activeMemberRecord.valid
                 }

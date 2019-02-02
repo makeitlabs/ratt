@@ -75,7 +75,7 @@ View {
                 var phase = sp[1];
 
                 if (state == "ToolEnabledNotPowered") {
-                    done('toolpower')
+                  done('toolpower');
                 }
             }
         }
@@ -121,6 +121,7 @@ View {
                   idleSecs: (enabledSecs - activeSecs)
                   };
         appWindow.mqttPublishSubtopicEvent('personality/logout', JSON.stringify(jo));
+        activeMemberRecord.loggedIn = false;
         appWindow.uiEvent('ToolEnabledDone');
     }
 
