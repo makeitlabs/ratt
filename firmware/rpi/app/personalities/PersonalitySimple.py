@@ -351,10 +351,10 @@ class Personality(PersonalityBase):
         self.telemetryEvent.emit('personality/login', json.dumps({'allowed': True, 'member': self.activeMemberRecord.name, 'usedPassword': True}))
         self.activeMemberRecord.loggedIn = True
         if self._performSafetyCheck:
-            return self.exitAndGoto(self.STATE_SAFETY_CHECK)
+            return self.goto(self.STATE_SAFETY_CHECK)
         else:
             self.enableTool()
-            return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
+            return self.goto(self.STATE_TOOL_ENABLED_INACTIVE)
 
     #############################################
     ## STATE_SAFETY_CHECK
