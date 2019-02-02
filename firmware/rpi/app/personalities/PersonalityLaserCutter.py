@@ -72,7 +72,7 @@ class Personality(PersonalitySimple):
     # returns true if homing requirement should be overridden because of an external
     # condition like using the rotary attachment
     def toolHomingOverride(self):
-        return (self.pins_in[3].get() == 0)
+        return (self.pins_in[3].get() == 1)
 
     #############################################
     ## STATE_TOOL_NOT_POWERED
