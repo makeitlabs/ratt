@@ -135,6 +135,15 @@ View {
         }
     }
 
+    Timer {
+        id: timeoutTimer
+        interval: 30000
+        repeat: false
+        running: shown
+        onTriggered: {
+          appWindow.uiEvent('ReportIssueDone');
+        }
+    }
 
     states: [
         State {
@@ -154,7 +163,7 @@ View {
 
         Label {
             Layout.fillWidth: true
-            text: "Select Issue From List"
+            text: "Report an Issue"
             font.pixelSize: 12
             font.weight: Font.DemiBold
             color: "#003399"
@@ -197,14 +206,15 @@ View {
             }
 
             Keys.onPressed: {
-                if (event.key === Qt.Key_Escape) {
-                    done();
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Return) {
-                    if (root.state == "list")
-                        root.state = "scan";
-                    event.accepted = true;
-                }
+              timeoutTimer.restart();
+              if (event.key === Qt.Key_Escape) {
+                  done();
+                  event.accepted = true;
+              } else if (event.key === Qt.Key_Return) {
+                  if (root.state == "list")
+                      root.state = "scan";
+                  event.accepted = true;
+              }
             }
         }
 
