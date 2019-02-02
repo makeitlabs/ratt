@@ -143,7 +143,7 @@ View {
         repeat: false
         running: shown
         onTriggered: {
-          appWindow.uiEvent('ReportIssueDone');
+          done(false);
         }
     }
 
