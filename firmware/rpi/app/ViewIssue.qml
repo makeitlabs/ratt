@@ -49,6 +49,7 @@ View {
 
     Connections {
         target: personality
+        enabled: shown
 
         onValidScan: {
             if (root.state == "scan") {
