@@ -405,3 +405,4 @@ class PersonalityBase(PersonalityStateMachine):
     @pyqtSlot(str, str)
     def __slotStateChanged(self, state, phase):
         self.telemetryEvent.emit('personality/state', json.dumps({ 'state': state, 'phase': phase}))
+        self.app.rfid.serialOut('%s.%s\n' % (state, phase))

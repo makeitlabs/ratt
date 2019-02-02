@@ -66,8 +66,8 @@ class RFID(QThread):
     def simulateScanError(self):
         now = calendar.timegm(time.gmtime())
         self.tagScanError.emit(0, now, 'simulated')
-        
-    def __init__(self, portName='', loglevel='WARNING'):
+
+    def __init__(self, portName='', baudRate=QSerialPort.Baud9600, loglevel='WARNING'):
         QThread.__init__(self)
 
         self.logger = Logger(name='ratt.rfid')
@@ -78,10 +78,24 @@ class RFID(QThread):
         self.mutex = QMutex()
 
         self.portName = portName
+        self.baudRate = baudRate
         self.waitTimeout = 250
 
         self.quit = False
-        
+
+        self.serial = QSerialPort()
+        self.serial.setPortName(self.portName)
+        self.serial.setBaudRate(self.baudRate)
+
+        if not self.serial.open(QIODevice.ReadWrite):
+            self.logger.error("can't open serial port")
+            return;
+
+    def serialOut(self, msg):
+        if self.serial and self.serial.isOpen() and self.serial.isWritable():
+            self.logger.debug('writing msg to serial: %s' % msg)
+            self.serial.writeData(msg)
+
     def monitor(self):
         if not self.isRunning():
             self.start();
@@ -149,19 +163,13 @@ class RFID(QThread):
 
     def run(self):
 
-        serial = QSerialPort()
-        serial.setPortName(self.portName)
-
-        if not serial.open(QIODevice.ReadOnly):
-            self.logger.error("can't open serial port")
-            return;
 
         while not self.quit:
-            if serial.waitForReadyRead(self.waitTimeout):
-                bytes = serial.readAll()
+            if self.serial.waitForReadyRead(self.waitTimeout):
+                bytes = self.serial.readAll()
 
-                while serial.waitForReadyRead(10):
-                    bytes += serial.readAll()
+                while self.serial.waitForReadyRead(10):
+                    bytes += self.serial.readAll()
 
                 tag = self.decode_gwiot(bytes)
                 now = calendar.timegm(time.gmtime())
