@@ -426,6 +426,9 @@ class Personality(PersonalityBase):
                 else:
                     self.pin_led1.set(LOW)
 
+            if self.wakereason == self.REASON_UI and self.uievent == 'ToolEnabledDone' and self.app.config.value('Personality.AllowForceLogout'):
+                return self.exitAndGoto(self.STATE_TOOL_DISABLED)
+
             if self._monitorToolPower and not self.toolPowered():
                 return self.exitAndGoto(self.STATE_TOOL_ENABLED_NOT_POWERED)
 

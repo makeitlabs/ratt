@@ -129,6 +129,10 @@ class RattConfig(QObject):
     def Personality_PasswordIncorrectText(self):
         return self.config['Personality.PasswordIncorrectText']
 
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_AllowForceLogout(self):
+        return self.config['Personality.AllowForceLogout']
+
     @pyqtProperty(str, notify=configChanged)
     def General_ToolDesc(self):
         return self.config['General.ToolDesc']
@@ -283,6 +287,7 @@ class RattConfig(QObject):
         self.addConfig('Personality', 'PasswordPrompt', 'Password')
         self.addConfig('Personality', 'PasswordCorrectText', 'Thank you, that is correct.')
         self.addConfig('Personality', 'PasswordIncorrectText', 'Sorry, that is incorrect.')
+        self.addConfigBool('Personality', 'AllowForceLogout', False)
 
         self.addConfig('Auth', 'LogLevel', 'INFO')
         self.addConfig('Auth', 'ResourceId')

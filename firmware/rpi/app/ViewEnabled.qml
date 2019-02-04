@@ -51,6 +51,7 @@ View {
 
     property int idleWarningSecs: config.Personality_TimeoutWarningSeconds
     property int idleTimeoutSecs: config.Personality_TimeoutSeconds
+    property bool allowForceLogout: config.Personality_AllowForceLogout
 
     property bool idleWarning: (idleSecs < idleWarningSecs)
     property bool idleTimeout: (idleSecs == 0)
@@ -60,7 +61,8 @@ View {
         onToolActiveFlagChanged: {
             var isActive = personality.toolActiveFlag;
 
-            status.keyEscActive = !isActive;
+            if (!allowForceLogout)
+              status.keyEscActive = !isActive;
 
             if (isActive)
                 idleSecs = idleTimeoutSecs;
@@ -87,9 +89,7 @@ View {
         onCurrentStateChanged: {
             checkPersonalityState();
         }
-
     }
-
 
     function _show() {
         status.setKeyActives(true, false, false, false);
@@ -102,15 +102,37 @@ View {
     }
 
     function _hide() {
+      if (allowForceLogout)
+        forceLogoutTimer.stop();
     }
 
     function keyEscape(pressed) {
-        if (!personality.toolActiveFlag && pressed) {
+      if (pressed) {
+        if (!personality.toolActiveFlag) {
           done('explicit');
+        } else if (allowForceLogout) {
+          forceLogoutTimer.start();
+        }
+      } else {
+        if (allowForceLogout)
+          forceLogoutTimer.stop();
+      }
+      return true;
+    }
+
+    Timer {
+        id: forceLogoutTimer
+        interval: 2000
+        running: false
+        repeat: false
+        onTriggered: {
+          done('forced');
         }
     }
 
     function done(reason) {
+      console.warn('DONE')
+
         sound.disableAudio.play();
         // TODO emit a telemetry event instead
 
