@@ -43,6 +43,7 @@ import logging
 import calendar
 import time
 import hashlib
+from Queue import Queue
 
 class RFID(QThread):
     tagScan = pyqtSignal(int, str, int, str, name='tagScan', arguments=['tag', 'hash', 'time', 'debugText'])
@@ -83,18 +84,12 @@ class RFID(QThread):
 
         self.quit = False
 
-        self.serial = QSerialPort()
-        self.serial.setPortName(self.portName)
-        self.serial.setBaudRate(self.baudRate)
-
-        if not self.serial.open(QIODevice.ReadWrite):
-            self.logger.error("can't open serial port")
-            return;
+        self.outQueue = Queue()
 
     def serialOut(self, msg):
-        if self.serial and self.serial.isOpen() and self.serial.isWritable():
-            self.logger.debug('writing msg to serial: %s' % msg)
-            self.serial.writeData(msg)
+        self.mutex.lock()
+        self.outQueue.put(msg)
+        self.mutex.unlock()
 
     def monitor(self):
         if not self.isRunning():
@@ -162,9 +157,30 @@ class RFID(QThread):
         return tag_hash
 
     def run(self):
+        self.serial = QSerialPort()
+        self.serial.setPortName(self.portName)
+        self.serial.setBaudRate(self.baudRate)
 
+        # open read-write for serial output function, which is unrelated to RFID,
+        # but lives here because the port can only be opened in one place
+        if not self.serial.open(QIODevice.ReadWrite):
+            self.logger.error("can't open serial port")
+            return;
 
         while not self.quit:
+            # look for queued serial output items, write them to serial port
+            writeItem = None
+            self.mutex.lock()
+            if not self.outQueue.empty():
+                writeItem = self.outQueue.get()
+                self.outQueue.task_done()
+            self.mutex.unlock()
+
+            if self.serial.isWritable() and writeItem is not None:
+                self.logger.debug('writing msg to serial: %s' % writeItem)
+                self.serial.writeData(writeItem)
+
+            # look for incoming data from RFID module, read and process it
             if self.serial.waitForReadyRead(self.waitTimeout):
                 bytes = self.serial.readAll()
 
