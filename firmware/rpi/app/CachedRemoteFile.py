@@ -49,6 +49,41 @@ class CachedRemoteFile(QObject):
     updateError = pyqtSignal(name='updateError')
     downloadActiveUpdate = pyqtSignal()
 
+    @pyqtProperty(str, notify=update)
+    def hash(self):
+        self.mutex.lock()
+        h = self._hash
+        self.mutex.unlock()
+        return h
+
+    @pyqtProperty(str, notify=update)
+    def date(self):
+        self.mutex.lock()
+        d = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self._date))
+        self.mutex.unlock()
+        return d
+
+    @pyqtProperty(str, notify=update)
+    def status(self):
+        self.mutex.lock()
+        s = self._status
+        self.mutex.unlock()
+        return s
+
+    @pyqtProperty(bool, notify=downloadActiveUpdate)
+    def downloadActive(self):
+        self.mutex.lock()
+        isdl = self._downloadActive
+        self.mutex.unlock()
+        return isdl
+
+    @downloadActive.setter
+    def downloadActive(self, value):
+        self.mutex.lock()
+        self._downloadActive = value
+        self.mutex.unlock()
+        self.downloadActiveUpdate.emit()
+
     def __init__(self, logger=None, netWorker=None, url=None, cacheFile=None):
         QObject.__init__(self)
 
@@ -57,8 +92,9 @@ class CachedRemoteFile(QObject):
         assert url
         assert cacheFile
 
-        self.logger = logger
         self.mutex = QMutex()
+
+        self.logger = logger
         self.netWorker = netWorker
         self.url = url
 
@@ -86,19 +122,6 @@ class CachedRemoteFile(QObject):
         self.mutex.unlock()
         return obj
 
-    @pyqtProperty(bool, notify=downloadActiveUpdate)
-    def downloadActive(self):
-        self.mutex.lock()
-        isdl = self._downloadActive
-        self.mutex.unlock()
-        return isdl
-
-    @downloadActive.setter
-    def downloadActive(self, value):
-        self.mutex.lock()
-        self._downloadActive = value
-        self.mutex.unlock()
-        self.downloadActiveUpdate.emit()
 
     @pyqtSlot()
     def download(self):
@@ -126,47 +149,6 @@ class CachedRemoteFile(QObject):
 
         self.reply.deleteLater()
         self.downloadActive = False
-
-    def parseJSON(self, doc, save=False, date=None, status=''):
-        try:
-            parsed = json.loads(doc)
-            hash = self.calcHash(doc)
-
-            self.logger.debug('parseJSON hash=%s stored hash=%s' % (hash, self._hash))
-            if hash != self._hash:
-                self.mutex.lock()
-                self._doc = doc
-                self._obj = parsed
-                self._hash = hash
-                if date is None:
-                    self._date = int(time.time())
-                else:
-                    self._date = date
-                self._status = status
-                self.mutex.unlock()
-
-                self.logger.info('updated remote config hash=%s' % (self._hash))
-                self.update.emit()
-
-                if save:
-                    self.saveFile(self.cacheFile)
-
-                return True
-
-            else:
-                self.mutex.lock()
-                if date is None:
-                    self._date = int(time.time())
-                self._status = 'same_hash'
-                self.mutex.unlock()
-                self.update.emit()
-                self.logger.error('no update because same hash=%s' % (self._hash))
-
-        except:
-            self.logger.exception('json parse error')
-            self.updateError.emit()
-
-        return False
 
     def saveFile(self, filename=None):
         self.logger.info('saving cache file %s' % filename)
@@ -221,3 +203,59 @@ class CachedRemoteFile(QObject):
         m.update(str(j).encode())
         hash = m.hexdigest()
         return hash
+
+    # this hook is called just after parsing but before hashes are checked
+    # the mutex is not held at this point
+    def parseJSON__hook_unlocked(self, parsed):
+        return None
+
+    # this hook is called if the hashes differ, and the mutex IS held
+    def parseJSON__hook_locked(self, o):
+        pass
+
+    def parseJSON(self, doc, save=False, date=None, status=''):
+        try:
+            parsed = json.loads(doc)
+            hash = self.calcHash(doc)
+            o = self.parseJSON__hook_unlocked(parsed)
+
+            self.logger.debug('parseJSON hash=%s stored hash=%s' % (hash, self._hash))
+            if hash != self._hash:
+                self.mutex.lock()
+                self._doc = doc
+                self._obj = parsed
+                self._hash = hash
+                if date is None:
+                    self._date = int(time.time())
+                else:
+                    self._date = date
+                self._status = status
+
+                if o is not None:
+                    self.parseJSON__hook_locked(o)
+
+                self.mutex.unlock()
+
+                self.logger.info('updated remote config hash=%s' % (self._hash))
+                self.update.emit()
+
+                if save:
+                    self.saveFile(self.cacheFile)
+
+                return True
+
+            else:
+                self.mutex.lock()
+                if date is None:
+                    self._date = int(time.time())
+                self._status = 'same_hash'
+                self.mutex.unlock()
+
+                self.logger.info('no update because same hash=%s' % (self._hash))
+                self.update.emit()
+
+        except:
+            self.logger.exception('json parse error')
+            self.updateError.emit()
+
+        return False

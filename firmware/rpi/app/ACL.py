@@ -44,178 +44,51 @@ import logging
 import hashlib
 import simplejson as json
 import time
+from CachedRemoteFile import CachedRemoteFile
 
-class ACL(QObject):
-    updateError = pyqtSignal(name='updateError')
-    update = pyqtSignal()
-    downloadActiveUpdate = pyqtSignal()
+class ACL(CachedRemoteFile):
+    recordUpdate = pyqtSignal()
 
-    @pyqtProperty(str, notify=update)
-    def hash(self):
-        self.mutex.lock()
-        h = self._hash
-        self.mutex.unlock()
-        return h
-
-    @pyqtProperty(int, notify=update)
+    @pyqtProperty(int, notify=recordUpdate)
     def numRecords(self):
         self.mutex.lock()
         n = self._numRecords
         self.mutex.unlock()
         return n
 
-    @pyqtProperty(int, notify=update)
+    @pyqtProperty(int, notify=recordUpdate)
     def numActiveRecords(self):
         self.mutex.lock()
         n = self._numActiveRecords
         self.mutex.unlock()
         return n
 
-    @pyqtProperty(str, notify=update)
-    def date(self):
-        self.mutex.lock()
-        d = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self._date))
-        self.mutex.unlock()
-        return d
-
-    @pyqtProperty(str, notify=update)
-    def status(self):
-        self.mutex.lock()
-        s = self._status
-        self.mutex.unlock()
-        return s
-
-    @pyqtProperty(bool, notify=downloadActiveUpdate)
-    def downloadActive(self):
-        self.mutex.lock()
-        isdl = self._downloadActive
-        self.mutex.unlock()
-        return isdl
-
-    @downloadActive.setter
-    def downloadActive(self, value):
-        self.mutex.lock()
-        self._downloadActive = value
-        self.mutex.unlock()
-        self.downloadActiveUpdate.emit()
+    @pyqtSlot()
+    def slotUpdate(self):
+        self.recordUpdate.emit()
 
     def __init__(self, loglevel='WARNING', netWorker = None, mqtt = None, url = '', cacheFile = None):
-        QObject.__init__(self)
-
         self.logger = Logger(name='ratt.acl')
         self.logger.setLogLevelStr('INFO')
         self.debug = self.logger.isDebug()
 
-        if netWorker is None:
-            self.logger.error('must set netWorker')
-            exit(-1)
-
-        self.netWorker = netWorker
-
-        self.url = url
-
-        self.cacheFile = cacheFile
-
-        self.mutex = QMutex()
-
-        self._acl = json.loads('[]')
-        self._hash = ''
         self._numRecords = 0
         self._numActiveRecords = 0
 
-        self._downloadActive = False
-        self._date = int(time.time())
-        self._status = 'initialized'
+        CachedRemoteFile.__init__(self, logger=self.logger, netWorker=netWorker, url=url, cacheFile=cacheFile)
 
-        self.loadFile(self.cacheFile)
 
         self.mqtt = mqtt
         self.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
         self.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
 
-    def loadFile(self, filename=None):
-        self.logger.info('loading ACL file %s' % filename)
-        if filename is not None:
-            f = QFile(filename)
-
-            if not f.open(QIODevice.ReadOnly | QIODevice.Text):
-                self.logger.error('error opening ACL file %s for read' % filename)
-                return False
-
-            bytes = f.readAll()
-
-            if bytes.isEmpty():
-                self.logger.error('unabled to read from ACL file %s' % filename)
-                f.close()
-                return False
-
-            f.close()
-
-            info = QFileInfo(filename)
-            modified = int(info.lastModified().toMSecsSinceEpoch() / 1000)
-
-            return self.parseJSON(doc=str(bytes), save=False, date=modified, status='loaded_from_file')
-
-        return False
-
-    def saveFile(self, filename=None):
-        self.logger.info('saving ACL cache file %s' % filename)
-        if filename is not None:
-
-            self.mutex.lock()
-            doc = json.dumps(self._acl)
-            self.mutex.unlock()
-
-            f = QFile(filename)
-
-            if not f.open(QIODevice.WriteOnly):
-                self.logger.error('error opening ACL cache file %s for write' % filename)
-                return False
-
-            if f.write(str(doc)) == -1:
-                f.close()
-                self.logger.error('unabled to write to ACL cache file %s' % filename)
-                return False
-
-            f.close()
-            return True
-
-        return False
-
-    @pyqtSlot()
-    def download(self):
-        if not self.downloadActive:
-            self.logger.info('downloading ACL from ' + self.url)
-            self.reply = self.netWorker.get(url=QUrl(self.url))
-            self.reply.finished.connect(self.slotDownloadFinished)
-            self.downloadActive = True
-            return True
-        else:
-            self.logger.warning('already busy downloading ACL')
-        return False
-
-
-    def slotDownloadFinished(self):
-        self.logger.info('ACL download finished')
-
-        error = self.reply.error()
-
-        if error == QNetworkReply.NoError:
-            self.logger.debug('no error, parsing response')
-            self.parseJSON(doc=str(self.reply.readAll()), save=True, status='downloaded')
-
-        else:
-            self.logger.error('NetWorker response error: %s (%s)' % (error, self.reply.errorString()))
-
-        self.reply.deleteLater()
-        self.downloadActive = False
-
+        self.update.connect(self.slotUpdate)
 
     def search(self, hash):
         self.mutex.lock()
         found_record = []
 
-        for record in self._acl:
+        for record in self._obj:
             if record['tagid'] == hash:
                 found_record = record
                 break
@@ -230,56 +103,19 @@ class ACL(QObject):
                 active = active + 1
         return active
 
-    def calcHash(self, j):
-        m = hashlib.sha224()
-        m.update(str(j).encode())
-        hash = m.hexdigest()
-        return hash
+    # this hook is called just after parsing but before hashes are checked
+    # the mutex is not held at this point
+    def parseJSON__hook_unlocked(self, parsed):
+        o = {}
+        o['count'] = len(parsed)
+        o['active'] = self.countActive(parsed)
+        return o
 
-    def parseJSON(self, doc, save=False, date=None, status=''):
-        try:
-            parsed = json.loads(doc)
-            count = len(parsed)
-            active = self.countActive(parsed)
-            hash = self.calcHash(parsed)
-
-            self.logger.debug('parseJSON hash=%s stored hash=%s' % (hash, self._hash))
-            if hash != self._hash:
-                self.mutex.lock()
-                self._acl = parsed
-                self._numRecords = count
-                self._numActiveRecords = active
-                self._hash = hash
-                if date is None:
-                    self._date = int(time.time())
-                else:
-                    self._date = date
-                self._status = status
-                self.mutex.unlock()
-
-                self.logger.info('updated ACL with %d entries, %d active, hash=%s' % (self._numRecords, self._numActiveRecords, self._hash))
-                self.update.emit()
-
-                if save:
-                    self.saveFile(self.cacheFile)
-
-                return True
-
-            else:
-                self.mutex.lock()
-                if date is None:
-                    self._date = int(time.time())
-                self._status = 'same_hash'
-                self.mutex.unlock()
-                self.update.emit()
-                self.logger.error('no ACL update because same hash=%s' % (self._hash))
-
-        except:
-            self.logger.exception('json parse error')
-            self.updateError.emit()
-
-        return False
-
+    # this hook is called if the hashes differ, and the mutex IS held
+    def parseJSON__hook_locked(self, o):
+        self._numRecords = o['count']
+        self._numActiveRecords = o['active']
+        self.logger.info('updated ACL with %d entries, %d active, hash=%s' % (self._numRecords, self._numActiveRecords, self._hash))
 
     # MQTT targeted event
     @pyqtSlot(str, str)
