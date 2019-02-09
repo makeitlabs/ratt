@@ -36,9 +36,14 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty, QVariant
+from PyQt5.QtCore import QObject, QMutex, QIODevice, pyqtSlot, pyqtSignal, pyqtProperty, QVariant, QUrl
+from PyQt5.QtCore import QFile, QFileInfo
+from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from PyQt5.QtQml import QQmlListProperty, qmlRegisterType
 import ConfigParser
+from Logger import Logger
+import simplejson as json
+from CachedRemoteFile import CachedRemoteFile
 
 class Issue(QObject):
     nameChanged = pyqtSignal()
@@ -57,17 +62,55 @@ class Issue(QObject):
             self._name = name
             self.nameChanged.emit()
 
-
 class RattConfig(QObject):
     configChanged = pyqtSignal()
 
-    def __init__(self, inifile):
+    def __init__(self, inifile, loglevel='INFO'):
         QObject.__init__(self)
+
+        self.logger = Logger(name='ratt.config')
+        self.logger.setLogLevelStr(loglevel)
+        self.debug = self.logger.isDebug()
 
         self._inifile = inifile
 
-        qmlRegisterType(Issue, 'RATT', 1, 0, 'Channel')
-        self.loadConfig()
+        qmlRegisterType(Issue, 'RATT', 1, 0, 'Issue')
+        self.loadBootstrapConfig()
+
+        self.remoteConfig = None
+
+    def setNetWorker(self, netWorker=None):
+        self.remoteConfig = CachedRemoteFile(logger=self.logger, netWorker=netWorker,
+                                             url=self.config['Auth.ConfigUrl'], cacheFile=self.config['Auth.ConfigCacheFile'])
+
+        self.remoteConfig.update.connect(self.slotRemoteConfigUpdate)
+        self.remoteConfig.updateError.connect(self.slotRemoteConfigUpdateError)
+        self.remoteConfig.download()
+
+    @pyqtSlot()
+    def slotRemoteConfigUpdate(self):
+        self.logger.info('REMOTE CONFIG UPDATE!')
+        obj = self.remoteConfig.getObj()
+        print obj
+        if obj['status'] == 'success':
+            p = obj['params']
+            for section, params in p.iteritems():
+                for key, value in params.iteritems():
+                    if type(value) is dict:
+                        self.logger.warning('cannot parse dict values in remote config section=%s key=%s -> %s' % (section, key, value))
+                    else:
+                        self.config['%s.%s' % (section, key)] = value
+
+                        print self.config['%s.%s' % (section, key)]
+
+
+        print self.config
+        self.configChanged.emit()
+
+    @pyqtSlot()
+    def slotRemoteConfigUpdateError(self):
+        self.logger.error('REMOTE CONFIG UPDATE ERROR!')
+
 
     #---------------------------------------------------------------------------------------------
     # if any config variables need to be exposed to QML they need to be defined here as properties
@@ -254,7 +297,7 @@ class RattConfig(QObject):
         except ConfigParser.NoOptionError:
             self.config['%s.%s' % (section, key)] = default
 
-    def loadConfig(self):
+    def loadBootstrapConfig(self):
         self.parser = ConfigParser.ConfigParser()
 
         self.parser.read(self._inifile)
@@ -264,6 +307,7 @@ class RattConfig(QObject):
         self.addConfigBool('General', 'Diags')
         self.addConfig('General', 'ToolDesc')
         self.addConfig('General', 'NetworkInterfaceName', 'wlan0')
+        self.addConfig('General', 'MacAddressOverride', None)
 
         self.addConfigBool('GPIO', 'Simulated', False)
 
@@ -295,6 +339,8 @@ class RattConfig(QObject):
         self.addConfig('Auth', 'HttpAuthPassword')
         self.addConfig('Auth', 'AclUrl')
         self.addConfig('Auth', 'AclCacheFile')
+        self.addConfig('Auth', 'ConfigUrl')
+        self.addConfig('Auth', 'ConfigCacheFile')
 
         self.addConfig('MQTT', 'SSL', False)
         self.addConfig('MQTT', 'LogLevel', 'INFO')

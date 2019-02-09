@@ -80,7 +80,7 @@ class NetWorker(QObject):
     def currentWifiLevel(self):
         return self.level
 
-    def __init__(self, loglevel='WARNING', ifcName='wlan0', mqtt=None):
+    def __init__(self, loglevel='WARNING', ifcName='wlan0', ifcMacAddressOverride=None, mqtt=None):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.networker')
@@ -100,7 +100,11 @@ class NetWorker(QObject):
 
         self.ifcName = ifcName
         self.ifcAddr = QHostAddress()
-        self.hwAddr = self.getHwAddress(ifc=ifcName)
+
+        if ifcMacAddressOverride is not None:
+            self.hwAddr = ifcMacAddressOverride
+        else:
+            self.hwAddr = self.getHwAddress(ifc=ifcName)
 
         self.statusTimer = QTimer()
         self.statusTimer.setSingleShot(False)

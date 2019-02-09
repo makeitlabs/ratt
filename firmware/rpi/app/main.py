@@ -67,6 +67,6 @@ if __name__ == '__main__':
 
     engine = RattAppEngine()
     engine.load(QUrl('main.qml'))
-    engine.quit.connect(app.quit)
+    #engine.quit.connect(app.quit)
 
     sys.exit(app.exec_())

@@ -407,6 +407,14 @@ View {
             font.weight: Font.DemiBold
             color: "#444444"
         }
+        Label {
+            Layout.fillWidth: true
+            text: "MAC: " + netWorker.currentHwAddr
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 10
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
 
     }
 

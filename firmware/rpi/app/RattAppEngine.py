@@ -63,7 +63,9 @@ class RattAppEngine(QQmlApplicationEngine):
         args = parser.parse_args()
 
         # load the config
-        self.config = RattConfig(inifile=args.inifile)
+        self.config = RattConfig(inifile=args.inifile, loglevel='DEBUG')
+
+        self.config.configChanged.connect(self.slotConfigChanged)
 
         # create parent logger which will optionally log to file and console, and opionally enable Qt logging
         self.logger = Logger(name='ratt',
@@ -92,6 +94,9 @@ class RattAppEngine(QQmlApplicationEngine):
         # begin executing the personality state machine
         self.personality.execute()
 
+    @pyqtSlot()
+    def slotConfigChanged(self):
+        self.logger.info('CONFIG CHANGED - RE-INIT')
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
@@ -116,7 +121,11 @@ class RattAppEngine(QQmlApplicationEngine):
         # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
         self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'),
                                     ifcName=self.config.value('General.NetworkInterfaceName'),
+                                    ifcMacAddressOverride=self.config.value('General.MacAddressOverride'),
                                     mqtt=self._mqtt)
+
+        # setting the netWorker in the config module will trigger the load of the second stage config (remote)
+        self.config.setNetWorker(netWorker=self._netWorker)
 
         self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
                                          caCertFile=self.config.value('SSL.CaCertFile'),
@@ -160,9 +169,6 @@ class RattAppEngine(QQmlApplicationEngine):
                                caCertFile=self.config.value('SSL.CaCertFile'),
                                clientCertFile=self.config.value('SSL.ClientCertFile'),
                                clientKeyFile=self.config.value('SSL.ClientKeyFile'))
-
-
-
 
 
     def shutdown(self):

@@ -41,8 +41,8 @@ from PyQt5.QtCore import QFile, QFileInfo
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from Logger import Logger
 import logging
-import simplejson as json
 import hashlib
+import simplejson as json
 import time
 
 class ACL(QObject):
@@ -103,7 +103,7 @@ class ACL(QObject):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.acl')
-        self.logger.setLogLevelStr(loglevel)
+        self.logger.setLogLevelStr('INFO')
         self.debug = self.logger.isDebug()
 
         if netWorker is None:
@@ -159,7 +159,7 @@ class ACL(QObject):
         return False
 
     def saveFile(self, filename=None):
-        self.logger.info('saving ACL file %s' % filename)
+        self.logger.info('saving ACL cache file %s' % filename)
         if filename is not None:
 
             self.mutex.lock()
@@ -169,12 +169,12 @@ class ACL(QObject):
             f = QFile(filename)
 
             if not f.open(QIODevice.WriteOnly):
-                self.logger.error('error opening ACL file %s for write' % filename)
+                self.logger.error('error opening ACL cache file %s for write' % filename)
                 return False
 
             if f.write(str(doc)) == -1:
                 f.close()
-                self.logger.error('unabled to write to ACL file %s' % filename)
+                self.logger.error('unabled to write to ACL cache file %s' % filename)
                 return False
 
             f.close()
