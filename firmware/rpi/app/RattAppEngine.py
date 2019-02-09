@@ -106,21 +106,21 @@ class RattAppEngine(QQmlApplicationEngine):
         if self.config.haveInitialRemoteConfig:
             self.logger.info('CONFIG CHANGED - RE-INIT')
 
-            robjs = self.rootObjects()
-            if robjs is not None:
-                for ro in robjs:
-                    ro.close()
+            #robjs = self.rootObjects()
+            #if robjs is not None:
+            #    for ro in robjs:
+            #        ro.close()
 
-            del self.personality
-            self.personality = None
-            self.__initPersonality__()
-            self.__setContextProperties__(reinit=True)
-            self.personality.execute()
+            #del self.personality
+            #self.personality = None
+            #self.__initPersonality__()
+            #self.__setContextProperties__(reinit=True)
+            #self.personality.execute()
 
 
-            self.exit.emit(2)
-        else:
-            self.load("main.qml")
+            #self.exit.emit(2)
+        #else:
+        #    self.load("main.qml")
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic

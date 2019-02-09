@@ -70,6 +70,13 @@ class CachedRemoteFile(QObject):
         self.mutex.unlock()
         return s
 
+    @pyqtProperty(str, notify=update)
+    def source(self):
+        self.mutex.lock()
+        s = self._source
+        self.mutex.unlock()
+        return s
+
     @pyqtProperty(bool, notify=downloadActiveUpdate)
     def downloadActive(self):
         self.mutex.lock()
@@ -84,29 +91,30 @@ class CachedRemoteFile(QObject):
         self.mutex.unlock()
         self.downloadActiveUpdate.emit()
 
-    def __init__(self, logger=None, netWorker=None, url=None, cacheFile=None):
+    def __init__(self):
         QObject.__init__(self)
 
+        self.mutex = QMutex()
+
+        self._downloadActive = False
+        self._date = int(time.time())
+        self._status = 'initialized'
+        self._source = ''
+        self._doc = None
+        self._obj = json.loads('[]')
+        self._hash = ''
+
+    def setup(self, logger=None, netWorker=None, url=None, cacheFile=None):
         assert logger
         assert netWorker
         assert url
         assert cacheFile
-
-        self.mutex = QMutex()
 
         self.logger = logger
         self.netWorker = netWorker
         self.url = url
 
         self.cacheFile = cacheFile
-
-        self._doc = None
-        self._obj = json.loads('[]')
-        self._hash = ''
-
-        self._downloadActive = False
-        self._date = int(time.time())
-        self._status = 'initialized'
 
         self.loadFile(self.cacheFile)
 
@@ -142,10 +150,12 @@ class CachedRemoteFile(QObject):
 
         if error == QNetworkReply.NoError:
             self.logger.debug('no error, parsing response')
+            self._source = self.url
             self.parseJSON(doc=str(self.reply.readAll()), save=True, status='downloaded')
 
         else:
             self.logger.error('NetWorker response error: %s (%s)' % (error, self.reply.errorString()))
+            self.updateError.emit()
 
         self.reply.deleteLater()
         self.downloadActive = False
@@ -194,7 +204,8 @@ class CachedRemoteFile(QObject):
             info = QFileInfo(filename)
             modified = int(info.lastModified().toMSecsSinceEpoch() / 1000)
 
-            return self.parseJSON(doc=str(bytes), save=False, date=modified, status='loaded_from_file')
+            self._source = 'file://' + filename
+            return self.parseJSON(doc=str(bytes), save=False, date=modified, status='loaded')
 
         return False
 
@@ -256,6 +267,7 @@ class CachedRemoteFile(QObject):
 
         except:
             self.logger.exception('json parse error')
+            self._status = 'json_error'
             self.updateError.emit()
 
         return False

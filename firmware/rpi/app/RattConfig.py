@@ -87,12 +87,15 @@ class RattConfig(QObject):
     def setNetWorker(self, netWorker=None):
         assert netWorker
 
-        self.remoteConfig = CachedRemoteFile(logger=self.logger, netWorker=netWorker,
-                                             url=self.config['Auth.ConfigUrl'], cacheFile=self.config['Auth.ConfigCacheFile'])
+        self.remoteConfig = CachedRemoteFile()
 
         self.remoteConfig.update.connect(self.slotRemoteConfigUpdate)
         self.remoteConfig.updateError.connect(self.slotRemoteConfigUpdateError)
+
+        self.remoteConfig.setup(logger=self.logger, netWorker=netWorker, url=self.config['Auth.ConfigUrl'], cacheFile=self.config['Auth.ConfigCacheFile'])
+
         self.remoteConfig.download()
+
 
     def setMQTT(self, mqtt=None):
         assert mqtt
@@ -122,6 +125,13 @@ class RattConfig(QObject):
 
         if not self._haveInitialRemoteConfig:
             self._haveInitialRemoteConfig = True
+        else:
+            if self.mqtt:
+                o = { 'status': self.remoteConfig.status, 'source': self.remoteConfig.source, 'hash': self.remoteConfig.hash}
+                print o
+                self.mqtt.slotPublishSubtopic('config/update', json.dumps(o))
+
+
 
     @pyqtSlot()
     def slotRemoteConfigUpdateError(self):

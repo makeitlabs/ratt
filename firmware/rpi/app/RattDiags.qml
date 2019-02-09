@@ -49,7 +49,6 @@ Item {
     property bool simOUT3: false
 
     function updateSimGPIO(pinName, value) {
-      console.warn('updateSimGPIO', pinName, value)
       switch (pinName) {
       case 'SHUTDOWN':
           simShutdown = value;

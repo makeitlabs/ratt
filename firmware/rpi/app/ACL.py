@@ -68,6 +68,7 @@ class ACL(CachedRemoteFile):
         self.recordUpdate.emit()
 
     def __init__(self, loglevel='WARNING', netWorker = None, mqtt = None, url = '', cacheFile = None):
+        CachedRemoteFile.__init__(self)
         self.logger = Logger(name='ratt.acl')
         self.logger.setLogLevelStr('INFO')
         self.debug = self.logger.isDebug()
@@ -75,7 +76,7 @@ class ACL(CachedRemoteFile):
         self._numRecords = 0
         self._numActiveRecords = 0
 
-        CachedRemoteFile.__init__(self, logger=self.logger, netWorker=netWorker, url=url, cacheFile=cacheFile)
+        self.setup(logger=self.logger, netWorker=netWorker, url=url, cacheFile=cacheFile)
 
 
         self.mqtt = mqtt
