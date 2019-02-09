@@ -162,7 +162,6 @@ class PersonalityBase(PersonalityStateMachine):
         self.logger.info('Personality deinit')
         self.__deinit_gpio_pins()
 
-
     # gpio initialization
     def __init_gpio(self):
         self._simGPIO = False
@@ -194,7 +193,17 @@ class PersonalityBase(PersonalityStateMachine):
             self.pin_led2.pinChanged.connect(self.slotSimGPIOPinChanged)
             self.pin_shutdown.pinChanged.connect(self.slotSimGPIOPinChanged)
 
-        self.simGPIOChanged.emit()
+    @pyqtSlot()
+    def slotForceSimGPIOUpdate(self):
+        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[0].number], self.pins_out[0].value)
+        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[1].number], self.pins_out[1].value)
+        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[2].number], self.pins_out[2].value)
+        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[3].number], self.pins_out[3].value)
+
+        self.simGPIOPinChanged.emit(self.pinToName[self.pin_led1.number], self.pin_led1.value)
+        self.simGPIOPinChanged.emit(self.pinToName[self.pin_led2.number], self.pin_led2.value)
+        self.simGPIOPinChanged.emit(self.pinToName[self.pin_shutdown.number], self.pin_shutdown.value)
+
 
     # this slot handles pin changes for simulated GPIO and regenerates
     # a new signal with a named I/O pin for the Diags QML

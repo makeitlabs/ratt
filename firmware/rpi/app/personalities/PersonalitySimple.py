@@ -137,15 +137,17 @@ class Personality(PersonalityBase):
         self.pins_out[1].set(LOW)
         self.pins_out[2].set(LOW)
         self.pins_out[3].set(LOW)
-        self.pin_led1.set(LOW)
-        self.pin_led2.set(LOW)
+        self.pin_led1.set(HIGH)
+        self.pin_led2.set(HIGH)
 
     # enable tool
     def enableTool(self):
+        self.logger.info('************** ENABLE TOOL')
         self.pins_out[0].set(HIGH)
 
     # disable tool
     def disableTool(self):
+        self.logger.info('************** DISABLE TOOL')
         self.pins_out[0].set(LOW)
 
     # returns true if the tool is currently active
@@ -180,7 +182,8 @@ class Personality(PersonalityBase):
                 self.telemetryEvent.emit('personality/logout', json.dumps({'member': self.activeMemberRecord.name, 'reason': 'other'}))
             self.activeMemberRecord.clear()
             self.wakeOnRFID(True)
-            self.pin_led1.set(HIGH)
+            self.pin_led1.set(LOW)
+            self.pin_led2.set(LOW)
             self.wakeOnTimer(enabled=True, interval=500, singleShot=True)
             return self.goActive()
 

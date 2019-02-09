@@ -48,6 +48,45 @@ Item {
     property bool simOUT2: false
     property bool simOUT3: false
 
+    function updateSimGPIO(pinName, value) {
+      console.warn('updateSimGPIO', pinName, value)
+      switch (pinName) {
+      case 'SHUTDOWN':
+          simShutdown = value;
+          break;
+      case 'OUT0':
+          simOUT0 = value;
+          break;
+      case 'OUT1':
+          simOUT1 = value;
+          break;
+      case 'OUT2':
+          simOUT2 = value;
+          break;
+      case 'OUT3':
+          simOUT3 = value;
+          break;
+      case 'LED1':
+          simLED1 = value;
+          break;
+      case 'LED2':
+          simLED2 = value;
+          break;
+      }
+
+    }
+
+    Component.onCompleted: {
+      personality.slotForceSimGPIOUpdate();
+      personality.slotSimGPIOChangePin('POWER_PRESENT', checkPowerPresent.checked);
+      personality.slotSimGPIOChangePin('CHARGE_STATE', checkChargeState.checked);
+      personality.slotSimGPIOChangePin('IN0', checkIn0.checked);
+      personality.slotSimGPIOChangePin('IN1', checkIn1.checked);
+      personality.slotSimGPIOChangePin('IN2', checkIn2.checked);
+      personality.slotSimGPIOChangePin('IN3', checkIn3.checked);
+
+    }
+
     ColumnLayout {
         Label {
             color: "white"
@@ -74,31 +113,7 @@ Item {
             Connections {
                 target: personality
 
-                onSimGPIOPinChanged: {
-                    switch (pinName) {
-                    case 'SHUTDOWN':
-                        simShutdown = value;
-                        break;
-                    case 'OUT0':
-                        simOUT0 = value;
-                        break;
-                    case 'OUT1':
-                        simOUT1 = value;
-                        break;
-                    case 'OUT2':
-                        simOUT2 = value;
-                        break;
-                    case 'OUT3':
-                        simOUT3 = value;
-                        break;
-                    case 'LED1':
-                        simLED1 = value;
-                        break;
-                    case 'LED2':
-                        simLED2 = value;
-                        break;
-                    }
-                }
+                onSimGPIOPinChanged: updateSimGPIO(pinName, value)
             }
 
             ColumnLayout {
@@ -161,7 +176,7 @@ Item {
                 Rectangle {
                     width: 40
                     height: 20
-                    color: !simLED1 ? "green" : "black"
+                    color: simLED1 ? "#00FF00" : "#005500"
                     Label {
                         anchors.fill: parent
                         horizontalAlignment: Text.AlignHCenter
@@ -175,7 +190,7 @@ Item {
                 Rectangle {
                     width: 40
                     height: 20
-                    color: !simLED2 ? "red" : "black"
+                    color: simLED2 ? "#FF0000" : "#550000"
                     Label {
                         anchors.fill: parent
                         horizontalAlignment: Text.AlignHCenter
@@ -248,13 +263,16 @@ Item {
                 Layout.fillWidth: true
 
                 CheckBox {
+                  id: checkPowerPresent
                   text: 'POWER_PRESENT'
                   height: 20
+                  checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('POWER_PRESENT', checked);
                   }
                 }
                 CheckBox {
+                  id: checkChargeState
                   text: 'CHARGE_STATE'
                   height: 20
                   onCheckedChanged: {
@@ -262,29 +280,37 @@ Item {
                   }
                 }
                 CheckBox {
+                  id: checkIn0
                   text: 'IN0'
                   height: 20
+                  checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN0', checked);
                   }
                 }
                 CheckBox {
+                  id: checkIn1
                   text: 'IN1'
                   height: 20
+                  checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN1', checked);
                   }
                 }
                 CheckBox {
+                  id: checkIn2
                   text: 'IN2'
                   height: 20
+                  checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN2', checked);
                   }
                 }
                 CheckBox {
+                  id: checkIn3
                   text: 'IN3'
                   height: 20
+                  checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN3', checked);
                   }

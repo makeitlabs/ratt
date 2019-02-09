@@ -112,14 +112,18 @@ class Pin(QObject):
         return self._number
 
     @property
+    def value(self):
+        # Pin number
+        return self._val
+
+    @property
     def active_low(self):
         # Pin active logic
         return self._active_low
 
     def set(self, value):
-        self.pinChanged.emit(self._number, self._val)
-
         self._val = value;
+        self.pinChanged.emit(self._number, self._val)
         self.changed(value)
 
     def get (self):
