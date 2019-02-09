@@ -38,7 +38,7 @@
 
 #!/usr/bin/python
 
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant, QEvent, Qt, QCoreApplication
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant, QEvent, Qt, QCoreApplication, QUrl
 from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PyQt5.QtGui import QKeyEvent
@@ -79,6 +79,13 @@ class RattAppEngine(QQmlApplicationEngine):
         self.__initSystem__()
         self.__initPersonality__()
 
+        self.setContextProperties()
+
+        # temporary for test; will move somewhere else eventually
+        self._acl.download()
+
+
+    def setContextProperties(self):
         # create context properties so certain objects can be accessed from QML
         self.rootContext().setContextProperty("appEngine", self)
         self.rootContext().setContextProperty("config", self.config)
@@ -88,15 +95,15 @@ class RattAppEngine(QQmlApplicationEngine):
         self.rootContext().setContextProperty("rfid", self._rfid)
         self.rootContext().setContextProperty("mqtt", self.mqtt)
 
-        # temporary for test; will move somewhere else eventually
-        self._acl.download()
-
-        # begin executing the personality state machine
-        self.personality.execute()
 
     @pyqtSlot()
     def slotConfigChanged(self):
         self.logger.info('CONFIG CHANGED - RE-INIT')
+        self.__initPersonality__()
+        self.setContextProperties()
+        self.load(QUrl('main.qml'))
+        # begin executing the personality state machine
+        self.personality.execute()
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
@@ -112,8 +119,8 @@ class RattAppEngine(QQmlApplicationEngine):
             self.logger.exception('could not establish personality: ' + personalityClass)
             exit(-1)
 
-
     def __initSystem__(self):
+
         # MQTT module, for publishing and subscribing to the MQTT broker
         self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
                                 baseTopic=self.config.value('MQTT.BaseTopic'))
@@ -124,9 +131,6 @@ class RattAppEngine(QQmlApplicationEngine):
                                     ifcMacAddressOverride=self.config.value('General.MacAddressOverride'),
                                     mqtt=self._mqtt)
 
-        # setting the netWorker in the config module will trigger the load of the second stage config (remote)
-        self.config.setNetWorker(netWorker=self._netWorker)
-
         self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
                                          caCertFile=self.config.value('SSL.CaCertFile'),
                                          clientCertFile=self.config.value('SSL.ClientCertFile'),
@@ -135,14 +139,16 @@ class RattAppEngine(QQmlApplicationEngine):
         self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
                                 password=self.config.value('Auth.HttpAuthPassword'))
 
+        # setting the netWorker in the config module will trigger the load of the second stage config (remote)
+        self.config.setNetWorker(netWorker=self._netWorker)
+
+
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),
                         netWorker=self._netWorker,
                         mqtt=self._mqtt,
                         url=self.config.value('Auth.AclUrl'),
                         cacheFile=self.config.value('Auth.AclCacheFile'))
-
-
 
         # telemetry module, for collecting and posting events back to the auth server
         self._telemetry = Telemetry(loglevel=self.config.value('Telemetry.LogLevel'),

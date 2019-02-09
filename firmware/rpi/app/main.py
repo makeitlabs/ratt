@@ -64,9 +64,8 @@ if __name__ == '__main__':
     font = QFont("Ubuntu", 12)
     app.setFont(font)
 
-
     engine = RattAppEngine()
-    engine.load(QUrl('main.qml'))
-    #engine.quit.connect(app.quit)
+    #engine.load(QUrl('main.qml'))
+    engine.quit.connect(app.quit)
 
     sys.exit(app.exec_())

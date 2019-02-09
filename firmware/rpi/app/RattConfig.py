@@ -101,9 +101,6 @@ class RattConfig(QObject):
                     else:
                         self.config['%s.%s' % (section, key)] = value
 
-                        print self.config['%s.%s' % (section, key)]
-
-
         print self.config
         self.configChanged.emit()
 
@@ -263,9 +260,18 @@ class RattConfig(QObject):
     @pyqtProperty(QQmlListProperty, notify=configChanged)
     def Issues(self):
         list = [Issue('Exit (no issue to report)')]
-        for pair in self.parser.items('Issues'):
+        keys = []
+        for pair in self.config.items():
             (name, descr) = pair
+            if name.startswith('Issues'):
+                keys.append(name)
+
+        keys.sort()
+
+        for key in keys:
+            descr = self.config[key]
             list.append(Issue(name=descr))
+
         return QQmlListProperty(Issue, self, list)
 
     #---------------------------------------------------------------------------------------------
