@@ -65,6 +65,10 @@ class Issue(QObject):
 class RattConfig(QObject):
     configChanged = pyqtSignal()
 
+    @pyqtProperty(bool, notify=configChanged)
+    def haveInitialRemoteConfig(self):
+        return self._haveInitialRemoteConfig
+
     def __init__(self, inifile, loglevel='INFO'):
         QObject.__init__(self)
 
@@ -73,6 +77,7 @@ class RattConfig(QObject):
         self.debug = self.logger.isDebug()
 
         self._inifile = inifile
+        self._haveInitialRemoteConfig = False
 
         qmlRegisterType(Issue, 'RATT', 1, 0, 'Issue')
         self.loadBootstrapConfig()
@@ -80,12 +85,22 @@ class RattConfig(QObject):
         self.remoteConfig = None
 
     def setNetWorker(self, netWorker=None):
+        assert netWorker
+
         self.remoteConfig = CachedRemoteFile(logger=self.logger, netWorker=netWorker,
                                              url=self.config['Auth.ConfigUrl'], cacheFile=self.config['Auth.ConfigCacheFile'])
 
         self.remoteConfig.update.connect(self.slotRemoteConfigUpdate)
         self.remoteConfig.updateError.connect(self.slotRemoteConfigUpdateError)
         self.remoteConfig.download()
+
+    def setMQTT(self, mqtt=None):
+        assert mqtt
+
+        self.mqtt = mqtt
+        self.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
+        self.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
+
 
     @pyqtSlot()
     def slotRemoteConfigUpdate(self):
@@ -102,11 +117,37 @@ class RattConfig(QObject):
                         self.config['%s.%s' % (section, key)] = value
 
         print self.config
+
         self.configChanged.emit()
+
+        if not self._haveInitialRemoteConfig:
+            self._haveInitialRemoteConfig = True
 
     @pyqtSlot()
     def slotRemoteConfigUpdateError(self):
         self.logger.error('REMOTE CONFIG UPDATE ERROR!')
+
+    # MQTT targeted event
+    @pyqtSlot(str, str)
+    def __slotTargetedMQTTEvent(self, subtopic, message):
+        tsplit = subtopic.split('/')
+
+        if len(tsplit) >= 2 and tsplit[0] == 'config':
+            cmd = tsplit[1]
+
+            if cmd == 'update':
+                self.remoteConfig.download()
+
+    # MQTT broadcast event
+    @pyqtSlot(str, str)
+    def __slotBroadcastMQTTEvent(self, subtopic, message):
+        tsplit = subtopic.split('/')
+
+        if len(tsplit) >= 2 and tsplit[0] == 'config':
+            cmd = tsplit[1]
+
+            if cmd == 'update':
+                self.remoteConfig.download()
 
 
     #---------------------------------------------------------------------------------------------

@@ -54,6 +54,8 @@ from commands import getoutput
 import argparse
 
 class RattAppEngine(QQmlApplicationEngine):
+    restart = pyqtSignal()
+
     def __init__(self):
         QQmlApplicationEngine.__init__(self)
 
@@ -79,31 +81,46 @@ class RattAppEngine(QQmlApplicationEngine):
         self.__initSystem__()
         self.__initPersonality__()
 
-        self.setContextProperties()
+        self.__setContextProperties__()
 
         # temporary for test; will move somewhere else eventually
         self._acl.download()
 
+        # begin executing the personality state machine
+        self.personality.execute()
 
-    def setContextProperties(self):
+    def __setContextProperties__(self, reinit = False):
         # create context properties so certain objects can be accessed from QML
-        self.rootContext().setContextProperty("appEngine", self)
-        self.rootContext().setContextProperty("config", self.config)
-        self.rootContext().setContextProperty("personality", self.personality)
-        self.rootContext().setContextProperty("netWorker", self._netWorker)
-        self.rootContext().setContextProperty("acl", self._acl)
-        self.rootContext().setContextProperty("rfid", self._rfid)
-        self.rootContext().setContextProperty("mqtt", self.mqtt)
+        if not reinit:
+            self.rootContext().setContextProperty("appEngine", self)
+            self.rootContext().setContextProperty("config", self.config)
+            self.rootContext().setContextProperty("netWorker", self._netWorker)
+            self.rootContext().setContextProperty("acl", self._acl)
+            self.rootContext().setContextProperty("rfid", self._rfid)
+            self.rootContext().setContextProperty("mqtt", self.mqtt)
 
+        self.rootContext().setContextProperty("personality", self.personality)
 
     @pyqtSlot()
     def slotConfigChanged(self):
-        self.logger.info('CONFIG CHANGED - RE-INIT')
-        self.__initPersonality__()
-        self.setContextProperties()
-        self.load(QUrl('main.qml'))
-        # begin executing the personality state machine
-        self.personality.execute()
+        if self.config.haveInitialRemoteConfig:
+            self.logger.info('CONFIG CHANGED - RE-INIT')
+
+            robjs = self.rootObjects()
+            if robjs is not None:
+                for ro in robjs:
+                    ro.close()
+
+            del self.personality
+            self.personality = None
+            self.__initPersonality__()
+            self.__setContextProperties__(reinit=True)
+            self.personality.execute()
+
+
+            self.exit.emit(2)
+        else:
+            self.load("main.qml")
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
@@ -142,6 +159,8 @@ class RattAppEngine(QQmlApplicationEngine):
         # setting the netWorker in the config module will trigger the load of the second stage config (remote)
         self.config.setNetWorker(netWorker=self._netWorker)
 
+        # set the mqtt object for the config engine, this allows triggering of config reloads
+        self.config.setMQTT(mqtt=self._mqtt)
 
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),

@@ -49,6 +49,7 @@ import re
 class NetWorker(QObject):
     ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
     currentIfcAddrChanged = pyqtSignal()
+    currentIfcHwAddrChanged = pyqtSignal()
     wifiStatus = pyqtSignal(str, str, str, int, int, name='wifiStatus', arguments=['essid', 'ap', 'freq', 'quality', 'level'])
     wifiStatusChanged = pyqtSignal()
 
@@ -56,7 +57,7 @@ class NetWorker(QObject):
     def currentIfcAddr(self):
         return self.ifcAddr.toString()
 
-    @pyqtProperty(str)
+    @pyqtProperty(str, notify=currentIfcHwAddrChanged)
     def currentHwAddr(self):
         return self.hwAddr
 
@@ -105,7 +106,7 @@ class NetWorker(QObject):
             self.hwAddr = ifcMacAddressOverride
         else:
             self.hwAddr = self.getHwAddress(ifc=ifcName)
-
+            
         self.statusTimer = QTimer()
         self.statusTimer.setSingleShot(False)
         self.statusTimer.timeout.connect(self.slotStatusTimer)

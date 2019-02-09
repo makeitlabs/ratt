@@ -221,6 +221,8 @@ View {
             return "#007700";
           else if (root.state == "incorrect")
             return "#770000";
+          else
+            return "#000000";
 
         }
 
