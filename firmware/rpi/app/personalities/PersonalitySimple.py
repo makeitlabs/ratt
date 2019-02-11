@@ -142,12 +142,12 @@ class Personality(PersonalityBase):
 
     # enable tool
     def enableTool(self):
-        self.logger.info('************** ENABLE TOOL')
+        self.logger.debug('ENABLE TOOL')
         self.pins_out[0].set(HIGH)
 
     # disable tool
     def disableTool(self):
-        self.logger.info('************** DISABLE TOOL')
+        self.logger.debug('DISABLE TOOL')
         self.pins_out[0].set(LOW)
 
     # returns true if the tool is currently active
@@ -168,6 +168,8 @@ class Personality(PersonalityBase):
     ## STATE_INIT
     #############################################
     def stateInit(self):
+        self.telemetryEvent.emit('personality/init', None)
+
         self.logger.debug('initialize')
         self.initPins()
         return self.goto(self.STATE_IDLE)
