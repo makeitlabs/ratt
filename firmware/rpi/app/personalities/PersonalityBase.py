@@ -195,21 +195,22 @@ class PersonalityBase(PersonalityStateMachine):
 
     @pyqtSlot()
     def slotForceSimGPIOUpdate(self):
-        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[0].number], self.pins_out[0].value)
-        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[1].number], self.pins_out[1].value)
-        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[2].number], self.pins_out[2].value)
-        self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[3].number], self.pins_out[3].value)
+        if self._simGPIO:
+            self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[0].number], self.pins_out[0].value)
+            self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[1].number], self.pins_out[1].value)
+            self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[2].number], self.pins_out[2].value)
+            self.simGPIOPinChanged.emit(self.pinToName[self.pins_out[3].number], self.pins_out[3].value)
 
-        self.simGPIOPinChanged.emit(self.pinToName[self.pin_led1.number], self.pin_led1.value)
-        self.simGPIOPinChanged.emit(self.pinToName[self.pin_led2.number], self.pin_led2.value)
-        self.simGPIOPinChanged.emit(self.pinToName[self.pin_shutdown.number], self.pin_shutdown.value)
+            self.simGPIOPinChanged.emit(self.pinToName[self.pin_led1.number], self.pin_led1.value)
+            self.simGPIOPinChanged.emit(self.pinToName[self.pin_led2.number], self.pin_led2.value)
+            self.simGPIOPinChanged.emit(self.pinToName[self.pin_shutdown.number], self.pin_shutdown.value)
 
 
     # this slot handles pin changes for simulated GPIO and regenerates
     # a new signal with a named I/O pin for the Diags QML
     @pyqtSlot(int, bool)
     def slotSimGPIOPinChanged(self, pin, value):
-        if pin in self.pinToName:
+        if self._simGPIO and pin in self.pinToName:
             pinName = self.pinToName[pin]
             self.simGPIOPinChanged.emit(pinName, value)
 
@@ -219,7 +220,7 @@ class PersonalityBase(PersonalityStateMachine):
     # appear to be actual GPIO inputs
     @pyqtSlot(str, bool)
     def slotSimGPIOChangePin(self, pinName, value):
-        if pinName in self.nameToPinObject:
+        if self._simGPIO and pinName in self.nameToPinObject:
             self.nameToPinObject[pinName].set(value)
 
     # callback for when one of the application GPIO input pins has changed state
