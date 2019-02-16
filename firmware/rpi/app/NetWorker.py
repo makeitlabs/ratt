@@ -98,6 +98,7 @@ class NetWorker(QObject):
         self.setSSLCertConfig()
 
         self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
+        self.authAttempts = 0
 
         self.ifcName = ifcName
         self.ifcAddr = QHostAddress()
@@ -106,7 +107,7 @@ class NetWorker(QObject):
             self.hwAddr = ifcMacAddressOverride
         else:
             self.hwAddr = self.getHwAddress(ifc=ifcName)
-            
+
         self.statusTimer = QTimer()
         self.statusTimer.setSingleShot(False)
         self.statusTimer.timeout.connect(self.slotStatusTimer)
@@ -199,7 +200,7 @@ class NetWorker(QObject):
             self.configureCerts()
 
     def get(self, url):
-        self.logger.debug('get url=%s' % url.toString())
+        self.logger.debug('HTTP GET URL %s' % url.toString())
 
         request = QNetworkRequest(QUrl(url))
         request.setRawHeader("User-Agent", "RATT")
@@ -250,11 +251,18 @@ class NetWorker(QObject):
             self.logger.error('SSL errors:' + err.errorString())
 
     def handleAuthenticationRequired(self, reply, authenticator):
-        if self.user == '' and self.password == '':
-            self.logger.warning('authentication required and no user/password set')
+        self.logger.debug("AUTH REQUIRED")
+        self.authAttempts = self.authAttempts + 1
 
-        authenticator.setUser(self.user)
-        authenticator.setPassword(self.password)
+        if self.authAttempts > 2:
+            self.logger.error('authentication failure, check the user/password in the config')
+
+        elif self.user == '' and self.password == '':
+            self.logger.error('authentication required and no user/password set')
+
+        else:
+            authenticator.setUser(self.user)
+            authenticator.setPassword(self.password)
 
     def configureCerts(self):
         ## import the private client key

@@ -134,28 +134,42 @@ class CachedRemoteFile(QObject):
     @pyqtSlot()
     def download(self):
         if not self.downloadActive:
+            self.downloadActive = True
+
             self.logger.info('downloading from ' + self.url)
             self.reply = self.netWorker.get(url=QUrl(self.url))
             self.reply.finished.connect(self.slotDownloadFinished)
-            self.downloadActive = True
+            #self.reply.error.connect(self.slotDownloadError)
+
+            self.logger.info('self.reply.error=' + str(self.reply.error()))
+
+            if self.reply.error() != QNetworkReply.NoError:
+                self.downloadError(self.reply.error())
+                self.reply.deleteLater()
+                return False
+
             return True
         else:
             self.logger.warning('already busy downloading ' + self.url)
         return False
 
-    def slotDownloadFinished(self):
-        self.logger.info('remote download finished from ' + self.url)
+    def downloadError(self, error, errorString):
+        self.logger.error('DOWNLOAD ERROR: %s (%s) %s' % (error, errorString, self.url))
+        self.updateError.emit()
 
+        self.downloadActive = False
+
+    @pyqtSlot()
+    def slotDownloadFinished(self):
+        self.logger.error('remote download finished from ' + self.url)
         error = self.reply.error()
 
         if error == QNetworkReply.NoError:
-            self.logger.debug('no error, parsing response')
+            self.logger.debug('parsing download response')
             self._source = self.url
             self.parseJSON(doc=str(self.reply.readAll()), save=True, status='downloaded')
-
         else:
-            self.logger.error('NetWorker response error: %s (%s)' % (error, self.reply.errorString()))
-            self.updateError.emit()
+            self.downloadError(self.reply.error(), self.reply.errorString())
 
         self.reply.deleteLater()
         self.downloadActive = False
