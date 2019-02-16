@@ -77,17 +77,8 @@ class RattAppEngine(QQmlApplicationEngine):
         self.logger.info('Initializing RATT System')
         self.debug = self.logger.isDebug()
 
-        # initialize the node personality and the other necessary modules
-        self.__initSystem__()
-        self.__initPersonality__()
+        self.__bootstrapSystem__()
 
-        self.__setContextProperties__()
-
-        # temporary for test; will move somewhere else eventually
-        self._acl.download()
-
-        # begin executing the personality state machine
-        self.personality.execute()
 
     def __setContextProperties__(self, reinit = False):
         # create context properties so certain objects can be accessed from QML
@@ -101,6 +92,21 @@ class RattAppEngine(QQmlApplicationEngine):
 
         self.rootContext().setContextProperty("personality", self.personality)
 
+    def __startSystem__(self):
+        # initialize the node personality and the other necessary modules
+        self.__initSystem__()
+        self.__initPersonality__()
+
+        self.__setContextProperties__()
+
+        # temporary for test; will move somewhere else eventually
+        self._acl.download()
+
+        # begin executing the personality state machine
+        self.personality.execute()
+        self.load("main.qml")
+
+
     @pyqtSlot()
     def slotConfigChanged(self):
         if self.config.haveInitialRemoteConfig:
@@ -111,16 +117,9 @@ class RattAppEngine(QQmlApplicationEngine):
             #    for ro in robjs:
             #        ro.close()
 
-            #del self.personality
-            #self.personality = None
-            #self.__initPersonality__()
-            #self.__setContextProperties__(reinit=True)
-            #self.personality.execute()
-
-
-            #self.exit.emit(2)
-        #else:
-        #    self.load("main.qml")
+            self.exit.emit(0)
+        else:
+            self.__startSystem__()
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic
@@ -136,8 +135,7 @@ class RattAppEngine(QQmlApplicationEngine):
             self.logger.exception('could not establish personality: ' + personalityClass)
             exit(-1)
 
-    def __initSystem__(self):
-
+    def __bootstrapSystem__(self):
         # MQTT module, for publishing and subscribing to the MQTT broker
         self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
                                 baseTopic=self.config.value('MQTT.BaseTopic'))
@@ -161,6 +159,9 @@ class RattAppEngine(QQmlApplicationEngine):
 
         # set the mqtt object for the config engine, this allows triggering of config reloads
         self.config.setMQTT(mqtt=self._mqtt)
+
+
+    def __initSystem__(self):
 
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),

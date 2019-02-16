@@ -81,7 +81,7 @@ class MainApp(QObject):
         if not self.engine:
             print("creating engine")
             self.engine = RattAppEngine()
-            self.engine.load(QUrl('main.qml'))
+            #self.engine.load(QUrl('main.qml'))
             self.engine.exit.connect(self.exit)
 
     @pyqtSlot(int)
@@ -103,9 +103,7 @@ if __name__ == '__main__':
     ma = MainApp()
     running = True
     while running:
-        print "running"
         r = ma.run()
-        print "done r=", r
         if r != 2:
             running = False
 

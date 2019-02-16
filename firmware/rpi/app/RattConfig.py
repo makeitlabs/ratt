@@ -119,9 +119,10 @@ class RattConfig(QObject):
                     else:
                         self.config['%s.%s' % (section, key)] = value
 
-        print self.config
+        #print json.dumps(self.config,2)
 
-        self.configChanged.emit()
+        if self.remoteConfig.status != 'same_hash':
+            self.configChanged.emit()
 
         if not self._haveInitialRemoteConfig:
             self._haveInitialRemoteConfig = True
