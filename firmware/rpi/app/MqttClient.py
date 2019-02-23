@@ -78,6 +78,7 @@ class MqttClient(QThread):
         self.cond = QWaitCondition()
         self.mutex = QMutex()
 
+        self._node_id = None
         self._hostname = 'localhost'
         self._port = 1883
         self._keepalive = 60
@@ -183,12 +184,13 @@ class MqttClient(QThread):
     def publish(self, topic=None, subtopic=None, msg=None, qos=2, retain=False):
         # "subtopic" is a shortcut way of not having to supply the prefix part of the topic
         # for RATT; generally all messages should be published with this prefix
-        if topic is None and subtopic is not None:
-            t = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_STATUS + '/' + self._node_id + '/' + subtopic
-        else:
-            t = topic
+        if self._node_id is not None:
+            if topic is None and subtopic is not None:
+                t = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_STATUS + '/' + self._node_id + '/' + subtopic
+            else:
+                t = topic
 
-        self._client.publish(t, payload=msg, qos=qos, retain=retain)
+            self._client.publish(t, payload=msg, qos=qos, retain=retain)
 
     @pyqtSlot(str, str)
     def slotPublishSubtopic(self, subtopic, msg):
@@ -247,11 +249,12 @@ class MqttClient(QThread):
         f(buf)
 
     def on_connect(self, client, userdata, flags, rc):
-        self.state = MqttClient.Connected
-        self.logger.info('on_connect')
-        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/#')
-        self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/#')
-        self.brokerConnectionEvent.emit(True)
+        if self._node_id is not None:
+            self.state = MqttClient.Connected
+            self.logger.info('on_connect')
+            self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/#')
+            self.subscribe(self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/#')
+            self.brokerConnectionEvent.emit(True)
 
     def on_disconnect(self, client, userdata, rc):
         self.state = MqttClient.Disconnected
@@ -259,13 +262,14 @@ class MqttClient(QThread):
         self.brokerConnectionEvent.emit(False)
 
     def on_message(self, client, userdata, message):
-        topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/'
-        topic_targeted = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/'
+        if self._node_id is not None:
+            topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/'
+            topic_targeted = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/'
 
-        self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
-        if message.topic.startswith(topic_broadcast):
-            subtopic = message.topic.replace(topic_broadcast, '')
-            self.broadcastEvent.emit(subtopic, message.payload)
-        elif message.topic.startswith(topic_targeted):
-            subtopic = message.topic.replace(topic_targeted, '')
-            self.targetedEvent.emit(subtopic, message.payload)
+            self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
+            if message.topic.startswith(topic_broadcast):
+                subtopic = message.topic.replace(topic_broadcast, '')
+                self.broadcastEvent.emit(subtopic, message.payload)
+            elif message.topic.startswith(topic_targeted):
+                subtopic = message.topic.replace(topic_targeted, '')
+                self.targetedEvent.emit(subtopic, message.payload)

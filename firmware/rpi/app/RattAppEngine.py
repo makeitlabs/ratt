@@ -68,6 +68,7 @@ class RattAppEngine(QQmlApplicationEngine):
         self.config = RattConfig(inifile=args.inifile, loglevel='DEBUG')
 
         self.config.configChanged.connect(self.slotConfigChanged)
+        self.config.configError.connect(self.slotConfigError)
 
         # create parent logger which will optionally log to file and console, and opionally enable Qt logging
         self.logger = Logger(name='ratt',
@@ -120,6 +121,10 @@ class RattAppEngine(QQmlApplicationEngine):
             self.exit.emit(0)
         else:
             self.__startSystem__()
+
+    @pyqtSlot()
+    def slotConfigError(self):
+        self.__startSystem__()
 
     def __initPersonality__(self):
         # dynamically import and instantiate the correct 'Personality' class, which contains the specific logic

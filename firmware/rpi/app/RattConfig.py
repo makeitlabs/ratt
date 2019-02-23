@@ -64,6 +64,7 @@ class Issue(QObject):
 
 class RattConfig(QObject):
     configChanged = pyqtSignal()
+    configError = pyqtSignal()
 
     @pyqtProperty(bool, notify=configChanged)
     def haveInitialRemoteConfig(self):
@@ -137,6 +138,7 @@ class RattConfig(QObject):
     @pyqtSlot()
     def slotRemoteConfigUpdateError(self):
         self.logger.error('REMOTE CONFIG UPDATE ERROR!')
+        self.configError.emit()
 
     # MQTT targeted event
     @pyqtSlot(str, str)
