@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name doorbot)(type Legacy)(uri C:/Users/tange/Documents/ratt/hardware/doorbot/REV0/doorbot/doorbot.lib)(options "")(descr ""))
+)
