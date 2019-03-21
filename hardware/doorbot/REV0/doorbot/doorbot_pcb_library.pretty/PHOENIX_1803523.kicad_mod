@@ -1,4 +1,4 @@
-(module Connector:PHOENIX_1803523 (layer F.Cu) (tedit 5C8EE6D5)
+(module PHOENIX_1803523 (layer F.Cu) (tedit 5C92E577)
   (fp_text reference REF** (at -6.35 1.27) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
@@ -21,4 +21,9 @@
   (pad 10 smd roundrect (at 34.29 0) (size 2 4) (layers F.Cu F.Paste F.Mask) (roundrect_rratio 0.25))
   (pad 11 smd roundrect (at 38.1 0) (size 2 4) (layers F.Cu F.Paste F.Mask) (roundrect_rratio 0.25))
   (pad 12 smd roundrect (at 41.91 0) (size 2 4) (layers F.Cu F.Paste F.Mask) (roundrect_rratio 0.25))
+  (model :download:pxc_1803523_02_MCV-1-5-12-G-3-81_3D.stp
+    (offset (xyz 44.5 -2.5 3.9))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 90 0 180))
+  )
 )
