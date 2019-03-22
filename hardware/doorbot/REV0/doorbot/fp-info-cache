@@ -1,4 +1,4 @@
-114937905302971
+125815285949154
 Air_Coils_SML_NEOSID
 Neosid_Air-Coil_SML_1turn_HDM0131A
 
@@ -11915,6 +11915,55 @@ SBC18-11SURKCGKWA
 0
 Divers
 Blank
+
+
+0
+0
+0
+doorbot_pcb_library
+DC_BOOST_MODULE
+
+
+0
+4
+4
+doorbot_pcb_library
+makeit-logo
+
+
+0
+0
+0
+doorbot_pcb_library
+makeit-logo2
+
+
+0
+0
+0
+doorbot_pcb_library
+PHOENIX_1803523
+
+
+0
+12
+12
+doorbot_pcb_library
+PinHeader_2x02_P2.54mm_Vertical
+Through hole straight pin header, 2x02, 2.54mm pitch, double rows
+Through hole pin header THT 2x02 2.54mm double row
+0
+4
+4
+doorbot_pcb_library
+PinHeader_2x20_P2.54mm_Vertical
+Through hole straight pin header, 2x20, 2.54mm pitch, double rows
+Through hole pin header THT 2x20 2.54mm double row
+0
+40
+40
+doorbot_pcb_library
+RATT-LOGO
 
 
 0
