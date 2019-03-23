@@ -29,9 +29,9 @@ Wire Wire Line
 	3750 8100 4700 8100
 Wire Wire Line
 	3750 8000 4300 8000
-Text Label 3850 8100 0    50   ~ 0
+Text Label 3850 8100 0    50   ~ 6
 AT_TXD
-Text Label 3850 8000 0    50   ~ 0
+Text Label 3850 8000 0    50   ~ 6
 AT_RXD
 Wire Wire Line
 	4300 8000 4300 7900
@@ -298,7 +298,7 @@ L Device:R_Small_US R13
 U 1 1 5C90B605
 P 12550 1250
 F 0 "R13" V 12345 1250 50  0000 C CNN
-F 1 "R_PWM" V 12436 1250 50  0000 C CNN
+F 1 "DNP" V 12436 1250 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 12550 1250 50  0001 C CNN
 F 3 "~" H 12550 1250 50  0001 C CNN
 	1    12550 1250
@@ -309,7 +309,7 @@ L Device:R_Small_US R14
 U 1 1 5C90B6E0
 P 12550 2050
 F 0 "R14" V 12345 2050 50  0000 C CNN
-F 1 "R_FREQ" V 12436 2050 50  0000 C CNN
+F 1 "47.5K" V 12436 2050 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 12550 2050 50  0001 C CNN
 F 3 "~" H 12550 2050 50  0001 C CNN
 	1    12550 2050
@@ -320,7 +320,7 @@ L Device:C_Small C1
 U 1 1 5C90E162
 P 12550 1650
 F 0 "C1" V 12321 1650 50  0000 C CNN
-F 1 "C_DELAY" V 12412 1650 50  0000 C CNN
+F 1 "1uF" V 12412 1650 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 12550 1650 50  0001 C CNN
 F 3 "~" H 12550 1650 50  0001 C CNN
 	1    12550 1650
@@ -397,7 +397,7 @@ L Diode:B260 D1
 U 1 1 5C918A2D
 P 15600 1750
 F 0 "D1" V 15554 1829 50  0000 L CNN
-F 1 "B260" V 15645 1829 50  0000 L CNN
+F 1 "SS34-E3/57T" V 15645 1829 50  0000 L CNN
 F 2 "Diode_SMD:D_SMB" H 15600 1575 50  0001 C CNN
 F 3 "http://www.jameco.com/Jameco/Products/ProdDS/1538777.pdf" H 15600 1750 50  0001 C CNN
 	1    15600 1750
@@ -405,17 +405,6 @@ F 3 "http://www.jameco.com/Jameco/Products/ProdDS/1538777.pdf" H 15600 1750 50  
 $EndComp
 Wire Wire Line
 	14550 1900 15600 1900
-$Comp
-L Device:R_Small_US R9
-U 1 1 5C91CADA
-P 12250 3350
-F 0 "R9" H 12318 3396 50  0000 L CNN
-F 1 "R_LED" H 12318 3305 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 12250 3350 50  0001 C CNN
-F 3 "~" H 12250 3350 50  0001 C CNN
-	1    12250 3350
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	11900 3500 12250 3500
 Wire Wire Line
@@ -472,7 +461,7 @@ L Device:R_Small_US R6
 U 1 1 5C925F82
 P 10950 2800
 F 0 "R6" V 10745 2800 50  0000 C CNN
-F 1 "47" V 10836 2800 50  0000 C CNN
+F 1 "270" V 10836 2800 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 10950 2800 50  0001 C CNN
 F 3 "~" H 10950 2800 50  0001 C CNN
 	1    10950 2800
@@ -519,7 +508,7 @@ F 3 "https://toshiba.semicon-storage.com/info/docget.jsp?did=12884&prodName=TLP2
 	1    9950 5650
 	-1   0    0    -1  
 $EndComp
-Text Label 14850 1900 0    50   ~ 0
+Text Label 14850 1900 0    50   ~ 6
 SOLENOID_LOW
 Wire Wire Line
 	10250 5550 10650 5550
@@ -700,13 +689,13 @@ Wire Wire Line
 	4950 7700 5200 7700
 Wire Wire Line
 	4300 7800 3750 7800
-Text Label 3900 6600 0    50   ~ 0
+Text Label 3900 6600 0    50   ~ 6
 AT_MOSI
-Text Label 3900 6700 0    50   ~ 0
+Text Label 3900 6700 0    50   ~ 6
 AT_MISO
-Text Label 3900 6800 0    50   ~ 0
+Text Label 3900 6800 0    50   ~ 6
 AT_SCK
-Text Label 3850 7800 0    50   ~ 0
+Text Label 3850 7800 0    50   ~ 6
 AT_RST
 Wire Wire Line
 	4100 3000 4950 3000
@@ -732,13 +721,13 @@ L Device:R_Small_US R1
 U 1 1 5C8E9583
 P 4650 7900
 F 0 "R1" V 4550 7900 50  0000 C CNN
-F 1 "1K" V 4750 7900 50  0000 C CNN
+F 1 "47" V 4750 7900 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4650 7900 50  0001 C CNN
 F 3 "~" H 4650 7900 50  0001 C CNN
 	1    4650 7900
 	0    1    1    0   
 $EndComp
-Text Notes 600  10750 0    50   ~ 0
+Text Notes 600  10750 0    50   ~ 6
 https://learn.adafruit.com/program-an-avr-or-arduino-using-raspberry-pi-gpio-pins/overview
 $Comp
 L Device:R_Small_US R23
@@ -1034,9 +1023,9 @@ F 3 "" H 11200 8550 50  0001 C CNN
 	1    11200 8550
 	-1   0    0    -1  
 $EndComp
-Text Label 11550 7400 0    50   ~ 0
+Text Label 11550 7400 0    50   ~ 6
 WG_D1_RAW
-Text Label 11550 7300 0    50   ~ 0
+Text Label 11550 7300 0    50   ~ 6
 WG_D0_RAW
 $Comp
 L Regulator_Linear:MC78L05_SOT89 U8
@@ -1073,7 +1062,7 @@ L Device:R_Small_US R17
 U 1 1 5C90511D
 P 10450 7850
 F 0 "R17" V 10350 7850 50  0000 C CNN
-F 1 "100" V 10550 7850 50  0000 C CNN
+F 1 "330" V 10550 7850 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 10450 7850 50  0001 C CNN
 F 3 "~" H 10450 7850 50  0001 C CNN
 	1    10450 7850
@@ -1084,7 +1073,7 @@ L Device:R_Small_US R16
 U 1 1 5C904FFD
 P 10450 7300
 F 0 "R16" V 10350 7300 50  0000 C CNN
-F 1 "100" V 10550 7300 50  0000 C CNN
+F 1 "330" V 10550 7300 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 10450 7300 50  0001 C CNN
 F 3 "~" H 10450 7300 50  0001 C CNN
 	1    10450 7300
@@ -1116,21 +1105,21 @@ F 3 "https://toshiba.semicon-storage.com/info/docget.jsp?did=12884&prodName=TLP2
 	1    9950 7400
 	-1   0    0    -1  
 $EndComp
-Text Notes 12400 7850 0    50   ~ 0
+Text Notes 12400 7850 0    50   ~ 6
 1 - DOOR SWITCH (OPTO)\n2 - DOOR SWITCH (GND)\n3 - WIEGAND BEEPER\n4 - WIEGAND LED\n5 - WIEGAND D0\n6 - WIEGAND D1\n7 - WIEGAND 12V\n8 - WIEGAND GND\n9 - SOLENOID +\n10 - SOLENOID -\n11 - GND IN\n12- 12-24V IN
 Connection ~ 10800 7600
 Wire Wire Line
 	10800 7000 12100 7000
 Wire Wire Line
 	10800 7600 10800 7500
-Text Label 11400 6900 0    50   ~ 0
+Text Label 11400 6900 0    50   ~ 6
 DOOR_SWITCH_IN
 Connection ~ 10800 7900
 Wire Wire Line
 	10800 7600 10800 7900
 Wire Wire Line
 	12100 7600 10800 7600
-Text Label 11700 8000 0    50   ~ 0
+Text Label 11700 8000 0    50   ~ 6
 +12V_IN
 Wire Wire Line
 	10200 8600 9950 8600
@@ -1162,7 +1151,7 @@ Wire Wire Line
 	12100 7900 10800 7900
 Wire Wire Line
 	12100 7800 11300 7800
-Text Label 11400 7800 0    50   ~ 0
+Text Label 11400 7800 0    50   ~ 6
 SOLENOID_LOW
 $Comp
 L Connector:Screw_Terminal_01x12 J2
@@ -1421,7 +1410,7 @@ L Device:R_Small_US R26
 U 1 1 5CC358A7
 P 9150 6700
 F 0 "R26" V 9050 6700 50  0000 C CNN
-F 1 "100" V 9250 6700 50  0000 C CNN
+F 1 "270" V 9250 6700 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 9150 6700 50  0001 C CNN
 F 3 "~" H 9150 6700 50  0001 C CNN
 	1    9150 6700
@@ -1432,7 +1421,7 @@ L Device:R_Small_US R25
 U 1 1 5CC358AD
 P 9150 6150
 F 0 "R25" V 9050 6150 50  0000 C CNN
-F 1 "100" V 9250 6150 50  0000 C CNN
+F 1 "270" V 9250 6150 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 9150 6150 50  0001 C CNN
 F 3 "~" H 9150 6150 50  0001 C CNN
 	1    9150 6150
@@ -1446,65 +1435,65 @@ Wire Wire Line
 	9050 6150 8400 6150
 Wire Wire Line
 	9050 6700 8400 6700
-Text GLabel 8400 6150 0    50   Input ~ 0
+Text GLabel 8400 6150 0    50   Input ~ 6
 WG_BEEP
-Text GLabel 1950 2900 0    50   Input ~ 0
+Text GLabel 1950 2900 0    50   Input ~ 6
 WG_BEEP
-Text GLabel 1900 1700 0    50   Input ~ 0
+Text GLabel 1900 1700 0    50   Input ~ 6
 WG_LED
-Text GLabel 8400 6700 0    50   Input ~ 0
+Text GLabel 8400 6700 0    50   Input ~ 6
 WG_LED
-Text GLabel 8400 7300 0    50   Input ~ 0
+Text GLabel 8400 7300 0    50   Input ~ 6
 WG_D0
-Text GLabel 8400 7850 0    50   Input ~ 0
+Text GLabel 8400 7850 0    50   Input ~ 6
 WG_D1
 Wire Wire Line
 	9450 6350 9450 5750
 Wire Wire Line
 	9450 5750 9650 5750
 Connection ~ 9450 6350
-Text GLabel 4200 8200 2    50   Input ~ 0
+Text GLabel 4200 8200 2    50   Input ~ 6
 WG_D0
-Text GLabel 4200 8300 2    50   Input ~ 0
+Text GLabel 4200 8300 2    50   Input ~ 6
 WG_D1
 Wire Wire Line
 	8850 5550 9100 5550
 Connection ~ 9100 5550
 Wire Wire Line
 	8650 5550 8400 5550
-Text GLabel 8400 5550 0    50   Input ~ 0
+Text GLabel 8400 5550 0    50   Input ~ 6
 DOOR_SW
-Text GLabel 4950 2200 2    50   Input ~ 0
+Text GLabel 4950 2200 2    50   Input ~ 6
 DOOR_SW
 Wire Wire Line
 	4950 2200 4100 2200
-Text GLabel 5250 6600 2    50   Input ~ 0
+Text GLabel 5250 6600 2    50   Input ~ 6
 ICSP_MOSI
-Text GLabel 5250 6700 2    50   Input ~ 0
+Text GLabel 5250 6700 2    50   Input ~ 6
 ICSP_MISO
-Text GLabel 5250 6800 2    50   Input ~ 0
+Text GLabel 5250 6800 2    50   Input ~ 6
 ICSP_SCK
-Text GLabel 5200 7700 2    50   Input ~ 0
+Text GLabel 5200 7700 2    50   Input ~ 6
 ICSP_RESET
-Text GLabel 5200 7900 2    50   Input ~ 0
+Text GLabel 5200 7900 2    50   Input ~ 6
 PI_TXD
-Text GLabel 5200 8100 2    50   Input ~ 0
+Text GLabel 5200 8100 2    50   Input ~ 6
 PI_RXD
-Text GLabel 4950 3000 2    50   Input ~ 0
+Text GLabel 4950 3000 2    50   Input ~ 6
 ICSP_RESET
-Text GLabel 1950 1900 0    50   Input ~ 0
+Text GLabel 1950 1900 0    50   Input ~ 6
 ICSP_MISO
-Text GLabel 1950 2600 0    50   Input ~ 0
+Text GLabel 1950 2600 0    50   Input ~ 6
 ICSP_MOSI
-Text GLabel 1950 2700 0    50   Input ~ 0
+Text GLabel 1950 2700 0    50   Input ~ 6
 ICSP_SCK
-Text GLabel 1950 1400 0    50   Input ~ 0
+Text GLabel 1950 1400 0    50   Input ~ 6
 PI_TXD
-Text GLabel 1950 1500 0    50   Input ~ 0
+Text GLabel 1950 1500 0    50   Input ~ 6
 PI_RXD
-Text GLabel 4950 2000 2    50   Input ~ 0
+Text GLabel 4950 2000 2    50   Input ~ 6
 SOL_ENABLE
-Text GLabel 4950 2100 2    50   Input ~ 0
+Text GLabel 4950 2100 2    50   Input ~ 6
 SOL_OK
 Wire Wire Line
 	4950 2000 4100 2000
@@ -1515,13 +1504,13 @@ Wire Wire Line
 Connection ~ 10850 3500
 Wire Wire Line
 	10550 3500 10500 3500
-Text GLabel 10500 2800 0    50   Input ~ 0
+Text GLabel 10500 2800 0    50   Input ~ 6
 SOL_ENABLE
-Text GLabel 10500 3500 0    50   Input ~ 0
+Text GLabel 10500 3500 0    50   Input ~ 6
 SOL_OK
-Text Label 11550 7200 0    50   ~ 0
+Text Label 11550 7200 0    50   ~ 6
 WG_LED_RAW
-Text Label 11550 7100 0    50   ~ 0
+Text Label 11550 7100 0    50   ~ 6
 WG_BEEP_RAW
 Wire Wire Line
 	1900 1700 2500 1700
@@ -1582,7 +1571,7 @@ L Device:R_Small_US R30
 U 1 1 5CA3F59E
 P 5650 6300
 F 0 "R30" V 5550 6300 50  0000 C CNN
-F 1 "100" V 5750 6300 50  0000 C CNN
+F 1 "220" V 5750 6300 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5650 6300 50  0001 C CNN
 F 3 "~" H 5650 6300 50  0001 C CNN
 	1    5650 6300
@@ -1805,9 +1794,9 @@ Wire Wire Line
 	4200 7600 4200 7100
 Wire Wire Line
 	4200 7100 5250 7100
-Text GLabel 5250 7200 2    50   Input ~ 0
+Text GLabel 5250 7200 2    50   Input ~ 6
 AT_SCL
-Text GLabel 5250 7100 2    50   Input ~ 0
+Text GLabel 5250 7100 2    50   Input ~ 6
 AT_SDA
 $Comp
 L Connector_Generic:Conn_01x04 J4
@@ -1828,9 +1817,9 @@ Wire Wire Line
 	2000 9500 1550 9500
 Wire Wire Line
 	2000 9400 1550 9400
-Text GLabel 1550 9400 0    50   Input ~ 0
+Text GLabel 1550 9400 0    50   Input ~ 6
 AT_SCL
-Text GLabel 1550 9500 0    50   Input ~ 0
+Text GLabel 1550 9500 0    50   Input ~ 6
 AT_SDA
 Wire Wire Line
 	1450 7400 1450 7500
@@ -1875,9 +1864,9 @@ Wire Wire Line
 	1850 7900 1850 7850
 Wire Wire Line
 	1450 8100 1450 8200
-Text GLabel 2000 7500 2    50   Input ~ 0
+Text GLabel 2000 7500 2    50   Input ~ 6
 AT_SCL
-Text GLabel 2000 8200 2    50   Input ~ 0
+Text GLabel 2000 8200 2    50   Input ~ 6
 AT_SDA
 $Comp
 L Device:R_Small_US R32
@@ -1921,9 +1910,9 @@ Connection ~ 1850 7900
 Wire Wire Line
 	1850 7250 1850 7200
 Connection ~ 1850 7200
-Text Notes 1950 10250 0    50   ~ 0
+Text Notes 1950 10250 0    50   ~ 6
 ATMEGA - GROVE DIGITAL or I2C\n1 - Yellow (primary digital I/O or SCL)\n2 - White (secondary digital I/O or SDA)\n3 - VCC (+5V)\n4 - GND
-Text Notes 4450 5050 0    50   ~ 0
+Text Notes 4450 5050 0    50   ~ 6
 PI - GROVE DIGITAL or I2C - 3.3V ONLY!\n1 - Yellow (primary digital I/O or SCL)\n2 - White (secondary digital I/O or SDA)\n3 - VCC (+3.3V)\n4 - GND
 $Comp
 L power:GND #PWR044
@@ -1974,9 +1963,9 @@ Wire Wire Line
 	4500 4300 4050 4300
 Wire Wire Line
 	4500 4200 4050 4200
-Text GLabel 4050 4200 0    50   Input ~ 0
+Text GLabel 4050 4200 0    50   Input ~ 6
 PI_SCL
-Text GLabel 4050 4300 0    50   Input ~ 0
+Text GLabel 4050 4300 0    50   Input ~ 6
 PI_SDA
 Wire Wire Line
 	3450 4250 3450 4350
@@ -2052,9 +2041,9 @@ Wire Wire Line
 	2300 4900 2300 4850
 Wire Wire Line
 	1900 5100 1900 5200
-Text GLabel 2450 4500 2    50   Input ~ 0
+Text GLabel 2450 4500 2    50   Input ~ 6
 PI_SCL
-Text GLabel 2450 5200 2    50   Input ~ 0
+Text GLabel 2450 5200 2    50   Input ~ 6
 PI_SDA
 $Comp
 L power:+3.3V #PWR042
@@ -2086,9 +2075,9 @@ Wire Wire Line
 	4100 1800 4950 1800
 Wire Wire Line
 	4100 1700 4950 1700
-Text GLabel 4950 1700 2    50   Input ~ 0
+Text GLabel 4950 1700 2    50   Input ~ 6
 PI_SDA
-Text GLabel 4950 1800 2    50   Input ~ 0
+Text GLabel 4950 1800 2    50   Input ~ 6
 PI_SCL
 Wire Notes Line
 	500  5500 7150 5500
@@ -2131,11 +2120,11 @@ Wire Wire Line
 Wire Wire Line
 	600  9950 950  9950
 Connection ~ 950  9950
-Text Notes 7350 4150 0    59   ~ 0
+Text Notes 7350 4150 0    59   ~ 6
 DELAY (Initial on @ 100% Duty) - Value of C1 (C_DELAY)\n====================================\n1µs ... Pin 2 Tied to +5V\n18µs ... Pin 2 Open\n110µs ... 100pF\n1.1ms ... 1nF\n11ms ... 10nF\n110ms ... 100nF\n1.1s ... 1µF ***\n11s ... 10µF
-Text Notes 7350 1700 0    59   ~ 0
+Text Notes 7350 1700 0    59   ~ 6
 PWM FREQ - Value of R14 (R_FREQ)\n=======================\n100kHz ... 47.5k ***\n50kHz ... 100k\n25kHz ... 205k\n10kHz ... 523k\n5kHz ... 1.07M\n500Hz ... 11.3M
-Text Notes 7350 3150 0    59   ~ 0
+Text Notes 7350 3150 0    59   ~ 6
 PWM DUTY CYCLE (at 100kHz) - Value of R13 (R_PWM)\n==================================\n5% 16.9k\n10% 19.1k\n20% 22.6k\n30% 26.1k\n40% 29.4k\n50% 33.2k\n60% 37.4k\n70% 40.2k\n80% 44.2k\n90% 47.5k\n95% 49.9k\n\n
 $Comp
 L Device:R_POT_US RV1
@@ -2162,7 +2151,7 @@ L Device:R_Small_US R34
 U 1 1 5CA32B55
 P 4600 7550
 F 0 "R34" H 4450 7550 50  0000 C CNN
-F 1 "4.7K" H 4750 7550 50  0000 C CNN
+F 1 "4.7K" H 4750 7600 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4600 7550 50  0001 C CNN
 F 3 "~" H 4600 7550 50  0001 C CNN
 	1    4600 7550
@@ -2187,10 +2176,10 @@ Connection ~ 4600 7700
 Wire Wire Line
 	4600 7700 4750 7700
 $Comp
-L Device:C_Small C?
+L Device:C_Small C13
 U 1 1 5CAEF039
 P 2100 6400
-F 0 "C?" H 2192 6446 50  0000 L CNN
+F 0 "C13" H 2192 6446 50  0000 L CNN
 F 1 ".1uF" H 2192 6355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 2100 6400 50  0001 C CNN
 F 3 "~" H 2100 6400 50  0001 C CNN
@@ -2198,10 +2187,10 @@ F 3 "~" H 2100 6400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L power:GND #PWR046
 U 1 1 5CAEF03F
 P 2100 6500
-F 0 "#PWR?" H 2100 6250 50  0001 C CNN
+F 0 "#PWR046" H 2100 6250 50  0001 C CNN
 F 1 "GND" H 2105 6327 50  0000 C CNN
 F 2 "" H 2100 6500 50  0001 C CNN
 F 3 "" H 2100 6500 50  0001 C CNN
@@ -2221,4 +2210,19 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20w
 $EndComp
 Wire Wire Line
 	2550 6300 2100 6300
+Text Notes 12450 700  0    79   ~ 0
+DNP R13 WHEN USING RV1
+$Comp
+L Device:R_Small_US R9
+U 1 1 5C91CADA
+P 12250 3350
+F 0 "R9" H 12318 3396 50  0000 L CNN
+F 1 "330" H 12318 3305 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 12250 3350 50  0001 C CNN
+F 3 "~" H 12250 3350 50  0001 C CNN
+	1    12250 3350
+	1    0    0    -1  
+$EndComp
+Text Notes 10450 9150 0    79   ~ 0
+DNP R24 IF USING BOOST CONVERTER
 $EndSCHEMATC
