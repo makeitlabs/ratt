@@ -36,7 +36,11 @@
 //
 // --------------------------------------------------------------------------
 //
-// requires ATTiny support for Arduino, see https://github.com/damellis/attiny
+// requires ATTiny support for Arduino:
+// see https://github.com/damellis/attiny
+// see http://highlowtech.org/?p=1695
+//
+// programmed via ICSP pins using AVR Dragon or other ICSP tools
 
 #define PIN_OUT 4
 #define PIN_ANALOG_IN 3
