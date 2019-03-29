@@ -41,7 +41,7 @@ import QtGraphicalEffects 1.0
 
 View {
     id: root
-    name: "Shutdown"
+    name: "Enabled"
 
     color: "#000099"
 
@@ -63,6 +63,8 @@ View {
 
             if (!allowForceLogout)
               status.keyEscActive = !isActive;
+
+            status.keyReturnActive = !isActive;
 
             if (isActive)
                 idleSecs = idleTimeoutSecs;
@@ -92,7 +94,7 @@ View {
     }
 
     function _show() {
-        status.setKeyActives(true, false, false, false);
+        status.setKeyActives(true, false, false, true);
         enabledSecs = 0;
         activeSecs = 0;
         idleSecs = idleTimeoutSecs;
@@ -130,9 +132,15 @@ View {
         }
     }
 
-    function done(reason) {
-      console.warn('DONE')
+    function keyReturn(pressed) {
+      if (pressed) {
+        sound.keyAudio.play();
+        idleSecs = idleTimeoutSecs;
+      }
+      return true;
+    }
 
+    function done(reason) {
         sound.disableAudio.play();
         // TODO emit a telemetry event instead
 
