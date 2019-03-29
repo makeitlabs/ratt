@@ -43,7 +43,7 @@ View {
     id: root
     name: "Enabled"
 
-    color: "#000099"
+    color: idleWarning ? "#666666" : "#000099"
 
     property int enabledSecs: 0
     property int activeSecs: 0
@@ -102,7 +102,6 @@ View {
       updateTime();
 
       sound.enableAudio.play();
-
     }
 
     function _hide() {
@@ -244,6 +243,8 @@ View {
         RowLayout {
           Layout.fillWidth: true
           Layout.preferredHeight: 20
+          visible: !idleWarning
+
           Item {
             Layout.preferredWidth: 35
             Layout.fillHeight: true
@@ -282,6 +283,75 @@ View {
             }
           }
         }
+        RowLayout {
+          Layout.fillWidth: true
+          Layout.preferredHeight: 12
+          visible: idleWarning
+
+          Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Label {
+                id: textHint1
+                horizontalAlignment: Text.AlignHCenter
+                text: "SESSION ENDING..."
+                width: parent.width
+                font.pixelSize: 14
+                font.weight: Font.DemiBold
+                color: "#ffffff"
+            }
+            Glow {
+              anchors.fill: textHint1
+              source: textHint1
+              radius: 2
+              color: "black"
+            }
+          }
+        }
+        RowLayout {
+          Layout.fillWidth: true
+          Layout.preferredHeight: 12
+          visible: idleWarning
+
+          Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Label {
+                id: textHint2
+                horizontalAlignment: Text.AlignRight
+                text: "STAY LOGGED IN"
+                width: parent.width
+                font.pixelSize: 12
+                font.weight: Font.DemiBold
+                color: "#ffffff"
+            }
+            Glow {
+              anchors.fill: textHint2
+              source: textHint2
+              radius: 2
+              color: "black"
+            }
+          }
+          Item {
+            Layout.preferredWidth: 20
+            Layout.fillHeight: true
+            Label {
+                id: textHintButton
+                text: "\u25a0"
+                width: 20
+                font.pixelSize: 16
+                font.weight: Font.DemiBold
+                color: "#3333ff"
+            }
+            Glow {
+              anchors.fill: textHintButton
+              source: textHintButton
+              radius: 3
+              color: "black"
+            }
+          }
+        }
+
 
         RowLayout {
           Layout.fillWidth: true
