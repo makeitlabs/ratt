@@ -184,6 +184,10 @@ class RattConfig(QObject):
         return self.config['Personality.TimeoutSeconds']
 
     @pyqtProperty(int, notify=configChanged)
+    def Personality_AdminTimeoutSeconds(self):
+        return self.config['Personality.AdminTimeoutSeconds']
+
+    @pyqtProperty(int, notify=configChanged)
     def Personality_TimeoutWarningSeconds(self):
         return self.config['Personality.TimeoutWarningSeconds']
 
@@ -380,6 +384,7 @@ class RattConfig(QObject):
         self.addConfig('Personality', 'Class')
         self.addConfig('Personality', 'LogLevel', 'INFO')
         self.addConfigInt('Personality', 'TimeoutSeconds')
+        self.addConfigInt('Personality', 'AdminTimeoutSeconds')
         self.addConfigInt('Personality', 'TimeoutWarningSeconds')
         self.addConfigBool('Personality', 'SafetyCheckEnabled', False)
         self.addConfigBool('Personality', 'MonitorToolPowerEnabled', False)

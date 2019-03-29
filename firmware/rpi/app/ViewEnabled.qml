@@ -94,13 +94,15 @@ View {
     }
 
     function _show() {
-        status.setKeyActives(true, false, false, true);
-        enabledSecs = 0;
-        activeSecs = 0;
-        idleSecs = idleTimeoutSecs;
-        updateTime();
+      status.setKeyActives(true, false, false, true);
+      enabledSecs = 0;
+      activeSecs = 0;
+      idleTimeoutSecs = config.Personality_TimeoutSeconds;
+      idleSecs = idleTimeoutSecs;
+      updateTime();
 
-        sound.enableAudio.play();
+      sound.enableAudio.play();
+
     }
 
     function _hide() {
@@ -136,9 +138,30 @@ View {
       if (pressed) {
         sound.keyAudio.play();
         idleSecs = idleTimeoutSecs;
+        updateTime();
+        forceAdminTimeoutTimer.start();
+      } else {
+        forceAdminTimeoutTimer.stop();
       }
       return true;
     }
+
+    Timer {
+        id: forceAdminTimeoutTimer
+        interval: 2000
+        running: false
+        repeat: false
+        onTriggered: {
+          console.warn('level=', activeMemberRecord.level);
+          if (activeMemberRecord.level > 0) {
+            idleTimeoutSecs = config.Personality_AdminTimeoutSeconds;
+            idleSecs = idleTimeoutSecs;
+            sound.generalAlertAudio.play();
+            updateTime();
+          }
+        }
+    }
+
 
     function done(reason) {
         sound.disableAudio.play();
