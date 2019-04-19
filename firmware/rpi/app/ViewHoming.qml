@@ -55,14 +55,18 @@ View {
     }
 
     function _hide() {
-      timeoutTimer.stop();
       audioInstructionTimer.stop();
+      overrideTimer.stop();
+      timeoutTimer.stop();
       gentleReminderTimer.stop();
+
       sound.homingInstructionsAudio.stop();
+      sound.generalAlertAudio.stop();
+
     }
 
     function keyEscape(pressed) {
-      overrideTimer.stop();
+
       appWindow.uiEvent('HomingAborted');
 
       return true;
@@ -103,7 +107,7 @@ View {
 
     Timer {
       id: gentleReminderTimer
-      interval: 3000
+      interval: 2000
       running: false
       repeat: true
       onTriggered: {
@@ -128,7 +132,7 @@ View {
       onPlayingChanged: {
         if (target.playing) {
           gentleReminderTimer.stop();
-        } else {
+        } else if (shown) {
           gentleReminderTimer.start();
         }
       }
