@@ -97,7 +97,11 @@ View {
       status.setKeyActives(true, false, false, true);
       enabledSecs = 0;
       activeSecs = 0;
-      idleTimeoutSecs = config.Personality_TimeoutSeconds;
+      if (activeMemberRecord.level > 0) {
+        idleTimeoutSecs = config.Personality_AdminTimeoutSeconds;
+      } else {
+        idleTimeoutSecs = config.Personality_TimeoutSeconds;
+      } 
       idleSecs = idleTimeoutSecs;
       updateTime();
 

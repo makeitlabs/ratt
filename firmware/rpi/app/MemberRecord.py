@@ -41,6 +41,15 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty
 class MemberRecord(QObject):
     recordChanged = pyqtSignal()
 
+    ACCESS_LEVEL=['User','Trainer','ARM','RM','Admin']
+    LEVEL_USER=0
+    LEVEL_TRAINER=1
+    LEVEL_ARM=2
+    LEVEL_RM=3
+    LEVEL_ADMIN=4
+    LEVEL_HEADRM=4 # Equiv of Admin
+    LEVEL_NOACCESS=-1
+
     def __init__(self, initRecord = []):
         QObject.__init__(self)
         self.clear()

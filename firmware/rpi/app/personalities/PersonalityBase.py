@@ -384,7 +384,10 @@ class PersonalityBase(PersonalityStateMachine):
                 self.cond.wakeAll()
 
                 if len(message):
-                    self._lockReason = message
+                    try:
+                      self._lockReason = json.loads(message)['reason']
+                    except:
+                      self._lockReason = message
                 else:
                     self._lockReason = '(no reason given)'
                 self.lockReasonChanged.emit()

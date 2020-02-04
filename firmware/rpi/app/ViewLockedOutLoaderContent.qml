@@ -27,6 +27,7 @@ ColumnLayout {
         id: reasonText
         width: sv.width
         text: personality.lockReason
+        horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 12
         font.weight: Font.DemiBold
         wrapMode: Text.Wrap

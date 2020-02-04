@@ -186,6 +186,8 @@ class Personality(PersonalityBase):
             self.wakeOnRFID(True)
             self.pin_led1.set(LOW)
             self.pin_led2.set(LOW)
+            if self.wasLockedOut:
+                return self.exitAndGoto(self.STATE_LOCK_OUT)
             self.wakeOnTimer(enabled=True, interval=500, singleShot=True)
             return self.goActive()
 
@@ -565,6 +567,10 @@ class Personality(PersonalityBase):
             return self.goActive()
 
         elif self.phACTIVE:
+            if self.wakereason == self.REASON_RFID_ALLOWED and self.activeMemberRecord.level > 1:
+                self.wasLockedOut=True
+                return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
+
             if self.wakereason == self.REASON_TIMER:
                 if self.pin_led1.get() == LOW:
                     self.pin_led1.set(HIGH)
