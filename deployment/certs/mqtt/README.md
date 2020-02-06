@@ -31,6 +31,18 @@ To generate a client cert, you must supply the CN for the client on the command 
 
 This script will ask you for that CA password you should have remembered earlier.
 
+## Deploying certificates to the authbackend
+
+The authbackend needs valid client certificates so it can connect to the MQTT broker.  Generate the client cert named `authbackend` using the script, and then deploy it with the included script:
+
+`./deploy_authbackend_certs.sh`
+
+This will deploy the certs to both the production and staging servers, and, importantly, it will restart the Apache webserver, so be aware before you do this.
+
+## Deploying certificates to Node-RED
+
+Node-RED is used for automation glue and "smarts" for the RATT system (e.g. Slack integration).  Generate client certs with the name `node-red` and manually configure Node-RED TLS to point to the certificates on the local filesystem.  You may also choose to upload the certs into Node-RED instead.
+
 ## Deploying certificates to a RATT node
 
 To deploy to a RATT node you will need to have a working `fab` configuration, including `ssh-config` and properly deployed SSH keys.  It is beyond the scope of this document (for now) to help you get that configured.
