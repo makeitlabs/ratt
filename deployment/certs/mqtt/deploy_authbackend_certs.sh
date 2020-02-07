@@ -21,3 +21,6 @@ sudo cp private/client_authbackend.key ${STAGING_DIR}/ssl
 echo -e ${CYAN}restarting apache...
 echo -e ${GRAY}
 sudo systemctl restart apache2
+echo -e ${CYAN}restarting authbackend-mqtt daemon...
+echo -e ${GRAY}
+sudo service authbackend-mqtt restart
