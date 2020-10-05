@@ -221,7 +221,7 @@ View {
         anchors.fill: parent
         Item {
           Layout.fillWidth: true
-          Layout.preferredHeight: 16
+          Layout.preferredHeight: config.Personality_UseEndorsements ? 10 : 16
           Label {
               id: memberNameLabel
               width: parent.width
@@ -235,6 +235,31 @@ View {
           Glow {
             anchors.fill: memberNameLabel
             source: memberNameLabel
+            radius: 2
+            color: "black"
+          }
+        }
+
+        Item {
+          visible: config.Personality_UseEndorsements
+          Layout.fillWidth: true
+          Layout.preferredHeight: config.Personality_UseEndorsements ? 10 : 0
+          Label {
+              id: memberAdvLabel
+              width: parent.width
+              text: {
+                return personality.hasAdvancedEndorsement ?
+                  config.Personality_AdvancedDescription :
+                  config.Personality_NonAdvancedDescription;
+              }
+              horizontalAlignment: Text.AlignHCenter
+              font.pixelSize: 10
+              color: "#FFFFFF"
+          }
+
+          Glow {
+            anchors.fill: memberAdvLabel
+            source: memberAdvLabel
             radius: 2
             color: "black"
           }
@@ -285,7 +310,7 @@ View {
         }
         RowLayout {
           Layout.fillWidth: true
-          Layout.preferredHeight: 12
+          Layout.preferredHeight: 10
           visible: idleWarning
 
           Item {
@@ -296,8 +321,8 @@ View {
                 horizontalAlignment: Text.AlignHCenter
                 text: "SESSION ENDING..."
                 width: parent.width
-                font.pixelSize: 14
-                font.weight: Font.DemiBold
+                font.pixelSize: 12
+                font.weight: Font.Bold
                 color: "#ffffff"
             }
             Glow {
@@ -310,7 +335,7 @@ View {
         }
         RowLayout {
           Layout.fillWidth: true
-          Layout.preferredHeight: 12
+          Layout.preferredHeight: 10
           visible: idleWarning
 
           Item {
@@ -322,7 +347,6 @@ View {
                 text: "STAY LOGGED IN"
                 width: parent.width
                 font.pixelSize: 12
-                font.weight: Font.DemiBold
                 color: "#ffffff"
             }
             Glow {

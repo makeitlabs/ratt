@@ -231,6 +231,23 @@ class RattConfig(QObject):
     def Personality_AllowForceLogout(self):
         return self.config['Personality.AllowForceLogout']
 
+    @pyqtProperty(bool, notify=configChanged)
+    def Personality_UseEndorsements(self):
+        return self.config['Personality.UseEndorsements']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Personality_AdvancedEndorsement(self):
+        return self.config['Personality.AdvancedEndorsement']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Personality_AdvancedDescription(self):
+        return self.config['Personality.AdvancedDescription']
+
+    @pyqtProperty(str, notify=configChanged)
+    def Personality_NonAdvancedDescription(self):
+        return self.config['Personality.NonAdvancedDescription']
+
+
     @pyqtProperty(str, notify=configChanged)
     def General_ToolDesc(self):
         return self.config['General.ToolDesc']
@@ -390,13 +407,16 @@ class RattConfig(QObject):
         self.addConfigBool('Personality', 'MonitorToolPowerEnabled', False)
         self.addConfigBool('Personality', 'HomingManualOverrideEnabled', False)
         self.addConfigBool('Personality', 'HomingExternalOverrideEnabled', False)
-
         self.addConfigBool('Personality', 'PasswordEnabled', False)
         self.addConfig('Personality', 'Password', 'RATT')
         self.addConfig('Personality', 'PasswordPrompt', 'Password')
         self.addConfig('Personality', 'PasswordCorrectText', 'Thank you, that is correct.')
         self.addConfig('Personality', 'PasswordIncorrectText', 'Sorry, that is incorrect.')
         self.addConfigBool('Personality', 'AllowForceLogout', False)
+        self.addConfigBool('Personality', 'UseEndorsements', False)
+        self.addConfig('Personality', 'AdvancedEndorsement')
+        self.addConfig('Personality', 'AdvancedDescription', 'ADVANCED')
+        self.addConfig('Personality', 'NonAdvancedDescription', 'BASIC')
 
         self.addConfig('Auth', 'LogLevel', 'INFO')
         self.addConfig('Auth', 'ResourceId')

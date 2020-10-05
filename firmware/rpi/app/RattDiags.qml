@@ -536,6 +536,12 @@ Item {
                 Label {
                     font.pixelSize: 10
                     color: "white"
+                    text: "endorsements: " + activeMemberRecord.endorsements
+                    visible: activeMemberRecord.valid
+                }
+                Label {
+                    font.pixelSize: 10
+                    color: "white"
                     text: activeMemberRecord.tag
                     visible: activeMemberRecord.valid
                 }

@@ -51,6 +51,7 @@ class MemberRecord(QObject):
     def copy(self, source):
         self._member = source.name
         self._nickname = source.nickname
+        self._endorsements = source.endorsements
         self._level = source.level
         self._tagid = source.tag
         self._lastaccessed = source.lastAccessed
@@ -64,6 +65,7 @@ class MemberRecord(QObject):
     def clear(self):
         self._member = ''
         self._nickname = ''
+        self._endorsements = ''
         self._level = -1
         self._tagid = ''
         self._lastaccessed = ''
@@ -79,6 +81,10 @@ class MemberRecord(QObject):
         try:
             self._member = record['member']
             self._nickname = record['nickname']
+            if 'endorsements' in record:
+                self._endorsements = record['endorsements']
+            else:
+                self._endorsements = ''
             self._level = int(record['level'])
             self._tagid = record['tagid']
             self._lastaccessed = record['last_accessed']
@@ -100,6 +106,10 @@ class MemberRecord(QObject):
     @pyqtProperty(str, notify=recordChanged)
     def nickname(self):
         return self._nickname
+
+    @pyqtProperty(str, notify=recordChanged)
+    def endorsements(self):
+        return self._endorsements
 
     @pyqtProperty(int, notify=recordChanged)
     def level(self):
