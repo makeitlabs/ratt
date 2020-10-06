@@ -22,7 +22,7 @@ cd ssl
 
 echo -e ${GREEN}generate client key without encryption
 echo -e ${GRAY}
-openssl genrsa -out private/client_${CN}.key 2048 -config openssl.cnf 
+openssl genrsa -out private/client_${CN}.key 2048 #-config openssl.cnf 
 
 echo -e ${GREEN}generate CSR for client key
 echo -e ${GRAY}

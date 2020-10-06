@@ -16,11 +16,11 @@ openssl req -new -x509 -days 36525 -extensions v3_ca -keyout private/ca.key -out
 
 #echo -e ${GREEN}generate server key with encryption
 #echo -e ${GRAY}
-#openssl genrsa -des3 -out private/server.key 2048 -config openssl.cnf 
+#openssl genrsa -des3 -out private/server.key 2048 #-config openssl.cnf 
 
 echo -e ${GREEN}generate server key without encryption
 echo -e ${GRAY}
-openssl genrsa -out private/server.key 2048 -config openssl.cnf
+openssl genrsa -out private/server.key 2048 #-config openssl.cnf
 
 echo -e ${GREEN}generate certificate signing request to send to the CA 
 echo -e ${GRAY}
