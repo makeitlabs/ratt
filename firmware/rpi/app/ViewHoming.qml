@@ -44,7 +44,7 @@ View {
 
     function _show() {
       status.keyEscActive = true;
-      status.keyReturnActive = config.Personality_HomingManualOverrideEnabled;
+      status.keyReturnActive = ((activeMemberRecord.level > 0) || (config.Personality_HomingManualOverrideEnabled));
       status.keyUpActive = false;
       status.keyDownActive = false;
 
@@ -73,10 +73,11 @@ View {
     }
 
     function keyReturn(pressed) {
-      if (config.Personality_HomingManualOverrideEnabled) {
-        if (pressed)
+      if ((activeMemberRecord.level > 0) || (config.Personality_HomingManualOverrideEnabled)) {
+        if (pressed) {
           overrideTimer.start();
-        else
+          appWindow.uiEvent('HomingOverride');
+        } else
           overrideTimer.stop();
       }
 

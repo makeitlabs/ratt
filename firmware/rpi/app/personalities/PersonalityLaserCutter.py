@@ -63,6 +63,7 @@ class Personality(PersonalitySimple):
         self.states[self.STATE_HOMING_OVERRIDE] = self.stateHomingOverride
 
         self._needsHoming = True
+        print "BKG NEEDS HOMING"
 
     # returns true if the tool is currently homed (generally connected to the
     # Y limit switch on a laser gantry)
@@ -129,9 +130,10 @@ class Personality(PersonalitySimple):
                     return self.exitAndGoto(self.STATE_HOMING_FAILED)
 
             if self.wakereason == self.REASON_UI:
+                print "BKG {0} {1}".format(self.uievent,self.activeMemberRecord)
                 if self.uievent == 'HomingAborted' or self.uievent == 'HomingTimeout':
                     return self.exitAndGoto(self.STATE_IDLE)
-                elif self.uievent == 'HomingOverride' and self.app.config.value('Personality.HomingManualOverrideEnabled'):
+                elif self.uievent == 'HomingOverride' and ((self.activeMemberRecord.level > 0) or (self.app.config.value('Personality.HomingManualOverrideEnabled'))):
                     return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
 
             return False

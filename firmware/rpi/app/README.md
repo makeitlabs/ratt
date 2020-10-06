@@ -20,11 +20,22 @@ Testing on Development Host
 
 `127.0.1.1	ubuntu devel`
 
+## Run MQTT broker (if desired)
+
+`sudo mosquito &`
+
+## Run backend auth database
+
+`cd ~/authserver`
+`python authserver.py`
+# (See README.md in authserver directory for more)
+
 ## Run the app
 
 The `ratt-devhost.ini` config file contains settings to allow the app
 to run on the development host.
 
+`cd ~/ratt/firmware/rpi/app`
 `./main.py --ini ./ratt-devhost.ini`
 
 
