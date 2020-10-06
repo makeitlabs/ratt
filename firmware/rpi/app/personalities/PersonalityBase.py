@@ -378,19 +378,24 @@ class PersonalityBase(PersonalityStateMachine):
             cmd = tsplit[1]
 
             if cmd == 'lock':
-                self.mutex.lock()
-                self.wakereason = self.REASON_LOCK_OUT
-                self.mutex.unlock()
-                self.cond.wakeAll()
-
+                # must ingore null lock messages, these need to be sent to
+                # clear the retention in the MQTT broker
                 if len(message):
                     try:
+                      print 'message:'
+                      print message
+                      print 'loads:'
+                      print json.loads(message)
                       self._lockReason = json.loads(message)['reason']
                     except:
                       self._lockReason = message
-                else:
-                    self._lockReason = '(no reason given)'
-                self.lockReasonChanged.emit()
+
+                    self.lockReasonChanged.emit()
+
+                    self.mutex.lock()
+                    self.wakereason = self.REASON_LOCK_OUT
+                    self.mutex.unlock()
+                    self.cond.wakeAll()
 
             elif cmd == 'unlock':
                 self.mutex.lock()
