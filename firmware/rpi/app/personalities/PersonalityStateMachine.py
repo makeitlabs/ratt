@@ -120,6 +120,7 @@ class PersonalityStateMachine(QThread):
 
         self.timerStart.connect(self.timer.start)
         self.timerStop.connect(self.timer.stop)
+        self.wasLockedOut = False
 
         self.lockoutPending = False
         self.quit = False
@@ -173,6 +174,7 @@ class PersonalityStateMachine(QThread):
                     self.telemetryEvent.emit('personality/lockout', json.dumps({'state': 'unlocked'}))
 
                 self.lockoutPending = False
+                self.wasLockedOut = False
                 if self.state == self.STATE_LOCK_OUT:
                     self.exitAndGoto(self.STATE_INIT)
 
