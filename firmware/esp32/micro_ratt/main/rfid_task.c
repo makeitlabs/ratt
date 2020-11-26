@@ -1,3 +1,38 @@
+/*--------------------------------------------------------------------------
+  _____       ______________
+ |  __ \   /\|__   ____   __|
+ | |__) | /  \  | |    | |
+ |  _  / / /\ \ | |    | |
+ | | \ \/ ____ \| |    | |
+ |_|  \_\/    \_\_|    |_|    ... RFID ALL THE THINGS!
+
+ A resource access control and telemetry solution for Makerspaces
+
+ Developed at MakeIt Labs - New Hampshire's First & Largest Makerspace
+ http://www.makeitlabs.com/
+
+ Copyright 2017-2020 MakeIt Labs
+
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ --------------------------------------------------------------------------
+ Author: Steve Richardson (steve.richardson@makeitlabs.com)
+ -------------------------------------------------------------------------- */
 
 #include <stdio.h>
 #include <string.h>
@@ -60,8 +95,8 @@ void rfid_hash_sha224(char *tag_ascii, int ascii_len, char *tag_hexdigest, int d
     unsigned char tag_sha224[32];
 
     // set last arg = 1 for SHA224 instead of SHA256
-    mbedtls_sha256((unsigned char*)tag_ascii, ascii_len, tag_sha224, 1); 
-    
+    mbedtls_sha256((unsigned char*)tag_ascii, ascii_len, tag_sha224, 1);
+
     bzero(tag_hexdigest, digest_len);
 
     // last 4 bytes of a SHA224 are 0 so ignore them
@@ -78,10 +113,10 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
     char tag_ascii[32];
     char tag_sha224[65];
     char line[LINE_SIZE];
-    
+
     snprintf(tag_ascii, sizeof(tag_ascii), "%10.10u", tag);
     rfid_hash_sha224(tag_ascii, strlen(tag_ascii), tag_sha224, sizeof(tag_sha224));
-    
+
     ESP_LOGI(TAG, "RFID tag: %10.10u", tag);
     ESP_LOGI(TAG, "RFID tag SHA224 hexdigest: %s", tag_sha224);
 
@@ -90,7 +125,7 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
 
     xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
     xSemaphoreTake(g_acl_mutex, portMAX_DELAY);
-    
+
     FILE *f = fopen("/sdcard/acl.txt", "r");
     if (f == NULL) {
         ESP_LOGE(TAG, "Failed to open ACL file for reading!");
@@ -98,7 +133,7 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
         xSemaphoreGive(g_acl_mutex);
         return 0;
     }
-    
+
     uint8_t found = 0;
     while ((fgets(line, LINE_SIZE, f) != NULL) && !found) {
         //username,key,value,allowed,hashedCard,lastAccessed
@@ -108,12 +143,12 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
         char *token;
         char *fields[10];
         int num_fields;
-        
+
         num_fields = 0;
         while ((token = strsep(&str, ",")) != NULL && num_fields <= 10) {
             fields[num_fields++] = token;
         }
-        
+
         if (num_fields == 6) {
             char *username = fields[0];
             //char *key = fields[1];
@@ -169,7 +204,7 @@ void rfid_task(void *pvParameters)
                     display_allowed_msg("DENIED", 0);
                     audio_play("/sdcard/denied.s16");
                 }
-                
+
             } else {
                 char s[80];
                 ESP_LOGI(TAG, "Bad RFID tag checksum, bytes follow:");
@@ -179,4 +214,3 @@ void rfid_task(void *pvParameters)
         }
     }
 }
-

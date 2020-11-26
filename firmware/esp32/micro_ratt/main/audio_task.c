@@ -1,3 +1,39 @@
+/*--------------------------------------------------------------------------
+  _____       ______________
+ |  __ \   /\|__   ____   __|
+ | |__) | /  \  | |    | |
+ |  _  / / /\ \ | |    | |
+ | | \ \/ ____ \| |    | |
+ |_|  \_\/    \_\_|    |_|    ... RFID ALL THE THINGS!
+
+ A resource access control and telemetry solution for Makerspaces
+
+ Developed at MakeIt Labs - New Hampshire's First & Largest Makerspace
+ http://www.makeitlabs.com/
+
+ Copyright 2017-2020 MakeIt Labs
+
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ --------------------------------------------------------------------------
+ Author: Steve Richardson (steve.richardson@makeitlabs.com)
+ -------------------------------------------------------------------------- */
+
 #include <stdio.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -62,10 +98,10 @@ void audio_init()
     };
 
     i2s_driver_install(I2S_NUM, &i2s_config, 64, &m_drv_q);
-    i2s_set_pin(I2S_NUM, &pin_config);    
+    i2s_set_pin(I2S_NUM, &pin_config);
 
     //i2s_stop(I2S_NUM);
-    
+
     m_evt_q = xQueueCreate(AUDIO_QUEUE_DEPTH, sizeof(audio_evt_t));
 
     if (m_evt_q == NULL) {
@@ -109,9 +145,9 @@ int audio_read(FILE* f)
         xSemaphoreGive(g_sdcard_mutex);
         return -1;
     }
-    
+
     xSemaphoreGive(g_sdcard_mutex);
-    
+
     return 1;
 }
 
@@ -119,7 +155,7 @@ void audio_task(void *pvParameters)
 {
     FILE* f = NULL;
     int count = DMA_BUF_COUNT;
-    
+
     while(1) {
         audio_evt_t evt;
         i2s_event_type_t i2s_evt;
@@ -156,7 +192,7 @@ void audio_task(void *pvParameters)
                 ESP_LOGE(TAG, "I2S ERR unknown event");
             }
         }
-        
+
         if (xQueueReceive(m_evt_q, &evt, (20 / portTICK_PERIOD_MS)) == pdTRUE) {
             switch(evt.cmd) {
             case AUDIO_CMD_PLAY:
@@ -166,14 +202,14 @@ void audio_task(void *pvParameters)
                     fclose(f);
                     f = NULL;
                 }
-                
+
                 ESP_LOGI(TAG, "opening new file %s", evt.buf);
                 f = fopen(evt.buf, "r");
                 xSemaphoreGive(g_sdcard_mutex);
 
                 i2s_start(I2S_NUM);
                 i2s_zero_dma_buffer(I2S_NUM);
-                
+
                 break;
             case AUDIO_CMD_STOP:
                 xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
@@ -188,6 +224,6 @@ void audio_task(void *pvParameters)
 
     }
 
-    
+
     while(1);
 }
