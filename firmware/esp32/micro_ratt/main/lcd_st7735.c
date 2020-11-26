@@ -13,7 +13,6 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_heap_alloc_caps.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include "sdcard.h"
@@ -147,7 +146,7 @@ static const uint8_t
       0x00,                   //     Boost frequency
     ST7735_PWCTR4 , 2      ,  // 10: Power control, 2 args, no delay:
       0x8A,                   //     BCLK/2, Opamp current small & Medium low
-      0x2A,  
+      0x2A,
     ST7735_PWCTR5 , 2      ,  // 11: Power control, 2 args, no delay:
       0x8A, 0xEE,
     ST7735_VMCTR1 , 1      ,  // 12: Power control, 1 arg, no delay:
@@ -213,7 +212,7 @@ void delay(int ms)
 
 //This function is called (in irq context!) just before a transmission starts. It will
 //set the D/C line to the value indicated in the user field.
-void lcd_spi_pre_transfer_callback(spi_transaction_t *t) 
+void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 {
     int dc=(int)t->user;
     gpio_set_level(LCD_PIN_DC, dc);
@@ -224,7 +223,7 @@ void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 void lcd_init_hw(void)
 {
     ESP_LOGI(TAG, "Initializing LCD control pins...");
-    
+
     // these pins must be set to GPIO mode with gpio_config()
     gpio_config_t rst_cfg = {
         .pin_bit_mask = LCD_SEL_RST,
@@ -255,7 +254,7 @@ void lcd_init_hw(void)
     gpio_config(&bckl_cfg);
     gpio_config(&dc_cfg);
 
-    
+
     // Initialize the other GPIO
     gpio_set_direction(LCD_PIN_CS, GPIO_MODE_OUTPUT);
 
@@ -264,7 +263,7 @@ void lcd_init_hw(void)
     // Reset the display
     // toggle RST low to reset with CS low
     gpio_set_level(LCD_PIN_CS, 0);
-    
+
     gpio_set_level(LCD_PIN_RST, 1);
     delay(50);
     gpio_set_level(LCD_PIN_RST, 0);
@@ -294,11 +293,11 @@ void lcd_init(void)
         .queue_size=32,                          //We want to be able to queue 16 transactions at a time
         .pre_cb=lcd_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
     };
-    
+
     // init SPI bus
     ret=spi_bus_initialize(HSPI_HOST, &buscfg, 1);
     assert(ret==ESP_OK);
-    
+
     // attach LCD to SPI bus
     ret=spi_bus_add_device(HSPI_HOST, &devcfg, &m_spi);
     assert(ret==ESP_OK);
@@ -308,17 +307,17 @@ void lcd_init(void)
     // init LCD
     //lcd_initB();
     lcd_initR(INITR_BLACKTAB);
-    
+
     // set rotation
     lcd_set_rotation(0);
-    
+
     // init gfx routines
     gfx_set_text_wrap(1);
     gfx_set_text_size(1);
 
-    
+
     m_frame_buf_size = (size_t)_width * (size_t)_height * sizeof(uint16_t);
-    m_frame_buf = (uint16_t*) pvPortMallocCaps(m_frame_buf_size, MALLOC_CAP_8BIT);
+    m_frame_buf = (uint16_t*) malloc(m_frame_buf_size);
 
     if (!m_frame_buf) {
         ESP_LOGE(TAG, "Can't alloc frame buffer of %zu bytes", m_frame_buf_size);
@@ -329,7 +328,7 @@ void lcd_init(void)
 }
 
 
-void lcd_cmd(spi_device_handle_t spi, const uint8_t cmd) 
+void lcd_cmd(spi_device_handle_t spi, const uint8_t cmd)
 {
     esp_err_t ret;
     spi_transaction_t t;
@@ -348,7 +347,7 @@ void writecommand(uint8_t c)
 }
 
 
-void lcd_data(spi_device_handle_t spi, const uint8_t *data, int len) 
+void lcd_data(spi_device_handle_t spi, const uint8_t *data, int len)
 {
     esp_err_t ret;
     spi_transaction_t t;
@@ -375,7 +374,7 @@ void lcd_init_cmds(const uint8_t *addr)
 {
     uint8_t  numCommands, numArgs;
     uint16_t ms;
-    
+
     numCommands = *(addr++);      	// Number of commands to follow
     while(numCommands--) {      	// For each command...
         writecommand(*(addr++)); 	//   Read, issue command
@@ -385,7 +384,7 @@ void lcd_init_cmds(const uint8_t *addr)
         while(numArgs--) {              //   For each argument...
             writedata(*(addr++));  	//     Read, issue argument
         }
-        
+
         if(ms) {
             ms = *(addr++); 		// Read post-command delay time (ms)
             if(ms == 255) ms = 500;     // If 255, delay for 500 ms
@@ -397,9 +396,9 @@ void lcd_init_cmds(const uint8_t *addr)
 // Initialization code common to both 'B' and 'R' type displays
 void lcd_init_common(const uint8_t *cmdList)
 {
-  
+
   if(cmdList) lcd_init_cmds(cmdList);
-  
+
   // Enable backlight
   gpio_set_level(LCD_PIN_BCKL, 1);
 }
@@ -428,7 +427,7 @@ void lcd_initR(uint8_t options)
         lcd_init_cmds(Rcmd2red);
     }
     lcd_init_cmds(Rcmd3);
-    
+
     // if black, change MADCTL color filter
     if (options == INITR_BLACKTAB) {
         writecommand(ST7735_MADCTL);
@@ -441,9 +440,9 @@ void lcd_initR(uint8_t options)
 void lcd_set_addr_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 {
     uint8_t buf[4];
-    
+
     writecommand(ST7735_CASET); // Column addr set
-    
+
     buf[0] = 0x00;
     buf[1] = x0 + colstart; // XSTART
     buf[2] = 0x00;
@@ -457,7 +456,7 @@ void lcd_set_addr_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
     buf[2] = 0x00;
     buf[3] = y1 + rowstart; // YEND
     lcd_data(m_spi, buf, 4);
-    
+
     writecommand(ST7735_RAMWR); // write to RAM
 }
 
@@ -490,7 +489,7 @@ void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color)
 
   while (w--)
       lcd_data(m_spi, (uint8_t*)&color, sizeof(color));
-               
+
 }
 
 
@@ -502,7 +501,7 @@ void lcd_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
     if((x + w - 1) >= _width)  w = _width  - x;
     if((y + h - 1) >= _height) h = _height - y;
 
-   
+
     for(int iy=y+h-1; iy>=y; iy--) {
         for(int ix=x+w; ix>x; ix--) {
             m_frame_buf[((_height - iy-1) * _width) + ix - 1] = color;
@@ -545,7 +544,7 @@ void lcd_set_rotation(uint8_t m)
      }
      _width  = ST7735_TFTWIDTH;
 
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _height = ST7735_TFTHEIGHT_144;
      else
        _height = ST7735_TFTHEIGHT_18;
@@ -558,7 +557,7 @@ void lcd_set_rotation(uint8_t m)
        writedata(MADCTL_MY | MADCTL_MV | MADCTL_BGR);
      }
 
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _width = ST7735_TFTHEIGHT_144;
      else
        _width = ST7735_TFTHEIGHT_18;
@@ -572,7 +571,7 @@ void lcd_set_rotation(uint8_t m)
        writedata(MADCTL_BGR);
      }
      _width  = ST7735_TFTWIDTH;
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _height = ST7735_TFTHEIGHT_144;
      else
        _height = ST7735_TFTHEIGHT_18;
@@ -584,7 +583,7 @@ void lcd_set_rotation(uint8_t m)
      } else {
        writedata(MADCTL_MX | MADCTL_MV | MADCTL_BGR);
      }
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _width = ST7735_TFTHEIGHT_144;
      else
        _width = ST7735_TFTHEIGHT_18;
@@ -906,25 +905,25 @@ void gfx_load_rgb565_bitmap(int16_t x, int16_t y, int16_t w, int16_t h, char *fi
 {
     int r;
     uint8_t buf[128*2];
-     
+
     lcd_set_addr_window(0, 0, x+w-1, y+h-1);
 
     ESP_LOGI(TAG, "taking sdcard mutex...");
     xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
-    
+
     FILE *f = fopen(filename, "r");
 
     if (!f) {
         ESP_LOGE(TAG, "can't open filename %s", filename);
         return;
     }
-        
+
     do {
         r = fread(buf, sizeof(buf), 1, f);
         if (r)
             lcd_data(m_spi, buf, sizeof(buf));
     } while (!feof(f));
-    
+
 
     fclose(f);
 
@@ -963,7 +962,7 @@ as well as Adafruit raw 1.8" TFT display
 /*
   Based in part on Adafruit_GFX.cpp
   https://github.com/adafruit/Adafruit-GFX-Library
-  
+
 This is the core graphics library for all our displays, providing a common
 set of graphics primitives (points, lines, circles, etc.).  It needs to be
 paired with a hardware-specific library for each display device we carry
@@ -1000,7 +999,7 @@ POSSIBILITY OF SUCH DAMAGE.
 /*
   Based in part on ESP-IDF spi_master.c example
   from https://github.com/espressif/esp-idf/tree/master/examples/peripherals/spi_master
-  
+
   SPI Master example
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)

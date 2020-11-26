@@ -3,7 +3,8 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := ratt-platform
+PROJECT_NAME := micro_ratt
+
+#EXTRA_COMPONENT_DIRS = $(IDF_PATH)/examples/common_components/protocol_examples_common
 
 include $(IDF_PATH)/make/project.mk
-

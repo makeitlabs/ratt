@@ -6,6 +6,9 @@
 // by Steve Richardson (steve.richardson@makeitlabs.com) - 2017JAN29
 //
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +25,8 @@
 #include "mbedtls/error.h"
 #include "mbedtls/certs.h"
 #include "mbedtls/base64.h"
+
+#include "esp_crt_bundle.h"
 
 #include "esp_log.h"
 
@@ -60,7 +65,7 @@ typedef struct
     size_t  body_len;
 
     FILE    *fp;
-    
+
     mbedtls_net_context         ssl_fd;
     mbedtls_entropy_context     entropy;
     mbedtls_ctr_drbg_context    ctr_drbg;
@@ -70,7 +75,7 @@ typedef struct
     mbedtls_x509_crt		client_cert;
     mbedtls_pk_context		client_pk;
     char			client_pk_passphrase[H_PASSPHRASE_SIZE];
-    
+
 } HTTP_INFO;
 
 /*---------------------------------------------------------------------*/
@@ -255,14 +260,14 @@ static int http_parse(HTTP_INFO *hi)
 
     p1 = hi->r_buf;
 
-    
+
     while(1) {
         if(hi->header_end == 0) {
-            // header parser            
+            // header parser
             if((p2 = strstr(p1, "\r\n")) != NULL) {
                 len = (long)(p2 - p1);
                 *p2 = 0;
-                
+
                 if(len > 0) {
                     //printf("header: %s(%zu)\n", p1, len);
 
@@ -346,7 +351,7 @@ static int http_parse(HTTP_INFO *hi)
             } else {
                 if(hi->length > 0) {
                     len = hi->r_len - (p1 - hi->r_buf);
-                    
+
                     if(len > hi->length) {
                         // copy the data for response ..
 
@@ -363,7 +368,7 @@ static int http_parse(HTTP_INFO *hi)
                                     ESP_LOGE(TAG, "error writing to file with fputc() k=%zu hi->length=%zu", k, hi->length);
                                     return -1;
                                 }
-                                
+
                                 /*
                                  * there seems to be some kind of bug doing fwrite() on the ESP that i can't yet track down...
                                  *
@@ -388,22 +393,22 @@ static int http_parse(HTTP_INFO *hi)
 
 
                             }
-                            
+
                         } else {
                             if(hi->body_len < hi->body_size-1) {
                                 // if there is still room in the body buffer...
-                                
+
                                 if (hi->body_size > (hi->body_len + hi->length)) {
                                     // if there is room for the whole rcv buf to be copied into body buf...
                                     // copy all bytes from rcv buf
-                                    
+
                                     strncpy(&(hi->body[hi->body_len]), p1, hi->length);
                                     hi->body_len += hi->length;
                                     hi->body[hi->body_len] = 0;
                                 } else {
                                     // there are more bytes in the rcv buf than will fit in the body buffer...
                                     // only copy as many as will fit
-                                    
+
                                     strncpy(&(hi->body[hi->body_len]), p1, hi->body_size - hi->body_len - 1);
                                     hi->body_len = hi->body_size - 1;
                                     hi->body[hi->body_len] = 0;
@@ -436,7 +441,7 @@ static int http_parse(HTTP_INFO *hi)
                                     ESP_LOGE(TAG, "error writing to file with fputc() k=%zu len=%zu", k, len);
                                     return -1;
                                 }
-                                
+
                                 /*
                                  * there seems to be some kind of bug doing fwrite() on the ESP that i can't yet track down...
                                  *
@@ -463,18 +468,18 @@ static int http_parse(HTTP_INFO *hi)
                         } else {
                             if(hi->body_len < hi->body_size-1) {
                                 // if there is still room in the body buffer...
-                                
+
                                 if (hi->body_size > (hi->body_len + len)) {
                                     // if there is room for 'len' bytes to be copied into body buf...
                                     // copy 'len' bytes from rcv buf
-                                    
+
                                     strncpy(&(hi->body[hi->body_len]), p1, len);
                                     hi->body_len += len;
                                     hi->body[hi->body_len] = 0;
                                 } else {
                                     // 'len' is more bytes than will fit in the body buffer...
-                                    // only copy as many as will fit 
-                                    
+                                    // only copy as many as will fit
+
                                     strncpy(&(hi->body[hi->body_len]), p1, hi->body_size - hi->body_len - 1);
                                     hi->body_len = hi->body_size - 1;
                                     hi->body[hi->body_len] = 0;
@@ -504,7 +509,7 @@ static int http_parse(HTTP_INFO *hi)
             }
         }
     }
-    
+
     return 0;
 }
 
@@ -514,7 +519,7 @@ static int https_init(HTTP_INFO *hi, int https)
     memset(hi, 0, sizeof(HTTP_INFO));
 
     ESP_LOGI(TAG, "https_init() https=%d", https);
-    
+
     if(https == 1)
     {
         mbedtls_ssl_init(&hi->ssl);
@@ -529,7 +534,7 @@ static int https_init(HTTP_INFO *hi, int https)
     mbedtls_net_init(&hi->ssl_fd);
 
     hi->https = https;
-    
+
     return 0;
 }
 
@@ -672,14 +677,16 @@ static int https_connect(HTTP_INFO *hi, char *host, char *port)
 {
     int ret, https;
 
+/*
     extern const uint8_t ca_cert_pem_start[] asm("_binary_cacert_pem_start");
     extern const uint8_t ca_cert_pem_end[]   asm("_binary_cacert_pem_end");
-    
+
     extern const uint8_t client_cert_pem_start[] asm("_binary_client_cert_pem_start");
     extern const uint8_t client_cert_pem_end[]   asm("_binary_client_cert_pem_end");
-    
+
     extern const uint8_t client_key_pem_start[] asm("_binary_client_key_pem_start");
     extern const uint8_t client_key_pem_end[]   asm("_binary_client_key_pem_end");
+*/
 
     https = hi->https;
 
@@ -694,6 +701,17 @@ static int https_connect(HTTP_INFO *hi, char *host, char *port)
             return ret;
         }
 
+        ESP_LOGI(TAG, "Attaching the certificate bundle...");
+
+        ret = esp_crt_bundle_attach(&hi->conf);
+
+        if(ret < 0)
+        {
+            ESP_LOGE(TAG, "esp_crt_bundle_attach returned -0x%x\n\n", -ret);
+            abort();
+        }
+
+        /*
         ESP_LOGI(TAG, "Loading CA root certificate...");
         ret = mbedtls_x509_crt_parse( &hi->cacert, ca_cert_pem_start,
                                       ca_cert_pem_end - ca_cert_pem_start );
@@ -722,8 +740,9 @@ static int https_connect(HTTP_INFO *hi, char *host, char *port)
         {
             ESP_LOGE(TAG, "mbedtls_pk_parse_key returned -0x%x\n\n", -ret);
             return ret;
-        }        
-        
+        }
+        */
+
         ret = mbedtls_ssl_config_defaults( &hi->conf,
                                            MBEDTLS_SSL_IS_CLIENT,
                                            MBEDTLS_SSL_TRANSPORT_STREAM,
@@ -733,7 +752,7 @@ static int https_connect(HTTP_INFO *hi, char *host, char *port)
             return ret;
         }
 
-        // MBEDTLS_SSL_VERIFY_REQUIRED means the CA verification must succeed to connect        
+        // MBEDTLS_SSL_VERIFY_REQUIRED means the CA verification must succeed to connect
         mbedtls_ssl_conf_authmode(&hi->conf, MBEDTLS_SSL_VERIFY_REQUIRED);
 
         // set up our own client certificate
@@ -894,21 +913,21 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
     }
 
     /* Send HTTP request. */
-    
+
     // build the http request, including an auth header if requested
     if (strcmp(auth_user, "") != 0) {
         size_t olen;
         unsigned char base64[32];
         char auth[64];
-        
+
         snprintf(auth, sizeof(auth), "%s:%s", auth_user, auth_pass);
         if ((ret = mbedtls_base64_encode(base64, 32, &olen, (const unsigned char*)auth, strlen(auth))) != 0) {
             ESP_LOGE(TAG, "mbedtls_base64_encode returned -0x%x\n\n", -ret);
             abort();
         }
-        
+
         snprintf(auth, sizeof(auth), "Authorization: Basic %s", base64);
-        
+
         // basic auth required
         len = snprintf(request, sizeof(request),
                  "GET %s HTTP/1.1\n"
@@ -925,11 +944,11 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
                  "User-Agent: esp-idf/1.0 esp32\n"
                  "Connection: close\n"
                  "\n", dir, host, port);
-        
+
     }
-    
+
     ESP_LOGI(TAG, "request header:\n%s", request);
-    
+
     if((ret = https_write(hi, request, len)) != len)
     {
         https_close(hi);
@@ -957,15 +976,15 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
         hi->body_len = 0;
     }
     hi->fp = fp;
-    
+
     while(1)
     {
         //printf("start https_read r_len=%zu\n", hi->r_len);
-        
+
         ret = https_read(hi, &hi->r_buf[hi->r_len], (H_READ_SIZE - hi->r_len));
 
         //printf("done https_read ret=%d WANT_READ=%d\n", ret, MBEDTLS_ERR_SSL_WANT_READ);
-        
+
         if(ret == MBEDTLS_ERR_SSL_WANT_READ) continue;
         else if(ret < 0)
         {
@@ -996,7 +1015,7 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
         }
         printf("\n");
         */
-        
+
         if(http_parse(hi) != 0) break;
     }
 
@@ -1237,21 +1256,21 @@ int http_open_chunked(int id, char *url, char *auth_user, char *auth_pass)
 
 
 //
-    
+
     // build the http request, including an auth header if requested
     if (strcmp(auth_user, "") != 0) {
         size_t olen;
         unsigned char base64[32];
         char auth[64];
-        
+
         snprintf(auth, sizeof(auth), "%s:%s", auth_user, auth_pass);
         if ((ret = mbedtls_base64_encode(base64, 32, &olen, (const unsigned char*)auth, strlen(auth))) != 0) {
             ESP_LOGE(TAG, "mbedtls_base64_encode returned -0x%x\n\n", -ret);
             abort();
         }
-        
+
         snprintf(auth, sizeof(auth), "Authorization: Basic %s", base64);
-        
+
         // basic auth required
         len = snprintf(request, sizeof(request),
                        "GET %s HTTP/1.1\r\n"
@@ -1270,7 +1289,7 @@ int http_open_chunked(int id, char *url, char *auth_user, char *auth_pass)
                        "Transfer-Encoding: chunked\r\n"
                        "Connection: Keep-Alive\r\n"
                        "%s\r\n", dir, host, port, hi->cookie);
-        
+
     }
 
     ESP_LOGI(TAG, "request:\n\r %s", request);
@@ -1288,7 +1307,7 @@ int http_open_chunked(int id, char *url, char *auth_user, char *auth_pass)
                            "%s\r\n",
                    dir, host, port, hi->cookie);
     */
-    
+
     if ((ret = https_write(hi, request, len)) != len)
     {
         https_close(hi);
@@ -1417,3 +1436,5 @@ int http_read_chunked(int id, char *response, int size)
     return hi->status;
 }
 
+
+#pragma GCC diagnostic pop

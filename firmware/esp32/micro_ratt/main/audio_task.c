@@ -99,8 +99,8 @@ int audio_read(FILE* f)
         if (bytes_read > 0 && bytes_read != DMA_BUF_SIZE) {
             bzero(buf + bytes_read, DMA_BUF_SIZE - bytes_read);
         }
-
-        r = i2s_write_bytes(I2S_NUM, buf, DMA_BUF_SIZE, portMAX_DELAY);
+        size_t written;
+        r = i2s_write(I2S_NUM, buf, DMA_BUF_SIZE, &written, portMAX_DELAY);
         count++;
     } while (!feof(f) && r>0 && count < DMA_BUF_COUNT);
 

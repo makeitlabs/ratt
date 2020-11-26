@@ -5,8 +5,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
-#include "freertos/heap_regions.h"
-#include "esp_heap_alloc_caps.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 #include "esp_log.h"
@@ -113,14 +111,14 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
         ip = &event->event_info.got_ip.ip_info.ip;
         snprintf(s, sizeof(s), "%d.%d.%d.%d", ip4_addr1_16(ip), ip4_addr2_16(ip), ip4_addr3_16(ip), ip4_addr4_16(ip));
         display_wifi_msg(s);
-        
+
         xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         /* This is a workaround as ESP32 WiFi libs don't currently
            auto-reassociate. */
         display_wifi_msg("WIFI DISCON");
-        
+
         esp_wifi_connect();
         xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
         break;
@@ -142,11 +140,11 @@ void net_timer(TimerHandle_t xTimer)
 void net_init(void)
 {
     char s[32];
-    
+
     ESP_LOGI(TAG, "Initializing network...");
 
     display_net_msg("WIFI INIT");
-    
+
     tcpip_adapter_init();
     wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
@@ -186,15 +184,15 @@ void net_task(void *pvParameters)
     char s[32];
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
-    
+
     net_init();
-    
+
 
     ESP_LOGI(TAG, "start net task");
-    
+
     snprintf(web_url, sizeof(web_url), "https://%s/%s", WEB_SERVER, WEB_URL_PATH);
 
-    
+
     while(1) {
         display_net_msg("WIFI WAITING");
 
@@ -202,15 +200,11 @@ void net_task(void *pvParameters)
         xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
         ESP_LOGI(TAG, "Connected to AP...");
 
-        
-        display_net_msg("WIFI CONNECT");
-        
-        ESP_LOGI(TAG, "Free heap size before malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
-        
-        resp_buf = pvPortMallocCaps(RESP_BUF_SIZE, MALLOC_CAP_8BIT);
 
-        ESP_LOGI(TAG, "Free heap size after malloc = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
-        
+        display_net_msg("WIFI CONNECT");
+
+        resp_buf = malloc(RESP_BUF_SIZE);
+
         if (resp_buf) {
             ESP_LOGI(TAG, "response buffer size = %zu", RESP_BUF_SIZE);
 
@@ -220,7 +214,7 @@ void net_task(void *pvParameters)
 
             xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
             FILE* file = fopen("/sdcard/acl-temp.txt", "w");
-            
+
             if (file) {
                 ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, resp_buf, RESP_BUF_SIZE, file);
 
@@ -228,7 +222,7 @@ void net_task(void *pvParameters)
                 if (ret == -1) {
                     ESP_LOGE(TAG, "%s", resp_buf);
                 }
-                
+
                 fclose(file);
             } else {
                 ESP_LOGE(TAG, "could not open file for writing");
@@ -248,20 +242,19 @@ void net_task(void *pvParameters)
                     ESP_LOGE(TAG, "Could not rename downloaded ACL file!");
                 }
                 xSemaphoreGive(g_acl_mutex);
-                
+
                 display_net_msg("DOWNLOAD OK");
             } else {
                 display_net_msg("DOWNLOAD FAIL");
             }
-            
+
             xSemaphoreGive(g_sdcard_mutex);
 
-            vPortFreeTagged(resp_buf);
-            ESP_LOGI(TAG, "Free heap size after free = %zu", xPortGetFreeHeapSizeCaps(MALLOC_CAP_8BIT));
+            free(resp_buf);
         } else {
             ESP_LOGE(TAG, "Could not malloc acl buffer");
         }
-        
+
         for(int countdown = 120; countdown >= 0; countdown--) {
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             snprintf(s, sizeof(s), "WIFI SLEEP %d", countdown);
