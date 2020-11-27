@@ -145,16 +145,16 @@ void display_task(void *pvParameters)
     last_heartbeat_tick = xTaskGetTickCount();
 
     lcd_init();
-    lcd_fill_screen(lcd_rgb565(0x00, 0x00, 0xC0));
-    lcd_fill_rect(0, 0, 128, 16, lcd_rgb565(0xFF, 0xFF, 0xFF));
-    lcd_fill_rect(0, 17, 128, 1, lcd_rgb565(0x00, 0x00, 0x00));
+    lcd_fill_screen(lcd_rgb(0x00, 0x00, 0xC0));
+    lcd_fill_rect(0, 0, 160, 16, lcd_rgb(0xFF, 0xFF, 0xFF));
+    lcd_fill_rect(0, 17, 160, 1, lcd_rgb(0x00, 0x00, 0x00));
 
-    lcd_fill_rect(0, 143, 128, 1, lcd_rgb565(0x00, 0x00, 0x00));
-    lcd_fill_rect(0, 144, 128, 16, lcd_rgb565(0xFF, 0xFF, 0xFF));
+    lcd_fill_rect(0, 63, 160, 1, lcd_rgb(0x00, 0x00, 0x00));
+    lcd_fill_rect(0, 64, 160, 16, lcd_rgb(0xFF, 0xFF, 0xFF));
 
     gfx_set_font(&Atari8);
-    gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
-    gfx_write_string(0, 144, "RSSI");
+    gfx_set_text_color(lcd_rgb(0x00, 0x00, 0x00));
+    gfx_write_string(0, 64, "RSSI");
     gfx_refresh();
 
     int b1=0, b2=0, b3=0, b4=0;
@@ -195,52 +195,52 @@ void display_task(void *pvParameters)
             switch(evt.cmd) {
             case DISP_CMD_WIFI_MSG:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 0, 128, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+                lcd_fill_rect(0, 0, 160, 8, lcd_rgb(0xFF, 0xFF, 0xFF));
                 gfx_set_font(&Atari8);
-                gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
+                gfx_set_text_color(lcd_rgb(0x00, 0x00, 0x00));
                 gfx_write_string(0, 0, evt.buf);
                 gfx_refresh_rect(0, 0, 128, 8);
                 break;
             case DISP_CMD_WIFI_RSSI:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 152, 32, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+                lcd_fill_rect(0, 72, 32, 8, lcd_rgb(0xFF, 0xFF, 0xFF));
                 gfx_set_font(&Atari8);
-                gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
+                gfx_set_text_color(lcd_rgb(0x00, 0x00, 0x00));
                 snprintf(s, sizeof(s), "%d", evt.params.rssi);
-                gfx_write_string(0, 152, s);
-                gfx_refresh_rect(0, 152, 32, 8);
+                gfx_write_string(0, 72, s);
+                gfx_refresh_rect(0, 72, 32, 8);
                 break;
             case DISP_CMD_NET_MSG:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 8, 128, 8, lcd_rgb565(0xFF, 0xFF, 0xFF));
+                lcd_fill_rect(0, 8, 160, 8, lcd_rgb(0xFF, 0xFF, 0xFF));
                 gfx_set_font(&Atari8);
-                gfx_set_text_color(lcd_rgb565(0x00, 0x00, 0x00));
+                gfx_set_text_color(lcd_rgb(0x00, 0x00, 0x00));
                 gfx_write_string(0, 8, evt.buf);
                 gfx_refresh_rect(0, 8, 128, 8);
                 break;
             case DISP_CMD_USER_MSG:
                 gfx_set_font(NULL);
-                lcd_fill_rect(0, 24, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
+                lcd_fill_rect(0, 24, 160, 8, lcd_rgb(0x00, 0x00, 0xC0));
                 gfx_set_font(&Atari8);
-                gfx_set_text_color(lcd_rgb565(0xFF, 0xFF, 0xFF));
+                gfx_set_text_color(lcd_rgb(0xFF, 0xFF, 0xFF));
                 gfx_write_string(0, 24, evt.buf);
                 gfx_refresh_rect(0, 24, 128, 8);
                 break;
             case DISP_CMD_ALLOWED_MSG:
                 gfx_set_font(&Atari8);
-                lcd_fill_rect(0, 32, 128, 8, lcd_rgb565(0x00, 0x00, 0xC0));
-                gfx_set_text_color(lcd_rgb565(0x99, 0x99, 0x99));
+                lcd_fill_rect(0, 32, 160, 8, lcd_rgb(0x00, 0x00, 0xC0));
+                gfx_set_text_color(lcd_rgb(0x99, 0x99, 0x99));
                 gfx_write_string(0, 32, evt.buf);
 
-                lcd_fill_rect(0, 40, 128, 20, lcd_rgb565(0x00, 0x00, 0xC0));
+                lcd_fill_rect(0, 40, 160, 20, lcd_rgb(0x00, 0x00, 0xC0));
                 if (evt.params.allowed) {
-                    gfx_set_text_color(lcd_rgb565(0x00, 0xFF, 0x00));
+                    gfx_set_text_color(lcd_rgb(0x00, 0xFF, 0x00));
                     gfx_write_string(0, 40, "ALLOWED");
                 } else {
-                    gfx_set_text_color(lcd_rgb565(0xFF, 0x00, 0x00));
+                    gfx_set_text_color(lcd_rgb(0xFF, 0x00, 0x00));
                     gfx_write_string(0, 40, "DENIED");
                 }
-                gfx_refresh_rect(0, 32, 128, 16);
+                gfx_refresh_rect(0, 32, 160, 16);
 
                 break;
             }
@@ -250,9 +250,9 @@ void display_task(void *pvParameters)
         if (now - last_heartbeat_tick >= (500/portTICK_PERIOD_MS)) {
             // heartbeat
             gfx_set_font(NULL);
-            gfx_draw_char(122, 152, m_spin[spin_idx][0], lcd_rgb565(0xFF, 0x00, 0x00), lcd_rgb565(0xFF, 0xFF, 0xFF), 1);
+            gfx_draw_char(152, 72, m_spin[spin_idx][0], lcd_rgb(0xFF, 0x00, 0x00), lcd_rgb(0xFF, 0xFF, 0xFF), 1);
             spin_idx = (spin_idx + 1) % SPIN_LENGTH;
-            gfx_refresh_rect(122, 152, 6, 8);
+            gfx_refresh_rect(152, 72, 6, 8);
 
             last_heartbeat_tick = now;
         }
@@ -266,22 +266,22 @@ void display_task(void *pvParameters)
 
         ESP_LOGI(TAG, "Drawing graphics & text from primitives...");
 
-        lcd_fill_screen(lcd_rgb565(0x00, 0x00, 0xF8));
-        gfx_draw_circle(64, 80, 32, lcd_rgb565(0xF8, 0xFC, 0x00));
-        gfx_draw_circle(64, 80, 24, lcd_rgb565(0x00, 0xFC, 0xF8));
-        gfx_draw_circle(64, 80, 16, lcd_rgb565(0xF8, 0xFC, 0x00));
-        gfx_draw_circle(64, 80, 8, lcd_rgb565(0x00, 0xFC, 0xF8));
+        lcd_fill_screen(lcd_rgb(0x00, 0x00, 0xF8));
+        gfx_draw_circle(64, 80, 32, lcd_rgb(0xF8, 0xFC, 0x00));
+        gfx_draw_circle(64, 80, 24, lcd_rgb(0x00, 0xFC, 0xF8));
+        gfx_draw_circle(64, 80, 16, lcd_rgb(0xF8, 0xFC, 0x00));
+        gfx_draw_circle(64, 80, 8, lcd_rgb(0x00, 0xFC, 0xF8));
 
         gfx_set_font(&FreeSans9pt7b);
-        gfx_set_text_color(lcd_rgb565(0x00, 0xE0, 0xF8));
+        gfx_set_text_color(lcd_rgb(0x00, 0xE0, 0xF8));
         gfx_write_string(0, 20, "Hello World");
 
         gfx_set_font(NULL);
-        gfx_set_text_color(lcd_rgb565(0x00, 0xFC, 0x00));
+        gfx_set_text_color(lcd_rgb(0x00, 0xFC, 0x00));
         gfx_write_string(0, 22, "from the ESP32!");
 
         gfx_set_font(&FreeSans9pt7b);
-        gfx_set_text_color(lcd_rgb565(0xF8, 0xFC, 0xF8));
+        gfx_set_text_color(lcd_rgb(0xF8, 0xFC, 0xF8));
         gfx_write_string(0, 154, "MakeIt Labs");
 
         mydelay(100);

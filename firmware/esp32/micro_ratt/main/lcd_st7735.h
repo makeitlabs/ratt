@@ -30,12 +30,18 @@
 #define INITR_18REDTAB      INITR_REDTAB
 #define INITR_18BLACKTAB    INITR_BLACKTAB
 #define INITR_144GREENTAB   0x1
+#define INITR_MINI160x80 		0x04
+
+
+#define ST7735_TFTWIDTH_80 80
 
 #define ST7735_TFTWIDTH  128
-// for 1.44" display
+#define ST7735_TFTWIDTH_128 128
+#define ST7735_TFTHEIGHT_128 128
 #define ST7735_TFTHEIGHT_144 128
-// for 1.8" display
 #define ST7735_TFTHEIGHT_18  160
+#define ST7735_TFTHEIGHT_160 160
+
 
 #define ST7735_NOP     0x00
 #define ST7735_SWRESET 0x01
@@ -59,6 +65,12 @@
 #define ST7735_PTLAR   0x30
 #define ST7735_COLMOD  0x3A
 #define ST7735_MADCTL  0x36
+
+#define ST7735_MADCTL_MY 0x80
+#define ST7735_MADCTL_MX 0x40
+#define ST7735_MADCTL_MV 0x20
+#define ST7735_MADCTL_ML 0x10
+#define ST7735_MADCTL_RGB 0x00
 
 #define ST7735_FRMCTR1 0xB1
 #define ST7735_FRMCTR2 0xB2
@@ -93,6 +105,8 @@
 #define ST7735_YELLOW  0xFFE0
 #define ST7735_WHITE   0xFFFF
 
+#define ST7735_MADCTL_BGR 0x08
+#define ST7735_MADCTL_MH 0x04
 
 typedef struct { // Data stored PER GLYPH
 	uint16_t bitmapOffset;     // Pointer into GFXfont->bitmap
@@ -116,6 +130,8 @@ void lcd_set_rotation(uint8_t m);
 void lcd_fill_screen(uint16_t color);
 void lcd_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 uint16_t lcd_rgb565(uint8_t r, uint8_t g, uint8_t b);
+uint16_t lcd_rgb(uint8_t r, uint8_t g, uint8_t b);
+void invertDisplay(uint8_t i);
 
 
 void gfx_draw_circle(int16_t x0, int16_t y0, int16_t r, uint16_t color);

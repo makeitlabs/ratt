@@ -43,13 +43,11 @@ static GFXfont* gfxFont;
 
 static const char *TAG = "lcd_st7735";
 
-
 void lcd_init_common(const uint8_t *cmdList);
 void lcd_initB(void);
 void lcd_initR(uint8_t options);
 
 void gfx_refresh();
-
 
 uint16_t *m_frame_buf;
 size_t m_frame_buf_size;
@@ -183,6 +181,15 @@ static const uint8_t
       0x00, 0x00,             //     XSTART = 0
       0x00, 0x7F },           //     XEND = 127
 
+  Rcmd2green160x80[] = {            // 7735R init, part 2 (mini 160x80)
+    2,                              //  2 commands in list:
+    ST7735_CASET,   4,              //  1: Column addr set, 4 args, no delay:
+      0x00, 0x00,                   //     XSTART = 0
+      0x00, 0x4F,                   //     XEND = 79
+    ST7735_RASET,   4,              //  2: Row addr set, 4 args, no delay:
+      0x00, 0x00,                   //     XSTART = 0
+      0x00, 0x9F },                 //     XEND = 159
+
   Rcmd3[] = {                 // Init for 7735R, part 3 (red or green tab)
     4,                        //  4 commands in list:
     ST7735_GMCTRP1, 16      , //  1: Magical unicorn dust, 16 args, no delay:
@@ -254,7 +261,6 @@ void lcd_init_hw(void)
     gpio_config(&bckl_cfg);
     gpio_config(&dc_cfg);
 
-
     // Initialize the other GPIO
     gpio_set_direction(LCD_PIN_CS, GPIO_MODE_OUTPUT);
 
@@ -306,15 +312,15 @@ void lcd_init(void)
 
     // init LCD
     //lcd_initB();
-    lcd_initR(INITR_BLACKTAB);
+    lcd_initR(INITR_MINI160x80);
+    invertDisplay(1);
 
     // set rotation
-    lcd_set_rotation(0);
+    lcd_set_rotation(1);
 
     // init gfx routines
     gfx_set_text_wrap(1);
     gfx_set_text_size(1);
-
 
     m_frame_buf_size = (size_t)_width * (size_t)_height * sizeof(uint16_t);
     m_frame_buf = (uint16_t*) malloc(m_frame_buf_size);
@@ -422,6 +428,12 @@ void lcd_initR(uint8_t options)
         lcd_init_cmds(Rcmd2green144);
         colstart = 2;
         rowstart = 3;
+    } else if (options == INITR_MINI160x80) {
+      _height = ST7735_TFTHEIGHT_160;
+      _width = ST7735_TFTWIDTH_80;
+      lcd_init_cmds(Rcmd2green160x80);
+      colstart = 1;
+      rowstart = 26;
     } else {
         // colstart, rowstart left at default '0' values
         lcd_init_cmds(Rcmd2red);
@@ -429,7 +441,7 @@ void lcd_initR(uint8_t options)
     lcd_init_cmds(Rcmd3);
 
     // if black, change MADCTL color filter
-    if (options == INITR_BLACKTAB) {
+    if (options == INITR_BLACKTAB || options == INITR_MINI160x80) {
         writecommand(ST7735_MADCTL);
         writedata(0xC0);
     }
@@ -523,74 +535,111 @@ uint16_t lcd_rgb565(uint8_t r, uint8_t g, uint8_t b)
     return ((color & 0xFF) << 8) | ((color & 0xFF00) >> 8);
 }
 
-#define MADCTL_MY  0x80
-#define MADCTL_MX  0x40
-#define MADCTL_MV  0x20
-#define MADCTL_ML  0x10
-#define MADCTL_RGB 0x00
-#define MADCTL_BGR 0x08
-#define MADCTL_MH  0x04
+uint16_t lcd_rgb(uint8_t r, uint8_t g, uint8_t b)
+{
+    // do endian swap here for now -- this can definitely be more efficient
+    uint16_t color = ((b & 0xF8) << 8) | ((g & 0xFC) << 3) | (r >> 3);
+    return ((color & 0xFF) << 8) | ((color & 0xFF00) >> 8);
+}
+
 
 void lcd_set_rotation(uint8_t m)
 {
-  writecommand(ST7735_MADCTL);
-  rotation = m % 4; // can't be higher than 3
-  switch (rotation) {
-   case 0:
-     if (tabcolor == INITR_BLACKTAB) {
-       writedata(MADCTL_MX | MADCTL_MY | MADCTL_RGB);
-     } else {
-       writedata(MADCTL_MX | MADCTL_MY | MADCTL_BGR);
-     }
-     _width  = ST7735_TFTWIDTH;
+  uint8_t madctl = 0;
 
-     if (tabcolor == INITR_144GREENTAB)
-       _height = ST7735_TFTHEIGHT_144;
-     else
-       _height = ST7735_TFTHEIGHT_18;
+  rotation = m & 3; // can't be higher than 3
 
-     break;
-   case 1:
-     if (tabcolor == INITR_BLACKTAB) {
-       writedata(MADCTL_MY | MADCTL_MV | MADCTL_RGB);
-     } else {
-       writedata(MADCTL_MY | MADCTL_MV | MADCTL_BGR);
-     }
-
-     if (tabcolor == INITR_144GREENTAB)
-       _width = ST7735_TFTHEIGHT_144;
-     else
-       _width = ST7735_TFTHEIGHT_18;
-
-     _height = ST7735_TFTWIDTH;
-     break;
-  case 2:
-     if (tabcolor == INITR_BLACKTAB) {
-       writedata(MADCTL_RGB);
-     } else {
-       writedata(MADCTL_BGR);
-     }
-     _width  = ST7735_TFTWIDTH;
-     if (tabcolor == INITR_144GREENTAB)
-       _height = ST7735_TFTHEIGHT_144;
-     else
-       _height = ST7735_TFTHEIGHT_18;
-
-    break;
-   case 3:
-     if (tabcolor == INITR_BLACKTAB) {
-       writedata(MADCTL_MX | MADCTL_MV | MADCTL_RGB);
-     } else {
-       writedata(MADCTL_MX | MADCTL_MV | MADCTL_BGR);
-     }
-     if (tabcolor == INITR_144GREENTAB)
-       _width = ST7735_TFTHEIGHT_144;
-     else
-       _width = ST7735_TFTHEIGHT_18;
-
-     _height = ST7735_TFTWIDTH;
-     break;
+  // For ST7735 with GREEN TAB (including HalloWing)...
+  if (tabcolor == INITR_144GREENTAB) {
+    // ..._rowstart is 3 for rotations 0&1, 1 for rotations 2&3
+    rowstart = (rotation < 2) ? 3 : 1;
   }
+
+  switch (rotation) {
+  case 0:
+    if ((tabcolor == INITR_BLACKTAB) || (tabcolor == INITR_MINI160x80)) {
+      madctl = ST7735_MADCTL_MX | ST7735_MADCTL_MY | ST7735_MADCTL_RGB;
+    } else {
+      madctl = ST7735_MADCTL_MX | ST7735_MADCTL_MY | ST7735_MADCTL_BGR;
+    }
+
+    if (tabcolor == INITR_144GREENTAB) {
+      _height = ST7735_TFTHEIGHT_128;
+      _width = ST7735_TFTWIDTH_128;
+    } else if (tabcolor == INITR_MINI160x80) {
+      _height = ST7735_TFTHEIGHT_160;
+      _width = ST7735_TFTWIDTH_80;
+    } else {
+      _height = ST7735_TFTHEIGHT_160;
+      _width = ST7735_TFTWIDTH_128;
+    }
+    //_xstart = _colstart;
+    //_ystart = _rowstart;
+    break;
+  case 1:
+    if ((tabcolor == INITR_BLACKTAB) || (tabcolor == INITR_MINI160x80)) {
+      madctl = ST7735_MADCTL_MY | ST7735_MADCTL_MV | ST7735_MADCTL_RGB;
+    } else {
+      madctl = ST7735_MADCTL_MY | ST7735_MADCTL_MV | ST7735_MADCTL_BGR;
+    }
+
+    if (tabcolor == INITR_144GREENTAB) {
+      _width = ST7735_TFTHEIGHT_128;
+      _height = ST7735_TFTWIDTH_128;
+    } else if (tabcolor == INITR_MINI160x80) {
+      _width = ST7735_TFTHEIGHT_160;
+      _height = ST7735_TFTWIDTH_80;
+    } else {
+      _width = ST7735_TFTHEIGHT_160;
+      _height = ST7735_TFTWIDTH_128;
+    }
+    //_ystart = _colstart;
+    //_xstart = _rowstart;
+    break;
+  case 2:
+    if ((tabcolor == INITR_BLACKTAB) || (tabcolor == INITR_MINI160x80)) {
+      madctl = ST7735_MADCTL_RGB;
+    } else {
+      madctl = ST7735_MADCTL_BGR;
+    }
+
+    if (tabcolor == INITR_144GREENTAB) {
+      _height = ST7735_TFTHEIGHT_128;
+      _width = ST7735_TFTWIDTH_128;
+    } else if (tabcolor == INITR_MINI160x80) {
+      _height = ST7735_TFTHEIGHT_160;
+      _width = ST7735_TFTWIDTH_80;
+    } else {
+      _height = ST7735_TFTHEIGHT_160;
+      _width = ST7735_TFTWIDTH_128;
+    }
+    //_xstart = _colstart;
+    //_ystart = _rowstart;
+    break;
+  case 3:
+    if ((tabcolor == INITR_BLACKTAB) || (tabcolor == INITR_MINI160x80)) {
+      madctl = ST7735_MADCTL_MX | ST7735_MADCTL_MV | ST7735_MADCTL_RGB;
+    } else {
+      madctl = ST7735_MADCTL_MX | ST7735_MADCTL_MV | ST7735_MADCTL_BGR;
+    }
+
+    if (tabcolor == INITR_144GREENTAB) {
+      _width = ST7735_TFTHEIGHT_128;
+      _height = ST7735_TFTWIDTH_128;
+    } else if (tabcolor == INITR_MINI160x80) {
+      _width = ST7735_TFTHEIGHT_160;
+      _height = ST7735_TFTWIDTH_80;
+    } else {
+      _width = ST7735_TFTHEIGHT_160;
+      _height = ST7735_TFTWIDTH_128;
+    }
+    //_ystart = _colstart;
+    //_xstart = _rowstart;
+    break;
+  }
+
+  writecommand(ST7735_MADCTL);
+  writedata(madctl);
 }
 
 
