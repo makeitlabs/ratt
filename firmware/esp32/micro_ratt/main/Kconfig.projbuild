@@ -1,4 +1,4 @@
-menu "Example Configuration"
+menu "RATT Configuration"
 
 config WIFI_SSID
     string "WiFi SSID"
