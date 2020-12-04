@@ -44,10 +44,18 @@
 #include <soc/uart_struct.h>
 #include <mbedtls/sha256.h>
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+#include "beep_task.h"
 #include "rfid_task.h"
 #include "sdcard.h"
 #include "display_task.h"
 #include "audio_task.h"
+
+#include "soc/gpio_struct.h"
+#include "driver/gpio.h"
+
 
 #define SER_BUF_SIZE (256)
 #define SER_RFID_TXD  (-1)
@@ -61,9 +69,39 @@ static const char *TAG = "rfid_task";
 
 SemaphoreHandle_t g_acl_mutex;
 
+#define MOTOR_O1 (25)
+#define MOTOR_O2 (26)
+
 
 void rfid_init()
 {
+  gpio_config_t mo1_cfg = {
+      .pin_bit_mask = MOTOR_O1,
+      .mode = GPIO_MODE_OUTPUT,
+      .pull_up_en = GPIO_PULLUP_ENABLE,
+      .pull_down_en = GPIO_PULLDOWN_DISABLE,
+      .intr_type = GPIO_INTR_DISABLE
+  };
+  gpio_config_t mo2_cfg = {
+      .pin_bit_mask = MOTOR_O2,
+      .mode = GPIO_MODE_OUTPUT,
+      .pull_up_en = GPIO_PULLUP_ENABLE,
+      .pull_down_en = GPIO_PULLDOWN_DISABLE,
+      .intr_type = GPIO_INTR_DISABLE
+  };
+
+
+  ESP_LOGI(TAG, "GPIO configuration...");
+//  gpio_config(&mo1_cfg);
+//  gpio_config(&mo2_cfg);
+
+  gpio_set_direction(MOTOR_O1, GPIO_MODE_OUTPUT);
+  gpio_set_direction(MOTOR_O2, GPIO_MODE_OUTPUT);
+
+  gpio_set_level(MOTOR_O1, 1);
+  gpio_set_level(MOTOR_O2, 1);
+
+
     uart_config_t uart_config = {
         .baud_rate = 9600,
         .data_bits = UART_DATA_8_BITS,
@@ -76,6 +114,8 @@ void rfid_init()
     uart_param_config(uart_num, &uart_config);
     uart_set_pin(uart_num, SER_RFID_TXD, SER_RFID_RXD, SER_RFID_RTS, SER_RFID_CTS);
     uart_driver_install(uart_num, SER_BUF_SIZE * 2, 0, 0, NULL, 0);
+
+
 
     g_acl_mutex = xSemaphoreCreateMutex();
     if (!g_sdcard_mutex) {
@@ -176,6 +216,26 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
     return found;
 }
 
+
+/*
+ * sample packet from "Gwiot 7941e V3.0" eBay RFID module:
+ *
+ * 00   01   02   03   04   05   06   07   08   09   BYTE #
+ * -----------------------------------------------------------
+ * 02   0A   02   11   00   0D   EF   80   7B   03
+ * |    |    |    |    |    |    |    |    |    |
+ * STX  ??   ??   ??   id3  id2  id1  id0  sum  ETX
+ *
+ * checksum (byte 8, 'sum') is a simple 8-bit XOR of bytes 01 through 07
+ * starting the checksum with the value of 'sum' or starting with 0 and
+ * including the value of 'sum' in the calculation will net a checksum
+ * value of 0 when correct
+ *
+ * the actual tag value is contained in bytes 04 through 07 as a 32-bit
+ * unsigned integer.  byte 04 ('id3') is the most significant byte, while
+ * byte 07 ('id0') is the least significant byte.
+ */
+
 void rfid_task(void *pvParameters)
 {
     uint8_t* rxbuf = (uint8_t*) malloc(SER_BUF_SIZE);
@@ -183,13 +243,51 @@ void rfid_task(void *pvParameters)
     while(1) {
         int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
 
-        if (len==5) {
+        if (len==10) {
 
-            uint8_t checksum_calc = rxbuf[0] ^ rxbuf[1] ^ rxbuf[2] ^ rxbuf[3];
-            if (checksum_calc == rxbuf[4]) {
-                uint32_t tag = (rxbuf[0]<<24) | (rxbuf[1]<<16) | (rxbuf[2]<<8) | rxbuf[3];
+            uint8_t checksum_calc = 0;
+            for (uint8_t i=1; i<8; i++) checksum_calc ^= rxbuf[i];
+
+            if (rxbuf[0] == 0x02 && rxbuf[9] == 0x03 && checksum_calc == rxbuf[8]) {
+                uint32_t tag = (rxbuf[4]<<24) | (rxbuf[5]<<16) | (rxbuf[6]<<8) | rxbuf[7];
+
+                char s[80];
+                ESP_LOGI(TAG, "Good RFID tag checksum, bytes follow:");
+                snprintf(s, sizeof(s), "%10.10u %2.2X %2.2X %2.2X %2.2X [%2.2X == %2.2X]", tag, rxbuf[4], rxbuf[5], rxbuf[6], rxbuf[7], rxbuf[8], checksum_calc);
+                ESP_LOGI(TAG, "%s", s);
+
+                snprintf(s, sizeof(s), "%10.10u", tag);
+                display_user_msg(s);
+
+                beep_queue(880, 250, 5, 5);
+                beep_queue(1174, 250, 5, 100);
+
+                display_allowed_msg("OPEN", 1);
+
+                gpio_set_level(MOTOR_O1, 0);
+                gpio_set_level(MOTOR_O2, 1);
+                display_allowed_msg("HOLD", 1);
+
+                vTaskDelay(500 / portTICK_PERIOD_MS);
+                gpio_set_level(MOTOR_O1, 1);
+                gpio_set_level(MOTOR_O2, 1);
+
+
+                vTaskDelay(3000 / portTICK_PERIOD_MS);
+
+                display_allowed_msg("LOCK", 1);
+                gpio_set_level(MOTOR_O1, 1);
+                gpio_set_level(MOTOR_O2, 0);
+                vTaskDelay(500 / portTICK_PERIOD_MS);
+                gpio_set_level(MOTOR_O1, 1);
+                gpio_set_level(MOTOR_O2, 1);
+
+                beep_queue(1174, 250, 5, 5);
+                beep_queue(880, 250, 5, 100);
+
+
+                /*
                 user_fields_t user;
-
                 bzero(&user, sizeof(user));
                 if (rfid_lookup(tag, &user)) {
                     display_user_msg(user.name);
@@ -204,6 +302,7 @@ void rfid_task(void *pvParameters)
                     display_allowed_msg("DENIED", 0);
                     audio_play("/sdcard/denied.s16");
                 }
+                */
 
             } else {
                 char s[80];
