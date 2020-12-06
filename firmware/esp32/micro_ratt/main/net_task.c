@@ -337,13 +337,19 @@ void net_send_wifi_strength(void)
 
     char *topic, *payload;
     topic = malloc(128);
-    payload = malloc(128);
+    payload = malloc(256);
 
     uint8_t mac[6];
     esp_efuse_mac_get_default(mac);
 
+    const int chan_freq[] = { 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2484 };
+
     snprintf(topic, 128, "ratt/status/node/%02x%02x%02x%02x%02x%02x/wifi/status", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    snprintf(payload, 128, "{\"level\": %d}", wifidata.rssi);
+    snprintf(payload, 256, "{\"ap\": \"%02X:%02X:%02X:%02X:%02X:%02X\", \"freq\": \"%1d.%3d\", \"essid\": \"%s\", \"level\": %d}",
+      wifidata.bssid[0],wifidata.bssid[1],wifidata.bssid[2],wifidata.bssid[3],wifidata.bssid[4],wifidata.bssid[5],
+      (wifidata.primary <= 16) ? chan_freq[wifidata.primary-1] / 1000 : 0, (wifidata.primary <= 16) ? chan_freq[wifidata.primary-1] % 1000 : 0,
+      wifidata.ssid,
+      wifidata.rssi);
     int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 0, 0);
     ESP_LOGI(TAG, "published msg %d", msg_id);
     free(topic);
