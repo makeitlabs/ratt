@@ -52,6 +52,7 @@
 #include "rfid_task.h"
 #include "sdcard.h"
 #include "display_task.h"
+#include "net_task.h"
 
 #define SER_BUF_SIZE (256)
 #define SER_RFID_TXD  (-1)
@@ -233,6 +234,8 @@ void rfid_task(void *pvParameters)
                     display_user_msg(user.name);
                     display_allowed_msg(user.last_accessed, user.allowed);
 
+                    net_cmd_queue_access(user.name, user.allowed);
+
                     if (user.allowed) {
                       beep_queue(880, 250, 5, 5);
                       beep_queue(1174, 250, 5, 5);
@@ -249,6 +252,10 @@ void rfid_task(void *pvParameters)
                     beep_queue(220, 250, 5, 5);
                     beep_queue(0, 100, 0, 0);
                     beep_queue(220, 250, 5, 5);
+
+                    char tagstr[12];
+                    snprintf(tagstr, sizeof(tagstr), "%10.10u", tag);
+                    net_cmd_queue_access_error("unknown rfid tag", tagstr);
                 }
 
             } else {

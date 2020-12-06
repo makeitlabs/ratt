@@ -143,6 +143,39 @@ void net_mqtt_send_acl_updated(char* status)
 }
 
 
+void net_mqtt_send_access(char *member, int allowed)
+{
+  char *topic, *payload;
+  topic = malloc(128);
+  payload = malloc(128);
+
+  net_mqtt_topic_targeted(MQTT_TOPIC_TYPE_STATUS, "personality/access", topic, 128);
+
+  snprintf(payload, 128, "{\"member\": \"%s\", \"allowed\": %s}", member, allowed ? "true" : "false");
+  int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 2, 0);
+  ESP_LOGI(TAG, "published personality access id=%d", msg_id);
+
+  free(topic);
+  free(payload);
+}
+
+void net_mqtt_send_access_error(char *err_text, char *err_ext)
+{
+  char *topic, *payload;
+  topic = malloc(128);
+  payload = malloc(128);
+
+  net_mqtt_topic_targeted(MQTT_TOPIC_TYPE_STATUS, "personality/access", topic, 128);
+
+  snprintf(payload, 128, "{\"error\": true, \"errorText\": \"%s\", \"errorExt\": \"%s\"}", err_text, err_ext);
+  int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 2, 0);
+  ESP_LOGI(TAG, "published personality access error id=%d", msg_id);
+
+  free(topic);
+  free(payload);
+}
+
+
 static esp_err_t net_mqtt_event_handler(esp_mqtt_event_handle_t event)
 {
     esp_mqtt_client_handle_t client = event->client;

@@ -41,12 +41,16 @@ void net_init(void);
 void net_task(void *pvParameters);
 
 BaseType_t net_cmd_queue(int cmd);
+BaseType_t net_cmd_queue_access(char *member, int allowed);
+BaseType_t net_cmd_queue_access_error(char *err, char *err_ext);
 
 #define NET_CMD_DOWNLOAD_ACL  1
 #define NET_CMD_SEND_ACL_UPDATED 2
 #define NET_CMD_SEND_ACL_FAILED 3
 #define NET_CMD_SEND_WIFI_STR 4
-#define NET_CMD_NTP_SYNC 5
+#define NET_CMD_SEND_ACCESS 5
+#define NET_CMD_SEND_ACCESS_ERROR 6
+#define NET_CMD_NTP_SYNC 7
 
 extern uint8_t g_mac_addr[6];
 

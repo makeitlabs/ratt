@@ -91,9 +91,15 @@ const int CONNECTED_BIT = BIT0;
 
 
 #define NET_QUEUE_DEPTH 16
+#define NET_EVT_BUF_SIZE 32
 
 typedef struct net_evt {
   uint8_t cmd;
+  char buf1[NET_EVT_BUF_SIZE];
+  union {
+      char buf2[NET_EVT_BUF_SIZE];
+      uint8_t allowed;
+  } params;
 } net_evt_t;
 
 static QueueHandle_t m_q;
@@ -142,6 +148,25 @@ BaseType_t net_cmd_queue(int cmd)
     evt.cmd = cmd;
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
+
+BaseType_t net_cmd_queue_access(char *member, int allowed)
+{
+    net_evt_t evt;
+    evt.cmd = NET_CMD_SEND_ACCESS;
+    strncpy(evt.buf1, member, NET_EVT_BUF_SIZE);
+    evt.params.allowed = allowed;
+    return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
+}
+
+BaseType_t net_cmd_queue_access_error(char *err, char *err_ext)
+{
+    net_evt_t evt;
+    evt.cmd = NET_CMD_SEND_ACCESS_ERROR;
+    strncpy(evt.buf1, err, NET_EVT_BUF_SIZE);
+    strncpy(evt.params.buf2, err, NET_EVT_BUF_SIZE);
+    return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
+}
+
 
 void net_init(void)
 {
@@ -234,6 +259,14 @@ void net_task(void *pvParameters)
 
           case NET_CMD_SEND_WIFI_STR:
             net_mqtt_send_wifi_strength();
+            break;
+
+          case NET_CMD_SEND_ACCESS:
+            net_mqtt_send_access(evt.buf1, evt.params.allowed);
+            break;
+
+          case NET_CMD_SEND_ACCESS_ERROR:
+            net_mqtt_send_access_error(evt.buf1, evt.params.buf2);
             break;
 
           case NET_CMD_NTP_SYNC:
