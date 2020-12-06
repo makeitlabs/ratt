@@ -523,12 +523,52 @@ static int https_init(HTTP_INFO *hi, int https)
     if(https == 1)
     {
         mbedtls_ssl_init(&hi->ssl);
-        mbedtls_ssl_config_init(&hi->conf);
         mbedtls_x509_crt_init(&hi->cacert);
-        mbedtls_x509_crt_init(&hi->client_cert);
-        mbedtls_pk_init(&hi->client_pk);
-
         mbedtls_ctr_drbg_init(&hi->ctr_drbg);
+
+        mbedtls_entropy_init( &hi->entropy );
+
+        ESP_LOGI(TAG, "Seeding random number generator...");
+        int ret = mbedtls_ctr_drbg_seed( &hi->ctr_drbg, mbedtls_entropy_func, &hi->entropy, NULL, 0);
+        if( ret != 0 )
+        {
+            ESP_LOGE(TAG, "mbedtls_ctr_drbg seed return %d", -ret);
+            abort();
+        }
+
+        ESP_LOGI(TAG, "Attaching the certificate bundle...");
+
+        ret = esp_crt_bundle_attach(&hi->conf);
+        if(ret < 0)
+        {
+            ESP_LOGE(TAG, "esp_crt_bundle_attach returned -0x%x\n\n", -ret);
+            abort();
+        }
+
+        ESP_LOGI(TAG, "Setting up the SSL/TLS structure...");
+        if((ret = mbedtls_ssl_config_defaults(&hi->conf,
+                                              MBEDTLS_SSL_IS_CLIENT,
+                                              MBEDTLS_SSL_TRANSPORT_STREAM,
+                                              MBEDTLS_SSL_PRESET_DEFAULT)) != 0)
+        {
+            ESP_LOGE(TAG, "mbedtls_ssl_config_defaults returned %d", -ret);
+            abort();
+        }
+
+        mbedtls_ssl_conf_authmode(&hi->conf, MBEDTLS_SSL_VERIFY_REQUIRED);
+        mbedtls_ssl_conf_ca_chain(&hi->conf, &hi->cacert, NULL);
+        mbedtls_ssl_conf_rng(&hi->conf, mbedtls_ctr_drbg_random, &hi->ctr_drbg);
+
+        if ((ret = mbedtls_ssl_setup(&hi->ssl, &hi->conf)) != 0)
+        {
+            ESP_LOGE(TAG, "mbedtls_ssl_setup returned -0x%x\n\n", -ret);
+            abort();
+        }
+
+        //mbedtls_ssl_config_init(&hi->conf);
+
+        //mbedtls_x509_crt_init(&hi->client_cert);
+        //mbedtls_pk_init(&hi->client_pk);
     }
 
     mbedtls_net_init(&hi->ssl_fd);
@@ -550,13 +590,12 @@ static int https_close(HTTP_INFO *hi)
 
     if(hi->https == 1)
     {
-        mbedtls_x509_crt_free(&hi->cacert);
-        mbedtls_x509_crt_free(&hi->client_cert);
-        mbedtls_pk_free(&hi->client_pk);
         mbedtls_ssl_free(&hi->ssl);
         mbedtls_ssl_config_free(&hi->conf);
         mbedtls_ctr_drbg_free(&hi->ctr_drbg);
         mbedtls_entropy_free(&hi->entropy);
+
+        // TODO: probably more things to free
     }
 
     ESP_LOGI(TAG, "https_close()");
@@ -677,99 +716,10 @@ static int https_connect(HTTP_INFO *hi, char *host, char *port)
 {
     int ret, https;
 
-/*
-    extern const uint8_t ca_cert_pem_start[] asm("_binary_cacert_pem_start");
-    extern const uint8_t ca_cert_pem_end[]   asm("_binary_cacert_pem_end");
-
-    extern const uint8_t client_cert_pem_start[] asm("_binary_client_cert_pem_start");
-    extern const uint8_t client_cert_pem_end[]   asm("_binary_client_cert_pem_end");
-
-    extern const uint8_t client_key_pem_start[] asm("_binary_client_key_pem_start");
-    extern const uint8_t client_key_pem_end[]   asm("_binary_client_key_pem_end");
-*/
-
     https = hi->https;
 
     if(https == 1)
     {
-        mbedtls_entropy_init( &hi->entropy );
-
-        ESP_LOGI(TAG, "Seeding random number generator...");
-        ret = mbedtls_ctr_drbg_seed( &hi->ctr_drbg, mbedtls_entropy_func, &hi->entropy, NULL, 0);
-        if( ret != 0 )
-        {
-            return ret;
-        }
-
-        ESP_LOGI(TAG, "Attaching the certificate bundle...");
-
-        ret = esp_crt_bundle_attach(&hi->conf);
-
-        if(ret < 0)
-        {
-            ESP_LOGE(TAG, "esp_crt_bundle_attach returned -0x%x\n\n", -ret);
-            abort();
-        }
-
-        /*
-        ESP_LOGI(TAG, "Loading CA root certificate...");
-        ret = mbedtls_x509_crt_parse( &hi->cacert, ca_cert_pem_start,
-                                      ca_cert_pem_end - ca_cert_pem_start );
-        if( ret < 0 )
-        {
-            ESP_LOGE(TAG, "mbedtls_x509_crt_parse returned -0x%x\n\n", -ret);
-            return ret;
-        }
-
-        ESP_LOGI(TAG, "Loading client certificate...");
-        ret = mbedtls_x509_crt_parse( &hi->client_cert, client_cert_pem_start,
-                                      client_cert_pem_end - client_cert_pem_start );
-        if( ret < 0 )
-        {
-            ESP_LOGE(TAG, "mbedtls_x509_crt_parse returned -0x%x\n\n", -ret);
-            return ret;
-        }
-
-        ESP_LOGI(TAG, "Loading client key...");
-        snprintf(hi->client_pk_passphrase, sizeof(hi->client_pk_passphrase) - 1, CLIENT_PK_PASSPHRASE);
-        ret = mbedtls_pk_parse_key(&hi->client_pk, client_key_pem_start,
-                                   client_key_pem_end - client_key_pem_start,
-                                   (const unsigned char*) hi->client_pk_passphrase,
-                                   strlen(hi->client_pk_passphrase));
-        if(ret < 0)
-        {
-            ESP_LOGE(TAG, "mbedtls_pk_parse_key returned -0x%x\n\n", -ret);
-            return ret;
-        }
-        */
-
-        ret = mbedtls_ssl_config_defaults( &hi->conf,
-                                           MBEDTLS_SSL_IS_CLIENT,
-                                           MBEDTLS_SSL_TRANSPORT_STREAM,
-                                           MBEDTLS_SSL_PRESET_DEFAULT );
-        if( ret != 0 )
-        {
-            return ret;
-        }
-
-        // MBEDTLS_SSL_VERIFY_REQUIRED means the CA verification must succeed to connect
-        mbedtls_ssl_conf_authmode(&hi->conf, MBEDTLS_SSL_VERIFY_REQUIRED);
-
-        // set up our own client certificate
-        mbedtls_ssl_conf_own_cert(&hi->conf, &hi->client_cert, &hi->client_pk);
-
-        // set up CA certificate
-        mbedtls_ssl_conf_ca_chain( &hi->conf, &hi->cacert, NULL );
-
-        mbedtls_ssl_conf_rng( &hi->conf, mbedtls_ctr_drbg_random, &hi->ctr_drbg );
-        mbedtls_ssl_conf_read_timeout( &hi->conf, 5000 );
-
-        ret = mbedtls_ssl_setup( &hi->ssl, &hi->conf );
-        if( ret != 0 )
-        {
-            return ret;
-        }
-
         ret = mbedtls_ssl_set_hostname( &hi->ssl, host );
         if( ret != 0 )
         {
@@ -862,7 +812,7 @@ int http_close(int id)
 int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response, int size, FILE* fp)
 {
     HTTP_INFO   *hi;
-    char        request[1024], err[100];
+    char        request[2048], err[100];
     char        host[256], port[10], dir[1024];
     int         sock_fd, https, ret, opt, len;
     socklen_t   slen;
@@ -912,6 +862,23 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
         }
     }
 
+    ESP_LOGI(TAG, "Verifying peer X.509 certificate...");
+
+    int flags;
+    if ((flags = mbedtls_ssl_get_verify_result(&hi->ssl)) != 0)
+    {
+        /* In real life, we probably want to close connection if ret != 0 */
+        ESP_LOGW(TAG, "Failed to verify peer certificate!");
+        bzero(request, sizeof(request));
+        mbedtls_x509_crt_verify_info(request, sizeof(request), "  ! ", flags);
+        ESP_LOGW(TAG, "verification info: %s", request);
+    }
+    else {
+        ESP_LOGI(TAG, "Certificate verified.");
+    }
+
+    ESP_LOGI(TAG, "Cipher suite is %s", mbedtls_ssl_get_ciphersuite(&hi->ssl));
+
     /* Send HTTP request. */
 
     // build the http request, including an auth header if requested
@@ -926,37 +893,31 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
             abort();
         }
 
-        snprintf(auth, sizeof(auth), "Authorization: Basic %s", base64);
-
         // basic auth required
         len = snprintf(request, sizeof(request),
-                 "GET %s HTTP/1.1\n"
-                 "Host: %s:%s\n"
-                 "%s\n"
-                 "User-Agent: esp-idf/1.0 esp32\n"
-                 "Connection: close\n"
-                 "\n", dir, host, port, auth);
+                 "GET %s HTTP/1.1\r\n"
+                 "Host: %s\r\n"
+                 "Authorization: Basic %s\r\n"
+                 "User-Agent: esp-idf/1.0\r\n"
+                 "Connection: close\r\n"
+                 "\r\n", dir, host, base64);
+
     } else {
         // no basic auth required
         len = snprintf(request, sizeof(request),
-                 "GET %s HTTP/1.1\n"
-                 "Host: %s:%s\n"
-                 "User-Agent: esp-idf/1.0 esp32\n"
-                 "Connection: close\n"
-                 "\n", dir, host, port);
+                 "GET %s HTTP/1.1\r\n"
+                 "Host: %s:%s\r\n"
+                 "User-Agent: esp-idf/1.0 esp32\r\n"
+                 "Connection: close\r\n"
+                 "\r\n", dir, host, port);
 
     }
-
-    ESP_LOGI(TAG, "request header:\n%s", request);
 
     if((ret = https_write(hi, request, len)) != len)
     {
         https_close(hi);
-
         mbedtls_strerror(ret, err, 100);
-
         snprintf(response, 256, "socket error: %s(%d)", err, ret);
-
         return -1;
     }
 
@@ -1003,18 +964,6 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
         }
 
         hi->r_len += ret;
-        // SSR - this looks like it will overflow the buffer, taking it out for now
-        //hi->r_buf[hi->r_len] = 0;
-
-        // printf("read(%ld): |%s| \n", hi->r_len, hi->r_buf);
-        //printf("read(%zu) ... \n", hi->r_len);
-
-        /*
-        for (size_t k=0; k<hi->r_len; k++) {
-            printf("%c", hi->r_buf[k]);
-        }
-        printf("\n");
-        */
 
         if(http_parse(hi) != 0) break;
     }
@@ -1028,15 +977,6 @@ int http_get(int id, char *url, char *auth_user, char *auth_pass, char *response
         strncpy(hi->host, host, strlen(host));
         strncpy(hi->port, port, strlen(port));
     }
-
-    /*
-    printf("status: %d \n", hi->status);
-    printf("cookie: %s \n", hi->cookie);
-    printf("location: %s \n", hi->location);
-    printf("referrer: %s \n", hi->referrer);
-    printf("length: %ld \n", hi->content_length);
-    printf("body: %ld \n", hi->body_len);
-    */
 
     return hi->status;
 }
@@ -1160,8 +1100,6 @@ int http_post(int id, char *url, char *data, char *response, int size)
         hi->r_len += ret;
         hi->r_buf[hi->r_len] = 0;
 
-//        printf("read(%ld): %s \n", hi->r_len, hi->r_buf);
-//        printf("read(%ld) \n", hi->r_len);
 
         if(http_parse(hi) != 0) break;
     }
@@ -1175,15 +1113,6 @@ int http_post(int id, char *url, char *data, char *response, int size)
         strncpy(hi->host, host, strlen(host));
         strncpy(hi->port, port, strlen(port));
     }
-
-/*
-    printf("status: %d \n", hi->status);
-    printf("cookie: %s \n", hi->cookie);
-    printf("location: %s \n", hi->location);
-    printf("referrer: %s \n", hi->referrer);
-    printf("length: %d \n", hi->content_length);
-    printf("body: %d \n", hi->body_len);
-*/
 
     return hi->status;
 
@@ -1413,9 +1342,6 @@ int http_read_chunked(int id, char *response, int size)
         hi->r_len += ret;
         hi->r_buf[hi->r_len] = 0;
 
-        //printf("read(%ld): %s \n", hi->r_len, hi->r_buf);
-        //printf("read(%ld) \n", hi->r_len);
-
         if(http_parse(hi) != 0) break;
     }
 
@@ -1423,15 +1349,6 @@ int http_read_chunked(int id, char *response, int size)
     {
         https_close(hi);
     }
-
-/*
-    printf("status: %d \n", hi->status);
-    printf("cookie: %s \n", hi->cookie);
-    printf("location: %s \n", hi->location);
-    printf("referrer: %s \n", hi->referrer);
-    printf("length: %d \n", hi->content_length);
-    printf("body: %d \n", hi->body_len);
-*/
 
     return hi->status;
 }
