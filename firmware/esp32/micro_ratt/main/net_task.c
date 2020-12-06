@@ -65,34 +65,20 @@
 #include "mbedtls/certs.h"
 #include "mbedtls/base64.h"
 
-#include "mqtt_client.h"
 
 #include "display_task.h"
 #include "rfid_task.h"
 #include "net_task.h"
+#include "net_https.h"
+#include "net_mqtt.h"
 
 static const char *TAG = "net_task";
 
 void net_timer(TimerHandle_t xTimer);
 
-
-extern const uint8_t client_cert_pem_start[] asm("_binary_client_uratt_crt_start");
-extern const uint8_t client_cert_pem_end[] asm("_binary_client_uratt_crt_end");
-extern const uint8_t client_key_pem_start[] asm("_binary_client_uratt_key_start");
-extern const uint8_t client_key_pem_end[] asm("_binary_client_uratt_key_end");
-extern const uint8_t ca_cert_pem_start[] asm("_binary_ca_crt_start");
-extern const uint8_t ca_cert_pem_end[] asm("_binary_ca_crt_end");
-
-
 // The examples use simple configurations that you can set via 'make menuconfig'.
 #define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
 #define EXAMPLE_WIFI_PASS CONFIG_WIFI_PASSWORD
-#define WEB_SERVER CONFIG_WEB_SERVER
-#define WEB_PORT CONFIG_WEB_PORT
-#define WEB_URL_PATH CONFIG_WEB_URL_PATH
-#define WEB_BASIC_AUTH_USER CONFIG_WEB_BASIC_AUTH_USER
-#define WEB_BASIC_AUTH_PASS CONFIG_WEB_BASIC_AUTH_PASS
-
 
 // FreeRTOS event group to signal when we are connected & ready to make a request
 static EventGroupHandle_t wifi_event_group;
@@ -102,7 +88,6 @@ static EventGroupHandle_t wifi_event_group;
 // to the AP with an IP?
 const int CONNECTED_BIT = BIT0;
 
-esp_mqtt_client_handle_t mqtt_client;
 
 #define NET_QUEUE_DEPTH 16
 
@@ -112,53 +97,8 @@ typedef struct net_evt {
 
 static QueueHandle_t m_q;
 
-#define NET_CMD_DOWNLOAD_ACL  1
-#define NET_CMD_SEND_ACL_UPDATED 2
-#define NET_CMD_SEND_WIFI_STR 3
+uint8_t g_mac_addr[6];
 
-
-static esp_err_t net_mqtt_event_handler(esp_mqtt_event_handle_t event)
-{
-    esp_mqtt_client_handle_t client = event->client;
-    int msg_id;
-    // your_context_t *context = event->context;
-    switch (event->event_id) {
-        case MQTT_EVENT_CONNECTED:
-            ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            msg_id = esp_mqtt_client_subscribe(client, "ratt/control/broadcast/acl/update", 0);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-            break;
-        case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
-            break;
-
-        case MQTT_EVENT_SUBSCRIBED:
-            ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-            //msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-            //ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
-            break;
-        case MQTT_EVENT_UNSUBSCRIBED:
-            ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
-            break;
-        case MQTT_EVENT_PUBLISHED:
-            ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
-            break;
-        case MQTT_EVENT_DATA:
-            ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
-
-            net_cmd_queue(NET_CMD_DOWNLOAD_ACL);
-            break;
-        case MQTT_EVENT_ERROR:
-            ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
-            break;
-        default:
-            ESP_LOGI(TAG, "Other event id:%d", event->event_id);
-            break;
-    }
-    return ESP_OK;
-}
 
 
 static esp_err_t event_handler(void *ctx, system_event_t *event)
@@ -194,8 +134,6 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     }
     return ESP_OK;
 }
-
-
 
 BaseType_t net_cmd_queue(int cmd)
 {
@@ -238,146 +176,20 @@ void net_init(void)
     ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 
+    // get MAC address from efuse
+    esp_efuse_mac_get_default(g_mac_addr);
+
     TimerHandle_t timer = xTimerCreate("rssi_timer", (1000 / portTICK_PERIOD_MS), pdTRUE, (void*) 0, net_timer);
 
     if (xTimerStart(timer, 0) != pdPASS) {
         ESP_LOGE(TAG, "Could not start net timer");
     }
 
-
-    esp_log_level_set("*", ESP_LOG_INFO);
-    esp_log_level_set("MQTT_CLIENT", ESP_LOG_VERBOSE);
-    esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);
-    esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
-    esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
-    esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
-
-    const esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = "mqtts://192.168.0.153:21883",
-        .event_handle = net_mqtt_event_handler,
-        .client_cert_pem = (const char *)client_cert_pem_start,
-        .client_key_pem = (const char *)client_key_pem_start,
-        .cert_pem = (const char *)ca_cert_pem_start,
-        .skip_cert_common_name_check = true,
-    };
-
-    ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
-    mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
-
+    net_https_init();
+    net_mqtt_init();
 }
 
 
-#define RESP_BUF_SIZE 1024
-
-void net_download_acl()
-{
-  int ret;
-  char web_url[256];
-  char *resp_buf;
-
-  resp_buf = malloc(RESP_BUF_SIZE);
-  if (resp_buf) {
-      ret = http_init(0);
-      snprintf(web_url, sizeof(web_url), "https://%s/%s", WEB_SERVER, WEB_URL_PATH);
-
-      display_net_msg("WIFI DOWNLOAD");
-
-      xSemaphoreTake(g_sdcard_mutex, portMAX_DELAY);
-      FILE* file = fopen("/sdcard/acl-temp.txt", "w");
-
-      if (file) {
-          ESP_LOGI(TAG, "URL: %s", web_url);
-          ret = http_get(0, web_url, WEB_BASIC_AUTH_USER, WEB_BASIC_AUTH_PASS, resp_buf, RESP_BUF_SIZE, file);
-
-          ESP_LOGI(TAG, "http_get returned %d", ret);
-          if (ret == -1) {
-              ESP_LOGE(TAG, "%s", resp_buf);
-          }
-          fclose(file);
-      } else {
-          ESP_LOGE(TAG, "could not open file for writing");
-      }
-      http_close(0);
-
-      if (ret == 200) {
-          xSemaphoreTake(g_acl_mutex, portMAX_DELAY);
-          // delete existing ACL file if it exists
-          struct stat st;
-          if (stat("/sdcard/acl.txt", &st) == 0) {
-              unlink("/sdcard/acl.txt");
-          }
-
-          // move downloaded ACL in place
-          if (rename("/sdcard/acl-temp.txt", "/sdcard/acl.txt") != 0) {
-              ESP_LOGE(TAG, "Could not rename downloaded ACL file!");
-          }
-          xSemaphoreGive(g_acl_mutex);
-
-          display_net_msg("DOWNLOAD OK");
-      } else {
-          display_net_msg("DOWNLOAD FAIL");
-      }
-
-      xSemaphoreGive(g_sdcard_mutex);
-
-      free(resp_buf);
-  } else {
-      ESP_LOGE(TAG, "Could not malloc acl buffer");
-  }
-
-  net_cmd_queue(NET_CMD_SEND_ACL_UPDATED);
-}
-
-void net_send_wifi_strength(void)
-{
-  wifi_ap_record_t wifidata;
-  if (esp_wifi_sta_get_ap_info(&wifidata)==0){
-    // TOPIC=ratt/status/node/b827eb206a6c/wifi/status
-    // DATA={"ap": "46:D9:E7:69:BB:67", "freq": "2.412", "quality": 60, "essid": "MakeIt Members", "level": -68}
-
-    char *topic, *payload;
-    topic = malloc(128);
-    payload = malloc(256);
-
-    uint8_t mac[6];
-    esp_efuse_mac_get_default(mac);
-
-    const int chan_freq[] = { 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2484 };
-
-    snprintf(topic, 128, "ratt/status/node/%02x%02x%02x%02x%02x%02x/wifi/status", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    snprintf(payload, 256, "{\"ap\": \"%02X:%02X:%02X:%02X:%02X:%02X\", \"freq\": \"%1d.%3d\", \"essid\": \"%s\", \"level\": %d}",
-      wifidata.bssid[0],wifidata.bssid[1],wifidata.bssid[2],wifidata.bssid[3],wifidata.bssid[4],wifidata.bssid[5],
-      (wifidata.primary <= 16) ? chan_freq[wifidata.primary-1] / 1000 : 0, (wifidata.primary <= 16) ? chan_freq[wifidata.primary-1] % 1000 : 0,
-      wifidata.ssid,
-      wifidata.rssi);
-    int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 0, 0);
-    ESP_LOGI(TAG, "published msg %d", msg_id);
-    free(topic);
-    free(payload);
-  }
-}
-
-
-void net_send_acl_updated(void)
-{
-  // ratt/status/node/b827eb2f8dca/acl/update {"status":"downloaded"}
-
-  char *topic, *payload;
-  topic = malloc(128);
-  payload = malloc(128);
-
-  uint8_t mac[6];
-  esp_efuse_mac_get_default(mac);
-
-  snprintf(topic, 128, "ratt/status/node/%02x%02x%02x%02x%02x%02x/acl/update", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-  snprintf(payload, 128, "{\"status\":\"downloaded\"}");
-  int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 0, 0);
-  ESP_LOGI(TAG, "published msg %d", msg_id);
-  free(topic);
-  free(payload);
-
-
-}
 
 void net_task(void *pvParameters)
 {
@@ -392,7 +204,7 @@ void net_task(void *pvParameters)
     xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
     ESP_LOGI(TAG, "Connected to AP...");
 
-    esp_mqtt_client_start(mqtt_client);
+    net_mqtt_start();
 
     while(1) {
       net_evt_t evt;
@@ -400,15 +212,19 @@ void net_task(void *pvParameters)
       if (xQueueReceive(m_q, &evt, (20 / portTICK_PERIOD_MS)) == pdPASS) {
         switch(evt.cmd) {
           case NET_CMD_DOWNLOAD_ACL:
-            net_download_acl();
+            net_https_download_acl();
             break;
 
           case NET_CMD_SEND_ACL_UPDATED:
-            net_send_acl_updated();
+            net_mqtt_send_acl_updated(MQTT_ACL_SUCCESS);
+            break;
+
+          case NET_CMD_SEND_ACL_FAILED:
+            net_mqtt_send_acl_updated(MQTT_ACL_FAIL);
             break;
 
           case NET_CMD_SEND_WIFI_STR:
-            net_send_wifi_strength();
+            net_mqtt_send_wifi_strength();
             break;
 
           default:
@@ -442,24 +258,24 @@ void net_timer(TimerHandle_t xTimer)
 
 
 
+/*
 #ifdef MBEDTLS_DEBUG_C
 #define MBEDTLS_DEBUG_LEVEL 4
 
-/* mbedtls debug function that translates mbedTLS debug output
-   to ESP_LOGx debug output.
+// mbedtls debug function that translates mbedTLS debug output
+//  to ESP_LOGx debug output.
+//   MBEDTLS_DEBUG_LEVEL 4 means all mbedTLS debug output gets sent here,
+//   and then filtered to the ESP logging mechanism.
 
-   MBEDTLS_DEBUG_LEVEL 4 means all mbedTLS debug output gets sent here,
-   and then filtered to the ESP logging mechanism.
-*/
 static void mbedtls_debug(void *ctx, int level, const char *file, int line, const char *str)
 {
     const char *MBTAG = "mbedtls";
     char *file_sep;
 
-    /* Shorten 'file' from the whole file path to just the filename
-       This is a bit wasteful because the macros are compiled in with
-       the full _FILE_ path in each case.
-    */
+    // Shorten 'file' from the whole file path to just the filename
+    // This is a bit wasteful because the macros are compiled in with
+    // the full _FILE_ path in each case.
+
     file_sep = rindex(file, '/');
     if(file_sep)
         file = file_sep+1;
@@ -481,3 +297,4 @@ static void mbedtls_debug(void *ctx, int level, const char *file, int line, cons
 }
 
 #endif
+*/

@@ -42,4 +42,11 @@ void net_task(void *pvParameters);
 
 BaseType_t net_cmd_queue(int cmd);
 
+#define NET_CMD_DOWNLOAD_ACL  1
+#define NET_CMD_SEND_ACL_UPDATED 2
+#define NET_CMD_SEND_ACL_FAILED 3
+#define NET_CMD_SEND_WIFI_STR 4
+
+extern uint8_t g_mac_addr[6];
+
 #endif
