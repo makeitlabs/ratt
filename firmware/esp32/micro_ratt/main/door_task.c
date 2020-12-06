@@ -34,57 +34,103 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
+#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
+#include "freertos/queue.h"
 #include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
+#include "esp_log.h"
 
-#include "lwip/err.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-#include "lwip/netdb.h"
-#include "lwip/dns.h"
+#include "soc/gpio_struct.h"
+#include "driver/gpio.h"
 
-#include "esp_tls.h"
-#include "esp_crt_bundle.h"
-
-#include "sdcard.h"
-#include "display_task.h"
-#include "lcd_st7735.h"
-#include "audio_task.h"
-#include "net_task.h"
-#include "rfid_task.h"
 #include "door_task.h"
-#include "beep_task.h"
 
-void app_main(void)
+static const char *TAG = "door_task";
+
+#define DOOR_QUEUE_DEPTH 8
+
+typedef struct door_evt {
+  int unlock;
+} door_evt_t;
+
+static QueueHandle_t m_q;
+
+BaseType_t door_unlock(void)
 {
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    door_evt_t evt;
+    evt.unlock = 1;
+    return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
+}
 
-    lcd_init_hw();
-    display_init();
-    beep_init();
-    door_init();
+BaseType_t door_lock(void)
+{
+    door_evt_t evt;
+    evt.unlock = 0;
+    return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
+}
 
-    sdcard_init();
-    rfid_init();
 
-    display_user_msg("Micro-RATT");
+void door_init(void)
+{
+  m_q = xQueueCreate(DOOR_QUEUE_DEPTH, sizeof(door_evt_t));
+  if (m_q == NULL) {
+      ESP_LOGE(TAG, "FATAL: Cannot create door queue!");
+  }
 
-    xTaskCreate(&door_task, "door_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&beep_task, "beep_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&rfid_task, "rfid_task", 4096, NULL, 8, NULL);
-    xTaskCreate(&display_task, "display_task", 8192, NULL, 8, NULL);
-    xTaskCreate(&net_task, "net_task", 8192, NULL, 7, NULL);
+  gpio_set_direction(MOTOR_O1, GPIO_MODE_OUTPUT);
+  gpio_set_direction(MOTOR_O2, GPIO_MODE_OUTPUT);
 
-    beep_queue(2000, 100, 5, 5);
+  gpio_set_level(MOTOR_O1, 1);
+  gpio_set_level(MOTOR_O2, 1);
+}
+
+void door_delay(int ms)
+{
+    TickType_t delay = ms / portTICK_PERIOD_MS;
+    vTaskDelay(delay);
+}
+
+void door_actuate_lock(void)
+{
+  gpio_set_level(MOTOR_O1, 1);
+  gpio_set_level(MOTOR_O2, 0);
+  door_delay(500);
+  gpio_set_level(MOTOR_O1, 1);
+  gpio_set_level(MOTOR_O2, 1);
+
+}
+
+void door_actuate_unlock(void)
+{
+  gpio_set_level(MOTOR_O1, 0);
+  gpio_set_level(MOTOR_O2, 1);
+  door_delay(500);
+  gpio_set_level(MOTOR_O1, 1);
+  gpio_set_level(MOTOR_O2, 1);
+}
+
+void door_task(void *pvParameters)
+{
+    // initially lock after delay
+    door_delay(2000);
+    door_actuate_lock();
+
+    while(1) {
+        door_evt_t evt;
+
+        if (xQueueReceive(m_q, &evt, (20 / portTICK_PERIOD_MS)) == pdPASS) {
+          if (evt.unlock) {
+            // unlock
+            door_actuate_unlock();
+            door_delay(5000);
+            door_actuate_lock();
+
+          } else {
+            // lock
+            door_actuate_lock();
+          }
+        }
+    }
 }

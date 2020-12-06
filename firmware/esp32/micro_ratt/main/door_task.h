@@ -34,21 +34,16 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#ifndef _RFID_TASK_H
-#define _RFID_TASK_H
+#ifndef _DOOR_TASK
+#define _DOOR_TASK
 
-void rfid_init();
-void rfid_task(void *pvParameters);
+void door_task(void *pvParameters);
+void door_init();
 
-#define FIELD_SIZE 32
+BaseType_t door_unlock();
+BaseType_t door_lock();
 
-typedef struct user_fields {
-    char name[FIELD_SIZE];
-    char last_accessed[FIELD_SIZE];
-    uint8_t allowed;
-} user_fields_t;
-
-extern SemaphoreHandle_t g_acl_mutex;
-
+#define MOTOR_O1 (25)
+#define MOTOR_O2 (26)
 
 #endif

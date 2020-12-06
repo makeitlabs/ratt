@@ -48,14 +48,10 @@
 #include "freertos/task.h"
 
 #include "beep_task.h"
+#include "door_task.h"
 #include "rfid_task.h"
 #include "sdcard.h"
 #include "display_task.h"
-#include "audio_task.h"
-
-#include "soc/gpio_struct.h"
-#include "driver/gpio.h"
-
 
 #define SER_BUF_SIZE (256)
 #define SER_RFID_TXD  (-1)
@@ -69,39 +65,10 @@ static const char *TAG = "rfid_task";
 
 SemaphoreHandle_t g_acl_mutex;
 
-#define MOTOR_O1 (25)
-#define MOTOR_O2 (26)
 
 
 void rfid_init()
 {
-  gpio_config_t mo1_cfg = {
-      .pin_bit_mask = MOTOR_O1,
-      .mode = GPIO_MODE_OUTPUT,
-      .pull_up_en = GPIO_PULLUP_ENABLE,
-      .pull_down_en = GPIO_PULLDOWN_DISABLE,
-      .intr_type = GPIO_INTR_DISABLE
-  };
-  gpio_config_t mo2_cfg = {
-      .pin_bit_mask = MOTOR_O2,
-      .mode = GPIO_MODE_OUTPUT,
-      .pull_up_en = GPIO_PULLUP_ENABLE,
-      .pull_down_en = GPIO_PULLDOWN_DISABLE,
-      .intr_type = GPIO_INTR_DISABLE
-  };
-
-
-  ESP_LOGI(TAG, "GPIO configuration...");
-//  gpio_config(&mo1_cfg);
-//  gpio_config(&mo2_cfg);
-
-  gpio_set_direction(MOTOR_O1, GPIO_MODE_OUTPUT);
-  gpio_set_direction(MOTOR_O2, GPIO_MODE_OUTPUT);
-
-  gpio_set_level(MOTOR_O1, 1);
-  gpio_set_level(MOTOR_O2, 1);
-
-
     uart_config_t uart_config = {
         .baud_rate = 9600,
         .data_bits = UART_DATA_8_BITS,
@@ -114,8 +81,6 @@ void rfid_init()
     uart_param_config(uart_num, &uart_config);
     uart_set_pin(uart_num, SER_RFID_TXD, SER_RFID_RXD, SER_RFID_RTS, SER_RFID_CTS);
     uart_driver_install(uart_num, SER_BUF_SIZE * 2, 0, 0, NULL, 0);
-
-
 
     g_acl_mutex = xSemaphoreCreateMutex();
     if (!g_sdcard_mutex) {
@@ -202,8 +167,8 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
                 ESP_LOGI(TAG, "found tag for user %s, allowed=%s, last accessed=%s", username, allowed, last_accessed);
                 found = 1;
 
-                strncpy(user->name, username, sizeof(user->name));
-                strncpy(user->last_accessed, last_accessed, sizeof(user->last_accessed));
+                strncpy(user->name, username, FIELD_SIZE);
+                strncpy(user->last_accessed, last_accessed, FIELD_SIZE);
                 user->allowed = (strcmp(allowed, "allowed") == 0);
             }
         }
@@ -214,6 +179,12 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
     xSemaphoreGive(g_sdcard_mutex);
 
     return found;
+}
+
+void rfid_delay(int ms)
+{
+    TickType_t delay = ms / portTICK_PERIOD_MS;
+    vTaskDelay(delay);
 }
 
 
@@ -256,53 +227,29 @@ void rfid_task(void *pvParameters)
                 snprintf(s, sizeof(s), "%10.10u %2.2X %2.2X %2.2X %2.2X [%2.2X == %2.2X]", tag, rxbuf[4], rxbuf[5], rxbuf[6], rxbuf[7], rxbuf[8], checksum_calc);
                 ESP_LOGI(TAG, "%s", s);
 
-                snprintf(s, sizeof(s), "%10.10u", tag);
-                display_user_msg(s);
-
-                beep_queue(880, 250, 5, 5);
-                beep_queue(1174, 250, 5, 100);
-
-                display_allowed_msg("OPEN", 1);
-
-                gpio_set_level(MOTOR_O1, 0);
-                gpio_set_level(MOTOR_O2, 1);
-                display_allowed_msg("HOLD", 1);
-
-                vTaskDelay(500 / portTICK_PERIOD_MS);
-                gpio_set_level(MOTOR_O1, 1);
-                gpio_set_level(MOTOR_O2, 1);
-
-
-                vTaskDelay(3000 / portTICK_PERIOD_MS);
-
-                display_allowed_msg("LOCK", 1);
-                gpio_set_level(MOTOR_O1, 1);
-                gpio_set_level(MOTOR_O2, 0);
-                vTaskDelay(500 / portTICK_PERIOD_MS);
-                gpio_set_level(MOTOR_O1, 1);
-                gpio_set_level(MOTOR_O2, 1);
-
-                beep_queue(1174, 250, 5, 5);
-                beep_queue(880, 250, 5, 100);
-
-
-                /*
                 user_fields_t user;
                 bzero(&user, sizeof(user));
                 if (rfid_lookup(tag, &user)) {
                     display_user_msg(user.name);
                     display_allowed_msg(user.last_accessed, user.allowed);
+
                     if (user.allowed) {
-                        audio_play("/sdcard/granted.s16");
+                      beep_queue(880, 250, 5, 5);
+                      beep_queue(1174, 250, 5, 5);
+                      rfid_delay(520);
+                      door_unlock();
                     } else {
-                        audio_play("/sdcard/denied.s16");
+                      beep_queue(220, 250, 5, 5);
+                      beep_queue(0, 100, 0, 0);
+                      beep_queue(220, 250, 5, 5);
                     }
                 } else {
                     display_user_msg("Unknown Tag");
                     display_allowed_msg("DENIED", 0);
-                    audio_play("/sdcard/denied.s16");
+                    beep_queue(220, 250, 5, 5);
+                    beep_queue(0, 100, 0, 0);
+                    beep_queue(220, 250, 5, 5);
                 }
-                */
 
             } else {
                 char s[80];
