@@ -78,7 +78,7 @@ BaseType_t display_wifi_msg(char *msg)
 {
     display_evt_t evt;
     evt.cmd = DISP_CMD_WIFI_MSG;
-    strncpy(evt.buf, msg, sizeof(evt.buf)-1);
+    strncpy(evt.buf, msg, DISPLAY_EVT_BUF_SIZE);
 
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
@@ -95,7 +95,7 @@ BaseType_t display_net_msg(char *msg)
 {
     display_evt_t evt;
     evt.cmd = DISP_CMD_NET_MSG;
-    strncpy(evt.buf, msg, sizeof(evt.buf)-1);
+    strncpy(evt.buf, msg, DISPLAY_EVT_BUF_SIZE);
 
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
@@ -104,7 +104,7 @@ BaseType_t display_user_msg(char *msg)
 {
     display_evt_t evt;
     evt.cmd = DISP_CMD_USER_MSG;
-    strncpy(evt.buf, msg, sizeof(evt.buf)-1);
+    strncpy(evt.buf, msg, DISPLAY_EVT_BUF_SIZE);
 
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
@@ -113,7 +113,7 @@ BaseType_t display_allowed_msg(char *msg, uint8_t allowed)
 {
     display_evt_t evt;
     evt.cmd = DISP_CMD_ALLOWED_MSG;
-    strncpy(evt.buf, msg, sizeof(evt.buf)-1);
+    strncpy(evt.buf, msg, DISPLAY_EVT_BUF_SIZE);
     evt.params.allowed = allowed;
 
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
