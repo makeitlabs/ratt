@@ -40,4 +40,6 @@
 void net_init(void);
 void net_task(void *pvParameters);
 
+BaseType_t net_cmd_queue(int cmd);
+
 #endif

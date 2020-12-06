@@ -5,4 +5,4 @@
 
 # uncomment to embed files certs as binary data symbols
 # in the app
-# COMPONENT_EMBED_TXTFILES := cacert.pem client_cert.pem client_key.pem
+COMPONENT_EMBED_TXTFILES := ca.crt client_uratt.crt client_uratt.key
