@@ -71,6 +71,7 @@
 #include "net_task.h"
 #include "net_https.h"
 #include "net_mqtt.h"
+#include "net_sntp.h"
 
 static const char *TAG = "net_task";
 
@@ -187,6 +188,7 @@ void net_init(void)
 
     net_https_init();
     net_mqtt_init();
+    net_sntp_init();
 }
 
 
@@ -196,7 +198,8 @@ void net_task(void *pvParameters)
     ESP_LOGI(TAG, "start net task");
     net_init();
 
-    // queue an initial ACL download
+    // queue some initial commands
+    net_cmd_queue(NET_CMD_NTP_SYNC);
     net_cmd_queue(NET_CMD_DOWNLOAD_ACL);
 
     display_net_msg("WIFI CONNECT");
@@ -212,7 +215,13 @@ void net_task(void *pvParameters)
       if (xQueueReceive(m_q, &evt, (20 / portTICK_PERIOD_MS)) == pdPASS) {
         switch(evt.cmd) {
           case NET_CMD_DOWNLOAD_ACL:
-            net_https_download_acl();
+            {
+              uint32_t start = esp_log_timestamp();
+
+              net_https_download_acl();
+
+              ESP_LOGW(TAG, "download took %d", esp_log_timestamp() - start);
+            }
             break;
 
           case NET_CMD_SEND_ACL_UPDATED:
@@ -225,6 +234,10 @@ void net_task(void *pvParameters)
 
           case NET_CMD_SEND_WIFI_STR:
             net_mqtt_send_wifi_strength();
+            break;
+
+          case NET_CMD_NTP_SYNC:
+            net_sntp_sync();
             break;
 
           default:
@@ -243,9 +256,12 @@ void net_timer(TimerHandle_t xTimer)
     if (esp_wifi_sta_get_ap_info(&wifidata)==0){
         display_wifi_rssi(wifidata.rssi);
 
-        if (interval % 20 == 0) {
+        if (interval % 30 == 0) {
           net_cmd_queue(NET_CMD_SEND_WIFI_STR);
-          interval = 0;
+        }
+
+        if (interval % 62 == 0) {
+          net_cmd_queue(NET_CMD_NTP_SYNC);
         }
         interval++;
 

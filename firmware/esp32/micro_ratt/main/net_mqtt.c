@@ -115,8 +115,8 @@ void net_mqtt_send_wifi_strength(void)
       (wifidata.primary <= 16) ? chan_freq[wifidata.primary-1] / 1000 : 0, (wifidata.primary <= 16) ? chan_freq[wifidata.primary-1] % 1000 : 0,
       wifidata.ssid,
       wifidata.rssi);
-    int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 0, 0);
-    ESP_LOGI(TAG, "published msg %d", msg_id);
+    int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 2, 0);
+    ESP_LOGI(TAG, "published wifi status id=%d", msg_id);
 
     free(topic);
     free(payload);
@@ -135,8 +135,8 @@ void net_mqtt_send_acl_updated(char* status)
   net_mqtt_topic_targeted(MQTT_TOPIC_TYPE_STATUS, "acl/update", topic, 128);
 
   snprintf(payload, 128, "{\"status\":\"%s\"}", status);
-  int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 0, 0);
-  ESP_LOGI(TAG, "published msg %d", msg_id);
+  int msg_id = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, 2, 0);
+  ESP_LOGI(TAG, "published acl update status id=%d", msg_id);
 
   free(topic);
   free(payload);

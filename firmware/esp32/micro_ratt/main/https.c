@@ -357,43 +357,12 @@ static int http_parse(HTTP_INFO *hi)
 
                         if (hi->fp) {
                             if (hi->length) {
-                                size_t k = 0;
-                                while (k < hi->length) {
-                                    if (fputc(*(p1 + k), hi->fp) == EOF)
-                                        break;
-                                    k++;
-                                }
-
-                                if (k != hi->length) {
-                                    ESP_LOGE(TAG, "error writing to file with fputc() k=%zu hi->length=%zu", k, hi->length);
-                                    return -1;
-                                }
-
-                                /*
-                                 * there seems to be some kind of bug doing fwrite() on the ESP that i can't yet track down...
-                                 *
-                                 * results in file corruption:
-                                 * +8192 bytes -- two bytes are duplicated
-                                 * +1536 bytes -- two bytes missing
-                                 * +512 bytes  -- two bytes are duplicated
-                                 * +1536 bytes -- two bytes missing
-                                 * ...         -- (repeating corruption at 512/1536 for remainder of file written)
-                                 *
-                                 *
-                                 * YET this works fine using fputc() one character at a time...
-                                 *
-                                printf("fwrite() hi->length=%zu\n", hi->length);
                                 int ret = fwrite(p1, 1, hi->length, hi->fp);
-                                printf("fwrite() returned %d\n", ret);
                                 if (ret != hi->length) {
                                     ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
                                     return -1;
                                 }
-                                */
-
-
                             }
-
                         } else {
                             if(hi->body_len < hi->body_size-1) {
                                 // if there is still room in the body buffer...
@@ -430,39 +399,11 @@ static int http_parse(HTTP_INFO *hi)
 
                         if (hi->fp) {
                             if (len) {
-                                size_t k = 0;
-                                while (k < len) {
-                                    if (fputc(*(p1 + k), hi->fp) == EOF)
-                                        break;
-                                    k++;
-                                }
-
-                                if (k != len) {
-                                    ESP_LOGE(TAG, "error writing to file with fputc() k=%zu len=%zu", k, len);
-                                    return -1;
-                                }
-
-                                /*
-                                 * there seems to be some kind of bug doing fwrite() on the ESP that i can't yet track down...
-                                 *
-                                 * results in file corruption:
-                                 * +8192 bytes -- two bytes are duplicated
-                                 * +1536 bytes -- two bytes missing
-                                 * +512 bytes  -- two bytes are duplicated
-                                 * +1536 bytes -- two bytes missing
-                                 * ...         -- (repeating corruption at 512/1536 for remainder of file written)
-                                 *
-                                 *
-                                 * YET this works fine using fputc() one character at a time...
-                                 *
-                                printf("fwrite() len=%zu\n", len);
-                                int ret = fwrite(hi->body, sizeof(char), len, hi->fp);
-                                printf("fwrite() returned %d\n", ret);
+                                int ret = fwrite(p1, sizeof(char), len, hi->fp);
                                 if (ret != len) {
                                     ESP_LOGE(TAG, "error writing to file ret=%d, err=%d", ret, ferror(hi->fp));
                                     return -1;
                                 }
-                                */
                             }
 
                         } else {

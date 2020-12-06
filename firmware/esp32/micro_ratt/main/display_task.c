@@ -36,6 +36,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
@@ -253,6 +254,21 @@ void display_task(void *pvParameters)
             gfx_draw_char(152, 72, m_spin[spin_idx][0], lcd_rgb(0xFF, 0x00, 0x00), lcd_rgb(0xFF, 0xFF, 0xFF), 1);
             spin_idx = (spin_idx + 1) % SPIN_LENGTH;
             gfx_refresh_rect(152, 72, 6, 8);
+
+            char strftime_buf[64];
+            time_t tnow;
+            struct tm timeinfo;
+
+            time(&tnow);
+            setenv("TZ", "EST5EDT,M3.2.0/2,M11.1.0", 1);
+            tzset();
+            localtime_r(&tnow, &timeinfo);
+            strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+
+            lcd_fill_rect(0, 52, 160, 10, lcd_rgb(0x00, 0x00, 0xC0));
+            gfx_set_text_color(lcd_rgb(0xFF, 0xFF, 0x00));
+            gfx_write_string(0, 52, strftime_buf);
+            gfx_refresh_rect(0, 52, 160, 16);
 
             last_heartbeat_tick = now;
         }

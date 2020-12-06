@@ -46,6 +46,7 @@ BaseType_t net_cmd_queue(int cmd);
 #define NET_CMD_SEND_ACL_UPDATED 2
 #define NET_CMD_SEND_ACL_FAILED 3
 #define NET_CMD_SEND_WIFI_STR 4
+#define NET_CMD_NTP_SYNC 5
 
 extern uint8_t g_mac_addr[6];
 
