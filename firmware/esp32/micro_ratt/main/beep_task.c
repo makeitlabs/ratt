@@ -107,10 +107,12 @@ void beep_start(int hz, int attack)
   ledc_beep.freq_hz = hz;
   ledc_timer_config(&ledc_beep);
 
-  ledc_set_fade_with_time(ledc_channel.speed_mode,
-          ledc_channel.channel, 900, attack);
-  ledc_fade_start(ledc_channel.speed_mode,
-          ledc_channel.channel, LEDC_FADE_NO_WAIT);
+  if (hz > 100) {
+    ledc_set_fade_with_time(ledc_channel.speed_mode,
+            ledc_channel.channel, 900, attack);
+    ledc_fade_start(ledc_channel.speed_mode,
+            ledc_channel.channel, LEDC_FADE_NO_WAIT);
+  }
 }
 
 void beep_stop(int decay)
