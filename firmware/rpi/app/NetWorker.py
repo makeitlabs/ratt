@@ -246,7 +246,7 @@ class NetWorker(QObject):
 
         return reply
 
-    def handleSSLErrors(self, reply, errors):
+    def handleSSLErrors(self, errors):
         for err in errors:
             self.logger.error('SSL errors:' + err.errorString())
 

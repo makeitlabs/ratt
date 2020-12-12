@@ -41,6 +41,15 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty
 class MemberRecord(QObject):
     recordChanged = pyqtSignal()
 
+    ACCESS_LEVEL=['User','Trainer','ARM','RM','Admin']
+    LEVEL_USER=0
+    LEVEL_TRAINER=1
+    LEVEL_ARM=2
+    LEVEL_RM=3
+    LEVEL_ADMIN=4
+    LEVEL_HEADRM=4 # Equiv of Admin
+    LEVEL_NOACCESS=-1
+
     def __init__(self, initRecord = []):
         QObject.__init__(self)
         self.clear()
@@ -51,6 +60,7 @@ class MemberRecord(QObject):
     def copy(self, source):
         self._member = source.name
         self._nickname = source.nickname
+        self._endorsements = source.endorsements
         self._level = source.level
         self._tagid = source.tag
         self._lastaccessed = source.lastAccessed
@@ -64,6 +74,7 @@ class MemberRecord(QObject):
     def clear(self):
         self._member = ''
         self._nickname = ''
+        self._endorsements = ''
         self._level = -1
         self._tagid = ''
         self._lastaccessed = ''
@@ -79,6 +90,10 @@ class MemberRecord(QObject):
         try:
             self._member = record['member']
             self._nickname = record['nickname']
+            if 'endorsements' in record:
+                self._endorsements = record['endorsements']
+            else:
+                self._endorsements = ''
             self._level = int(record['level'])
             self._tagid = record['tagid']
             self._lastaccessed = record['last_accessed']
@@ -100,6 +115,10 @@ class MemberRecord(QObject):
     @pyqtProperty(str, notify=recordChanged)
     def nickname(self):
         return self._nickname
+
+    @pyqtProperty(str, notify=recordChanged)
+    def endorsements(self):
+        return self._endorsements
 
     @pyqtProperty(int, notify=recordChanged)
     def level(self):

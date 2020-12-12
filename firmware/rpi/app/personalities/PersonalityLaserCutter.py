@@ -95,6 +95,7 @@ class Personality(PersonalitySimple):
         if self._needsHoming:
             return self.goto(self.STATE_HOMING)
         else:
+	    self.enableTool()
             return self.goto(self.STATE_TOOL_ENABLED_INACTIVE)
 
     #############################################
@@ -120,6 +121,7 @@ class Personality(PersonalitySimple):
             if self.wakereason == self.REASON_GPIO:
                 if self.toolHomed():
                     self._needsHoming = False
+		    self.enableTool()
                     return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
                 elif self.toolHomingOverride() and self.app.config.value('Personality.HomingExternalOverrideEnabled'):
                     return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
@@ -129,7 +131,7 @@ class Personality(PersonalitySimple):
             if self.wakereason == self.REASON_UI:
                 if self.uievent == 'HomingAborted' or self.uievent == 'HomingTimeout':
                     return self.exitAndGoto(self.STATE_IDLE)
-                elif self.uievent == 'HomingOverride' and self.app.config.value('Personality.HomingManualOverrideEnabled'):
+                elif self.uievent == 'HomingOverride' and ((self.activeMemberRecord.level > 0) or (self.app.config.value('Personality.HomingManualOverrideEnabled'))):
                     return self.exitAndGoto(self.STATE_HOMING_OVERRIDE)
 
             return False
@@ -169,6 +171,7 @@ class Personality(PersonalitySimple):
 
         elif self.phACTIVE:
             if self.wakereason == self.REASON_UI and self.uievent == 'HomingOverrideDone':
+		self.enableTool()
                 return self.exitAndGoto(self.STATE_TOOL_ENABLED_INACTIVE)
             return False
 

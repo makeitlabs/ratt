@@ -220,6 +220,8 @@ class MqttClient(QThread):
                     self.state = MqttClient.Disconnected
                     self.msleep(self._reconnect_time)
 
+                self.msleep(self._reconnect_time)
+
             self._client.loop(timeout=1.0)
 
 

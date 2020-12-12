@@ -76,6 +76,7 @@ class Personality(PersonalityBase):
     STATE_REPORT_ISSUE = 'ReportIssue'
 
     toolActiveFlagChanged = pyqtSignal()
+    endorsementsChanged = pyqtSignal()
 
     @pyqtProperty(bool, notify=toolActiveFlagChanged)
     def toolActiveFlag(self):
@@ -158,6 +159,26 @@ class Personality(PersonalityBase):
     def toolPowered(self):
         return (self.pins_in[1].get() == 0)
 
+    @pyqtProperty(bool, notify=endorsementsChanged)
+    def hasAdvancedEndorsement(self):
+        return self.checkAdvancedEndorsement()
+
+    # returns true if the user has the endorsement specified in the config option
+    def checkAdvancedEndorsement(self):
+        required = self.app.config.value('Personality.AdvancedEndorsement').upper()
+
+        if required:
+            self.logger.debug('required endorsement=' + required)
+
+            endorsements = self.activeMemberRecord.endorsements.upper()
+            self.logger.debug('endorsements=' + endorsements)
+
+            if required in endorsements:
+                self.logger.debug('has advanced endorsement')
+                return True
+
+        return False
+
     #############################################
     ## STATE_UNINITIALIZED
     #############################################
@@ -186,6 +207,8 @@ class Personality(PersonalityBase):
             self.wakeOnRFID(True)
             self.pin_led1.set(LOW)
             self.pin_led2.set(LOW)
+            if self.wasLockedOut:
+                return self.exitAndGoto(self.STATE_LOCK_OUT)
             self.wakeOnTimer(enabled=True, interval=500, singleShot=True)
             return self.goActive()
 
@@ -202,6 +225,7 @@ class Personality(PersonalityBase):
                     self.pin_led1.set(LOW)
                     self.wakeOnTimer(enabled=True, interval=1500, singleShot=True)
             elif self.wakereason == self.REASON_RFID_ALLOWED:
+                self.endorsementsChanged.emit()
                 return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
             elif self.wakereason == self.REASON_RFID_DENIED:
                 return self.exitAndGoto(self.STATE_ACCESS_DENIED)
@@ -565,6 +589,10 @@ class Personality(PersonalityBase):
             return self.goActive()
 
         elif self.phACTIVE:
+            if self.wakereason == self.REASON_RFID_ALLOWED and self.activeMemberRecord.level > 1:
+                self.wasLockedOut=True
+                return self.exitAndGoto(self.STATE_ACCESS_ALLOWED)
+
             if self.wakereason == self.REASON_TIMER:
                 if self.pin_led1.get() == LOW:
                     self.pin_led1.set(HIGH)

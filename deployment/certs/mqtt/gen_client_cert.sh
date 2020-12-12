@@ -22,7 +22,7 @@ cd ssl
 
 echo -e ${GREEN}generate client key without encryption
 echo -e ${GRAY}
-openssl genrsa -out private/client_${CN}.key 2048 -config openssl.cnf 
+openssl genrsa -out private/client_${CN}.key 2048 #-config openssl.cnf 
 
 echo -e ${GREEN}generate CSR for client key
 echo -e ${GRAY}
@@ -30,5 +30,5 @@ openssl req -out private/client_${CN}.csr -key private/client_${CN}.key -new -co
 
 echo -e ${GREEN}sign the CSR
 echo -e ${GRAY}
-openssl x509 -req -in private/client_${CN}.csr -CA certs/ca.crt -CAkey private/ca.key -CAcreateserial -out certs/client_${CN}.crt -days 365 
+openssl x509 -req -in private/client_${CN}.csr -CA certs/ca.crt -CAkey private/ca.key -CAcreateserial -out certs/client_${CN}.crt -days 36525 
 

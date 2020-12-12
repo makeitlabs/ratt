@@ -44,7 +44,7 @@ View {
 
     function _show() {
       status.keyEscActive = true;
-      status.keyReturnActive = config.Personality_HomingManualOverrideEnabled;
+      status.keyReturnActive = ((activeMemberRecord.level > 0) || (config.Personality_HomingManualOverrideEnabled));
       status.keyUpActive = false;
       status.keyDownActive = false;
 
@@ -55,24 +55,29 @@ View {
     }
 
     function _hide() {
-      timeoutTimer.stop();
       audioInstructionTimer.stop();
+      overrideTimer.stop();
+      timeoutTimer.stop();
       gentleReminderTimer.stop();
+
       sound.homingInstructionsAudio.stop();
+      sound.generalAlertAudio.stop();
+
     }
 
     function keyEscape(pressed) {
-      overrideTimer.stop();
+
       appWindow.uiEvent('HomingAborted');
 
       return true;
     }
 
     function keyReturn(pressed) {
-      if (config.Personality_HomingManualOverrideEnabled) {
-        if (pressed)
+      if ((activeMemberRecord.level > 0) || (config.Personality_HomingManualOverrideEnabled)) {
+        if (pressed) {
           overrideTimer.start();
-        else
+          appWindow.uiEvent('HomingOverride');
+        } else
           overrideTimer.stop();
       }
 
@@ -103,7 +108,7 @@ View {
 
     Timer {
       id: gentleReminderTimer
-      interval: 3000
+      interval: 2000
       running: false
       repeat: true
       onTriggered: {
@@ -128,7 +133,7 @@ View {
       onPlayingChanged: {
         if (target.playing) {
           gentleReminderTimer.stop();
-        } else {
+        } else if (shown) {
           gentleReminderTimer.start();
         }
       }

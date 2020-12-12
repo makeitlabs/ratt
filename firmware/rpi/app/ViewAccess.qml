@@ -146,36 +146,61 @@ View {
               Layout.fillWidth: true
               Layout.preferredHeight: 12
               Label {
-                  id: memberTypeLabel
+                  id: memberPlanLabel
                   width: parent.width
-                  text: "Membership Type"
+                  text: {
+                    if (activeMemberRecord.plan == 'pro') return 'Pro Member';
+                    else if (activeMemberRecord.plan == 'hobbyist') return 'Hobbyist Member';
+                    else return (activeMemberRecord.plan.toUpperCase() + ' Member');
+                  }
                   horizontalAlignment: Text.AlignHCenter
                   font.pixelSize: 12
                   font.weight: Font.DemiBold
-                  color: "#ffffff"
+                  color: "#ffff00"
               }
               Glow {
-                anchors.fill: memberTypeLabel
-                source: memberTypeLabel
+                anchors.fill: memberPlanLabel
+                source: memberPlanLabel
                 radius: 2
                 color: "black"
               }
             }
             Item {
+              visible: activeMemberRecord.endorsements != ''
               Layout.fillWidth: true
               Layout.preferredHeight: 12
               Label {
-                  id: memberPlanLabel
+                  id: memberEndLabel
                   width: parent.width
-                  text: activeMemberRecord.plan
+                  text: "Endorsements"
                   horizontalAlignment: Text.AlignHCenter
                   font.pixelSize: 12
                   font.weight: Font.DemiBold
-                  color: "#ffffff"
+                  color: "#00ffff"
               }
               Glow {
-                anchors.fill: memberPlanLabel
-                source: memberPlanLabel
+                anchors.fill: memberEndLabel
+                source: memberEndLabel
+                radius: 2
+                color: "black"
+              }
+            }
+            Item {
+              visible: activeMemberRecord.endorsements != ''
+              Layout.fillWidth: true
+              Layout.preferredHeight: 12
+              Label {
+                  id: memberEndorsementsLabel
+                  width: parent.width
+                  text: { activeMemberRecord.endorsements.toUpperCase() }
+                  horizontalAlignment: Text.AlignHCenter
+                  font.pixelSize: 12
+                  font.weight: Font.DemiBold
+                  color: "#00ffff"
+              }
+              Glow {
+                anchors.fill: memberEndorsementsLabel
+                source: memberEndorsementsLabel
                 radius: 2
                 color: "black"
               }

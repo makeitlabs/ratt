@@ -1,0 +1,53 @@
+menu "RATT Configuration"
+
+config WIFI_SSID
+    string "WiFi SSID"
+	default "myssid"
+	help
+		SSID (network name) for the example to connect to.
+
+config WIFI_PASSWORD
+    string "WiFi Password"
+	default "mypassword"
+	help
+		WiFi password (WPA or WPA2) for the example to use.
+
+		Can be left blank if the network has no security set.
+
+config WEB_SERVER
+    string "Web Server Address"
+	default "192.168.0.1"
+	help
+		Address for the web server - IP or resolvable name.
+
+config WEB_PORT
+    string "Web Server Port (HTTPS)"
+	default "443"
+	help
+		Port on which the secure web server is running.
+
+config WEB_URL_PATH
+    string "URL Path"
+	default "auth/api/v1/resources/resname/acl"
+	help
+		The path portion of the URL to fetch, empty string is root.
+
+config WEB_BASIC_AUTH_USER
+    string "Basic authentication username."
+	default "foo"
+	help
+		The username for basic authentication.
+
+config WEB_BASIC_AUTH_PASS
+    string "Basic authentication password."
+	default "bar"
+	help
+		The password for basic authentication.
+
+config CLIENT_PK_PASSPHRASE
+    string "Passphrase for the client private key."
+	default "secret"
+	help
+		The passphrase to unlock the private key, configured during certificate setup.
+
+endmenu

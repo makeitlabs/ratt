@@ -47,8 +47,8 @@ Rectangle {
     color: "#dddddd"
 
     function show() {
-        _show();
         shown = true;
+        _show();
         console.debug("view %s shown", name)
         root.forceActiveFocus()
     }
@@ -58,8 +58,8 @@ Rectangle {
     }
 
     function hide() {
-        _hide();
         shown = false;
+        _hide();
         console.debug("view %s hidden", name)
         root.focus=false
     }
