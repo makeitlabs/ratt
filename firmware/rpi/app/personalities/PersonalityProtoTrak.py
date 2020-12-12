@@ -42,11 +42,7 @@ import simplejson as json
 
 class Personality(PersonalitySimple):
     #############################################
-    ## Tool Personality: Laser Cutter
-    ##
-    ## Supports forcing homing after power-up via detection of the Y limit switch
-    ## Homing is enabled via Personality.SafetyCheckEnabled in the .ini
-    ## Requires that Personality.MonitorToolPowerEnabled is also enabled
+    ## Tool Personality: ProtoTrak Mill
     #############################################
     PERSONALITY_DESCRIPTION = 'ProtoTrak'
 
