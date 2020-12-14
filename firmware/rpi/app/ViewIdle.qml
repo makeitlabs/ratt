@@ -53,6 +53,15 @@ View {
         return true;
     }
 
+    function keyDown(pressed) {
+        if (pressed)
+          dlTimer.start();
+        else
+          dlTimer.stop();
+
+        return true;
+    }
+
     function keyReturn(pressed) {
         if (pressed)
           diagTimer.start();
@@ -70,6 +79,17 @@ View {
         onTriggered: {
             stop();
             appWindow.uiEvent('ReportIssue');
+        }
+    }
+    Timer {
+        id: dlTimer
+        interval: 1000
+        running: false
+        repeat: false
+        onTriggered: {
+            stop();
+            animTimer.restart();
+            acl.download();
         }
     }
     Timer {
@@ -111,7 +131,7 @@ View {
         status.keyEscActive = true;
         status.keyReturnActive = true;
         status.keyUpActive = false;
-        status.keyDownActive = false;
+        status.keyDownActive = true;
     }
 
     Connections {
