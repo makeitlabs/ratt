@@ -1,12 +1,32 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP +3.3V
+D Power symbol creates a global label with name "+3.3V"
+K power-flag
+$ENDCMP
+#
+$CMP +3V3
+D Power symbol creates a global label with name "+3V3"
+K power-flag
+$ENDCMP
+#
+$CMP +5VIN
+D Power symbol creates a global label with name "+VBATT"
+K power-flag
+$ENDCMP
+#
+$CMP +VBATT
+D Power symbol creates a global label with name "+VBATT"
+K power-flag
+$ENDCMP
+#
 $CMP ER-TFT0.96-1
 D 0.96" LCD
 F https://www.buydisplay.com/download/manual/ER-TFT0.96-1_Datasheet.pdf
 $ENDCMP
 #
 $CMP MP6513
-D MP6513 2.5V - 21V, 0.8A, H-Bridge Motor Driver 
+D MP6513 2.5V - 21V, 0.8A, H-Bridge Motor Driver
 K H-Bridge Motor Driver
 F https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MP6513/document_id/169
 $ENDCMP
