@@ -272,7 +272,7 @@ AR Path="/62F12CC7" Ref="J?"  Part="1"
 AR Path="/62EF036B/62F12CC7" Ref="J10"  Part="1" 
 F 0 "J10" H 3000 3150 50  0000 C CNN
 F 1 "Conn_01x10" H 3050 2050 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical" H 2900 2650 50  0001 C CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x10_P2.00mm_Vertical" H 2900 2650 50  0001 C CNN
 F 3 "~" H 2900 2650 50  0001 C CNN
 	1    2900 2650
 	-1   0    0    -1  
@@ -511,19 +511,6 @@ F 3 "~" H 6200 5150 50  0001 C CNN
 	1    6200 5150
 	1    0    0    -1  
 $EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 60451D87
-P 6200 6400
-AR Path="/60451D87" Ref="#PWR?"  Part="1" 
-AR Path="/62EF036B/60451D87" Ref="#PWR023"  Part="1" 
-F 0 "#PWR023" H 6200 6150 50  0001 C CNN
-F 1 "GND" H 6205 6227 50  0000 C CNN
-F 2 "" H 6200 6400 50  0001 C CNN
-F 3 "" H 6200 6400 50  0001 C CNN
-	1    6200 6400
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	6200 6400 6200 6300
 $Comp
@@ -560,4 +547,17 @@ Wire Wire Line
 Wire Wire Line
 	6200 4850 6200 5050
 Connection ~ 6150 2150
+$Comp
+L power:GND1 #PWR?
+U 1 1 5FE7C0E9
+P 6200 6400
+AR Path="/5FE7C0E9" Ref="#PWR?"  Part="1" 
+AR Path="/62EF036B/5FE7C0E9" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 6200 6150 50  0001 C CNN
+F 1 "GND1" H 6205 6227 50  0000 C CNN
+F 2 "" H 6200 6400 50  0001 C CNN
+F 3 "" H 6200 6400 50  0001 C CNN
+	1    6200 6400
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

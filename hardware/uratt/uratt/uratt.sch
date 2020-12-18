@@ -1393,7 +1393,7 @@ U 1 1 62A9ED39
 P 14300 1600
 F 0 "J3" H 14300 2100 50  0000 C CNN
 F 1 "Conn_01x10" H 14450 950 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical" H 14300 1600 50  0001 C CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x10_P2.00mm_Vertical" H 14300 1600 50  0001 C CNN
 F 3 "~" H 14300 1600 50  0001 C CNN
 	1    14300 1600
 	1    0    0    -1  
