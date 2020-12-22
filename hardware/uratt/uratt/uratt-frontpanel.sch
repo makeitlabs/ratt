@@ -380,19 +380,6 @@ Wire Wire Line
 	3100 3050 3450 3050
 Wire Wire Line
 	3450 3050 3450 4650
-Wire Wire Line
-	3450 4650 4200 4650
-$Comp
-L uratt:TOUCH P1
-U 1 1 631920D9
-P 4400 4650
-F 0 "P1" H 4507 4696 50  0000 L CNN
-F 1 "TOUCH" H 4507 4605 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Pad_4.0x4.0mm" H 4400 4650 50  0001 C CNN
-F 3 "" H 4400 4650 50  0001 C CNN
-	1    4400 4650
-	1    0    0    -1  
-$EndComp
 Connection ~ 2950 4650
 Wire Wire Line
 	2950 4650 3050 4650
@@ -403,7 +390,7 @@ P 3150 4650
 AR Path="/6319A3AD" Ref="R?"  Part="1" 
 AR Path="/62EF036B/6319A3AD" Ref="R43"  Part="1" 
 F 0 "R43" V 3050 4600 50  0000 L CNN
-F 1 "470 (OPTION)" V 3250 4500 50  0000 L CNN
+F 1 "47" V 3250 4500 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 3150 4650 50  0001 C CNN
 F 3 "~" H 3150 4650 50  0001 C CNN
 	1    3150 4650
@@ -426,7 +413,7 @@ P 2700 4800
 AR Path="/6319A3BE" Ref="C?"  Part="1" 
 AR Path="/62EF036B/6319A3BE" Ref="C32"  Part="1" 
 F 0 "C32" V 2800 4850 50  0000 L CNN
-F 1 ".1uF (OPTION)" V 2900 4800 50  0000 L CNN
+F 1 ".1uF" V 2900 4800 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 2700 4800 50  0001 C CNN
 F 3 "~" H 2700 4800 50  0001 C CNN
 	1    2700 4800
@@ -439,7 +426,7 @@ P 2700 4650
 AR Path="/6319A3C4" Ref="SW?"  Part="1" 
 AR Path="/62EF036B/6319A3C4" Ref="SW3"  Part="1" 
 F 0 "SW3" H 2700 4935 50  0000 C CNN
-F 1 "SW_Push (OPTION)" H 2700 4844 50  0000 C CNN
+F 1 "SW_Push" H 2700 4844 50  0000 C CNN
 F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2" H 2700 4850 50  0001 C CNN
 F 3 "~" H 2700 4850 50  0001 C CNN
 	1    2700 4650
@@ -461,7 +448,6 @@ $EndComp
 Connection ~ 2500 4800
 Wire Wire Line
 	3250 4650 3450 4650
-Connection ~ 3450 4650
 Text Label 3200 3050 0    50   ~ 0
 R_BTN
 $Comp
@@ -480,7 +466,7 @@ $EndComp
 Wire Wire Line
 	6300 5400 6200 5400
 Wire Wire Line
-	6200 5400 6200 5250
+	6200 5400 6200 5300
 $Comp
 L Transistor_FET:2N7002 Q?
 U 1 1 60451D78
@@ -495,7 +481,7 @@ F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 6100 6100 50  0001 
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6200 5900 6200 5600
+	6200 5900 6200 5800
 Wire Wire Line
 	6200 5600 6300 5600
 $Comp
@@ -568,7 +554,7 @@ AR Path="/61FC99B5/5FEBDB85" Ref="H?"  Part="1"
 AR Path="/62EF036B/5FEBDB85" Ref="H5"  Part="1" 
 F 0 "H5" H 8250 4596 50  0000 L CNN
 F 1 "MountingHole" H 8250 4505 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 8150 4550 50  0001 C CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 4550 50  0001 C CNN
 F 3 "~" H 8150 4550 50  0001 C CNN
 	1    8150 4550
 	1    0    0    -1  
@@ -581,7 +567,7 @@ AR Path="/61FC99B5/5FEBDB8B" Ref="H?"  Part="1"
 AR Path="/62EF036B/5FEBDB8B" Ref="H6"  Part="1" 
 F 0 "H6" H 8250 4846 50  0000 L CNN
 F 1 "MountingHole" H 8250 4755 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 8150 4800 50  0001 C CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 4800 50  0001 C CNN
 F 3 "~" H 8150 4800 50  0001 C CNN
 	1    8150 4800
 	1    0    0    -1  
@@ -594,7 +580,7 @@ AR Path="/61FC99B5/5FEBDB91" Ref="H?"  Part="1"
 AR Path="/62EF036B/5FEBDB91" Ref="H7"  Part="1" 
 F 0 "H7" H 8250 5096 50  0000 L CNN
 F 1 "MountingHole" H 8250 5005 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 8150 5050 50  0001 C CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 5050 50  0001 C CNN
 F 3 "~" H 8150 5050 50  0001 C CNN
 	1    8150 5050
 	1    0    0    -1  
@@ -607,9 +593,71 @@ AR Path="/61FC99B5/5FEBDB97" Ref="H?"  Part="1"
 AR Path="/62EF036B/5FEBDB97" Ref="H8"  Part="1" 
 F 0 "H8" H 8250 5346 50  0000 L CNN
 F 1 "MountingHole" H 8250 5255 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 8150 5300 50  0001 C CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 5300 50  0001 C CNN
 F 3 "~" H 8150 5300 50  0001 C CNN
 	1    8150 5300
 	1    0    0    -1  
 $EndComp
+$Comp
+L uratt:BREAKAWAY BK1
+U 1 1 5FF4E008
+P 1100 1050
+F 0 "BK1" H 1473 1021 50  0000 L CNN
+F 1 "BREAKAWAY" H 1473 930 50  0000 L CNN
+F 2 "uratt:RATT_BITE" H 1100 1050 50  0001 C CNN
+F 3 "" H 1100 1050 50  0001 C CNN
+	1    1100 1050
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK2
+U 1 1 5FF4E66A
+P 1100 1250
+F 0 "BK2" H 1473 1221 50  0000 L CNN
+F 1 "BREAKAWAY" H 1473 1130 50  0000 L CNN
+F 2 "uratt:RATT_BITE" H 1100 1250 50  0001 C CNN
+F 3 "" H 1100 1250 50  0001 C CNN
+	1    1100 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK3
+U 1 1 5FF50D6B
+P 1100 1450
+F 0 "BK3" H 1473 1421 50  0000 L CNN
+F 1 "BREAKAWAY" H 1473 1330 50  0000 L CNN
+F 2 "uratt:RATT_BITE" H 1100 1450 50  0001 C CNN
+F 3 "" H 1100 1450 50  0001 C CNN
+	1    1100 1450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:Buzzer BZ?
+U 1 1 5FF0EFC7
+P 5750 5500
+AR Path="/5FF0EFC7" Ref="BZ?"  Part="1" 
+AR Path="/62EF036B/5FF0EFC7" Ref="BZ2"  Part="1" 
+F 0 "BZ2" H 5902 5529 50  0000 L CNN
+F 1 "Buzzer (ALT OPT)" H 5902 5438 50  0000 L CNN
+F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 5725 5600 50  0001 C CNN
+F 3 "~" V 5725 5600 50  0001 C CNN
+	1    5750 5500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 5600 5600 5600
+Wire Wire Line
+	5600 5600 5600 5800
+Wire Wire Line
+	5600 5800 6200 5800
+Connection ~ 6200 5800
+Wire Wire Line
+	6200 5800 6200 5600
+Wire Wire Line
+	5650 5400 5650 5300
+Wire Wire Line
+	5650 5300 6200 5300
+Connection ~ 6200 5300
+Wire Wire Line
+	6200 5300 6200 5250
 $EndSCHEMATC
