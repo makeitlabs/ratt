@@ -105,9 +105,10 @@ P 3200 4850
 AR Path="/62082164" Ref="U?"  Part="1" 
 AR Path="/61FC99B5/62082164" Ref="U5"  Part="1" 
 F 0 "U5" H 3250 4300 50  0000 C CNN
-F 1 "TPS2115A" H 3800 4300 50  0000 C CNN
+F 1 "TPS2115APWR" H 3800 4300 50  0000 C CNN
 F 2 "Package_SO:TSSOP-8_4.4x3mm_P0.65mm" H 3200 4850 50  0001 C CNN
-F 3 "" H 3200 4850 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/tps2115a.pdf" H 3200 4850 50  0001 C CNN
+F 4 "296-16940-1-ND" H 3200 4850 50  0001 C CNN "Digikey"
 	1    3200 4850
 	1    0    0    -1  
 $EndComp
@@ -163,9 +164,10 @@ P 3800 4450
 AR Path="/6208217F" Ref="C?"  Part="1" 
 AR Path="/61FC99B5/6208217F" Ref="C19"  Part="1" 
 F 0 "C19" H 3892 4496 50  0000 L CNN
-F 1 ".1uF" H 3892 4405 50  0000 L CNN
+F 1 "0.1uF" H 3892 4405 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 3800 4450 50  0001 C CNN
 F 3 "~" H 3800 4450 50  0001 C CNN
+F 4 "732-7939-1-ND " H 3800 4450 50  0001 C CNN "Digikey"
 	1    3800 4450
 	1    0    0    -1  
 $EndComp
@@ -183,9 +185,10 @@ P 3150 4450
 AR Path="/62082189" Ref="C?"  Part="1" 
 AR Path="/61FC99B5/62082189" Ref="C18"  Part="1" 
 F 0 "C18" H 3242 4496 50  0000 L CNN
-F 1 ".1uF" H 3242 4405 50  0000 L CNN
+F 1 "0.1uF" H 3242 4405 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 3150 4450 50  0001 C CNN
 F 3 "~" H 3150 4450 50  0001 C CNN
+F 4 "732-7939-1-ND " H 3150 4450 50  0001 C CNN "Digikey"
 	1    3150 4450
 	1    0    0    -1  
 $EndComp
@@ -240,6 +243,7 @@ F 0 "R28" H 2818 5296 50  0000 L CNN
 F 1 "10K" H 2818 5205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2750 5250 50  0001 C CNN
 F 3 "~" H 2750 5250 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 2750 5250 50  0001 C CNN "Digikey"
 	1    2750 5250
 	-1   0    0    1   
 $EndComp
@@ -253,6 +257,7 @@ F 0 "R27" H 2518 5296 50  0000 L CNN
 F 1 "10K" H 2518 5205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2450 5250 50  0001 C CNN
 F 3 "~" H 2450 5250 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 2450 5250 50  0001 C CNN "Digikey"
 	1    2450 5250
 	-1   0    0    1   
 $EndComp
@@ -277,6 +282,7 @@ F 0 "R29" H 3118 5446 50  0000 L CNN
 F 1 "270" H 3118 5355 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 3050 5400 50  0001 C CNN
 F 3 "~" H 3050 5400 50  0001 C CNN
+F 4 "13-RT0603FRE07270RLCT-ND" H 3050 5400 50  0001 C CNN "Digikey"
 	1    3050 5400
 	-1   0    0    1   
 $EndComp
@@ -398,7 +404,8 @@ AR Path="/61FC99B5/62082355" Ref="D8"  Part="1"
 F 0 "D8" V 8039 4782 50  0000 R CNN
 F 1 "LED" V 7948 4782 50  0000 R CNN
 F 2 "LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 8000 4900 50  0001 C CNN
-F 3 "~" H 8000 4900 50  0001 C CNN
+F 3 "https://katalog.we-online.de/led/datasheet/150060SS75000.pdf" H 8000 4900 50  0001 C CNN
+F 4 "732-4979-1-ND" H 8000 4900 50  0001 C CNN "Digikey"
 	1    8000 4900
 	0    -1   -1   0   
 $EndComp
@@ -412,6 +419,7 @@ F 0 "R37" H 8068 4646 50  0000 L CNN
 F 1 "1K" H 8068 4555 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8000 4600 50  0001 C CNN
 F 3 "~" H 8000 4600 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 8000 4600 50  0001 C CNN "Digikey"
 	1    8000 4600
 	-1   0    0    1   
 $EndComp
@@ -441,7 +449,8 @@ AR Path="/61FC99B5/62082341" Ref="C25"  Part="1"
 F 0 "C25" H 8442 4646 50  0000 L CNN
 F 1 "2.2uF" H 8442 4555 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 8350 4600 50  0001 C CNN
-F 3 "~" H 8350 4600 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL10A225KP8NNNC.jsp" H 8350 4600 50  0001 C CNN
+F 4 "1276-1085-1-ND" H 8350 4600 50  0001 C CNN "Digikey"
 	1    8350 4600
 	1    0    0    -1  
 $EndComp
@@ -469,7 +478,8 @@ AR Path="/61FC99B5/62082334" Ref="C22"  Part="1"
 F 0 "C22" H 6300 4650 50  0000 L CNN
 F 1 "1uF" H 6300 4550 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 6550 4600 50  0001 C CNN
-F 3 "~" H 6550 4600 50  0001 C CNN
+F 3 "http://www.yuden.co.jp/productdata/catalog/mlcc06_e.pdf" H 6550 4600 50  0001 C CNN
+F 4 "587-2834-1-ND" H 6550 4600 50  0001 C CNN "Digikey"
 	1    6550 4600
 	1    0    0    -1  
 $EndComp
@@ -498,6 +508,7 @@ F 0 "R36" H 7118 4846 50  0000 L CNN
 F 1 "1K" H 7118 4755 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 7050 4800 50  0001 C CNN
 F 3 "~" H 7050 4800 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 7050 4800 50  0001 C CNN "Digikey"
 	1    7050 4800
 	-1   0    0    1   
 $EndComp
@@ -508,9 +519,10 @@ P 7400 4550
 AR Path="/62082321" Ref="U?"  Part="1" 
 AR Path="/61FC99B5/62082321" Ref="U7"  Part="1" 
 F 0 "U7" H 7400 4892 50  0000 C CNN
-F 1 "AP2112K-3.3" H 7400 4801 50  0000 C CNN
+F 1 "AP2112K-3.3TRG1" H 7400 4801 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:SOT-23-5" H 7400 4875 50  0001 C CNN
 F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 7400 4650 50  0001 C CNN
+F 4 "AP2112K-3.3TRG1DICT-ND" H 7400 4550 50  0001 C CNN "Digikey"
 	1    7400 4550
 	1    0    0    -1  
 $EndComp
@@ -546,7 +558,8 @@ AR Path="/61FC99B5/62082310" Ref="D11"  Part="1"
 F 0 "D11" V 9939 2182 50  0000 R CNN
 F 1 "LED" V 9848 2182 50  0000 R CNN
 F 2 "LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 9900 2300 50  0001 C CNN
-F 3 "~" H 9900 2300 50  0001 C CNN
+F 3 "https://katalog.we-online.de/led/datasheet/150060SS75000.pdf" H 9900 2300 50  0001 C CNN
+F 4 "732-4979-1-ND" H 9900 2300 50  0001 C CNN "Digikey"
 	1    9900 2300
 	0    -1   -1   0   
 $EndComp
@@ -560,6 +573,7 @@ F 0 "R42" H 9968 2046 50  0000 L CNN
 F 1 "1K" H 9968 1955 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 9900 2000 50  0001 C CNN
 F 3 "~" H 9900 2000 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 9900 2000 50  0001 C CNN "Digikey"
 	1    9900 2000
 	-1   0    0    1   
 $EndComp
@@ -586,7 +600,8 @@ AR Path="/61FC99B5/620822FC" Ref="D9"  Part="1"
 F 0 "D9" V 8089 6282 50  0000 R CNN
 F 1 "LED" V 7998 6282 50  0000 R CNN
 F 2 "LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 8050 6400 50  0001 C CNN
-F 3 "~" H 8050 6400 50  0001 C CNN
+F 3 "https://katalog.we-online.de/led/datasheet/150060SS75000.pdf" H 8050 6400 50  0001 C CNN
+F 4 "732-4979-1-ND" H 8050 6400 50  0001 C CNN "Digikey"
 	1    8050 6400
 	0    -1   -1   0   
 $EndComp
@@ -600,6 +615,7 @@ F 0 "R38" H 8118 6146 50  0000 L CNN
 F 1 "1K" H 8118 6055 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8050 6100 50  0001 C CNN
 F 3 "~" H 8050 6100 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 8050 6100 50  0001 C CNN "Digikey"
 	1    8050 6100
 	-1   0    0    1   
 $EndComp
@@ -689,6 +705,7 @@ F 0 "R34" H 6968 3446 50  0000 L CNN
 F 1 "10K" H 6968 3355 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6900 3400 50  0001 C CNN
 F 3 "~" H 6900 3400 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 6900 3400 50  0001 C CNN "Digikey"
 	1    6900 3400
 	-1   0    0    1   
 $EndComp
@@ -752,8 +769,9 @@ AR Path="/61FC99B5/620822A6" Ref="C23"  Part="1"
 F 0 "C23" H 6892 2046 50  0000 L CNN
 F 1 "10uF" H 6892 1955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 6800 2000 50  0001 C CNN
-F 3 "~" H 6800 2000 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL21A106KOQNNNE.jsp" H 6800 2000 50  0001 C CNN
 F 4 "X75/X5R Ceramic" H 6600 2250 50  0000 C CNN "Field4"
+F 5 "1276-1096-1-ND" H 6800 2000 50  0001 C CNN "Digikey"
 	1    6800 2000
 	1    0    0    -1  
 $EndComp
@@ -772,8 +790,9 @@ AR Path="/61FC99B5/6208229B" Ref="L1"  Part="1"
 F 0 "L1" H 7250 2150 50  0000 L CNN
 F 1 "6.8uH" H 7250 2050 50  0000 L CNN
 F 2 "Inductor_SMD:L_12x12mm_H4.5mm" H 7200 2050 50  0001 C CNN
-F 3 "~" H 7200 2050 50  0001 C CNN
-F 4 "Sumida CDRH124-6R8" H 7150 2450 50  0000 C CNN "Field4"
+F 3 "http://products.sumida.com/products/pdf/CDRH124.pdf" H 7200 2050 50  0001 C CNN
+F 4 "" H 7150 2450 50  0000 C CNN "Field4"
+F 5 "308-1937-1-ND" H 7200 2050 50  0001 C CNN "Digikey"
 	1    7200 2050
 	1    0    0    -1  
 $EndComp
@@ -800,6 +819,7 @@ F 0 "R33" H 6618 2746 50  0000 L CNN
 F 1 "R2" H 6618 2655 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6550 2700 50  0001 C CNN
 F 3 "~" H 6550 2700 50  0001 C CNN
+F 4 "TBD" H 6550 2700 50  0001 C CNN "Digikey"
 	1    6550 2700
 	-1   0    0    1   
 $EndComp
@@ -813,6 +833,7 @@ F 0 "R32" H 6568 2446 50  0000 L CNN
 F 1 "R1" H 6568 2355 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6500 2400 50  0001 C CNN
 F 3 "~" H 6500 2400 50  0001 C CNN
+F 4 "TBD" H 6500 2400 50  0001 C CNN "Digikey"
 	1    6500 2400
 	-1   0    0    1   
 $EndComp
@@ -867,8 +888,9 @@ AR Path="/61FC99B5/6208226D" Ref="C27"  Part="1"
 F 0 "C27" H 8792 2096 50  0000 L CNN
 F 1 "2.2uF" H 8792 2005 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 8700 2050 50  0001 C CNN
-F 3 "~" H 8700 2050 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL10A225KP8NNNC.jsp" H 8700 2050 50  0001 C CNN
 F 4 "X7R/X5R Ceramic" H 8600 2350 50  0000 C CNN "Field4"
+F 5 "1276-1085-1-ND" H 8700 2050 50  0001 C CNN "Digikey"
 	1    8700 2050
 	1    0    0    -1  
 $EndComp
@@ -881,8 +903,9 @@ AR Path="/61FC99B5/62082266" Ref="C28"  Part="1"
 F 0 "C28" H 9191 2096 50  0000 L CNN
 F 1 "220uF" H 9191 2005 50  0000 L CNN
 F 2 "Capacitor_Tantalum_SMD:CP_EIA-6032-20_AVX-F" H 9100 2050 50  0001 C CNN
-F 3 "~" H 9100 2050 50  0001 C CNN
+F 3 "http://datasheets.avx.com/TLJ.pdf" H 9100 2050 50  0001 C CNN
 F 4 "Low ESR Tantalum" H 9100 2450 50  0000 C CNN "Field4"
+F 5 "478-6135-1-ND" H 9100 2050 50  0001 C CNN "Digikey"
 	1    9100 2050
 	1    0    0    -1  
 $EndComp
@@ -896,6 +919,7 @@ F 0 "R41" H 9568 2696 50  0000 L CNN
 F 1 "10K" H 9568 2605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 9500 2650 50  0001 C CNN
 F 3 "~" H 9500 2650 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 9500 2650 50  0001 C CNN "Digikey"
 	1    9500 2650
 	-1   0    0    1   
 $EndComp
@@ -938,6 +962,7 @@ F 0 "R40" H 8618 2546 50  0000 L CNN
 F 1 "R4" H 8618 2455 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8550 2500 50  0001 C CNN
 F 3 "~" H 8550 2500 50  0001 C CNN
+F 4 "TBD" H 8550 2500 50  0001 C CNN "Digikey"
 	1    8550 2500
 	-1   0    0    1   
 $EndComp
@@ -951,6 +976,7 @@ F 0 "R39" H 8568 2246 50  0000 L CNN
 F 1 "R3" H 8568 2155 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8500 2200 50  0001 C CNN
 F 3 "~" H 8500 2200 50  0001 C CNN
+F 4 "TBD" H 8500 2200 50  0001 C CNN "Digikey"
 	1    8500 2200
 	-1   0    0    1   
 $EndComp
@@ -990,6 +1016,7 @@ F 0 "GT1" V 7300 3200 50  0000 L CNN
 F 1 "0" V 7500 3200 50  0000 L CNN
 F 2 "uratt:GND_TIE" H 7400 3250 50  0001 C CNN
 F 3 "~" H 7400 3250 50  0001 C CNN
+F 4 "N/A" H 7400 3250 50  0001 C CNN "Digikey"
 	1    7400 3250
 	0    1    1    0   
 $EndComp
@@ -1054,7 +1081,8 @@ AR Path="/61FC99B5/62082210" Ref="U6"  Part="1"
 F 0 "U6" H 7400 2250 50  0000 L CNN
 F 1 "TPS61032PWP" H 8100 1300 50  0000 L CNN
 F 2 "uratt:PWP0016C" H 7400 2200 50  0001 C CNN
-F 3 "" H 7400 2200 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/tps61032.pdf" H 7400 2200 50  0001 C CNN
+F 4 "296-27007-5-ND" H 7400 2200 50  0001 C CNN "Digikey"
 	1    7400 2200
 	1    0    0    -1  
 $EndComp
@@ -1098,7 +1126,8 @@ AR Path="/61FC99B5/620821D6" Ref="C26"  Part="1"
 F 0 "C26" H 8492 6146 50  0000 L CNN
 F 1 "2.2uF" H 8492 6055 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 8400 6100 50  0001 C CNN
-F 3 "~" H 8400 6100 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL10A225KP8NNNC.jsp" H 8400 6100 50  0001 C CNN
+F 4 "1276-1085-1-ND" H 8400 6100 50  0001 C CNN "Digikey"
 	1    8400 6100
 	1    0    0    -1  
 $EndComp
@@ -1126,7 +1155,8 @@ AR Path="/61FC99B5/620821C9" Ref="C21"  Part="1"
 F 0 "C21" H 6542 6146 50  0000 L CNN
 F 1 "1uF" H 6542 6055 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 6450 6100 50  0001 C CNN
-F 3 "~" H 6450 6100 50  0001 C CNN
+F 3 "http://www.yuden.co.jp/productdata/catalog/mlcc06_e.pdf" H 6450 6100 50  0001 C CNN
+F 4 "587-2834-1-ND" H 6450 6100 50  0001 C CNN "Digikey"
 	1    6450 6100
 	1    0    0    -1  
 $EndComp
@@ -1166,6 +1196,7 @@ F 0 "R35" H 6968 6146 50  0000 L CNN
 F 1 "1K" H 6968 6055 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6900 6100 50  0001 C CNN
 F 3 "~" H 6900 6100 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 6900 6100 50  0001 C CNN "Digikey"
 	1    6900 6100
 	-1   0    0    1   
 $EndComp
@@ -1199,6 +1230,7 @@ F 0 "R31" H 4418 5046 50  0000 L CNN
 F 1 "10K" H 4418 4955 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4350 5000 50  0001 C CNN
 F 3 "~" H 4350 5000 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 4350 5000 50  0001 C CNN "Digikey"
 	1    4350 5000
 	-1   0    0    1   
 $EndComp
@@ -1209,9 +1241,10 @@ P 7450 6050
 AR Path="/6208215E" Ref="U?"  Part="1" 
 AR Path="/61FC99B5/6208215E" Ref="U8"  Part="1" 
 F 0 "U8" H 7450 6392 50  0000 C CNN
-F 1 "AP2112K-3.3" H 7450 6301 50  0000 C CNN
+F 1 "AP2112K-3.3TRG1" H 7450 6301 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:SOT-23-5" H 7450 6375 50  0001 C CNN
 F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 7450 6150 50  0001 C CNN
+F 4 "AP2112K-3.3TRG1DICT-ND" H 7450 6050 50  0001 C CNN "Digikey"
 	1    7450 6050
 	1    0    0    -1  
 $EndComp
@@ -1253,6 +1286,7 @@ F 0 "JP3" V 1950 8200 50  0000 L CNN
 F 1 "0 (OPTION)" V 2150 8200 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2050 8250 50  0001 C CNN
 F 3 "~" H 2050 8250 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 2050 8250 50  0001 C CNN "Digikey"
 	1    2050 8250
 	0    1    1    0   
 $EndComp
@@ -1321,6 +1355,7 @@ F 0 "JP4" V 1950 8700 50  0000 L CNN
 F 1 "0 (OPTION)" V 2150 8700 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2050 8750 50  0001 C CNN
 F 3 "~" H 2050 8750 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 2050 8750 50  0001 C CNN "Digikey"
 	1    2050 8750
 	0    1    1    0   
 $EndComp
@@ -1366,7 +1401,8 @@ AR Path="/61FC99B5/62033E26" Ref="D7"  Part="1"
 F 0 "D7" V 3589 2182 50  0000 R CNN
 F 1 "LED" V 3498 2182 50  0000 R CNN
 F 2 "LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3550 2300 50  0001 C CNN
-F 3 "~" H 3550 2300 50  0001 C CNN
+F 3 "https://katalog.we-online.de/led/datasheet/150060SS75000.pdf" H 3550 2300 50  0001 C CNN
+F 4 "732-4979-1-ND" H 3550 2300 50  0001 C CNN "Digikey"
 	1    3550 2300
 	0    -1   -1   0   
 $EndComp
@@ -1385,6 +1421,7 @@ F 0 "R30" H 3618 2046 50  0000 L CNN
 F 1 "1K" H 3618 1955 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 3550 2000 50  0001 C CNN
 F 3 "~" H 3550 2000 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 3550 2000 50  0001 C CNN "Digikey"
 	1    3550 2000
 	-1   0    0    1   
 $EndComp
@@ -1425,6 +1462,7 @@ F 0 "R26" H 2168 2546 50  0000 L CNN
 F 1 "2K" H 2168 2455 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2100 2500 50  0001 C CNN
 F 3 "~" H 2100 2500 50  0001 C CNN
+F 4 "13-RT0603FRE072K05LCT-ND" H 2100 2500 50  0001 C CNN "Digikey"
 	1    2100 2500
 	-1   0    0    1   
 $EndComp
@@ -1470,7 +1508,8 @@ AR Path="/61FC99B5/62033DF4" Ref="C17"  Part="1"
 F 0 "C17" H 3092 2046 50  0000 L CNN
 F 1 "4.7uF" H 3092 1955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 3000 2000 50  0001 C CNN
-F 3 "~" H 3000 2000 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/__icsFiles/afieldfile/2018/08/30/Data%20sheet_CL21A475KPFNNNE.pdf" H 3000 2000 50  0001 C CNN
+F 4 "1276-1259-1-ND" H 3000 2000 50  0001 C CNN "Digikey"
 	1    3000 2000
 	1    0    0    -1  
 $EndComp
@@ -1495,7 +1534,8 @@ AR Path="/61FC99B5/62033DE7" Ref="C20"  Part="1"
 F 0 "C20" H 4000 2700 50  0000 L CNN
 F 1 "4.7uF" H 3950 2600 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 3900 2700 50  0001 C CNN
-F 3 "~" H 3900 2700 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/__icsFiles/afieldfile/2018/08/30/Data%20sheet_CL21A475KPFNNNE.pdf" H 3900 2700 50  0001 C CNN
+F 4 "1276-1259-1-ND" H 3900 2700 50  0001 C CNN "Digikey"
 	1    3900 2700
 	1    0    0    -1  
 $EndComp
@@ -1527,7 +1567,8 @@ AR Path="/61FC99B5/62033DD8" Ref="J7"  Part="1"
 F 0 "J7" H 4500 2600 50  0000 L CNN
 F 1 "Conn_01x02" H 4350 2250 50  0000 L CNN
 F 2 "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" H 4550 2450 50  0001 C CNN
-F 3 "~" H 4550 2450 50  0001 C CNN
+F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" H 4550 2450 50  0001 C CNN
+F 4 "455-1704-ND" H 4550 2450 50  0001 C CNN "Digikey"
 	1    4550 2450
 	1    0    0    -1  
 $EndComp
@@ -1553,9 +1594,10 @@ P 2800 2650
 AR Path="/62033DCB" Ref="U?"  Part="1" 
 AR Path="/61FC99B5/62033DCB" Ref="U4"  Part="1" 
 F 0 "U4" H 2550 2900 50  0000 C CNN
-F 1 "MCP73832-2-OT" H 2350 2350 50  0000 C CNN
+F 1 "MCP73832T-2ACI/OT" H 2350 2350 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:SOT-23-5" H 2850 2400 50  0001 L CIN
 F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001984g.pdf" H 2650 2600 50  0001 C CNN
+F 4 "MCP73832T-2ACI/OTCT-ND" H 2800 2650 50  0001 C CNN "Digikey"
 	1    2800 2650
 	1    0    0    -1  
 $EndComp
@@ -1568,7 +1610,8 @@ AR Path="/61FC99B5/633001F1" Ref="J6"  Part="1"
 F 0 "J6" H 2030 9692 50  0000 L CNN
 F 1 "Conn_01x02" H 2030 9601 50  0000 L CNN
 F 2 "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" H 1950 9700 50  0001 C CNN
-F 3 "~" H 1950 9700 50  0001 C CNN
+F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" H 1950 9700 50  0001 C CNN
+F 4 "455-1704-ND" H 1950 9700 50  0001 C CNN "Digikey"
 	1    1950 9700
 	-1   0    0    1   
 $EndComp
@@ -1633,6 +1676,7 @@ F 0 "JP2" V 1950 7700 50  0000 L CNN
 F 1 "0 (OPTION)" V 2150 7700 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2050 7750 50  0001 C CNN
 F 3 "~" H 2050 7750 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 2050 7750 50  0001 C CNN "Digikey"
 	1    2050 7750
 	0    1    1    0   
 $EndComp
@@ -1654,6 +1698,7 @@ F 0 "JP1" V 1950 7250 50  0000 L CNN
 F 1 "0 (OPTION)" V 2150 7250 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 2050 7300 50  0001 C CNN
 F 3 "~" H 2050 7300 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 2050 7300 50  0001 C CNN "Digikey"
 	1    2050 7300
 	0    1    1    0   
 $EndComp
@@ -1691,6 +1736,7 @@ F 0 "TP2" V 2304 7488 50  0000 L CNN
 F 1 "TestPoint" V 2395 7488 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 2550 7300 50  0001 C CNN
 F 3 "~" H 2550 7300 50  0001 C CNN
+F 4 "N/A" H 2350 7300 50  0001 C CNN "Digikey"
 	1    2350 7300
 	0    1    1    0   
 $EndComp
@@ -1703,6 +1749,7 @@ F 0 "TP3" V 2304 7938 50  0000 L CNN
 F 1 "TestPoint" V 2395 7938 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 2550 7750 50  0001 C CNN
 F 3 "~" H 2550 7750 50  0001 C CNN
+F 4 "N/A" H 2350 7750 50  0001 C CNN "Digikey"
 	1    2350 7750
 	0    1    1    0   
 $EndComp
@@ -1714,6 +1761,7 @@ F 0 "TP4" V 2304 8438 50  0000 L CNN
 F 1 "TestPoint" V 2395 8438 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 2550 8250 50  0001 C CNN
 F 3 "~" H 2550 8250 50  0001 C CNN
+F 4 "N/A" H 2350 8250 50  0001 C CNN "Digikey"
 	1    2350 8250
 	0    1    1    0   
 $EndComp
@@ -1725,6 +1773,7 @@ F 0 "TP5" V 2304 8938 50  0000 L CNN
 F 1 "TestPoint" V 2395 8938 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 2550 8750 50  0001 C CNN
 F 3 "~" H 2550 8750 50  0001 C CNN
+F 4 "N/A" H 2350 8750 50  0001 C CNN "Digikey"
 	1    2350 8750
 	0    1    1    0   
 $EndComp
@@ -1736,6 +1785,7 @@ F 0 "TP1" V 1704 8938 50  0000 L CNN
 F 1 "TestPoint" V 1795 8938 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 1950 8750 50  0001 C CNN
 F 3 "~" H 1950 8750 50  0001 C CNN
+F 4 "N/A" H 1750 8750 50  0001 C CNN "Digikey"
 	1    1750 8750
 	0    -1   -1   0   
 $EndComp
@@ -1757,7 +1807,8 @@ P 8150 1350
 F 0 "D10" V 8196 1438 50  0000 L CNN
 F 1 "BAT54S (OPTION)" V 8105 1438 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 8225 1475 50  0001 L CNN
-F 3 "https://www.diodes.com/assets/Datasheets/ds11005.pdf" H 8030 1350 50  0001 C CNN
+F 3 "http://www.onsemi.com/pub/Collateral/BAT54SLT1-D.PDF" H 8030 1350 50  0001 C CNN
+F 4 "BAT54SLT1GOSCT-ND" H 8150 1350 50  0001 C CNN "Digikey"
 	1    8150 1350
 	0    1    -1   0   
 $EndComp
@@ -1772,6 +1823,7 @@ F 1 ".1uF (OPTION)" V 7650 1000 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 7800 1350 50  0001 C CNN
 F 3 "~" H 7800 1350 50  0001 C CNN
 F 4 "X75/X5R Ceramic" V 7550 1150 50  0000 C CNN "Field4"
+F 5 "732-7939-1-ND " H 7800 1350 50  0001 C CNN "Digikey"
 	1    7800 1350
 	0    1    1    0   
 $EndComp
@@ -1793,8 +1845,9 @@ AR Path="/61FC99B5/636AD3AB" Ref="C29"  Part="1"
 F 0 "C29" H 9592 1346 50  0000 L CNN
 F 1 "1uF (OPTION)" H 9592 1255 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 9500 1300 50  0001 C CNN
-F 3 "~" H 9500 1300 50  0001 C CNN
-F 4 "X75/X5R Ceramic" H 9050 1400 50  0000 C CNN "Field4"
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL10B105KA8NFNC.jsp" H 9500 1300 50  0001 C CNN
+F 4 "X75/X5R Ceramic 25V" H 9050 1400 50  0000 C CNN "Field4"
+F 5 "1276-1942-1-ND" H 9500 1300 50  0001 C CNN "Digikey"
 	1    9500 1300
 	1    0    0    -1  
 $EndComp
@@ -1815,7 +1868,8 @@ AR Path="/61FC99B5/63772D7F" Ref="C31"  Part="1"
 F 0 "C31" H 14691 6346 50  0000 L CNN
 F 1 "10uF" H 14691 6255 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 14600 6300 50  0001 C CNN
-F 3 "~" H 14600 6300 50  0001 C CNN
+F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL21A106KOQNNNE.jsp" H 14600 6300 50  0001 C CNN
+F 4 "1276-1096-1-ND" H 14600 6300 50  0001 C CNN "Digikey"
 	1    14600 6300
 	1    0    0    -1  
 $EndComp
@@ -1829,6 +1883,7 @@ F 0 "C30" H 14242 6346 50  0000 L CNN
 F 1 "0.1uF" H 14242 6255 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 14150 6300 50  0001 C CNN
 F 3 "~" H 14150 6300 50  0001 C CNN
+F 4 "732-7939-1-ND " H 14150 6300 50  0001 C CNN "Digikey"
 	1    14150 6300
 	1    0    0    -1  
 $EndComp
@@ -1870,7 +1925,8 @@ AR Path="/61FC99B5/63772D9A" Ref="J8"  Part="1"
 F 0 "J8" H 14980 6892 50  0000 L CNN
 F 1 "Conn_01x02" H 14980 6801 50  0000 L CNN
 F 2 "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical" H 14900 6900 50  0001 C CNN
-F 3 "~" H 14900 6900 50  0001 C CNN
+F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" H 14900 6900 50  0001 C CNN
+F 4 "455-1704-ND" H 14900 6900 50  0001 C CNN "Digikey"
 	1    14900 6900
 	1    0    0    -1  
 $EndComp
@@ -1900,9 +1956,10 @@ P 13800 6750
 AR Path="/63772DA9" Ref="U?"  Part="1" 
 AR Path="/61FC99B5/63772DA9" Ref="U9"  Part="1" 
 F 0 "U9" H 13850 6850 50  0000 C CNN
-F 1 "MP6513" H 14300 6150 50  0000 C CNN
+F 1 "MP6513GJ-Z" H 14300 6150 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:TSOT-23-6" H 13825 6800 50  0001 C CNN
 F 3 "https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MP6513/document_id/169" H 13825 6800 50  0001 C CNN
+F 4 "1589-1709-1-ND" H 13800 6750 50  0001 C CNN "Digikey"
 	1    13800 6750
 	1    0    0    -1  
 $EndComp
@@ -1947,6 +2004,7 @@ F 0 "TP6" V 3804 2338 50  0000 L CNN
 F 1 "TestPoint" V 3895 2338 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 4050 2150 50  0001 C CNN
 F 3 "~" H 4050 2150 50  0001 C CNN
+F 4 "N/A" H 3850 2150 50  0001 C CNN "Digikey"
 	1    3850 2150
 	0    1    1    0   
 $EndComp
@@ -1957,7 +2015,9 @@ P 4350 8300
 F 0 "H1" H 4450 8346 50  0000 L CNN
 F 1 "MountingHole" H 4450 8255 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 8300 50  0001 C CNN
-F 3 "~" H 4350 8300 50  0001 C CNN
+F 3 "" H 4350 8300 50  0001 C CNN
+F 4 "" H 4350 8300 50  0001 C CNN "Field4"
+F 5 "N/A" H 4350 8300 50  0001 C CNN "Digikey"
 	1    4350 8300
 	1    0    0    -1  
 $EndComp
@@ -1968,7 +2028,9 @@ P 4350 8550
 F 0 "H2" H 4450 8596 50  0000 L CNN
 F 1 "MountingHole" H 4450 8505 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 8550 50  0001 C CNN
-F 3 "~" H 4350 8550 50  0001 C CNN
+F 3 "" H 4350 8550 50  0001 C CNN
+F 4 "" H 4350 8550 50  0001 C CNN "Field4"
+F 5 "N/A" H 4350 8550 50  0001 C CNN "Digikey"
 	1    4350 8550
 	1    0    0    -1  
 $EndComp
@@ -1979,7 +2041,9 @@ P 4350 8800
 F 0 "H3" H 4450 8846 50  0000 L CNN
 F 1 "MountingHole" H 4450 8755 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 8800 50  0001 C CNN
-F 3 "~" H 4350 8800 50  0001 C CNN
+F 3 "" H 4350 8800 50  0001 C CNN
+F 4 "" H 4350 8800 50  0001 C CNN "Field4"
+F 5 "N/A" H 4350 8800 50  0001 C CNN "Digikey"
 	1    4350 8800
 	1    0    0    -1  
 $EndComp
@@ -1990,7 +2054,9 @@ P 4350 9050
 F 0 "H4" H 4450 9096 50  0000 L CNN
 F 1 "MountingHole" H 4450 9005 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 9050 50  0001 C CNN
-F 3 "~" H 4350 9050 50  0001 C CNN
+F 3 "" H 4350 9050 50  0001 C CNN
+F 4 "" H 4350 9050 50  0001 C CNN "Field4"
+F 5 "N/A" H 4350 9050 50  0001 C CNN "Digikey"
 	1    4350 9050
 	1    0    0    -1  
 $EndComp
@@ -2001,7 +2067,9 @@ P 4350 2900
 F 0 "SW4" V 4304 3048 50  0000 L CNN
 F 1 "SW_SPDT" V 4395 3048 50  0000 L CNN
 F 2 "uratt:EAO-SPDT" H 4350 2900 50  0001 C CNN
-F 3 "~" H 4350 2900 50  0001 C CNN
+F 3 "https://media.digikey.com/pdf/Data%20Sheets/EAO%20PDFs/series1k2_201004.pdf" H 4350 2900 50  0001 C CNN
+F 4 "" H 4350 2900 50  0001 C CNN "Field4"
+F 5 "1948-1086-ND" H 4350 2900 50  0001 C CNN "Digikey"
 	1    4350 2900
 	0    1    1    0   
 $EndComp
@@ -2021,7 +2089,9 @@ P 2700 9450
 F 0 "F1" V 2800 9450 50  0000 C CNN
 F 1 "MF-NSHT075KX-2" V 2600 9400 50  0000 C CNN
 F 2 "Fuse:Fuse_1206_3216Metric" H 2750 9250 50  0001 L CNN
-F 3 "~" H 2700 9450 50  0001 C CNN
+F 3 "https://www.bourns.com/docs/product-datasheets/mfnsht.pdf" H 2700 9450 50  0001 C CNN
+F 4 "" H 2700 9450 50  0001 C CNN "Field4"
+F 5 "118-MF-NSHT075KX-2CT-ND" H 2700 9450 50  0001 C CNN "Digikey"
 	1    2700 9450
 	0    1    1    0   
 $EndComp
@@ -2041,6 +2111,8 @@ F 0 "D12" V 3054 9680 50  0000 L CNN
 F 1 "SM6T6V8A" V 3145 9680 50  0000 L CNN
 F 2 "Diode_SMD:D_SMB" H 3100 9400 50  0001 C CNN
 F 3 "https://www.st.com/resource/en/datasheet/sm6t.pdf" H 3050 9600 50  0001 C CNN
+F 4 "" H 3100 9600 50  0001 C CNN "Field4"
+F 5 "SM6T6V8A-E3/52GICT-ND" H 3100 9600 50  0001 C CNN "Digikey"
 	1    3100 9600
 	0    1    1    0   
 $EndComp
@@ -2068,6 +2140,7 @@ F 0 "TP7" V 3204 7538 50  0000 L CNN
 F 1 "TestPoint" V 3295 7538 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 3450 7350 50  0001 C CNN
 F 3 "~" H 3450 7350 50  0001 C CNN
+F 4 "N/A" H 3250 7350 50  0001 C CNN "Digikey"
 	1    3250 7350
 	0    1    1    0   
 $EndComp
@@ -2110,6 +2183,7 @@ F 0 "JP5" H 14000 5950 50  0000 L CNN
 F 1 "0 (OPTION)" H 13750 5850 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 14250 5900 50  0001 C CNN
 F 3 "~" H 14250 5900 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 14250 5900 50  0001 C CNN "Digikey"
 	1    14250 5900
 	1    0    0    -1  
 $EndComp
@@ -2134,6 +2208,7 @@ F 0 "JP6" H 14650 5950 50  0000 L CNN
 F 1 "0 (OPTION)" H 14650 5850 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 14550 5900 50  0001 C CNN
 F 3 "~" H 14550 5900 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 14550 5900 50  0001 C CNN "Digikey"
 	1    14550 5900
 	1    0    0    -1  
 $EndComp

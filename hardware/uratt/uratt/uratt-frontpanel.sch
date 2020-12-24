@@ -23,6 +23,7 @@ F 0 "LCD1" H 5800 2250 50  0000 L CNN
 F 1 "ER-TFT0.96-1" H 8600 800 50  0000 L CNN
 F 2 "uratt:ER-TFT0.96-1" H 5750 2375 50  0001 C CNN
 F 3 "https://www.buydisplay.com/download/manual/ER-TFT0.96-1_Datasheet.pdf" H 5750 2375 50  0001 C CNN
+F 4 "N/A" H 5800 2300 50  0001 C CNN "Digikey"
 	1    5800 2300
 	1    0    0    -1  
 $EndComp
@@ -39,6 +40,7 @@ F 0 "C34" H 6242 2046 50  0000 L CNN
 F 1 "0.1uF" H 6242 1955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 6150 2000 50  0001 C CNN
 F 3 "~" H 6150 2000 50  0001 C CNN
+F 4 "732-7939-1-ND " H 6150 2000 50  0001 C CNN "Digikey"
 	1    6150 2000
 	1    0    0    -1  
 $EndComp
@@ -53,7 +55,8 @@ AR Path="/62EF036B/62F12C5A" Ref="C33"  Part="1"
 F 0 "C33" H 5842 2046 50  0000 L CNN
 F 1 "1uF" H 5842 1955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 5750 2000 50  0001 C CNN
-F 3 "~" H 5750 2000 50  0001 C CNN
+F 3 "http://www.yuden.co.jp/productdata/catalog/mlcc06_e.pdf" H 5750 2000 50  0001 C CNN
+F 4 "587-2834-1-ND" H 5750 2000 50  0001 C CNN "Digikey"
 	1    5750 2000
 	1    0    0    -1  
 $EndComp
@@ -81,7 +84,8 @@ AR Path="/62EF036B/62F12C68" Ref="Q3"  Part="1"
 F 0 "Q3" H 4850 1900 50  0000 L CNN
 F 1 "DMP31D0U" H 4650 1800 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 5250 1925 50  0001 L CIN
-F 3 "http://www.farnell.com/datasheets/1835997.pdf" H 5050 2000 50  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/DMP31D0U.pdf" H 5050 2000 50  0001 L CNN
+F 4 "DMP31D0U-7DICT-ND" H 5050 2000 50  0001 C CNN "Digikey"
 	1    5050 2000
 	1    0    0    -1  
 $EndComp
@@ -95,6 +99,7 @@ F 0 "R51" H 5218 2446 50  0000 L CNN
 F 1 "220" H 5218 2355 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5150 2400 50  0001 C CNN
 F 3 "~" H 5150 2400 50  0001 C CNN
+F 4 "YAG5947CT-ND" H 5150 2400 50  0001 C CNN "Digikey"
 	1    5150 2400
 	1    0    0    -1  
 $EndComp
@@ -136,6 +141,7 @@ F 0 "R45" H 4818 1796 50  0000 L CNN
 F 1 "10K" H 4818 1705 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4750 1750 50  0001 C CNN
 F 3 "~" H 4750 1750 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 4750 1750 50  0001 C CNN "Digikey"
 	1    4750 1750
 	1    0    0    -1  
 $EndComp
@@ -170,6 +176,7 @@ F 0 "R48" V 4900 2800 50  0000 L CNN
 F 1 "47" V 5100 2800 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 2850 50  0001 C CNN
 F 3 "~" H 5000 2850 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 5000 2850 50  0001 C CNN "Digikey"
 	1    5000 2850
 	0    1    1    0   
 $EndComp
@@ -183,6 +190,7 @@ F 0 "R46" V 4750 3000 50  0000 L CNN
 F 1 "47" V 4950 3000 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4850 3050 50  0001 C CNN
 F 3 "~" H 4850 3050 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 4850 3050 50  0001 C CNN "Digikey"
 	1    4850 3050
 	0    1    1    0   
 $EndComp
@@ -196,6 +204,7 @@ F 0 "R49" V 4900 3250 50  0000 L CNN
 F 1 "47" V 5100 3250 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 3300 50  0001 C CNN
 F 3 "~" H 5000 3300 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 5000 3300 50  0001 C CNN "Digikey"
 	1    5000 3300
 	0    1    1    0   
 $EndComp
@@ -209,6 +218,7 @@ F 0 "R47" V 4750 3450 50  0000 L CNN
 F 1 "47" V 4950 3450 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4850 3500 50  0001 C CNN
 F 3 "~" H 4850 3500 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 4850 3500 50  0001 C CNN "Digikey"
 	1    4850 3500
 	0    1    1    0   
 $EndComp
@@ -222,6 +232,7 @@ F 0 "R50" V 4900 3650 50  0000 L CNN
 F 1 "47" V 5100 3650 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 3700 50  0001 C CNN
 F 3 "~" H 5000 3700 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 5000 3700 50  0001 C CNN "Digikey"
 	1    5000 3700
 	0    1    1    0   
 $EndComp
@@ -259,6 +270,7 @@ F 0 "R44" V 4250 1950 50  0000 L CNN
 F 1 "1K" V 4450 1950 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 4350 2000 50  0001 C CNN
 F 3 "~" H 4350 2000 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 4350 2000 50  0001 C CNN "Digikey"
 	1    4350 2000
 	0    1    1    0   
 $EndComp
@@ -273,7 +285,10 @@ AR Path="/62EF036B/62F12CC7" Ref="J9"  Part="1"
 F 0 "J9" H 3000 3150 50  0000 C CNN
 F 1 "Conn_01x10" H 3050 2050 50  0000 C CNN
 F 2 "Connector_FFC-FPC:TE_1-1734839-0_1x10-1MP_P0.5mm_Horizontal" H 2900 2650 50  0001 C CNN
-F 3 "~" H 2900 2650 50  0001 C CNN
+F 3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1734839&DocType=Customer+Drawing&DocLang=English" H 2900 2650 50  0001 C CNN
+F 4 "" H 2900 2650 50  0001 C CNN "Field4"
+F 5 "ZF5S-10-01-T-WT-TR" H 2900 2650 50  0001 C CNN "Alt MFR Part"
+F 6 "A100293CT-ND" H 2900 2650 50  0001 C CNN "Digikey"
 	1    2900 2650
 	-1   0    0    -1  
 $EndComp
@@ -393,6 +408,7 @@ F 0 "R43" V 3050 4600 50  0000 L CNN
 F 1 "47" V 3250 4500 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 3150 4650 50  0001 C CNN
 F 3 "~" H 3150 4650 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 3150 4650 50  0001 C CNN "Digikey"
 	1    3150 4650
 	0    1    1    0   
 $EndComp
@@ -413,9 +429,10 @@ P 2700 4800
 AR Path="/6319A3BE" Ref="C?"  Part="1" 
 AR Path="/62EF036B/6319A3BE" Ref="C32"  Part="1" 
 F 0 "C32" V 2800 4850 50  0000 L CNN
-F 1 ".1uF" V 2900 4800 50  0000 L CNN
+F 1 "0.1uF" V 2900 4800 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 2700 4800 50  0001 C CNN
 F 3 "~" H 2700 4800 50  0001 C CNN
+F 4 "732-7939-1-ND " H 2700 4800 50  0001 C CNN "Digikey"
 	1    2700 4800
 	0    1    1    0   
 $EndComp
@@ -428,7 +445,9 @@ AR Path="/62EF036B/6319A3C4" Ref="SW3"  Part="1"
 F 0 "SW3" H 2700 4935 50  0000 C CNN
 F 1 "SW_Push" H 2700 4844 50  0000 C CNN
 F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KSC6xxJ" H 2700 4850 50  0001 C CNN
-F 3 "~" H 2700 4850 50  0001 C CNN
+F 3 "https://www.ckswitches.com/media/1973/ksc7.pdf" H 2700 4850 50  0001 C CNN
+F 4 "" H 2700 4650 50  0001 C CNN "Field4"
+F 5 "	401-1910-1-ND" H 2700 4650 50  0001 C CNN "Digikey"
 	1    2700 4650
 	1    0    0    -1  
 $EndComp
@@ -459,7 +478,9 @@ AR Path="/62EF036B/60451D70" Ref="BZ1"  Part="1"
 F 0 "BZ1" H 6552 5529 50  0000 L CNN
 F 1 "Buzzer" H 6552 5438 50  0000 L CNN
 F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 6375 5600 50  0001 C CNN
-F 3 "~" V 6375 5600 50  0001 C CNN
+F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 6375 5600 50  0001 C CNN
+F 4 "" H 6400 5500 50  0001 C CNN "Field4"
+F 5 "102-3761-1-ND" H 6400 5500 50  0001 C CNN "Digikey"
 	1    6400 5500
 	1    0    0    -1  
 $EndComp
@@ -476,7 +497,8 @@ AR Path="/62EF036B/60451D78" Ref="Q4"  Part="1"
 F 0 "Q4" H 6304 6146 50  0000 L CNN
 F 1 "2N7002" H 6304 6055 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 6300 6025 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/NDS7002A-D.PDF" H 6100 6100 50  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/2N7002.pdf" H 6100 6100 50  0001 L CNN
+F 4 "2N7002Q-7-FDICT-ND" H 6100 6100 50  0001 C CNN "Digikey"
 	1    6100 6100
 	1    0    0    -1  
 $EndComp
@@ -494,6 +516,7 @@ F 0 "R53" H 6268 5196 50  0000 L CNN
 F 1 "100" H 6268 5105 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6200 5150 50  0001 C CNN
 F 3 "~" H 6200 5150 50  0001 C CNN
+F 4 "13-RE0603FRE07100RLCT-ND" H 6200 5150 50  0001 C CNN "Digikey"
 	1    6200 5150
 	1    0    0    -1  
 $EndComp
@@ -509,6 +532,7 @@ F 0 "R52" V 5550 6050 50  0000 L CNN
 F 1 "1K" V 5750 6050 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5650 6100 50  0001 C CNN
 F 3 "~" H 5650 6100 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 5650 6100 50  0001 C CNN "Digikey"
 	1    5650 6100
 	0    1    1    0   
 $EndComp
@@ -556,6 +580,7 @@ F 0 "H5" H 8250 4596 50  0000 L CNN
 F 1 "MountingHole" H 8250 4505 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.1mm" H 8150 4550 50  0001 C CNN
 F 3 "~" H 8150 4550 50  0001 C CNN
+F 4 "N/A" H 8150 4550 50  0001 C CNN "Digikey"
 	1    8150 4550
 	1    0    0    -1  
 $EndComp
@@ -569,6 +594,7 @@ F 0 "H6" H 8250 4846 50  0000 L CNN
 F 1 "MountingHole" H 8250 4755 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.1mm" H 8150 4800 50  0001 C CNN
 F 3 "~" H 8150 4800 50  0001 C CNN
+F 4 "N/A" H 8150 4800 50  0001 C CNN "Digikey"
 	1    8150 4800
 	1    0    0    -1  
 $EndComp
@@ -582,6 +608,7 @@ F 0 "H7" H 8250 5096 50  0000 L CNN
 F 1 "MountingHole" H 8250 5005 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.1mm" H 8150 5050 50  0001 C CNN
 F 3 "~" H 8150 5050 50  0001 C CNN
+F 4 "N/A" H 8150 5050 50  0001 C CNN "Digikey"
 	1    8150 5050
 	1    0    0    -1  
 $EndComp
@@ -595,6 +622,7 @@ F 0 "H8" H 8250 5346 50  0000 L CNN
 F 1 "MountingHole" H 8250 5255 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.1mm" H 8150 5300 50  0001 C CNN
 F 3 "~" H 8150 5300 50  0001 C CNN
+F 4 "N/A" H 8150 5300 50  0001 C CNN "Digikey"
 	1    8150 5300
 	1    0    0    -1  
 $EndComp
@@ -606,6 +634,7 @@ F 0 "BK1" H 1473 1021 50  0000 L CNN
 F 1 "BREAKAWAY" H 1473 930 50  0000 L CNN
 F 2 "uratt:RATT_BITE" H 1100 1050 50  0001 C CNN
 F 3 "" H 1100 1050 50  0001 C CNN
+F 4 "N/A" H 1100 1050 50  0001 C CNN "Digikey"
 	1    1100 1050
 	1    0    0    -1  
 $EndComp
@@ -617,6 +646,7 @@ F 0 "BK2" H 1473 1221 50  0000 L CNN
 F 1 "BREAKAWAY" H 1473 1130 50  0000 L CNN
 F 2 "uratt:RATT_BITE" H 1100 1250 50  0001 C CNN
 F 3 "" H 1100 1250 50  0001 C CNN
+F 4 "N/A" H 1100 1250 50  0001 C CNN "Digikey"
 	1    1100 1250
 	1    0    0    -1  
 $EndComp
@@ -628,6 +658,7 @@ F 0 "BK3" H 1473 1421 50  0000 L CNN
 F 1 "BREAKAWAY" H 1473 1330 50  0000 L CNN
 F 2 "uratt:RATT_BITE" H 1100 1450 50  0001 C CNN
 F 3 "" H 1100 1450 50  0001 C CNN
+F 4 "N/A" H 1100 1450 50  0001 C CNN "Digikey"
 	1    1100 1450
 	1    0    0    -1  
 $EndComp
@@ -640,7 +671,8 @@ AR Path="/62EF036B/5FF0EFC7" Ref="BZ2"  Part="1"
 F 0 "BZ2" H 5902 5529 50  0000 L CNN
 F 1 "Buzzer (ALT OPT)" H 5902 5438 50  0000 L CNN
 F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 5725 5600 50  0001 C CNN
-F 3 "~" V 5725 5600 50  0001 C CNN
+F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 5725 5600 50  0001 C CNN
+F 4 "102-3761-1-ND" H 5750 5500 50  0001 C CNN "Digikey"
 	1    5750 5500
 	1    0    0    -1  
 $EndComp
