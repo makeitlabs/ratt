@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name doorbot_lcd_pcblib)(type KiCad)(uri ${KIPRJMOD}/doorbot_lcd_pcblib.pretty)(options "")(descr ""))
+)

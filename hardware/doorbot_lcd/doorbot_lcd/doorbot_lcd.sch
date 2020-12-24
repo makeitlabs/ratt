@@ -1,0 +1,129 @@
+EESchema Schematic File Version 4
+LIBS:doorbot_lcd-cache
+EELAYER 29 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L doorbot_lcd_schlib:NHD-C0220BiZ-FS(RGB)-FBW-3VM LCD1
+U 1 1 5CBBAA7E
+P 3300 1100
+F 0 "LCD1" H 3828 471 50  0000 L CNN
+F 1 "NHD-C0220BiZ-FS(RGB)-FBW-3VM" H 3828 380 50  0000 L CNN
+F 2 "doorbot_lcd_pcblib:NHD-C0220BiZ-FS(RGB)-FBW-3VM" H 3300 1100 50  0001 C CNN
+F 3 "" H 3300 1100 50  0001 C CNN
+	1    3300 1100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 2000 3050 1900
+Wire Wire Line
+	3050 1900 3200 1900
+Wire Wire Line
+	2450 2000 3050 2000
+Wire Wire Line
+	2450 1800 3200 1800
+$Comp
+L Device:C_Small C1
+U 1 1 5CBBB49A
+P 2450 1900
+F 0 "C1" H 2542 1946 50  0000 L CNN
+F 1 "2.2uF" H 2542 1855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 2450 1900 50  0001 C CNN
+F 3 "~" H 2450 1900 50  0001 C CNN
+	1    2450 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2450 1700 3200 1700
+$Comp
+L Device:C_Small C4
+U 1 1 5CBBEF72
+P 2150 1400
+F 0 "C4" H 2242 1446 50  0000 L CNN
+F 1 ".1uF" H 2242 1355 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2150 1400 50  0001 C CNN
+F 3 "~" H 2150 1400 50  0001 C CNN
+	1    2150 1400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3200 1500 2450 1500
+$Comp
+L Device:C_Small C2
+U 1 1 5CBBD8F1
+P 2450 1600
+F 0 "C2" H 2542 1646 50  0000 L CNN
+F 1 "1uF" H 2542 1555 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2450 1600 50  0001 C CNN
+F 3 "~" H 2450 1600 50  0001 C CNN
+	1    2450 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR0101
+U 1 1 5CBC0D72
+P 3200 1600
+F 0 "#PWR0101" H 3200 1450 50  0001 C CNN
+F 1 "+3.3V" V 3215 1728 50  0000 L CNN
+F 2 "" H 3200 1600 50  0001 C CNN
+F 3 "" H 3200 1600 50  0001 C CNN
+	1    3200 1600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR0102
+U 1 1 5CBC194F
+P 2000 1500
+F 0 "#PWR0102" H 2000 1250 50  0001 C CNN
+F 1 "GND" H 2005 1327 50  0000 C CNN
+F 2 "" H 2000 1500 50  0001 C CNN
+F 3 "" H 2000 1500 50  0001 C CNN
+	1    2000 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2150 1500 2450 1500
+Connection ~ 2450 1500
+Connection ~ 2150 1500
+$Comp
+L power:+3.3V #PWR0103
+U 1 1 5CBC2DE1
+P 2150 1300
+F 0 "#PWR0103" H 2150 1150 50  0001 C CNN
+F 1 "+3.3V" V 2165 1428 50  0000 L CNN
+F 2 "" H 2150 1300 50  0001 C CNN
+F 3 "" H 2150 1300 50  0001 C CNN
+	1    2150 1300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C3
+U 1 1 5CBC328B
+P 1800 1400
+F 0 "C3" H 1892 1446 50  0000 L CNN
+F 1 "1uF" H 1892 1355 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 1800 1400 50  0001 C CNN
+F 3 "~" H 1800 1400 50  0001 C CNN
+	1    1800 1400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1800 1500 2000 1500
+Connection ~ 2000 1500
+Wire Wire Line
+	2000 1500 2150 1500
+Wire Wire Line
+	1800 1300 2150 1300
+Connection ~ 2150 1300
+$EndSCHEMATC
