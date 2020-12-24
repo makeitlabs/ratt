@@ -41,6 +41,9 @@
 // see http://highlowtech.org/?p=1695
 //
 // programmed via ICSP pins using AVR Dragon or other ICSP tools
+//
+// programming fuse bits:
+// https://www.allaboutcircuits.com/projects/atmega328p-fuse-bits-and-an-external-crystal-oscillator/
 
 #include <SoftwareSerial.h>
 
