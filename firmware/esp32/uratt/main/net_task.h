@@ -51,6 +51,7 @@ BaseType_t net_cmd_queue_access_error(char *err, char *err_ext);
 #define NET_CMD_SEND_ACCESS 5
 #define NET_CMD_SEND_ACCESS_ERROR 6
 #define NET_CMD_NTP_SYNC 7
+#define NET_CMD_OTA_UPDATE 8
 
 extern uint8_t g_mac_addr[6];
 

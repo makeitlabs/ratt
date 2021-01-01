@@ -17,7 +17,7 @@
 // bus speed for SPI clock
 // works up to 20MHz on hand-wired prototype with logic analyzer connected
 #define ONE_MHZ 1000000
-#define LCD_SPI_BUS_SPEED (20 * ONE_MHZ)
+#define LCD_SPI_BUS_SPEED (8 * ONE_MHZ)
 
 
 // raft of defines from Adafruit library below

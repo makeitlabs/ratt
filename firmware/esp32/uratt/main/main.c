@@ -86,5 +86,7 @@ void app_main(void)
     xTaskCreate(&display_task, "display_task", 8192, NULL, 8, NULL);
     xTaskCreate(&net_task, "net_task", 8192, NULL, 7, NULL);
 
-    beep_queue(2000, 100, 5, 5);
+    beep_queue(2000, 1000, 5, 5);
+    beep_queue(1000, 2000, 5, 5);
+    beep_queue(4000, 3000, 5, 5);
 }

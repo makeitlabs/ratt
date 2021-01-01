@@ -50,4 +50,17 @@ config CLIENT_PK_PASSPHRASE
 	help
 		The passphrase to unlock the private key, configured during certificate setup.
 
+config FIRMWARE_UPGRADE_URL
+    string "firmware upgrade url endpoint"
+    default "https://192.168.0.3:8070/hello-world.bin"
+    help
+        URL of server which hosts the firmware
+        image.
+
+config SKIP_COMMON_NAME_CHECK
+    bool "Skip server certificate CN fieldcheck"
+    default n
+    help
+        This allows you to skip the validation of OTA server certificate CN field.
+
 endmenu

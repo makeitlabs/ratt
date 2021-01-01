@@ -286,7 +286,7 @@ void lcd_init(void)
     ESP_LOGI(TAG, "Initializing SPI bus..");
     esp_err_t ret;
     spi_bus_config_t buscfg={
-        .miso_io_num=LCD_PIN_MISO,
+        //.miso_io_num=LCD_PIN_MISO,
         .mosi_io_num=LCD_PIN_MOSI,
         .sclk_io_num=LCD_PIN_CLK,
         .quadwp_io_num=-1,
