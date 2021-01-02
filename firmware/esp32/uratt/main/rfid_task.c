@@ -47,6 +47,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "system.h"
+
 #include "beep_task.h"
 #include "door_task.h"
 #include "rfid_task.h"
@@ -55,8 +57,8 @@
 #include "net_task.h"
 
 #define SER_BUF_SIZE (256)
-#define SER_RFID_TXD  (-1)
-#define SER_RFID_RXD  (16)
+#define SER_RFID_TXD  (GPIO_PIN_TXD1)
+#define SER_RFID_RXD  (GPIO_PIN_RXD1)
 #define SER_RFID_RTS  (-1)
 #define SER_RFID_CTS  (-1)
 

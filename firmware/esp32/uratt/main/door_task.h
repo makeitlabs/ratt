@@ -43,7 +43,5 @@ void door_init();
 BaseType_t door_unlock();
 BaseType_t door_lock();
 
-#define MOTOR_O1 (25)
-#define MOTOR_O2 (26)
 
 #endif

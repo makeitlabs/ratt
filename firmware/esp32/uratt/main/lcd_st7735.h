@@ -1,18 +1,6 @@
 #ifndef _LCD_ST7735_H
 #define _LCD_ST7735_H
 
-// ESP32 pin and pinsel definitions
-#define LCD_PIN_MISO 19
-#define LCD_PIN_MOSI 23
-#define LCD_PIN_CLK  18
-#define LCD_PIN_CS   5
-
-#define LCD_PIN_DC   27
-#define LCD_SEL_DC   GPIO_SEL_27
-#define LCD_PIN_RST  32
-#define LCD_SEL_RST  GPIO_SEL_32
-#define LCD_PIN_BCKL 33
-#define LCD_SEL_BCKL GPIO_SEL_33
 
 // bus speed for SPI clock
 // works up to 20MHz on hand-wired prototype with logic analyzer connected

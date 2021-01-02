@@ -80,13 +80,12 @@ void app_main(void)
 
     display_user_msg("Micro-RATT");
 
-    xTaskCreate(&door_task, "door_task", 2048, NULL, 8, NULL);
     xTaskCreate(&beep_task, "beep_task", 2048, NULL, 8, NULL);
+    xTaskCreate(&door_task, "door_task", 2048, NULL, 8, NULL);
     xTaskCreate(&rfid_task, "rfid_task", 4096, NULL, 8, NULL);
     xTaskCreate(&display_task, "display_task", 8192, NULL, 8, NULL);
     xTaskCreate(&net_task, "net_task", 8192, NULL, 7, NULL);
 
-    beep_queue(2000, 1000, 5, 5);
-    beep_queue(1000, 2000, 5, 5);
-    beep_queue(4000, 3000, 5, 5);
+    beep_queue(2000, 100, 5, 5);
+    beep_queue(2000, 100, 5, 5);
 }

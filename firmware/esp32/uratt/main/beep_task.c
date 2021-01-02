@@ -41,6 +41,7 @@
 #include "freertos/queue.h"
 #include "esp_system.h"
 #include "esp_log.h"
+#include "system.h"
 
 #include "driver/ledc.h"
 
@@ -62,7 +63,7 @@ ledc_timer_config_t ledc_beep = {
 ledc_channel_config_t ledc_channel = {
     .channel    = LEDC_CHANNEL_0,
     .duty       = 0,
-    .gpio_num   = GPIO_NUM_4,
+    .gpio_num   = GPIO_PIN_BEEPER,
     .speed_mode = LEDC_HS_MODE,
     .hpoint     = 0,
     .timer_sel  = LEDC_HS_TIMER
@@ -103,7 +104,7 @@ void beep_init(void)
   }
 
   gpio_config_t beep_gpio_cfg = {
-      .pin_bit_mask = GPIO_SEL_4,
+      .pin_bit_mask = GPIO_SEL_BEEPER,
       .mode = GPIO_MODE_OUTPUT,
       .pull_up_en = GPIO_PULLUP_ENABLE,
       .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -113,12 +114,14 @@ void beep_init(void)
   ESP_LOGI(TAG, "GPIO configuration...");
   gpio_config(&beep_gpio_cfg);
 
+/*
   for (unsigned int i=0; i<500; i++) {
-    gpio_set_level(GPIO_NUM_4, 1);
+    gpio_set_level(GPIO_PIN_BEEPER, 1);
     bdelay(10);
-    gpio_set_level(GPIO_NUM_4, 0);
+    gpio_set_level(GPIO_PIN_BEEPER, 0);
     bdelay(10);
   }
+*/
 
   ESP_LOGI(TAG, "LEDC configuration...");
   ledc_timer_config(&ledc_beep);
