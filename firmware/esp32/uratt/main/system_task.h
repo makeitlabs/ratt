@@ -34,62 +34,10 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#include <string.h>
-#include <stdlib.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
+#ifndef _SYSTEM_TASK
+#define _SYSTEM_TASK
 
-#include "lwip/err.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-#include "lwip/netdb.h"
-#include "lwip/dns.h"
+void system_task(void *pvParameters);
+void system_init();
 
-#include "esp_tls.h"
-#include "esp_crt_bundle.h"
-
-#include "sdcard.h"
-#include "display_task.h"
-#include "lcd_st7735.h"
-#include "audio_task.h"
-#include "net_task.h"
-#include "rfid_task.h"
-#include "door_task.h"
-#include "beep_task.h"
-#include "system_task.h"
-
-static const char *TAG = "main";
-
-void app_main(void)
-{
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    system_init();
-    lcd_init_hw();
-    display_init();
-    beep_init();
-    door_init();
-
-    sdcard_init();
-    rfid_init();
-
-    display_user_msg("Micro-RATT");
-
-    xTaskCreate(&system_task, "system_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&beep_task, "beep_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&door_task, "door_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&rfid_task, "rfid_task", 4096, NULL, 8, NULL);
-    xTaskCreate(&display_task, "display_task", 8192, NULL, 8, NULL);
-    xTaskCreate(&net_task, "net_task", 8192, NULL, 7, NULL);
-
-    beep_queue(2000, 200, 5, 5);
-}
+#endif
