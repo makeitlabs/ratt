@@ -45,12 +45,14 @@
 
 #include "driver/ledc.h"
 
-#define LEDC_HS_TIMER          LEDC_TIMER_0
-#define LEDC_HS_MODE           LEDC_HIGH_SPEED_MODE
-
 static const char *TAG = "beep_task";
 
 #define BEEP_QUEUE_DEPTH 16
+
+
+#define LEDC_HS_TIMER          LEDC_TIMER_0
+#define LEDC_HS_MODE           LEDC_HIGH_SPEED_MODE
+
 
 ledc_timer_config_t ledc_beep = {
     .duty_resolution = LEDC_TIMER_10_BIT, // resolution of PWM duty

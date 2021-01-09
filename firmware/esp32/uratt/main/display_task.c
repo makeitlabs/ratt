@@ -128,7 +128,6 @@ BaseType_t display_allowed_msg(char *msg, uint8_t allowed)
 void display_init()
 {
     gpio_set_direction(GPIO_PIN_FP_BUTTON, GPIO_MODE_INPUT);
-//    gpio_set_pull_mode(GPIO_PIN_FP_BUTTON, GPIO_PULLUP_ONLY);
     gpio_pullup_en(GPIO_PIN_FP_BUTTON);
 
     m_q = xQueueCreate(DISPLAY_QUEUE_DEPTH, sizeof(display_evt_t));
@@ -165,7 +164,6 @@ void display_task(void *pvParameters)
 
         // braindead button test
         button = gpio_get_level(GPIO_PIN_FP_BUTTON);
-        ESP_LOGI(TAG, "Button now=%d", button);
 
         if (button != last_button) {
             ESP_LOGI(TAG, "Button now=%d", button);
