@@ -228,7 +228,7 @@ void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 
 
 // set up GPIOs and reset the display, but don't initialize it yet
-void lcd_init_hw(void)
+void lcd_hw_init(void)
 {
     ESP_LOGI(TAG, "Initializing LCD control pins...");
 

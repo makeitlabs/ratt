@@ -112,7 +112,7 @@ typedef struct { // Data stored for FONT AS A WHOLE:
 
 
 
-void lcd_init_hw(void);
+void lcd_hw_init(void);
 void lcd_init(void);
 void lcd_set_rotation(uint8_t m);
 void lcd_fill_screen(uint16_t color);

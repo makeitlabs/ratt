@@ -24,7 +24,10 @@
  all copies or substantial portions of the Software.
 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANT
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
@@ -34,62 +37,17 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#include <string.h>
-#include <stdlib.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
+#ifndef _MAIN_TASK_H
+#define _MAIN_TASK_H
 
-#include "lwip/err.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-#include "lwip/netdb.h"
-#include "lwip/dns.h"
+typedef enum {
+  MAIN_EVT_NONE = 0,
+  MAIN_EVT_VALID_RFID_SCAN,
+  MAIN_EVT_INVALID_RFID_SCAN
+} main_evt_id_t;
 
-#include "esp_tls.h"
-#include "esp_crt_bundle.h"
+void main_task(void *pvParameters);
+void main_task_init();
+BaseType_t main_task_event(main_evt_id_t e);
 
-#include "sdcard.h"
-#include "display_task.h"
-#include "lcd_st7735.h"
-#include "audio_task.h"
-#include "net_task.h"
-#include "rfid_task.h"
-#include "door_task.h"
-#include "beep_task.h"
-#include "system_task.h"
-#include "main_task.h"
-
-static const char *TAG = "main";
-
-void app_main(void)
-{
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    system_init();
-    lcd_hw_init();
-    display_init();
-    beep_init();
-    door_init();
-
-    sdcard_init();
-    rfid_init();
-    main_task_init();
-
-    xTaskCreate(&system_task, "system_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&beep_task, "beep_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&door_task, "door_task", 2048, NULL, 8, NULL);
-    xTaskCreate(&rfid_task, "rfid_task", 4096, NULL, 8, NULL);
-    xTaskCreate(&display_task, "display_task", 8192, NULL, 8, NULL);
-    xTaskCreate(&net_task, "net_task", 8192, NULL, 7, NULL);
-    xTaskCreate(&main_task, "main_task", 4096, NULL, 7, NULL);
-
-}
+#endif

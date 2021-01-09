@@ -37,18 +37,19 @@
 #ifndef _RFID_TASK_H
 #define _RFID_TASK_H
 
-void rfid_init();
-void rfid_task(void *pvParameters);
-
 #define FIELD_SIZE 32
 
-typedef struct user_fields {
+typedef struct member_record {
     char name[FIELD_SIZE];
-    char last_accessed[FIELD_SIZE];
     uint8_t allowed;
-} user_fields_t;
+    uint32_t tag;
+} member_record_t;
+
+
+void rfid_init();
+void rfid_task(void *pvParameters);
+BaseType_t rfid_get_member_record(member_record_t* member);
 
 extern SemaphoreHandle_t g_acl_mutex;
-
 
 #endif

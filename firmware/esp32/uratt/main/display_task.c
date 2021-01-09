@@ -62,7 +62,8 @@ typedef enum {
     DISP_CMD_WIFI_RSSI,
     DISP_CMD_NET_MSG,
     DISP_CMD_ALLOWED_MSG,
-    DISP_CMD_USER_MSG
+    DISP_CMD_USER_MSG,
+    DISP_CMD_CLEAR_MSG
 } display_cmd_t;
 
 typedef struct display_evt {
@@ -116,14 +117,18 @@ BaseType_t display_allowed_msg(char *msg, uint8_t allowed)
 {
     display_evt_t evt;
     evt.cmd = DISP_CMD_ALLOWED_MSG;
-    strncpy(evt.buf, msg, DISPLAY_EVT_BUF_SIZE);
     evt.params.allowed = allowed;
+    strncpy(evt.buf, msg, DISPLAY_EVT_BUF_SIZE);
 
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
 
-
-
+BaseType_t display_clear_msg()
+{
+    display_evt_t evt;
+    evt.cmd = DISP_CMD_CLEAR_MSG;
+    return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
+}
 
 void display_init()
 {
@@ -225,7 +230,10 @@ void display_task(void *pvParameters)
                     gfx_write_string(0, 40, "DENIED");
                 }
                 gfx_refresh_rect(0, 32, 160, 16);
-
+                break;
+            case DISP_CMD_CLEAR_MSG:
+                lcd_fill_rect(0, 24, 160, 44, lcd_rgb(0x00, 0x00, 0xC0));
+                gfx_refresh_rect(0, 24, 160, 44);
                 break;
             }
         }

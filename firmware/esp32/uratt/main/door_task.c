@@ -125,9 +125,6 @@ void door_task(void *pvParameters)
           if (evt.unlock) {
             // unlock
             door_actuate_unlock();
-            door_delay(5000);
-            door_actuate_lock();
-
           } else {
             // lock
             door_actuate_lock();
