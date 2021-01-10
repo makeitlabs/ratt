@@ -9,3 +9,5 @@ hardware/doorbot_lcd/doorbot_lcd/doorbot_lcd.bak
 hardware/doorbot_lcd/doorbot_lcd/doorbot_lcd.kicad_pcb-bak
 *.sch-bak
 hardware/uratt/REV0/uratt/_autosave-uratt.kicad_pcb
+*.bck
+*.kicad_pcb-bak

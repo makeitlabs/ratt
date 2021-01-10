@@ -2079,4 +2079,8 @@ Wire Wire Line
 	14650 4500 14650 5100
 Text Notes 14150 3400 0    50   ~ 0
 CONNECT J3 TO FRONT PANEL BOARD\n10POS 0.50MM FFC TOP/BOTTOM STYLE\n\nSAMTEC P/N  FJH-10-R-02.00-4\nhttp://suddendocs.samtec.com/catalog_english/fjh.pdf
+Text Notes 800  9750 0    118  ~ 0
+POWER SUPPLY &\nMOTOR CONTROL
+Text Notes 14950 1700 0    118  ~ 0
+FRONT PANEL
 $EndSCHEMATC
