@@ -1,23 +1,11 @@
 #ifndef _LCD_ST7735_H
 #define _LCD_ST7735_H
 
-// ESP32 pin and pinsel definitions
-#define LCD_PIN_MISO 19
-#define LCD_PIN_MOSI 23
-#define LCD_PIN_CLK  18
-#define LCD_PIN_CS   5
-
-#define LCD_PIN_DC   27
-#define LCD_SEL_DC   GPIO_SEL_27
-#define LCD_PIN_RST  32
-#define LCD_SEL_RST  GPIO_SEL_32
-#define LCD_PIN_BCKL 33
-#define LCD_SEL_BCKL GPIO_SEL_33
 
 // bus speed for SPI clock
 // works up to 20MHz on hand-wired prototype with logic analyzer connected
 #define ONE_MHZ 1000000
-#define LCD_SPI_BUS_SPEED (20 * ONE_MHZ)
+#define LCD_SPI_BUS_SPEED (8 * ONE_MHZ)
 
 
 // raft of defines from Adafruit library below
@@ -124,7 +112,7 @@ typedef struct { // Data stored for FONT AS A WHOLE:
 
 
 
-void lcd_init_hw(void);
+void lcd_hw_init(void);
 void lcd_init(void);
 void lcd_set_rotation(uint8_t m);
 void lcd_fill_screen(uint16_t color);

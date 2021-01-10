@@ -34,21 +34,18 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#ifndef _RFID_TASK_H
-#define _RFID_TASK_H
+#ifndef _DISPLAY_TASK
+#define _DISPLAY_TASK
 
-void rfid_init();
-void rfid_task(void *pvParameters);
+void display_task(void *pvParameters);
+void display_init();
 
-#define FIELD_SIZE 32
-
-typedef struct user_fields {
-    char name[FIELD_SIZE];
-    char last_accessed[FIELD_SIZE];
-    uint8_t allowed;
-} user_fields_t;
-
-extern SemaphoreHandle_t g_acl_mutex;
+BaseType_t display_wifi_msg(char *msg);
+BaseType_t display_wifi_rssi(int16_t rssi);
+BaseType_t display_net_msg(char *msg);
+BaseType_t display_user_msg(char *msg);
+BaseType_t display_allowed_msg(char *msg, uint8_t allowed);
+BaseType_t display_clear_msg();
 
 
 #endif

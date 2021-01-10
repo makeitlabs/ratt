@@ -34,24 +34,62 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#ifndef _NET_TASK_H
-#define _NET_TASK_H
+#include <string.h>
+#include <stdlib.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/event_groups.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
+#include "esp_log.h"
+#include "esp_system.h"
+#include "nvs_flash.h"
+#include "esp_netif.h"
 
-void net_init(void);
-void net_task(void *pvParameters);
+#include "lwip/err.h"
+#include "lwip/sockets.h"
+#include "lwip/sys.h"
+#include "lwip/netdb.h"
+#include "lwip/dns.h"
 
-BaseType_t net_cmd_queue(int cmd);
-BaseType_t net_cmd_queue_access(char *member, int allowed);
-BaseType_t net_cmd_queue_access_error(char *err, char *err_ext);
+#include "esp_tls.h"
+#include "esp_crt_bundle.h"
 
-#define NET_CMD_DOWNLOAD_ACL  1
-#define NET_CMD_SEND_ACL_UPDATED 2
-#define NET_CMD_SEND_ACL_FAILED 3
-#define NET_CMD_SEND_WIFI_STR 4
-#define NET_CMD_SEND_ACCESS 5
-#define NET_CMD_SEND_ACCESS_ERROR 6
-#define NET_CMD_NTP_SYNC 7
+#include "sdcard.h"
+#include "display_task.h"
+#include "lcd_st7735.h"
+#include "audio_task.h"
+#include "net_task.h"
+#include "rfid_task.h"
+#include "door_task.h"
+#include "beep_task.h"
+#include "system_task.h"
+#include "main_task.h"
 
-extern uint8_t g_mac_addr[6];
+static const char *TAG = "main";
 
-#endif
+void app_main(void)
+{
+    ESP_ERROR_CHECK(nvs_flash_init());
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    system_init();
+    lcd_hw_init();
+    display_init();
+    beep_init();
+    door_init();
+
+    sdcard_init();
+    rfid_init();
+    main_task_init();
+
+    xTaskCreate(&system_task, "system_task", 2048, NULL, 8, NULL);
+    xTaskCreate(&beep_task, "beep_task", 2048, NULL, 8, NULL);
+    xTaskCreate(&door_task, "door_task", 2048, NULL, 8, NULL);
+    xTaskCreate(&rfid_task, "rfid_task", 4096, NULL, 8, NULL);
+    xTaskCreate(&display_task, "display_task", 8192, NULL, 8, NULL);
+    xTaskCreate(&net_task, "net_task", 8192, NULL, 7, NULL);
+    xTaskCreate(&main_task, "main_task", 4096, NULL, 7, NULL);
+
+}

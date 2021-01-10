@@ -34,17 +34,14 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#ifndef _DISPLAY_TASK
-#define _DISPLAY_TASK
+#ifndef _DOOR_TASK
+#define _DOOR_TASK
 
-void display_task(void *pvParameters);
-void display_init();
+void door_task(void *pvParameters);
+void door_init();
 
-BaseType_t display_wifi_msg(char *msg);
-BaseType_t display_wifi_rssi(int16_t rssi);
-BaseType_t display_net_msg(char *msg);
-BaseType_t display_user_msg(char *msg);
-BaseType_t display_allowed_msg(char *msg, uint8_t allowed);
+BaseType_t door_unlock();
+BaseType_t door_lock();
 
 
 #endif

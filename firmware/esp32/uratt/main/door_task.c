@@ -44,6 +44,7 @@
 
 #include "soc/gpio_struct.h"
 #include "driver/gpio.h"
+#include "system.h"
 
 #include "door_task.h"
 
@@ -79,11 +80,11 @@ void door_init(void)
       ESP_LOGE(TAG, "FATAL: Cannot create door queue!");
   }
 
-  gpio_set_direction(MOTOR_O1, GPIO_MODE_OUTPUT);
-  gpio_set_direction(MOTOR_O2, GPIO_MODE_OUTPUT);
+  gpio_set_direction(GPIO_PIN_MOTOR_O1, GPIO_MODE_OUTPUT);
+  gpio_set_direction(GPIO_PIN_MOTOR_O2, GPIO_MODE_OUTPUT);
 
-  gpio_set_level(MOTOR_O1, 1);
-  gpio_set_level(MOTOR_O2, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O1, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O2, 1);
 }
 
 void door_delay(int ms)
@@ -94,21 +95,21 @@ void door_delay(int ms)
 
 void door_actuate_lock(void)
 {
-  gpio_set_level(MOTOR_O1, 1);
-  gpio_set_level(MOTOR_O2, 0);
+  gpio_set_level(GPIO_PIN_MOTOR_O1, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O2, 0);
   door_delay(500);
-  gpio_set_level(MOTOR_O1, 1);
-  gpio_set_level(MOTOR_O2, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O1, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O2, 1);
 
 }
 
 void door_actuate_unlock(void)
 {
-  gpio_set_level(MOTOR_O1, 0);
-  gpio_set_level(MOTOR_O2, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O1, 0);
+  gpio_set_level(GPIO_PIN_MOTOR_O2, 1);
   door_delay(500);
-  gpio_set_level(MOTOR_O1, 1);
-  gpio_set_level(MOTOR_O2, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O1, 1);
+  gpio_set_level(GPIO_PIN_MOTOR_O2, 1);
 }
 
 void door_task(void *pvParameters)
@@ -124,9 +125,6 @@ void door_task(void *pvParameters)
           if (evt.unlock) {
             // unlock
             door_actuate_unlock();
-            door_delay(5000);
-            door_actuate_lock();
-
           } else {
             // lock
             door_actuate_lock();

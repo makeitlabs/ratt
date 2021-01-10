@@ -20,6 +20,7 @@
 #include "soc/gpio_struct.h"
 #include "driver/gpio.h"
 #include "lcd_st7735.h"
+#include "system.h"
 
 // include standard font
 #include "glcdfont.c"
@@ -222,18 +223,18 @@ void delay(int ms)
 void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 {
     int dc=(int)t->user;
-    gpio_set_level(LCD_PIN_DC, dc);
+    gpio_set_level(GPIO_PIN_LCD_DC, dc);
 }
 
 
 // set up GPIOs and reset the display, but don't initialize it yet
-void lcd_init_hw(void)
+void lcd_hw_init(void)
 {
     ESP_LOGI(TAG, "Initializing LCD control pins...");
 
     // these pins must be set to GPIO mode with gpio_config()
     gpio_config_t rst_cfg = {
-        .pin_bit_mask = LCD_SEL_RST,
+        .pin_bit_mask = GPIO_SEL_LCD_RESET,
         .mode = GPIO_MODE_OUTPUT,
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -241,7 +242,7 @@ void lcd_init_hw(void)
     };
 
     gpio_config_t bckl_cfg = {
-        .pin_bit_mask = LCD_SEL_BCKL,
+        .pin_bit_mask = GPIO_SEL_LCD_BCKL,
         .mode = GPIO_MODE_OUTPUT,
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -249,7 +250,7 @@ void lcd_init_hw(void)
     };
 
     gpio_config_t dc_cfg = {
-        .pin_bit_mask = LCD_SEL_DC,
+        .pin_bit_mask = GPIO_SEL_LCD_DC,
         .mode = GPIO_MODE_OUTPUT,
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -262,21 +263,21 @@ void lcd_init_hw(void)
     gpio_config(&dc_cfg);
 
     // Initialize the other GPIO
-    gpio_set_direction(LCD_PIN_CS, GPIO_MODE_OUTPUT);
+    gpio_set_direction(GPIO_PIN_LCD_CS, GPIO_MODE_OUTPUT);
 
     ESP_LOGI(TAG, "Resetting display...");
 
     // Reset the display
     // toggle RST low to reset with CS low
-    gpio_set_level(LCD_PIN_CS, 0);
+    gpio_set_level(GPIO_PIN_LCD_CS, 0);
 
-    gpio_set_level(LCD_PIN_RST, 1);
+    gpio_set_level(GPIO_PIN_LCD_RESET, 1);
     delay(50);
-    gpio_set_level(LCD_PIN_RST, 0);
+    gpio_set_level(GPIO_PIN_LCD_RESET, 0);
     delay(50);
-    gpio_set_level(LCD_PIN_RST, 1);
+    gpio_set_level(GPIO_PIN_LCD_RESET, 1);
     delay(50);
-    gpio_set_level(LCD_PIN_CS, 1);
+    gpio_set_level(GPIO_PIN_LCD_CS, 1);
 
     ESP_LOGI(TAG, "LCD hardware initialized");
 }
@@ -286,16 +287,15 @@ void lcd_init(void)
     ESP_LOGI(TAG, "Initializing SPI bus..");
     esp_err_t ret;
     spi_bus_config_t buscfg={
-        .miso_io_num=LCD_PIN_MISO,
-        .mosi_io_num=LCD_PIN_MOSI,
-        .sclk_io_num=LCD_PIN_CLK,
+        .mosi_io_num=GPIO_PIN_LCD_MOSI,
+        .sclk_io_num=GPIO_PIN_LCD_CLK,
         .quadwp_io_num=-1,
         .quadhd_io_num=-1
     };
     spi_device_interface_config_t devcfg={
         .clock_speed_hz=LCD_SPI_BUS_SPEED,      //SPI clock
         .mode=0,                                //SPI mode 0
-        .spics_io_num=LCD_PIN_CS,               //CS pin
+        .spics_io_num=GPIO_PIN_LCD_CS,          //CS pin
         .queue_size=32,                          //We want to be able to queue 16 transactions at a time
         .pre_cb=lcd_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
     };
@@ -316,7 +316,7 @@ void lcd_init(void)
     invertDisplay(1);
 
     // set rotation
-    lcd_set_rotation(1);
+    lcd_set_rotation(3);
 
     // init gfx routines
     gfx_set_text_wrap(1);
@@ -406,7 +406,7 @@ void lcd_init_common(const uint8_t *cmdList)
   if(cmdList) lcd_init_cmds(cmdList);
 
   // Enable backlight
-  gpio_set_level(LCD_PIN_BCKL, 1);
+  gpio_set_level(GPIO_PIN_LCD_BCKL, 1);
 }
 
 // Initialization for ST7735B screens

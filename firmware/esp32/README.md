@@ -1,3 +1,3 @@
-# ESP32 Platform projects for remote nodes
+# ESP32 Platform RATT (uRATT)
 
-https_client_certs is adapted from an esp-idf example and demonstrates 2-way authenticated and encrypted communications from an ESP32 to our MakeItLabs authbackend (or other https site configured properly).
+* uratt - micro-RATT initially designed for interior door lock retrofit

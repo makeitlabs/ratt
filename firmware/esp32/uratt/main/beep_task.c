@@ -41,15 +41,18 @@
 #include "freertos/queue.h"
 #include "esp_system.h"
 #include "esp_log.h"
+#include "system.h"
 
 #include "driver/ledc.h"
-
-#define LEDC_HS_TIMER          LEDC_TIMER_0
-#define LEDC_HS_MODE           LEDC_HIGH_SPEED_MODE
 
 static const char *TAG = "beep_task";
 
 #define BEEP_QUEUE_DEPTH 16
+
+
+#define LEDC_HS_TIMER          LEDC_TIMER_0
+#define LEDC_HS_MODE           LEDC_HIGH_SPEED_MODE
+
 
 ledc_timer_config_t ledc_beep = {
     .duty_resolution = LEDC_TIMER_10_BIT, // resolution of PWM duty
@@ -62,7 +65,7 @@ ledc_timer_config_t ledc_beep = {
 ledc_channel_config_t ledc_channel = {
     .channel    = LEDC_CHANNEL_0,
     .duty       = 0,
-    .gpio_num   = 21,
+    .gpio_num   = GPIO_PIN_BEEPER,
     .speed_mode = LEDC_HS_MODE,
     .hpoint     = 0,
     .timer_sel  = LEDC_HS_TIMER
@@ -88,6 +91,12 @@ BaseType_t beep_queue(int hz, int msec, int attack, int decay)
     return xQueueSendToBack(m_q, &evt, 250 / portTICK_PERIOD_MS);
 }
 
+void bdelay(int ms)
+{
+    TickType_t delay = ms / portTICK_PERIOD_MS;
+    vTaskDelay(delay);
+}
+
 
 void beep_init(void)
 {
@@ -96,6 +105,27 @@ void beep_init(void)
       ESP_LOGE(TAG, "FATAL: Cannot create beeper queue!");
   }
 
+  gpio_config_t beep_gpio_cfg = {
+      .pin_bit_mask = GPIO_SEL_BEEPER,
+      .mode = GPIO_MODE_OUTPUT,
+      .pull_up_en = GPIO_PULLUP_ENABLE,
+      .pull_down_en = GPIO_PULLDOWN_DISABLE,
+      .intr_type = GPIO_INTR_DISABLE
+  };
+
+  ESP_LOGI(TAG, "GPIO configuration...");
+  gpio_config(&beep_gpio_cfg);
+
+/*
+  for (unsigned int i=0; i<500; i++) {
+    gpio_set_level(GPIO_PIN_BEEPER, 1);
+    bdelay(10);
+    gpio_set_level(GPIO_PIN_BEEPER, 0);
+    bdelay(10);
+  }
+*/
+
+  ESP_LOGI(TAG, "LEDC configuration...");
   ledc_timer_config(&ledc_beep);
   ledc_channel_config(&ledc_channel);
 
@@ -135,6 +165,7 @@ void beep_task(void *pvParameters)
         beep_evt_t evt;
 
         if (xQueueReceive(m_q, &evt, (20 / portTICK_PERIOD_MS)) == pdPASS) {
+            ESP_LOGI(TAG, "beep event hz=%d attack=%d msec=%d decay=%d\n", evt.hz, evt.attack, evt.msec, evt.decay);
             beep_start(evt.hz, evt.attack);
             beep_delay(evt.msec + evt.attack);
             beep_stop(evt.decay);

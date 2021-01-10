@@ -70,6 +70,9 @@ void sdcard_init(void)
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
+    slot_config.gpio_cd = SDMMC_SLOT_NO_CD;
+    slot_config.gpio_wp = SDMMC_SLOT_NO_WP;
+    slot_config.width = 1;
 
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and formatted
@@ -91,6 +94,7 @@ void sdcard_init(void)
         } else {
             ESP_LOGE(TAG, "Failed to initialize the card (%d). Make sure SD card lines have pull-up resistors in place.", ret);
         }
+        xSemaphoreGive(g_sdcard_mutex);
         return;
     }
 

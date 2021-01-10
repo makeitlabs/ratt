@@ -47,16 +47,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "beep_task.h"
-#include "door_task.h"
+#include "system.h"
+
 #include "rfid_task.h"
 #include "sdcard.h"
-#include "display_task.h"
-#include "net_task.h"
+
+#include "main_task.h"
 
 #define SER_BUF_SIZE (256)
-#define SER_RFID_TXD  (-1)
-#define SER_RFID_RXD  (16)
+#define SER_RFID_TXD  (GPIO_PIN_TXD1)
+#define SER_RFID_RXD  (GPIO_PIN_RXD1)
 #define SER_RFID_RTS  (-1)
 #define SER_RFID_CTS  (-1)
 
@@ -66,6 +66,8 @@ static const char *TAG = "rfid_task";
 
 SemaphoreHandle_t g_acl_mutex;
 
+SemaphoreHandle_t m_member_record_mutex;
+member_record_t m_member_record;
 
 
 void rfid_init()
@@ -84,10 +86,19 @@ void rfid_init()
     uart_driver_install(uart_num, SER_BUF_SIZE * 2, 0, 0, NULL, 0);
 
     g_acl_mutex = xSemaphoreCreateMutex();
-    if (!g_sdcard_mutex) {
-        ESP_LOGE(TAG, "Could not create ACL file mutex.");
+    m_member_record_mutex = xSemaphoreCreateMutex();
+    if (!g_sdcard_mutex || !m_member_record_mutex) {
+        ESP_LOGE(TAG, "Could not create mutexes.");
         return;
     }
+}
+
+BaseType_t rfid_get_member_record(member_record_t* member)
+{
+  xSemaphoreTake(m_member_record_mutex, portMAX_DELAY);
+  memcpy(member, &m_member_record, sizeof(member_record_t));
+  xSemaphoreGive(m_member_record_mutex);
+  return 0;
 }
 
 //
@@ -114,7 +125,7 @@ void rfid_hash_sha224(char *tag_ascii, int ascii_len, char *tag_hexdigest, int d
 }
 
 #define LINE_SIZE 256
-uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
+uint8_t rfid_lookup(uint32_t tag, member_record_t *member)
 {
     char tag_ascii[32];
     char tag_sha224[65];
@@ -161,16 +172,16 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
             //char *value = fields[2];
             char *allowed = fields[3];
             char *hashed_card = fields[4];
-            char *last_accessed = fields[5];
+            //char *last_accessed = fields[5];
 
             //ESP_LOGI(TAG, "comparing %s to %s", tag_sha224, hashed_card);
             if (strcmp(tag_sha224, hashed_card) == 0) {
-                ESP_LOGI(TAG, "found tag for user %s, allowed=%s, last accessed=%s", username, allowed, last_accessed);
+                ESP_LOGI(TAG, "found tag for user %s, allowed=%s", username, allowed);
                 found = 1;
 
-                strncpy(user->name, username, FIELD_SIZE);
-                strncpy(user->last_accessed, last_accessed, FIELD_SIZE);
-                user->allowed = (strcmp(allowed, "allowed") == 0);
+                strncpy(member->name, username, FIELD_SIZE);
+                //strncpy(member->last_accessed, last_accessed, FIELD_SIZE);
+                member->allowed = (strcmp(allowed, "allowed") == 0);
             }
         }
     }
@@ -180,12 +191,6 @@ uint8_t rfid_lookup(uint32_t tag, user_fields_t *user)
     xSemaphoreGive(g_sdcard_mutex);
 
     return found;
-}
-
-void rfid_delay(int ms)
-{
-    TickType_t delay = ms / portTICK_PERIOD_MS;
-    vTaskDelay(delay);
 }
 
 
@@ -216,7 +221,6 @@ void rfid_task(void *pvParameters)
         int len = uart_read_bytes(uart_num, rxbuf, SER_BUF_SIZE, 20 / portTICK_RATE_MS);
 
         if (len==10) {
-
             uint8_t checksum_calc = 0;
             for (uint8_t i=1; i<8; i++) checksum_calc ^= rxbuf[i];
 
@@ -228,35 +232,16 @@ void rfid_task(void *pvParameters)
                 snprintf(s, sizeof(s), "%10.10u %2.2X %2.2X %2.2X %2.2X [%2.2X == %2.2X]", tag, rxbuf[4], rxbuf[5], rxbuf[6], rxbuf[7], rxbuf[8], checksum_calc);
                 ESP_LOGI(TAG, "%s", s);
 
-                user_fields_t user;
-                bzero(&user, sizeof(user));
-                if (rfid_lookup(tag, &user)) {
-                    display_user_msg(user.name);
-                    display_allowed_msg(user.last_accessed, user.allowed);
+                xSemaphoreTake(m_member_record_mutex, portMAX_DELAY);
+                bzero(&m_member_record, sizeof(m_member_record));
+                uint8_t found = rfid_lookup(tag, &m_member_record);
+                m_member_record.tag = tag;
+                xSemaphoreGive(m_member_record_mutex);
 
-                    net_cmd_queue_access(user.name, user.allowed);
-
-                    if (user.allowed) {
-                      beep_queue(880, 250, 5, 5);
-                      beep_queue(1174, 250, 5, 5);
-                      rfid_delay(520);
-                      door_unlock();
-                    } else {
-                      beep_queue(220, 250, 5, 5);
-                      beep_queue(0, 100, 0, 0);
-                      beep_queue(220, 250, 5, 5);
-                    }
-                } else {
-                    display_user_msg("Unknown Tag");
-                    display_allowed_msg("DENIED", 0);
-                    beep_queue(220, 250, 5, 5);
-                    beep_queue(0, 100, 0, 0);
-                    beep_queue(220, 250, 5, 5);
-
-                    char tagstr[12];
-                    snprintf(tagstr, sizeof(tagstr), "%10.10u", tag);
-                    net_cmd_queue_access_error("unknown rfid tag", tagstr);
-                }
+                if (found)
+                  main_task_event(MAIN_EVT_VALID_RFID_SCAN);
+                else
+                  main_task_event(MAIN_EVT_INVALID_RFID_SCAN);
 
             } else {
                 char s[80];

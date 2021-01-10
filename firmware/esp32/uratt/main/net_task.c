@@ -72,6 +72,7 @@
 #include "net_https.h"
 #include "net_mqtt.h"
 #include "net_sntp.h"
+#include "net_ota.h"
 
 static const char *TAG = "net_task";
 
@@ -214,8 +215,8 @@ void net_init(void)
     net_https_init();
     net_mqtt_init();
     net_sntp_init();
+    net_ota_init();
 }
-
 
 
 void net_task(void *pvParameters)
@@ -226,6 +227,7 @@ void net_task(void *pvParameters)
     // queue some initial commands
     net_cmd_queue(NET_CMD_NTP_SYNC);
     net_cmd_queue(NET_CMD_DOWNLOAD_ACL);
+    //net_cmd_queue(NET_CMD_OTA_UPDATE);
 
     display_net_msg("WIFI CONNECT");
     // Wait for the callback to set the CONNECTED_BIT in the event group.
@@ -271,6 +273,10 @@ void net_task(void *pvParameters)
 
           case NET_CMD_NTP_SYNC:
             net_sntp_sync();
+            break;
+
+          case NET_CMD_OTA_UPDATE:
+            net_ota_update();
             break;
 
           default:

@@ -34,16 +34,25 @@
  Author: Steve Richardson (steve.richardson@makeitlabs.com)
  -------------------------------------------------------------------------- */
 
-#ifndef _DOOR_TASK
-#define _DOOR_TASK
+#ifndef _NET_TASK_H
+#define _NET_TASK_H
 
-void door_task(void *pvParameters);
-void door_init();
+void net_init(void);
+void net_task(void *pvParameters);
 
-BaseType_t door_unlock();
-BaseType_t door_lock();
+BaseType_t net_cmd_queue(int cmd);
+BaseType_t net_cmd_queue_access(char *member, int allowed);
+BaseType_t net_cmd_queue_access_error(char *err, char *err_ext);
 
-#define MOTOR_O1 (25)
-#define MOTOR_O2 (26)
+#define NET_CMD_DOWNLOAD_ACL  1
+#define NET_CMD_SEND_ACL_UPDATED 2
+#define NET_CMD_SEND_ACL_FAILED 3
+#define NET_CMD_SEND_WIFI_STR 4
+#define NET_CMD_SEND_ACCESS 5
+#define NET_CMD_SEND_ACCESS_ERROR 6
+#define NET_CMD_NTP_SYNC 7
+#define NET_CMD_OTA_UPDATE 8
+
+extern uint8_t g_mac_addr[6];
 
 #endif
