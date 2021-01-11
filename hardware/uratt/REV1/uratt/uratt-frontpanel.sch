@@ -4,11 +4,11 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 3
-Title ""
+Title "RFID All The Things : uRATT ESP32 - Front Panel"
 Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Rev "REV1"
+Comp "MakeIt Labs - www.makeitlabs.com"
+Comment1 "Steve Richardson (steve.richardson@makeitlabs.com)"
 Comment2 ""
 Comment3 ""
 Comment4 ""
@@ -96,7 +96,7 @@ P 5150 2400
 AR Path="/62F12C6E" Ref="R?"  Part="1" 
 AR Path="/62EF036B/62F12C6E" Ref="R51"  Part="1" 
 F 0 "R51" H 5218 2446 50  0000 L CNN
-F 1 "220" H 5218 2355 50  0000 L CNN
+F 1 "20" H 5218 2355 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5150 2400 50  0001 C CNN
 F 3 "~" H 5150 2400 50  0001 C CNN
 F 4 "YAG5947CT-ND" H 5150 2400 50  0001 C CNN "Digikey"
@@ -106,13 +106,6 @@ $EndComp
 Wire Wire Line
 	5700 2800 5550 2800
 Connection ~ 5550 1850
-Wire Wire Line
-	5550 2800 5550 2700
-Wire Wire Line
-	5700 2700 5550 2700
-Connection ~ 5550 2700
-Wire Wire Line
-	5550 2700 5550 1850
 Wire Wire Line
 	5450 2500 5700 2500
 Connection ~ 5450 3000
@@ -395,78 +388,78 @@ Wire Wire Line
 	3100 3050 3450 3050
 Wire Wire Line
 	3450 3050 3450 4650
-Connection ~ 2950 4650
+Connection ~ 2700 4650
 Wire Wire Line
-	2950 4650 3050 4650
+	2700 4650 2800 4650
 $Comp
 L Device:R_Small_US R?
 U 1 1 6319A3AD
-P 3150 4650
+P 2900 4650
 AR Path="/6319A3AD" Ref="R?"  Part="1" 
 AR Path="/62EF036B/6319A3AD" Ref="R43"  Part="1" 
-F 0 "R43" V 3050 4600 50  0000 L CNN
-F 1 "47" V 3250 4500 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 3150 4650 50  0001 C CNN
-F 3 "~" H 3150 4650 50  0001 C CNN
-F 4 "13-RT0603FRE0747RLCT-ND" H 3150 4650 50  0001 C CNN "Digikey"
-	1    3150 4650
+F 0 "R43" V 2800 4600 50  0000 L CNN
+F 1 "47" V 3000 4500 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 2900 4650 50  0001 C CNN
+F 3 "~" H 2900 4650 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 2900 4650 50  0001 C CNN "Digikey"
+	1    2900 4650
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	2800 4800 2950 4800
+	2550 4800 2700 4800
 Wire Wire Line
-	2600 4800 2500 4800
+	2350 4800 2250 4800
 Wire Wire Line
-	2950 4650 2900 4650
+	2700 4650 2650 4650
 Wire Wire Line
-	2950 4800 2950 4650
+	2700 4800 2700 4650
 Wire Wire Line
-	2500 4800 2500 4650
+	2250 4800 2250 4650
 $Comp
 L Device:C_Small C?
 U 1 1 6319A3BE
-P 2700 4800
+P 2450 4800
 AR Path="/6319A3BE" Ref="C?"  Part="1" 
 AR Path="/62EF036B/6319A3BE" Ref="C32"  Part="1" 
-F 0 "C32" V 2800 4850 50  0000 L CNN
-F 1 "0.1uF" V 2900 4800 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric" H 2700 4800 50  0001 C CNN
-F 3 "~" H 2700 4800 50  0001 C CNN
-F 4 "732-7939-1-ND " H 2700 4800 50  0001 C CNN "Digikey"
-	1    2700 4800
+F 0 "C32" V 2550 4850 50  0000 L CNN
+F 1 "0.1uF" V 2650 4800 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2450 4800 50  0001 C CNN
+F 3 "~" H 2450 4800 50  0001 C CNN
+F 4 "732-7939-1-ND " H 2450 4800 50  0001 C CNN "Digikey"
+	1    2450 4800
 	0    1    1    0   
 $EndComp
 $Comp
 L Switch:SW_Push SW?
 U 1 1 6319A3C4
-P 2700 4650
+P 2450 4650
 AR Path="/6319A3C4" Ref="SW?"  Part="1" 
 AR Path="/62EF036B/6319A3C4" Ref="SW3"  Part="1" 
-F 0 "SW3" H 2700 4935 50  0000 C CNN
-F 1 "SW_Push" H 2700 4844 50  0000 C CNN
-F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KSC6xxJ" H 2700 4850 50  0001 C CNN
-F 3 "https://www.ckswitches.com/media/1973/ksc7.pdf" H 2700 4850 50  0001 C CNN
-F 4 "" H 2700 4650 50  0001 C CNN "Field4"
-F 5 "	401-1910-1-ND" H 2700 4650 50  0001 C CNN "Digikey"
-	1    2700 4650
+F 0 "SW3" H 2450 4935 50  0000 C CNN
+F 1 "SW_Push" H 2450 4844 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KSC6xxJ" H 2450 4850 50  0001 C CNN
+F 3 "https://www.ckswitches.com/media/1973/ksc7.pdf" H 2450 4850 50  0001 C CNN
+F 4 "" H 2450 4650 50  0001 C CNN "Field4"
+F 5 "	401-1910-1-ND" H 2450 4650 50  0001 C CNN "Digikey"
+	1    2450 4650
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND1 #PWR?
 U 1 1 6319ECB9
-P 2500 4800
+P 2250 4800
 AR Path="/6319ECB9" Ref="#PWR?"  Part="1" 
 AR Path="/62EF036B/6319ECB9" Ref="#PWR090"  Part="1" 
-F 0 "#PWR090" H 2500 4550 50  0001 C CNN
-F 1 "GND1" H 2505 4627 50  0000 C CNN
-F 2 "" H 2500 4800 50  0001 C CNN
-F 3 "" H 2500 4800 50  0001 C CNN
-	1    2500 4800
+F 0 "#PWR090" H 2250 4550 50  0001 C CNN
+F 1 "GND1" H 2255 4627 50  0000 C CNN
+F 2 "" H 2250 4800 50  0001 C CNN
+F 3 "" H 2250 4800 50  0001 C CNN
+	1    2250 4800
 	1    0    0    -1  
 $EndComp
-Connection ~ 2500 4800
+Connection ~ 2250 4800
 Wire Wire Line
-	3250 4650 3450 4650
+	3000 4650 3150 4650
 Text Label 3200 3050 0    50   ~ 0
 R_BTN
 $Comp
@@ -488,20 +481,6 @@ Wire Wire Line
 	6300 5400 6200 5400
 Wire Wire Line
 	6200 5400 6200 5300
-$Comp
-L Transistor_FET:2N7002 Q?
-U 1 1 60451D78
-P 6100 6100
-AR Path="/60451D78" Ref="Q?"  Part="1" 
-AR Path="/62EF036B/60451D78" Ref="Q4"  Part="1" 
-F 0 "Q4" H 6304 6146 50  0000 L CNN
-F 1 "2N7002" H 6304 6055 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 6300 6025 50  0001 L CIN
-F 3 "https://www.diodes.com/assets/Datasheets/2N7002.pdf" H 6100 6100 50  0001 L CNN
-F 4 "2N7002Q-7-FDICT-ND" H 6100 6100 50  0001 C CNN "Digikey"
-	1    6100 6100
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	6200 5900 6200 5800
 Wire Wire Line
@@ -513,15 +492,13 @@ P 6200 5150
 AR Path="/60451D80" Ref="R?"  Part="1" 
 AR Path="/62EF036B/60451D80" Ref="R53"  Part="1" 
 F 0 "R53" H 6268 5196 50  0000 L CNN
-F 1 "100" H 6268 5105 50  0000 L CNN
+F 1 "10" H 6268 5105 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6200 5150 50  0001 C CNN
 F 3 "~" H 6200 5150 50  0001 C CNN
 F 4 "13-RE0603FRE07100RLCT-ND" H 6200 5150 50  0001 C CNN "Digikey"
 	1    6200 5150
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6200 6400 6200 6300
 $Comp
 L Device:R_Small_US R?
 U 1 1 60451D8E
@@ -536,8 +513,6 @@ F 4 "13-RE0603FRE071KLCT-ND" H 5650 6100 50  0001 C CNN "Digikey"
 	1    5650 6100
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	5750 6100 5900 6100
 Wire Wire Line
 	3100 2950 3550 2950
 Wire Wire Line
@@ -668,8 +643,8 @@ U 1 1 5FF0EFC7
 P 5750 5500
 AR Path="/5FF0EFC7" Ref="BZ?"  Part="1" 
 AR Path="/62EF036B/5FF0EFC7" Ref="BZ2"  Part="1" 
-F 0 "BZ2" H 5902 5529 50  0000 L CNN
-F 1 "Buzzer (ALT OPT)" H 5902 5438 50  0000 L CNN
+F 0 "BZ2" H 5900 5400 50  0000 L CNN
+F 1 "Buzzer (ALT)" H 5650 5300 50  0000 L CNN
 F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 5725 5600 50  0001 C CNN
 F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 5725 5600 50  0001 C CNN
 F 4 "102-3761-1-ND" H 5750 5500 50  0001 C CNN "Digikey"
@@ -686,10 +661,96 @@ Connection ~ 6200 5800
 Wire Wire Line
 	6200 5800 6200 5600
 Wire Wire Line
-	5650 5400 5650 5300
+	5600 5400 5600 5300
 Wire Wire Line
-	5650 5300 6200 5300
+	5600 5300 6200 5300
 Connection ~ 6200 5300
 Wire Wire Line
 	6200 5300 6200 5250
+Wire Wire Line
+	5550 1850 5550 2800
+$Comp
+L power:GND1 #PWR?
+U 1 1 5FFD4D84
+P 5300 2700
+AR Path="/5FFD4D84" Ref="#PWR?"  Part="1" 
+AR Path="/62EF036B/5FFD4D84" Ref="#PWR0111"  Part="1" 
+F 0 "#PWR0111" H 5300 2450 50  0001 C CNN
+F 1 "GND1" H 5305 2527 50  0000 C CNN
+F 2 "" H 5300 2700 50  0001 C CNN
+F 3 "" H 5300 2700 50  0001 C CNN
+	1    5300 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 2700 5300 2700
+$Comp
+L Device:R_Small_US R?
+U 1 1 60267C9A
+P 5250 5500
+AR Path="/60267C9A" Ref="R?"  Part="1" 
+AR Path="/62EF036B/60267C9A" Ref="R59"  Part="1" 
+F 0 "R59" H 5318 5546 50  0000 L CNN
+F 1 "470" H 5318 5455 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5250 5500 50  0001 C CNN
+F 3 "~" H 5250 5500 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 5250 5500 50  0001 C CNN "Digikey"
+	1    5250 5500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 5400 5600 5400
+Wire Wire Line
+	5250 5600 5250 5800
+Wire Wire Line
+	5250 5800 5600 5800
+Connection ~ 5600 5800
+Wire Wire Line
+	5250 5400 5250 5300
+Wire Wire Line
+	5250 5300 5600 5300
+Connection ~ 5600 5300
+$Comp
+L Device:R_Small_US R?
+U 1 1 603399B4
+P 3150 4300
+AR Path="/603399B4" Ref="R?"  Part="1" 
+AR Path="/62EF036B/603399B4" Ref="R61"  Part="1" 
+F 0 "R61" H 3218 4346 50  0000 L CNN
+F 1 "10K" H 3218 4255 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 3150 4300 50  0001 C CNN
+F 3 "~" H 3150 4300 50  0001 C CNN
+F 4 "13-RE0603FRE07100RLCT-ND" H 3150 4300 50  0001 C CNN "Digikey"
+	1    3150 4300
+	1    0    0    -1  
+$EndComp
+Text Label 2650 4000 0    50   ~ 0
+R_LCD_3.3V
+Wire Wire Line
+	3150 4000 2650 4000
+Wire Wire Line
+	3150 4000 3150 4200
+Wire Wire Line
+	3150 4400 3150 4650
+Connection ~ 3150 4650
+Wire Wire Line
+	3150 4650 3450 4650
+Wire Wire Line
+	5750 6100 5900 6100
+Wire Wire Line
+	6200 6400 6200 6300
+$Comp
+L Transistor_FET:2N7002 Q?
+U 1 1 60451D78
+P 6100 6100
+AR Path="/60451D78" Ref="Q?"  Part="1" 
+AR Path="/62EF036B/60451D78" Ref="Q4"  Part="1" 
+F 0 "Q4" H 6304 6146 50  0000 L CNN
+F 1 "2N7002" H 6304 6055 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 6300 6025 50  0001 L CIN
+F 3 "https://www.diodes.com/assets/Datasheets/2N7002.pdf" H 6100 6100 50  0001 L CNN
+F 4 "2N7002Q-7-FDICT-ND" H 6100 6100 50  0001 C CNN "Digikey"
+	1    6100 6100
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
