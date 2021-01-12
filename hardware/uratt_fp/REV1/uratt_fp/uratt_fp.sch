@@ -1,0 +1,724 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L uratt:ER-TFT0.96-1 LCD1
+U 1 1 62F12C4B
+P 5800 1750
+AR Path="/62F12C4B" Ref="LCD1"  Part="1" 
+AR Path="/62EF036B/62F12C4B" Ref="LCD1"  Part="1" 
+F 0 "LCD1" H 5800 1700 50  0000 L CNN
+F 1 "ER-TFT0.96-1" H 8600 250 50  0000 L CNN
+F 2 "uratt_fp:ER-TFT0.96-1" H 5750 1825 50  0001 C CNN
+F 3 "https://www.buydisplay.com/download/manual/ER-TFT0.96-1_Datasheet.pdf" H 5750 1825 50  0001 C CNN
+F 4 "N/A" H 5800 1750 50  0001 C CNN "Digikey"
+	1    5800 1750
+	1    0    0    -1  
+$EndComp
+NoConn ~ 5700 3150
+Wire Wire Line
+	5700 2450 5450 2450
+$Comp
+L Device:C_Small C3
+U 1 1 62F12C53
+P 6150 1450
+AR Path="/62F12C53" Ref="C3"  Part="1" 
+AR Path="/62EF036B/62F12C53" Ref="C34"  Part="1" 
+F 0 "C3" H 6242 1496 50  0000 L CNN
+F 1 "0.1uF" H 6242 1405 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 6150 1450 50  0001 C CNN
+F 3 "~" H 6150 1450 50  0001 C CNN
+F 4 "732-7939-1-ND " H 6150 1450 50  0001 C CNN "Digikey"
+	1    6150 1450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6150 1350 6150 1300
+$Comp
+L Device:C_Small C2
+U 1 1 62F12C5A
+P 5750 1450
+AR Path="/62F12C5A" Ref="C2"  Part="1" 
+AR Path="/62EF036B/62F12C5A" Ref="C33"  Part="1" 
+F 0 "C2" H 5842 1496 50  0000 L CNN
+F 1 "1uF" H 5842 1405 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 5750 1450 50  0001 C CNN
+F 3 "http://www.yuden.co.jp/productdata/catalog/mlcc06_e.pdf" H 5750 1450 50  0001 C CNN
+F 4 "587-2834-1-ND" H 5750 1450 50  0001 C CNN "Digikey"
+	1    5750 1450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5750 1300 5750 1350
+Wire Wire Line
+	5750 1550 5750 1600
+Wire Wire Line
+	5750 1600 6150 1600
+Wire Wire Line
+	6150 1600 6150 1550
+Connection ~ 5750 1300
+Wire Wire Line
+	5750 1300 6150 1300
+Wire Wire Line
+	5550 1300 5750 1300
+Wire Wire Line
+	5450 2450 5450 3300
+$Comp
+L Transistor_FET:BSS83P Q1
+U 1 1 62F12C68
+P 5050 1450
+AR Path="/62F12C68" Ref="Q1"  Part="1" 
+AR Path="/62EF036B/62F12C68" Ref="Q3"  Part="1" 
+F 0 "Q1" H 4850 1350 50  0000 L CNN
+F 1 "DMP31D0U" H 4650 1250 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 5250 1375 50  0001 L CIN
+F 3 "https://www.diodes.com/assets/Datasheets/DMP31D0U.pdf" H 5050 1450 50  0001 L CNN
+F 4 "DMP31D0U-7DICT-ND" H 5050 1450 50  0001 C CNN "Digikey"
+	1    5050 1450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small_US R10
+U 1 1 62F12C6E
+P 5150 1850
+AR Path="/62F12C6E" Ref="R10"  Part="1" 
+AR Path="/62EF036B/62F12C6E" Ref="R51"  Part="1" 
+F 0 "R10" H 5218 1896 50  0000 L CNN
+F 1 "20" H 5218 1805 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5150 1850 50  0001 C CNN
+F 3 "~" H 5150 1850 50  0001 C CNN
+F 4 "YAG5947CT-ND" H 5150 1850 50  0001 C CNN "Digikey"
+	1    5150 1850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 2250 5550 2250
+Connection ~ 5550 1300
+Wire Wire Line
+	5450 1950 5700 1950
+Connection ~ 5450 2450
+Wire Wire Line
+	5450 1950 5450 2450
+Wire Wire Line
+	5700 2050 5150 2050
+Wire Wire Line
+	5150 2050 5150 1950
+Wire Wire Line
+	5150 1750 5150 1650
+Wire Wire Line
+	5150 1250 5150 1200
+Wire Wire Line
+	5150 1200 5550 1200
+Connection ~ 5550 1200
+Wire Wire Line
+	5550 1200 5550 1300
+$Comp
+L Device:R_Small_US R4
+U 1 1 62F12C84
+P 4750 1200
+AR Path="/62F12C84" Ref="R4"  Part="1" 
+AR Path="/62EF036B/62F12C84" Ref="R45"  Part="1" 
+F 0 "R4" H 4818 1246 50  0000 L CNN
+F 1 "10K" H 4818 1155 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4750 1200 50  0001 C CNN
+F 3 "~" H 4750 1200 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 4750 1200 50  0001 C CNN "Digikey"
+	1    4750 1200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4850 1450 4750 1450
+Wire Wire Line
+	4750 1450 4750 1300
+Wire Wire Line
+	4750 1100 4750 1000
+Wire Wire Line
+	4750 1000 5150 1000
+Wire Wire Line
+	5150 1000 5150 1200
+Connection ~ 5150 1200
+Connection ~ 4750 1450
+NoConn ~ 5700 3050
+Wire Wire Line
+	5700 2950 5200 2950
+Wire Wire Line
+	5700 2550 5200 2550
+Text Notes 8600 1900 0    50   ~ 0
+GRAPHIC LCD
+Text Notes 6700 1800 0    50   ~ 0
+BACKLIGHT\nVF=3.2V IF=15mA\n
+$Comp
+L Device:R_Small_US R7
+U 1 1 62F12C96
+P 5000 2300
+AR Path="/62F12C96" Ref="R7"  Part="1" 
+AR Path="/62EF036B/62F12C96" Ref="R48"  Part="1" 
+F 0 "R7" V 4900 2250 50  0000 L CNN
+F 1 "47" V 5100 2250 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 2300 50  0001 C CNN
+F 3 "~" H 5000 2300 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 5000 2300 50  0001 C CNN "Digikey"
+	1    5000 2300
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small_US R5
+U 1 1 62F12C9C
+P 4850 2500
+AR Path="/62F12C9C" Ref="R5"  Part="1" 
+AR Path="/62EF036B/62F12C9C" Ref="R46"  Part="1" 
+F 0 "R5" V 4750 2450 50  0000 L CNN
+F 1 "47" V 4950 2450 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4850 2500 50  0001 C CNN
+F 3 "~" H 4850 2500 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 4850 2500 50  0001 C CNN "Digikey"
+	1    4850 2500
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small_US R8
+U 1 1 62F12CA2
+P 5000 2750
+AR Path="/62F12CA2" Ref="R8"  Part="1" 
+AR Path="/62EF036B/62F12CA2" Ref="R49"  Part="1" 
+F 0 "R8" V 4900 2700 50  0000 L CNN
+F 1 "47" V 5100 2700 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 2750 50  0001 C CNN
+F 3 "~" H 5000 2750 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 5000 2750 50  0001 C CNN "Digikey"
+	1    5000 2750
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small_US R6
+U 1 1 62F12CA8
+P 4850 2950
+AR Path="/62F12CA8" Ref="R6"  Part="1" 
+AR Path="/62EF036B/62F12CA8" Ref="R47"  Part="1" 
+F 0 "R6" V 4750 2900 50  0000 L CNN
+F 1 "47" V 4950 2900 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4850 2950 50  0001 C CNN
+F 3 "~" H 4850 2950 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 4850 2950 50  0001 C CNN "Digikey"
+	1    4850 2950
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small_US R9
+U 1 1 62F12CAE
+P 5000 3150
+AR Path="/62F12CAE" Ref="R9"  Part="1" 
+AR Path="/62EF036B/62F12CAE" Ref="R50"  Part="1" 
+F 0 "R9" V 4900 3100 50  0000 L CNN
+F 1 "47" V 5100 3100 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5000 3150 50  0001 C CNN
+F 3 "~" H 5000 3150 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 5000 3150 50  0001 C CNN "Digikey"
+	1    5000 3150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5200 2550 5200 2300
+Wire Wire Line
+	5200 2300 5100 2300
+Wire Wire Line
+	5150 2650 5150 2500
+Wire Wire Line
+	5150 2500 4950 2500
+Wire Wire Line
+	5150 2650 5700 2650
+Wire Wire Line
+	5700 2750 5100 2750
+Wire Wire Line
+	5150 2850 5150 2950
+Wire Wire Line
+	5150 2950 4950 2950
+Wire Wire Line
+	5150 2850 5700 2850
+Wire Wire Line
+	5200 2950 5200 3150
+Wire Wire Line
+	5200 3150 5100 3150
+Wire Wire Line
+	4900 2300 4050 2300
+$Comp
+L Device:R_Small_US R3
+U 1 1 62F12CC0
+P 4350 1450
+AR Path="/62F12CC0" Ref="R3"  Part="1" 
+AR Path="/62EF036B/62F12CC0" Ref="R44"  Part="1" 
+F 0 "R3" V 4250 1400 50  0000 L CNN
+F 1 "1K" V 4450 1400 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4350 1450 50  0001 C CNN
+F 3 "~" H 4350 1450 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 4350 1450 50  0001 C CNN "Digikey"
+	1    4350 1450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4250 1450 4050 1450
+$Comp
+L Connector_Generic:Conn_01x10 J1
+U 1 1 62F12CC7
+P 2900 2100
+AR Path="/62F12CC7" Ref="J1"  Part="1" 
+AR Path="/62EF036B/62F12CC7" Ref="J9"  Part="1" 
+F 0 "J1" H 3000 2600 50  0000 C CNN
+F 1 "Conn_01x10" H 3050 1500 50  0000 C CNN
+F 2 "uratt_fp:TE_1-1734742-0" H 2900 2100 50  0001 C CNN
+F 3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1734839&DocType=Customer+Drawing&DocLang=English" H 2900 2100 50  0001 C CNN
+F 4 "" H 2900 2100 50  0001 C CNN "Field4"
+F 5 "ZF5S-10-01-T-WT-TR" H 2900 2100 50  0001 C CNN "Alt MFR Part"
+F 6 "A100293CT-ND" H 2900 2100 50  0001 C CNN "Digikey"
+	1    2900 2100
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	3100 1800 4050 1800
+Wire Wire Line
+	4050 1800 4050 1450
+Wire Wire Line
+	4050 2300 4050 1900
+Wire Wire Line
+	4050 1900 3100 1900
+Wire Wire Line
+	3100 2000 3950 2000
+Wire Wire Line
+	3950 2000 3950 2500
+Wire Wire Line
+	3850 2750 3850 2100
+Wire Wire Line
+	3850 2100 3100 2100
+Wire Wire Line
+	3750 2950 3750 2200
+Wire Wire Line
+	3750 2200 3100 2200
+Wire Wire Line
+	3650 3150 3650 2300
+Wire Wire Line
+	3650 2300 3100 2300
+Wire Wire Line
+	3100 1700 3950 1700
+Wire Wire Line
+	3950 1700 3950 850 
+Wire Wire Line
+	3950 850  5550 850 
+Wire Wire Line
+	5550 850  5550 1200
+$Comp
+L power:GND1 #PWR0101
+U 1 1 62F12CDD
+P 3150 2950
+AR Path="/62F12CDD" Ref="#PWR0101"  Part="1" 
+AR Path="/62EF036B/62F12CDD" Ref="#PWR091"  Part="1" 
+F 0 "#PWR0101" H 3150 2700 50  0001 C CNN
+F 1 "GND1" H 3155 2777 50  0000 C CNN
+F 2 "" H 3150 2950 50  0001 C CNN
+F 3 "" H 3150 2950 50  0001 C CNN
+	1    3150 2950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3100 2600 3150 2600
+Wire Wire Line
+	3150 2600 3150 2950
+$Comp
+L power:GND1 #PWR0102
+U 1 1 62F12CE5
+P 6150 1600
+AR Path="/62F12CE5" Ref="#PWR0102"  Part="1" 
+AR Path="/62EF036B/62F12CE5" Ref="#PWR093"  Part="1" 
+F 0 "#PWR0102" H 6150 1350 50  0001 C CNN
+F 1 "GND1" H 6155 1427 50  0000 C CNN
+F 2 "" H 6150 1600 50  0001 C CNN
+F 3 "" H 6150 1600 50  0001 C CNN
+	1    6150 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND1 #PWR0103
+U 1 1 62F12CEB
+P 5450 3300
+AR Path="/62F12CEB" Ref="#PWR0103"  Part="1" 
+AR Path="/62EF036B/62F12CEB" Ref="#PWR092"  Part="1" 
+F 0 "#PWR0103" H 5450 3050 50  0001 C CNN
+F 1 "GND1" H 5455 3127 50  0000 C CNN
+F 2 "" H 5450 3300 50  0001 C CNN
+F 3 "" H 5450 3300 50  0001 C CNN
+	1    5450 3300
+	1    0    0    -1  
+$EndComp
+Text Label 3200 1800 0    50   ~ 0
+R_LCD_BL
+Text Label 3200 1700 0    50   ~ 0
+R_LCD_3.3V
+Text Label 3200 1900 0    50   ~ 0
+R_LCD_CS
+Text Label 3200 2000 0    50   ~ 0
+R_LCD_RESET
+Text Label 3200 2100 0    50   ~ 0
+R_LCD_DC
+Text Label 3200 2200 0    50   ~ 0
+R_LCD_CLK
+Text Label 3200 2300 0    50   ~ 0
+R_LCD_MOSI
+Wire Wire Line
+	4450 1450 4750 1450
+Wire Wire Line
+	3950 2500 4750 2500
+Wire Wire Line
+	3850 2750 4900 2750
+Wire Wire Line
+	3750 2950 4750 2950
+Wire Wire Line
+	3650 3150 4900 3150
+Wire Wire Line
+	3100 2500 3450 2500
+Wire Wire Line
+	3450 2500 3450 4100
+Connection ~ 2700 4100
+Wire Wire Line
+	2700 4100 2800 4100
+$Comp
+L Device:R_Small_US R1
+U 1 1 6319A3AD
+P 2900 4100
+AR Path="/6319A3AD" Ref="R1"  Part="1" 
+AR Path="/62EF036B/6319A3AD" Ref="R43"  Part="1" 
+F 0 "R1" V 2800 4050 50  0000 L CNN
+F 1 "47" V 3000 3950 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 2900 4100 50  0001 C CNN
+F 3 "~" H 2900 4100 50  0001 C CNN
+F 4 "13-RT0603FRE0747RLCT-ND" H 2900 4100 50  0001 C CNN "Digikey"
+	1    2900 4100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2550 4250 2700 4250
+Wire Wire Line
+	2350 4250 2250 4250
+Wire Wire Line
+	2700 4100 2650 4100
+Wire Wire Line
+	2700 4250 2700 4100
+Wire Wire Line
+	2250 4250 2250 4100
+$Comp
+L Device:C_Small C1
+U 1 1 6319A3BE
+P 2450 4250
+AR Path="/6319A3BE" Ref="C1"  Part="1" 
+AR Path="/62EF036B/6319A3BE" Ref="C32"  Part="1" 
+F 0 "C1" V 2550 4300 50  0000 L CNN
+F 1 "0.1uF" V 2650 4250 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2450 4250 50  0001 C CNN
+F 3 "~" H 2450 4250 50  0001 C CNN
+F 4 "732-7939-1-ND " H 2450 4250 50  0001 C CNN "Digikey"
+	1    2450 4250
+	0    1    1    0   
+$EndComp
+$Comp
+L Switch:SW_Push SW1
+U 1 1 6319A3C4
+P 2450 4100
+AR Path="/6319A3C4" Ref="SW1"  Part="1" 
+AR Path="/62EF036B/6319A3C4" Ref="SW3"  Part="1" 
+F 0 "SW1" H 2450 4385 50  0000 C CNN
+F 1 "SW_Push" H 2450 4294 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KSC6xxJ" H 2450 4300 50  0001 C CNN
+F 3 "https://www.ckswitches.com/media/1973/ksc7.pdf" H 2450 4300 50  0001 C CNN
+F 4 "" H 2450 4100 50  0001 C CNN "Field4"
+F 5 "	401-1910-1-ND" H 2450 4100 50  0001 C CNN "Digikey"
+	1    2450 4100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND1 #PWR0104
+U 1 1 6319ECB9
+P 2250 4250
+AR Path="/6319ECB9" Ref="#PWR0104"  Part="1" 
+AR Path="/62EF036B/6319ECB9" Ref="#PWR090"  Part="1" 
+F 0 "#PWR0104" H 2250 4000 50  0001 C CNN
+F 1 "GND1" H 2255 4077 50  0000 C CNN
+F 2 "" H 2250 4250 50  0001 C CNN
+F 3 "" H 2250 4250 50  0001 C CNN
+	1    2250 4250
+	1    0    0    -1  
+$EndComp
+Connection ~ 2250 4250
+Wire Wire Line
+	3000 4100 3150 4100
+Text Label 3200 2500 0    50   ~ 0
+R_BTN
+$Comp
+L Device:Buzzer BZ2
+U 1 1 60451D70
+P 6400 4950
+AR Path="/60451D70" Ref="BZ2"  Part="1" 
+AR Path="/62EF036B/60451D70" Ref="BZ1"  Part="1" 
+F 0 "BZ2" H 6552 4979 50  0000 L CNN
+F 1 "Buzzer" H 6552 4888 50  0000 L CNN
+F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 6375 5050 50  0001 C CNN
+F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 6375 5050 50  0001 C CNN
+F 4 "" H 6400 4950 50  0001 C CNN "Field4"
+F 5 "102-3761-1-ND" H 6400 4950 50  0001 C CNN "Digikey"
+	1    6400 4950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6300 4850 6200 4850
+Wire Wire Line
+	6200 4850 6200 4750
+Wire Wire Line
+	6200 5350 6200 5250
+Wire Wire Line
+	6200 5050 6300 5050
+$Comp
+L Device:R_Small_US R13
+U 1 1 60451D80
+P 6200 4600
+AR Path="/60451D80" Ref="R13"  Part="1" 
+AR Path="/62EF036B/60451D80" Ref="R53"  Part="1" 
+F 0 "R13" H 6268 4646 50  0000 L CNN
+F 1 "10" H 6268 4555 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 6200 4600 50  0001 C CNN
+F 3 "~" H 6200 4600 50  0001 C CNN
+F 4 "13-RE0603FRE07100RLCT-ND" H 6200 4600 50  0001 C CNN "Digikey"
+	1    6200 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small_US R12
+U 1 1 60451D8E
+P 5650 5550
+AR Path="/60451D8E" Ref="R12"  Part="1" 
+AR Path="/62EF036B/60451D8E" Ref="R52"  Part="1" 
+F 0 "R12" V 5550 5500 50  0000 L CNN
+F 1 "1K" V 5750 5500 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5650 5550 50  0001 C CNN
+F 3 "~" H 5650 5550 50  0001 C CNN
+F 4 "13-RE0603FRE071KLCT-ND" H 5650 5550 50  0001 C CNN "Digikey"
+	1    5650 5550
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3100 2400 3550 2400
+Wire Wire Line
+	3550 2400 3550 3600
+Wire Wire Line
+	3550 3600 4900 3600
+Wire Wire Line
+	4900 3600 4900 5550
+Wire Wire Line
+	4900 5550 5550 5550
+Text Label 3200 2400 0    50   ~ 0
+R_BEEPER
+Text Label 5700 4300 0    50   ~ 0
+R_LCD_3.3V
+Wire Wire Line
+	6200 4300 5700 4300
+Wire Wire Line
+	6200 4300 6200 4500
+Connection ~ 6150 1600
+$Comp
+L power:GND1 #PWR0105
+U 1 1 5FE7C0E9
+P 6200 5850
+AR Path="/5FE7C0E9" Ref="#PWR0105"  Part="1" 
+AR Path="/62EF036B/5FE7C0E9" Ref="#PWR094"  Part="1" 
+F 0 "#PWR0105" H 6200 5600 50  0001 C CNN
+F 1 "GND1" H 6205 5677 50  0000 C CNN
+F 2 "" H 6200 5850 50  0001 C CNN
+F 3 "" H 6200 5850 50  0001 C CNN
+	1    6200 5850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H?
+U 1 1 5FEBDB85
+P 8150 4000
+AR Path="/61FC99B5/5FEBDB85" Ref="H?"  Part="1" 
+AR Path="/62EF036B/5FEBDB85" Ref="H5"  Part="1" 
+AR Path="/5FEBDB85" Ref="H5"  Part="1" 
+F 0 "H5" H 8250 4046 50  0000 L CNN
+F 1 "MountingHole" H 8250 3955 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 4000 50  0001 C CNN
+F 3 "~" H 8150 4000 50  0001 C CNN
+F 4 "N/A" H 8150 4000 50  0001 C CNN "Digikey"
+	1    8150 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H?
+U 1 1 5FEBDB8B
+P 8150 4250
+AR Path="/61FC99B5/5FEBDB8B" Ref="H?"  Part="1" 
+AR Path="/62EF036B/5FEBDB8B" Ref="H6"  Part="1" 
+AR Path="/5FEBDB8B" Ref="H6"  Part="1" 
+F 0 "H6" H 8250 4296 50  0000 L CNN
+F 1 "MountingHole" H 8250 4205 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 4250 50  0001 C CNN
+F 3 "~" H 8150 4250 50  0001 C CNN
+F 4 "N/A" H 8150 4250 50  0001 C CNN "Digikey"
+	1    8150 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H?
+U 1 1 5FEBDB91
+P 8150 4500
+AR Path="/61FC99B5/5FEBDB91" Ref="H?"  Part="1" 
+AR Path="/62EF036B/5FEBDB91" Ref="H7"  Part="1" 
+AR Path="/5FEBDB91" Ref="H7"  Part="1" 
+F 0 "H7" H 8250 4546 50  0000 L CNN
+F 1 "MountingHole" H 8250 4455 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 4500 50  0001 C CNN
+F 3 "~" H 8150 4500 50  0001 C CNN
+F 4 "N/A" H 8150 4500 50  0001 C CNN "Digikey"
+	1    8150 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H?
+U 1 1 5FEBDB97
+P 8150 4750
+AR Path="/61FC99B5/5FEBDB97" Ref="H?"  Part="1" 
+AR Path="/62EF036B/5FEBDB97" Ref="H8"  Part="1" 
+AR Path="/5FEBDB97" Ref="H8"  Part="1" 
+F 0 "H8" H 8250 4796 50  0000 L CNN
+F 1 "MountingHole" H 8250 4705 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.1mm" H 8150 4750 50  0001 C CNN
+F 3 "~" H 8150 4750 50  0001 C CNN
+F 4 "N/A" H 8150 4750 50  0001 C CNN "Digikey"
+	1    8150 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:Buzzer BZ1
+U 1 1 5FF0EFC7
+P 5750 4950
+AR Path="/5FF0EFC7" Ref="BZ1"  Part="1" 
+AR Path="/62EF036B/5FF0EFC7" Ref="BZ2"  Part="1" 
+F 0 "BZ1" H 5900 4850 50  0000 L CNN
+F 1 "Buzzer (ALT)" H 5650 4750 50  0000 L CNN
+F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 5725 5050 50  0001 C CNN
+F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 5725 5050 50  0001 C CNN
+F 4 "102-3761-1-ND" H 5750 4950 50  0001 C CNN "Digikey"
+	1    5750 4950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 5050 5600 5050
+Wire Wire Line
+	5600 5050 5600 5250
+Wire Wire Line
+	5600 5250 6200 5250
+Connection ~ 6200 5250
+Wire Wire Line
+	6200 5250 6200 5050
+Wire Wire Line
+	5600 4850 5600 4750
+Wire Wire Line
+	5600 4750 6200 4750
+Connection ~ 6200 4750
+Wire Wire Line
+	6200 4750 6200 4700
+Wire Wire Line
+	5550 1300 5550 2250
+$Comp
+L power:GND1 #PWR0106
+U 1 1 5FFD4D84
+P 5300 2150
+AR Path="/5FFD4D84" Ref="#PWR0106"  Part="1" 
+AR Path="/62EF036B/5FFD4D84" Ref="#PWR0111"  Part="1" 
+F 0 "#PWR0106" H 5300 1900 50  0001 C CNN
+F 1 "GND1" H 5305 1977 50  0000 C CNN
+F 2 "" H 5300 2150 50  0001 C CNN
+F 3 "" H 5300 2150 50  0001 C CNN
+	1    5300 2150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 2150 5300 2150
+$Comp
+L Device:R_Small_US R11
+U 1 1 60267C9A
+P 5250 4950
+AR Path="/60267C9A" Ref="R11"  Part="1" 
+AR Path="/62EF036B/60267C9A" Ref="R59"  Part="1" 
+F 0 "R11" H 5318 4996 50  0000 L CNN
+F 1 "470" H 5318 4905 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 5250 4950 50  0001 C CNN
+F 3 "~" H 5250 4950 50  0001 C CNN
+F 4 "YAG2321CT-ND" H 5250 4950 50  0001 C CNN "Digikey"
+	1    5250 4950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 4850 5600 4850
+Wire Wire Line
+	5250 5050 5250 5250
+Wire Wire Line
+	5250 5250 5600 5250
+Connection ~ 5600 5250
+Wire Wire Line
+	5250 4850 5250 4750
+Wire Wire Line
+	5250 4750 5600 4750
+Connection ~ 5600 4750
+$Comp
+L Device:R_Small_US R2
+U 1 1 603399B4
+P 3150 3750
+AR Path="/603399B4" Ref="R2"  Part="1" 
+AR Path="/62EF036B/603399B4" Ref="R61"  Part="1" 
+F 0 "R2" H 3218 3796 50  0000 L CNN
+F 1 "10K" H 3218 3705 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 3150 3750 50  0001 C CNN
+F 3 "~" H 3150 3750 50  0001 C CNN
+F 4 "13-RE0603FRE07100RLCT-ND" H 3150 3750 50  0001 C CNN "Digikey"
+	1    3150 3750
+	1    0    0    -1  
+$EndComp
+Text Label 2650 3450 0    50   ~ 0
+R_LCD_3.3V
+Wire Wire Line
+	3150 3450 2650 3450
+Wire Wire Line
+	3150 3450 3150 3650
+Wire Wire Line
+	3150 3850 3150 4100
+Connection ~ 3150 4100
+Wire Wire Line
+	3150 4100 3450 4100
+Wire Wire Line
+	5750 5550 5900 5550
+Wire Wire Line
+	6200 5850 6200 5750
+$Comp
+L Transistor_FET:2N7002 Q2
+U 1 1 60451D78
+P 6100 5550
+AR Path="/60451D78" Ref="Q2"  Part="1" 
+AR Path="/62EF036B/60451D78" Ref="Q4"  Part="1" 
+F 0 "Q2" H 6304 5596 50  0000 L CNN
+F 1 "2N7002" H 6304 5505 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 6300 5475 50  0001 L CIN
+F 3 "https://www.diodes.com/assets/Datasheets/2N7002.pdf" H 6100 5550 50  0001 L CNN
+F 4 "2N7002Q-7-FDICT-ND" H 6100 5550 50  0001 C CNN "Digikey"
+	1    6100 5550
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
