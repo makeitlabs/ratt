@@ -1777,20 +1777,6 @@ Wire Wire Line
 	11300 1850 11700 1850
 Connection ~ 2350 8250
 $Comp
-L Device:CP1_Small C?
-U 1 1 63772D7F
-P 14600 6300
-AR Path="/63772D7F" Ref="C?"  Part="1" 
-AR Path="/61FC99B5/63772D7F" Ref="C32"  Part="1" 
-F 0 "C32" H 14691 6346 50  0000 L CNN
-F 1 "10uF" H 14691 6255 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 14600 6300 50  0001 C CNN
-F 3 "http://www.samsungsem.com/kr/support/product-search/mlcc/CL21A106KOQNNNE.jsp" H 14600 6300 50  0001 C CNN
-F 4 "1276-1096-1-ND" H 14600 6300 50  0001 C CNN "Digikey"
-	1    14600 6300
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:C_Small C?
 U 1 1 63772D85
 P 14150 6300
@@ -1808,10 +1794,6 @@ Wire Wire Line
 	14150 6400 14150 6500
 Wire Wire Line
 	14150 6500 14600 6500
-Wire Wire Line
-	14600 6500 14600 6400
-Wire Wire Line
-	14600 6100 14600 6200
 Wire Wire Line
 	14150 6200 14150 6100
 Connection ~ 14150 6100
@@ -1832,7 +1814,6 @@ F 3 "" H 14600 6500 50  0001 C CNN
 	1    14600 6500
 	1    0    0    -1  
 $EndComp
-Connection ~ 14600 6500
 $Comp
 L Connector_Generic:Conn_01x02 J?
 U 1 1 63772D9A
@@ -2427,4 +2408,23 @@ Wire Wire Line
 Connection ~ 4200 4150
 Wire Wire Line
 	4350 4450 4350 4400
+$Comp
+L Device:CP1_Small C?
+U 1 1 60170402
+P 14600 6250
+AR Path="/60170402" Ref="C?"  Part="1" 
+AR Path="/61FC99B5/60170402" Ref="C32"  Part="1" 
+F 0 "C32" H 14691 6296 50  0000 L CNN
+F 1 "100uF" H 14691 6205 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_5x3" H 14600 6250 50  0001 C CNN
+F 3 "https://industrial.panasonic.com/cdbs/www-data/pdf/RDE0000/ABA0000C1151.pdf" H 14600 6250 50  0001 C CNN
+F 4 "PCE4156CT-ND" H 14600 6250 50  0001 C CNN "Digikey"
+	1    14600 6250
+	1    0    0    -1  
+$EndComp
+Connection ~ 14600 6500
+Wire Wire Line
+	14600 6500 14600 6350
+Wire Wire Line
+	14600 6100 14600 6150
 $EndSCHEMATC
