@@ -1895,55 +1895,16 @@ MOTOR_O1
 Text GLabel 13550 7000 0    50   Input ~ 0
 MOTOR_O2
 $Comp
-L Mechanical:MountingHole H1
-U 1 1 5FE95DC9
-P 4350 8300
-F 0 "H1" H 4450 8346 50  0000 L CNN
-F 1 "MountingHole" H 4450 8255 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 8300 50  0001 C CNN
-F 3 "" H 4350 8300 50  0001 C CNN
-F 4 "" H 4350 8300 50  0001 C CNN "Field4"
-F 5 "N/A" H 4350 8300 50  0001 C CNN "Digikey"
-	1    4350 8300
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H2
-U 1 1 5FE9623B
-P 4350 8550
-F 0 "H2" H 4450 8596 50  0000 L CNN
-F 1 "MountingHole" H 4450 8505 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 8550 50  0001 C CNN
-F 3 "" H 4350 8550 50  0001 C CNN
-F 4 "" H 4350 8550 50  0001 C CNN "Field4"
-F 5 "N/A" H 4350 8550 50  0001 C CNN "Digikey"
-	1    4350 8550
-	1    0    0    -1  
-$EndComp
-$Comp
 L Mechanical:MountingHole H3
 U 1 1 5FEA2774
-P 4350 8800
-F 0 "H3" H 4450 8846 50  0000 L CNN
-F 1 "MountingHole" H 4450 8755 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 8800 50  0001 C CNN
-F 3 "" H 4350 8800 50  0001 C CNN
-F 4 "" H 4350 8800 50  0001 C CNN "Field4"
-F 5 "N/A" H 4350 8800 50  0001 C CNN "Digikey"
-	1    4350 8800
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H4
-U 1 1 5FEAED48
-P 4350 9050
-F 0 "H4" H 4450 9096 50  0000 L CNN
-F 1 "MountingHole" H 4450 9005 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 9050 50  0001 C CNN
-F 3 "" H 4350 9050 50  0001 C CNN
-F 4 "" H 4350 9050 50  0001 C CNN "Field4"
-F 5 "N/A" H 4350 9050 50  0001 C CNN "Digikey"
-	1    4350 9050
+P 4350 9400
+F 0 "H3" H 4450 9446 50  0000 L CNN
+F 1 "MountingHole" H 4450 9355 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.7mm_M2.5" H 4350 9400 50  0001 C CNN
+F 3 "" H 4350 9400 50  0001 C CNN
+F 4 "" H 4350 9400 50  0001 C CNN "Field4"
+F 5 "N/A" H 4350 9400 50  0001 C CNN "Digikey"
+	1    4350 9400
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2427,4 +2388,136 @@ Wire Wire Line
 	14600 6500 14600 6350
 Wire Wire Line
 	14600 6100 14600 6150
+$Comp
+L Mechanical:MountingHole_Pad H4
+U 1 1 6015897E
+P 4350 9700
+F 0 "H4" H 4450 9749 50  0000 L CNN
+F 1 "MountingHole_Pad" H 4450 9658 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.7mm_M2.5_Pad_TopBottom" H 4350 9700 50  0001 C CNN
+F 3 "~" H 4350 9700 50  0001 C CNN
+	1    4350 9700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small_US JP?
+U 1 1 6016F155
+P 4600 10050
+AR Path="/6016F155" Ref="JP?"  Part="1" 
+AR Path="/61FC99B5/6016F155" Ref="FB7"  Part="1" 
+F 0 "FB7" V 4500 10000 50  0000 L CNN
+F 1 "OPTION" V 4700 10000 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4600 10050 50  0001 C CNN
+F 3 "~" H 4600 10050 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 4600 10050 50  0001 C CNN "Digikey"
+	1    4600 10050
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601800AD
+P 5100 10050
+AR Path="/601800AD" Ref="#PWR?"  Part="1" 
+AR Path="/61FC99B5/601800AD" Ref="#PWR0103"  Part="1" 
+F 0 "#PWR0103" H 5100 9800 50  0001 C CNN
+F 1 "GND" H 5105 9877 50  0000 C CNN
+F 2 "" H 5100 10050 50  0001 C CNN
+F 3 "" H 5100 10050 50  0001 C CNN
+	1    5100 10050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4350 9800 4350 10050
+Wire Wire Line
+	4350 10050 4500 10050
+Wire Wire Line
+	4700 10050 5100 10050
+$Comp
+L Mechanical:MountingHole_Pad H1
+U 1 1 601B9F9A
+P 4350 8050
+F 0 "H1" H 4450 8099 50  0000 L CNN
+F 1 "MountingHole_Pad" H 4450 8008 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.7mm_M2.5_Pad_TopBottom" H 4350 8050 50  0001 C CNN
+F 3 "~" H 4350 8050 50  0001 C CNN
+	1    4350 8050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H2
+U 1 1 601C9D7C
+P 4350 8700
+F 0 "H2" H 4450 8749 50  0000 L CNN
+F 1 "MountingHole_Pad" H 4450 8658 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.7mm_M2.5_Pad_TopBottom" H 4350 8700 50  0001 C CNN
+F 3 "~" H 4350 8700 50  0001 C CNN
+	1    4350 8700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Small_US FB?
+U 1 1 601F19BA
+P 4600 8300
+AR Path="/601F19BA" Ref="FB?"  Part="1" 
+AR Path="/61FC99B5/601F19BA" Ref="FB5"  Part="1" 
+F 0 "FB5" V 4500 8250 50  0000 L CNN
+F 1 "OPTION" V 4700 8250 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4600 8300 50  0001 C CNN
+F 3 "~" H 4600 8300 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 4600 8300 50  0001 C CNN "Digikey"
+	1    4600 8300
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 601F19C0
+P 5100 8300
+AR Path="/601F19C0" Ref="#PWR?"  Part="1" 
+AR Path="/61FC99B5/601F19C0" Ref="#PWR0104"  Part="1" 
+F 0 "#PWR0104" H 5100 8050 50  0001 C CNN
+F 1 "GND" H 5105 8127 50  0000 C CNN
+F 2 "" H 5100 8300 50  0001 C CNN
+F 3 "" H 5100 8300 50  0001 C CNN
+	1    5100 8300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4350 8300 4500 8300
+Wire Wire Line
+	4700 8300 5100 8300
+$Comp
+L Device:R_Small_US FB?
+U 1 1 6020219E
+P 4600 8950
+AR Path="/6020219E" Ref="FB?"  Part="1" 
+AR Path="/61FC99B5/6020219E" Ref="FB6"  Part="1" 
+F 0 "FB6" V 4500 8900 50  0000 L CNN
+F 1 "OPTION" V 4700 8900 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 4600 8950 50  0001 C CNN
+F 3 "~" H 4600 8950 50  0001 C CNN
+F 4 "2019-RK73Z1JTTDCT-ND" H 4600 8950 50  0001 C CNN "Digikey"
+	1    4600 8950
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 602021A4
+P 5100 8950
+AR Path="/602021A4" Ref="#PWR?"  Part="1" 
+AR Path="/61FC99B5/602021A4" Ref="#PWR0105"  Part="1" 
+F 0 "#PWR0105" H 5100 8700 50  0001 C CNN
+F 1 "GND" H 5105 8777 50  0000 C CNN
+F 2 "" H 5100 8950 50  0001 C CNN
+F 3 "" H 5100 8950 50  0001 C CNN
+	1    5100 8950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4350 8950 4500 8950
+Wire Wire Line
+	4700 8950 5100 8950
+Wire Wire Line
+	4350 8800 4350 8950
+Wire Wire Line
+	4350 8150 4350 8300
 $EndSCHEMATC
