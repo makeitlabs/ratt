@@ -1,4 +1,4 @@
 # uRATT REV1
 
-![uRATT PCB Front](assembly/uratt_top.jpg?raw=true)
+![uRATT PCB Front](assembly/uratt_top.png?raw=true)
 
