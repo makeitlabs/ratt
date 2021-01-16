@@ -17,8 +17,8 @@
     (33 F.Adhes user hide)
     (34 B.Paste user hide)
     (35 F.Paste user hide)
-    (36 B.SilkS user)
-    (37 F.SilkS user hide)
+    (36 B.SilkS user hide)
+    (37 F.SilkS user)
     (38 B.Mask user hide)
     (39 F.Mask user hide)
     (40 Dwgs.User user hide)
@@ -34,7 +34,7 @@
   )
 
   (setup
-    (last_trace_width 0.4)
+    (last_trace_width 0.2)
     (user_trace_width 0.2)
     (user_trace_width 0.25)
     (user_trace_width 0.4)
@@ -2892,7 +2892,7 @@
   (segment (start 68.45 145.3) (end 68.45 144.5) (width 0.2) (layer B.Cu) (net 25))
   (segment (start 68.075 145.675) (end 68.45 145.3) (width 0.2) (layer B.Cu) (net 25))
 
-  (zone (net 1) (net_name GND1) (layer F.Cu) (tstamp 5FE23084) (hatch edge 0.508)
+  (zone (net 1) (net_name GND1) (layer F.Cu) (tstamp 60037902) (hatch edge 0.508)
     (connect_pads (clearance 0.508))
     (min_thickness 0.254)
     (fill yes (arc_segments 32) (thermal_gap 0.508) (thermal_bridge_width 0.508) (smoothing chamfer))
@@ -3114,7 +3114,7 @@
       )
     )
   )
-  (zone (net 1) (net_name GND1) (layer B.Cu) (tstamp 5FE23081) (hatch edge 0.508)
+  (zone (net 1) (net_name GND1) (layer B.Cu) (tstamp 600378FF) (hatch edge 0.508)
     (connect_pads (clearance 0.508))
     (min_thickness 0.254)
     (fill yes (arc_segments 32) (thermal_gap 0.508) (thermal_bridge_width 0.508) (smoothing chamfer))
