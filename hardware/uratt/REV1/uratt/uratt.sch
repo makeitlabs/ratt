@@ -1349,25 +1349,12 @@ F 4 "DT1240A-08LP3810-7DICT-ND" H 13500 2800 50  0001 C CNN "Digikey"
 	1    13500 2800
 	1    0    0    -1  
 $EndComp
-$Comp
-L Connector_Generic:Conn_01x10 J3
-U 1 1 62A9ED39
-P 14300 1600
-F 0 "J3" H 14300 2100 50  0000 C CNN
-F 1 "Conn_01x10" H 14450 950 50  0000 C CNN
-F 2 "uratt:TE_1-1734742-0" H 14300 1600 50  0001 C CNN
-F 3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1734839&DocType=Customer+Drawing&DocLang=English" H 14300 1600 50  0001 C CNN
-F 4 "A100293CT-ND" H 14300 1600 50  0001 C CNN "Digikey"
-F 5 "ZF5S-10-01-T-WT-TR" H 14300 1600 50  0001 C CNN "Alt MFR Part"
-	1    14300 1600
-	1    0    0    -1  
-$EndComp
 Text GLabel 12650 1500 0    50   Input ~ 0
 LCD_RESET
 Text GLabel 12650 1700 0    50   Input ~ 0
 LCD_CLK
 Wire Wire Line
-	14100 1200 12750 1200
+	14100 1200 14000 1200
 Wire Wire Line
 	12750 1200 12750 1000
 Wire Wire Line
@@ -1375,12 +1362,12 @@ Wire Wire Line
 $Comp
 L power:GND #PWR031
 U 1 1 62DCEE0A
-P 14000 2200
-F 0 "#PWR031" H 14000 1950 50  0001 C CNN
-F 1 "GND" H 14005 2027 50  0000 C CNN
-F 2 "" H 14000 2200 50  0001 C CNN
-F 3 "" H 14000 2200 50  0001 C CNN
-	1    14000 2200
+P 14000 2300
+F 0 "#PWR031" H 14000 2050 50  0001 C CNN
+F 1 "GND" H 14005 2127 50  0000 C CNN
+F 2 "" H 14000 2300 50  0001 C CNN
+F 3 "" H 14000 2300 50  0001 C CNN
+	1    14000 2300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -1777,7 +1764,7 @@ $EndComp
 Text GLabel 12650 1900 0    50   Input ~ 0
 BEEPER
 Wire Wire Line
-	14000 2200 14000 2100
+	14000 2300 14000 2200
 Wire Wire Line
 	14000 2100 14100 2100
 Wire Wire Line
@@ -2306,4 +2293,29 @@ Wire Notes Line
 	5600 8350 5600 10150
 Wire Notes Line
 	3050 8350 3050 10150
+$Comp
+L Connector_Generic:Conn_01x12 J3
+U 1 1 62A9ED39
+P 14300 1600
+F 0 "J3" H 14300 2200 50  0000 C CNN
+F 1 "Conn_01x10" H 14450 900 50  0000 C CNN
+F 2 "uratt:TE_1-1734742-2" H 14300 1600 50  0001 C CNN
+F 3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1734839&DocType=Customer+Drawing&DocLang=English" H 14300 1600 50  0001 C CNN
+F 4 "1-1734742-2" H 14300 1600 50  0001 C CNN "Digikey"
+F 5 "" H 14300 1600 50  0001 C CNN "Alt MFR Part"
+	1    14300 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	14100 2200 14000 2200
+Connection ~ 14000 2200
+Wire Wire Line
+	14000 2200 14000 2100
+Wire Wire Line
+	14100 1100 14000 1100
+Wire Wire Line
+	14000 1100 14000 1200
+Connection ~ 14000 1200
+Wire Wire Line
+	14000 1200 12750 1200
 $EndSCHEMATC
