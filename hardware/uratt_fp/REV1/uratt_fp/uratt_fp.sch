@@ -19,7 +19,7 @@ U 1 1 62F12C4B
 P 5800 1750
 AR Path="/62F12C4B" Ref="LCD101"  Part="1" 
 AR Path="/62EF036B/62F12C4B" Ref="LCD?"  Part="1" 
-F 0 "LCD101" H 5800 1700 50  0000 L CNN
+F 0 "LCD101" H 5750 1700 50  0000 L CNN
 F 1 "ER-TFT0.96-1" H 8600 250 50  0000 L CNN
 F 2 "uratt_fp:ER-TFT0.96-1" H 5750 1825 50  0001 C CNN
 F 3 "https://www.buydisplay.com/download/manual/ER-TFT0.96-1_Datasheet.pdf" H 5750 1825 50  0001 C CNN
@@ -81,8 +81,8 @@ U 1 1 62F12C68
 P 5050 1450
 AR Path="/62F12C68" Ref="Q101"  Part="1" 
 AR Path="/62EF036B/62F12C68" Ref="Q?"  Part="1" 
-F 0 "Q101" H 4850 1350 50  0000 L CNN
-F 1 "DMP31D0U" H 4650 1250 50  0000 L CNN
+F 0 "Q101" H 4800 1350 50  0000 L CNN
+F 1 "DMP31D0U" H 4600 1250 50  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 5250 1375 50  0001 L CIN
 F 3 "https://www.diodes.com/assets/Datasheets/DMP31D0U.pdf" H 5050 1450 50  0001 L CNN
 F 4 "DMP31D0U-7DICT-ND" H 5050 1450 50  0001 C CNN "Digikey"
@@ -96,7 +96,7 @@ P 5150 1850
 AR Path="/62F12C6E" Ref="R110"  Part="1" 
 AR Path="/62EF036B/62F12C6E" Ref="R?"  Part="1" 
 F 0 "R110" H 5218 1896 50  0000 L CNN
-F 1 "20" H 5218 1805 50  0000 L CNN
+F 1 "15" H 5218 1805 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 5150 1850 50  0001 C CNN
 F 3 "~" H 5150 1850 50  0001 C CNN
 F 4 "YAG5947CT-ND" H 5150 1850 50  0001 C CNN "Digikey"
@@ -314,7 +314,7 @@ Wire Wire Line
 Wire Wire Line
 	3950 1700 3950 850 
 Wire Wire Line
-	3950 850  5550 850 
+	3950 850  4150 850 
 Wire Wire Line
 	5550 850  5550 1200
 $Comp
@@ -462,29 +462,14 @@ Wire Wire Line
 	3000 4100 3150 4100
 Text Label 3200 2500 0    50   ~ 0
 R_BTN
-$Comp
-L Device:Buzzer BZ102
-U 1 1 60451D70
-P 6400 4950
-AR Path="/60451D70" Ref="BZ102"  Part="1" 
-AR Path="/62EF036B/60451D70" Ref="BZ?"  Part="1" 
-F 0 "BZ102" H 6552 4979 50  0000 L CNN
-F 1 "Buzzer" H 6552 4888 50  0000 L CNN
-F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 6375 5050 50  0001 C CNN
-F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 6375 5050 50  0001 C CNN
-F 4 "" H 6400 4950 50  0001 C CNN "Field4"
-F 5 "102-3761-1-ND" H 6400 4950 50  0001 C CNN "Digikey"
-	1    6400 4950
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	6300 4850 6200 4850
+	6300 4900 6200 4900
 Wire Wire Line
-	6200 4850 6200 4750
+	6200 4900 6200 4750
 Wire Wire Line
 	6200 5350 6200 5250
 Wire Wire Line
-	6200 5050 6300 5050
+	6200 5000 6300 5000
 $Comp
 L Device:R_Small_US R113
 U 1 1 60451D80
@@ -612,7 +597,7 @@ P 5750 4950
 AR Path="/5FF0EFC7" Ref="BZ101"  Part="1" 
 AR Path="/62EF036B/5FF0EFC7" Ref="BZ?"  Part="1" 
 F 0 "BZ101" H 5900 4850 50  0000 L CNN
-F 1 "Buzzer (ALT)" H 5650 4750 50  0000 L CNN
+F 1 "Buzzer" H 5650 4750 50  0000 L CNN
 F 2 "Buzzer_Beeper:Buzzer_CUI_CPT-9019S-SMT" V 5725 5050 50  0001 C CNN
 F 3 "https://www.cuidevices.com/product/resource/cpt-9019s-smt-tr.pdf" V 5725 5050 50  0001 C CNN
 F 4 "102-3761-1-ND" H 5750 4950 50  0001 C CNN "Digikey"
@@ -627,7 +612,7 @@ Wire Wire Line
 	5600 5250 6200 5250
 Connection ~ 6200 5250
 Wire Wire Line
-	6200 5250 6200 5050
+	6200 5250 6200 5000
 Wire Wire Line
 	5600 4850 5600 4750
 Wire Wire Line
@@ -719,6 +704,203 @@ F 2 "Package_TO_SOT_SMD:SOT-23" H 6300 5475 50  0001 L CIN
 F 3 "https://www.diodes.com/assets/Datasheets/2N7002.pdf" H 6100 5550 50  0001 L CNN
 F 4 "2N7002Q-7-FDICT-ND" H 6100 5550 50  0001 C CNN "Digikey"
 	1    6100 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK1
+U 1 1 60033CCA
+P 9350 3900
+F 0 "BK1" H 9723 3871 50  0000 L CNN
+F 1 "BREAKAWAY" H 9723 3780 50  0000 L CNN
+F 2 "uratt_fp:RATT_BITE" H 9350 3900 50  0001 C CNN
+F 3 "" H 9350 3900 50  0001 C CNN
+	1    9350 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK2
+U 1 1 60035B74
+P 9350 4150
+F 0 "BK2" H 9723 4121 50  0000 L CNN
+F 1 "BREAKAWAY" H 9723 4030 50  0000 L CNN
+F 2 "uratt_fp:RATT_BITE" H 9350 4150 50  0001 C CNN
+F 3 "" H 9350 4150 50  0001 C CNN
+	1    9350 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK3
+U 1 1 60038EFF
+P 9350 4400
+F 0 "BK3" H 9723 4371 50  0000 L CNN
+F 1 "BREAKAWAY" H 9723 4280 50  0000 L CNN
+F 2 "uratt_fp:RATT_BITE" H 9350 4400 50  0001 C CNN
+F 3 "" H 9350 4400 50  0001 C CNN
+	1    9350 4400
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK4
+U 1 1 6003C281
+P 9350 4650
+F 0 "BK4" H 9723 4621 50  0000 L CNN
+F 1 "BREAKAWAY" H 9723 4530 50  0000 L CNN
+F 2 "uratt_fp:RATT_BITE" H 9350 4650 50  0001 C CNN
+F 3 "" H 9350 4650 50  0001 C CNN
+	1    9350 4650
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK5
+U 1 1 600559B8
+P 9350 4900
+F 0 "BK5" H 9723 4871 50  0000 L CNN
+F 1 "BREAKAWAY" H 9723 4780 50  0000 L CNN
+F 2 "uratt_fp:RATT_BITE" H 9350 4900 50  0001 C CNN
+F 3 "" H 9350 4900 50  0001 C CNN
+	1    9350 4900
+	1    0    0    -1  
+$EndComp
+$Comp
+L uratt:BREAKAWAY BK6
+U 1 1 600559BE
+P 9350 5150
+F 0 "BK6" H 9723 5121 50  0000 L CNN
+F 1 "BREAKAWAY" H 9723 5030 50  0000 L CNN
+F 2 "uratt_fp:RATT_BITE" H 9350 5150 50  0001 C CNN
+F 3 "" H 9350 5150 50  0001 C CNN
+	1    9350 5150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID1
+U 1 1 60059976
+P 8150 5450
+F 0 "FID1" H 8235 5496 50  0000 L CNN
+F 1 "Fiducial" H 8235 5405 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8150 5450 50  0001 C CNN
+F 3 "~" H 8150 5450 50  0001 C CNN
+	1    8150 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID2
+U 1 1 6005B080
+P 8150 5700
+F 0 "FID2" H 8235 5746 50  0000 L CNN
+F 1 "Fiducial" H 8235 5655 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8150 5700 50  0001 C CNN
+F 3 "~" H 8150 5700 50  0001 C CNN
+	1    8150 5700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID3
+U 1 1 6005E3BB
+P 8150 5950
+F 0 "FID3" H 8235 5996 50  0000 L CNN
+F 1 "Fiducial" H 8235 5905 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8150 5950 50  0001 C CNN
+F 3 "~" H 8150 5950 50  0001 C CNN
+	1    8150 5950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID4
+U 1 1 600616B1
+P 8150 6200
+F 0 "FID4" H 8235 6246 50  0000 L CNN
+F 1 "Fiducial" H 8235 6155 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8150 6200 50  0001 C CNN
+F 3 "~" H 8150 6200 50  0001 C CNN
+	1    8150 6200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID5
+U 1 1 60071AAA
+P 8700 5450
+F 0 "FID5" H 8785 5496 50  0000 L CNN
+F 1 "Fiducial" H 8785 5405 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8700 5450 50  0001 C CNN
+F 3 "~" H 8700 5450 50  0001 C CNN
+	1    8700 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID6
+U 1 1 60071AB0
+P 8700 5700
+F 0 "FID6" H 8785 5746 50  0000 L CNN
+F 1 "Fiducial" H 8785 5655 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8700 5700 50  0001 C CNN
+F 3 "~" H 8700 5700 50  0001 C CNN
+	1    8700 5700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID7
+U 1 1 60071AB6
+P 8700 5950
+F 0 "FID7" H 8785 5996 50  0000 L CNN
+F 1 "Fiducial" H 8785 5905 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8700 5950 50  0001 C CNN
+F 3 "~" H 8700 5950 50  0001 C CNN
+	1    8700 5950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:Fiducial FID8
+U 1 1 60071ABC
+P 8700 6200
+F 0 "FID8" H 8785 6246 50  0000 L CNN
+F 1 "Fiducial" H 8785 6155 50  0000 L CNN
+F 2 "Fiducial:Fiducial_1.5mm_Mask3mm" H 8700 6200 50  0001 C CNN
+F 3 "~" H 8700 6200 50  0001 C CNN
+	1    8700 6200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP1_Small C104
+U 1 1 6008F309
+P 4150 1000
+F 0 "C104" H 4241 1046 50  0000 L CNN
+F 1 "100uF" H 4241 955 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_5x3" H 4150 1000 50  0001 C CNN
+F 3 "~" H 4150 1000 50  0001 C CNN
+	1    4150 1000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4150 900  4150 850 
+Connection ~ 4150 850 
+Wire Wire Line
+	4150 850  5550 850 
+$Comp
+L power:GND1 #PWR01
+U 1 1 60094159
+P 4150 1150
+AR Path="/60094159" Ref="#PWR01"  Part="1" 
+AR Path="/62EF036B/60094159" Ref="#PWR?"  Part="1" 
+F 0 "#PWR01" H 4150 900 50  0001 C CNN
+F 1 "GND1" H 4155 977 50  0000 C CNN
+F 2 "" H 4150 1150 50  0001 C CNN
+F 3 "" H 4150 1150 50  0001 C CNN
+	1    4150 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4150 1100 4150 1150
+$Comp
+L Device:Speaker LS101
+U 1 1 600E4D66
+P 6500 4900
+F 0 "LS101" H 6670 4896 50  0000 L CNN
+F 1 "Speaker" H 6670 4805 50  0000 L CNN
+F 2 "uratt_fp:SPKR_CVS-1508" H 6500 4700 50  0001 C CNN
+F 3 "~" H 6490 4850 50  0001 C CNN
+F 4 "102-2498-ND" H 6500 4900 50  0001 C CNN "Field4"
+	1    6500 4900
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
