@@ -270,18 +270,18 @@ $EndComp
 Wire Wire Line
 	4250 1450 4050 1450
 $Comp
-L Connector_Generic:Conn_01x10 J101
+L Connector_Generic:Conn_01x12 J101
 U 1 1 62F12CC7
 P 2900 2100
 AR Path="/62F12CC7" Ref="J101"  Part="1" 
 AR Path="/62EF036B/62F12CC7" Ref="J?"  Part="1" 
-F 0 "J101" H 3000 2600 50  0000 C CNN
-F 1 "Conn_01x10" H 3050 1500 50  0000 C CNN
-F 2 "uratt_fp:TE_1-1734742-0" H 2900 2100 50  0001 C CNN
+F 0 "J101" H 2900 2700 50  0000 C CNN
+F 1 "Conn_01x10" H 3000 1400 50  0000 C CNN
+F 2 "uratt_fp:TE_1-1734742-2" H 2900 2100 50  0001 C CNN
 F 3 "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1734839&DocType=Customer+Drawing&DocLang=English" H 2900 2100 50  0001 C CNN
 F 4 "" H 2900 2100 50  0001 C CNN "Field4"
-F 5 "ZF5S-10-01-T-WT-TR" H 2900 2100 50  0001 C CNN "Alt MFR Part"
-F 6 "A100293CT-ND" H 2900 2100 50  0001 C CNN "Digikey"
+F 5 "" H 2900 2100 50  0001 C CNN "Alt MFR Part"
+F 6 "A100233CT-ND" H 2900 2100 50  0001 C CNN "Digikey"
 	1    2900 2100
 	-1   0    0    -1  
 $EndComp
@@ -310,7 +310,7 @@ Wire Wire Line
 Wire Wire Line
 	3650 2300 3100 2300
 Wire Wire Line
-	3100 1700 3950 1700
+	3100 1700 3150 1700
 Wire Wire Line
 	3950 1700 3950 850 
 Wire Wire Line
@@ -333,7 +333,7 @@ $EndComp
 Wire Wire Line
 	3100 2600 3150 2600
 Wire Wire Line
-	3150 2600 3150 2950
+	3150 2600 3150 2700
 $Comp
 L power:GND1 #PWR0105
 U 1 1 62F12CE5
@@ -903,4 +903,16 @@ F 4 "102-2498-ND" H 6500 4900 50  0001 C CNN "Field4"
 	1    6500 4900
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	3100 1600 3150 1600
+Wire Wire Line
+	3150 1600 3150 1700
+Connection ~ 3150 1700
+Wire Wire Line
+	3150 1700 3950 1700
+Wire Wire Line
+	3100 2700 3150 2700
+Connection ~ 3150 2700
+Wire Wire Line
+	3150 2700 3150 2950
 $EndSCHEMATC
