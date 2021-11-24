@@ -1,6 +1,3 @@
 [submodule "firmware/rpi/meta-ratt"]
 	path = firmware/rpi/meta-ratt
 	url = https://github.com/makeitlabs/meta-ratt.git
-[submodule "firmware/rpi/meta-mender"]
-	path = firmware/rpi/meta-mender
-	url = https://github.com/mendersoftware/meta-mender.git
