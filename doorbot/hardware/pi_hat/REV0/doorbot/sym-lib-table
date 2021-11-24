@@ -1,5 +1,0 @@
-(sym_lib_table
-  (lib (name doorbot1)(type Legacy)(uri C:/Users/tange/Documents/ratt/hardware/doorbot/REV0/doorbot/doorbot.lib)(options "")(descr "")(disabled))
-  (lib (name doorbot-rescue)(type Legacy)(uri ${KIPRJMOD}/doorbot-rescue.lib)(options "")(descr ""))
-  (lib (name doorbot)(type Legacy)(uri ${KIPRJMOD}/doorbot.lib)(options "")(descr ""))
-)
