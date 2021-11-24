@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name uratt)(type Legacy)(uri ${KIPRJMOD}/uratt.lib)(options "")(descr ""))
-)
