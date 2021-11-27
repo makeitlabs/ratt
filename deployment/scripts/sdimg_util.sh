@@ -91,6 +91,19 @@ umount_parts()
     umount_part ${MOUNT_DATAFS}
 }
 
+umount_sdparts()
+{
+    umount_part ${SDCARD}${PART_BOOTFS}
+    umount_part ${SDCARD}${PART_ROOT1FS}
+    umount_part ${SDCARD}${PART_ROOT2FS}
+    umount_part ${SDCARD}${PART_DATAFS}
+}
+
+dd_image_to_sd()
+{
+    echo "Copying ${SDIMG} to ${SDCARD}... This will take a while, please wait."
+    sudo dd if=${SDIMG} of=${SDCARD} bs=8M status=progress
+}
 
 if [ "$1" = "mount" ]; then
     if [ "X$2" != "X" ]; then
@@ -106,10 +119,35 @@ if [ "$1" = "mount" ]; then
     fi
 elif [ "$1" = "umount" ]; then
     umount_parts
+elif [ "$1" = "write" ]; then
+
+    if [ "X$2" != "X" ]; then
+	SDCARD=$2
+    fi
+
+    if [[ ! -b ${SDCARD} ]]; then
+	echo "${SDCARD} is not a block device.  Exiting."
+	exit 1
+    fi
+    
+    read -p "Are you sure you want to write to ${SDCARD}?  All contents will be destroyed!  (y/n)? " -n 1 -r
+    echo    
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+	exit 1
+    fi
+
+    umount_parts
+    umount_sdparts
+    dd_image_to_sd
+
+    echo "Finished copy.  Please wait for activity LED to stop blinking on card writer before removing card."
+    
 else
     echo $0
-    echo "      mount [path/to/file.sdimg, default=${SDIMG}"
+    echo "      mount [path/to/file.sdimg, default=${SDIMG}]"
     echo "      umount"
+    echo "      write [/dev/sdX, where X is letter of SD card drive]"
 
 fi
 
