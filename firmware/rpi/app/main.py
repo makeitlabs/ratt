@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # --------------------------------------------------------------------------
 #  _____       ______________
@@ -86,9 +86,9 @@ class MainApp(QObject):
 
     @pyqtSlot(int)
     def exit(self, exitCode):
-        print "exit, code=", exitCode
+        print("exit, code=", exitCode)
         if exitCode == 2 and self.engine:
-            print "reloading qml"
+            print("reloading qml")
             self.engine.load(QUrl('main.qml'))
 
     def run(self):

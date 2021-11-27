@@ -36,8 +36,6 @@
 # Author: Steve Richardson (steve.richardson@makeitlabs.com)
 #
 
-#!/usr/bin/python
-
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QVariant, QEvent, Qt, QCoreApplication, QUrl
 from PyQt5 import QtCore
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
@@ -50,7 +48,7 @@ from MqttClient import MqttClient
 from RFID import RFID
 from Logger import Logger
 import sys
-from commands import getoutput
+import subprocess
 import argparse
 
 class RattAppEngine(QQmlApplicationEngine):
@@ -209,10 +207,10 @@ class RattAppEngine(QQmlApplicationEngine):
         self.personality.deinit()
 
         # stop raspi2fb
-        getoutput('systemctl stop raspi2fb')
+        subprocess.run(['systemctl', 'stop', 'raspi2fb'])
 
         # shut down system
-        getoutput('/sbin/shutdown -h now')
+        subprocess.run(['/sbin/shutdown', '-h', 'now'])
 
         self.quit.emit()
 

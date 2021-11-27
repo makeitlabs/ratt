@@ -43,7 +43,7 @@ from Logger import Logger
 import logging
 import simplejson as json
 import hashlib
-from commands import getoutput
+import subprocess
 import re
 
 class NetWorker(QObject):
@@ -144,7 +144,7 @@ class NetWorker(QObject):
 
     def getWifiStatus(self, res):
         try:
-            iw = getoutput('/sbin/iwconfig %s' % self.ifcName)
+            iw = subprocess.check_output(['/sbin/iwconfig', self.ifcName])
 
             if ('No such device' in iw) or ('no wireless extensions' in iw):
                 res['quality'] = 75
@@ -203,7 +203,7 @@ class NetWorker(QObject):
         self.logger.debug('HTTP GET URL %s' % url.toString())
 
         request = QNetworkRequest(QUrl(url))
-        request.setRawHeader("User-Agent", "RATT")
+        request.setRawHeader(("User-Agent").encode("utf-8"), ("RATT").encode("utf-8"))
 
         if self.sslSupported and self.sslEnabled:
             request.setSslConfiguration(self.sslConfig)

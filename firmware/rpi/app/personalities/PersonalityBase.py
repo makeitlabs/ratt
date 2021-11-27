@@ -382,10 +382,6 @@ class PersonalityBase(PersonalityStateMachine):
                 # clear the retention in the MQTT broker
                 if len(message):
                     try:
-                      print 'message:'
-                      print message
-                      print 'loads:'
-                      print json.loads(message)
                       self._lockReason = json.loads(message)['reason']
                     except:
                       self._lockReason = message

@@ -40,7 +40,7 @@ from PyQt5.QtCore import QObject, QMutex, QIODevice, pyqtSlot, pyqtSignal, pyqtP
 from PyQt5.QtCore import QFile, QFileInfo
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from PyQt5.QtQml import QQmlListProperty, qmlRegisterType
-import ConfigParser
+import configparser
 from Logger import Logger
 import simplejson as json
 from CachedRemoteFile import CachedRemoteFile
@@ -110,7 +110,6 @@ class RattConfig(QObject):
     def slotRemoteConfigUpdate(self):
         self.logger.info('REMOTE CONFIG UPDATE!')
         obj = self.remoteConfig.getObj()
-        print obj
         if obj['status'] == 'success':
             p = obj['params']
             for section, params in p.iteritems():
@@ -120,8 +119,6 @@ class RattConfig(QObject):
                     else:
                         self.config['%s.%s' % (section, key)] = value
 
-        #print json.dumps(self.config,2)
-
         if self.remoteConfig.status != 'same_hash':
             self.configChanged.emit()
 
@@ -130,7 +127,6 @@ class RattConfig(QObject):
         else:
             if self.mqtt:
                 o = { 'status': self.remoteConfig.status, 'source': self.remoteConfig.source, 'hash': self.remoteConfig.hash}
-                print o
                 self.mqtt.slotPublishSubtopic('config/update', json.dumps(o))
 
 
@@ -357,29 +353,29 @@ class RattConfig(QObject):
     def addConfig(self, section, key, default=''):
         try:
             self.config['%s.%s' % (section, key)] = self.parser.get(section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             self.config['%s.%s' % (section, key)] = default
 
     def addConfigBool(self, section, key, default=False):
         try:
             self.config['%s.%s' % (section, key)] = self.parser.getboolean(section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             self.config['%s.%s' % (section, key)] = default
 
     def addConfigInt(self, section, key, default=0):
         try:
             self.config['%s.%s' % (section, key)] = self.parser.getint(section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             self.config['%s.%s' % (section, key)] = default
 
     def addConfigFloat(self, section, key, default=0.0):
         try:
             self.config['%s.%s' % (section, key)] = self.parser.getfloat(section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             self.config['%s.%s' % (section, key)] = default
 
     def loadBootstrapConfig(self):
-        self.parser = ConfigParser.ConfigParser()
+        self.parser = configparser.ConfigParser()
 
         self.parser.read(self._inifile)
 

@@ -43,7 +43,7 @@ import logging
 import calendar
 import time
 import hashlib
-from Queue import Queue
+import queue
 
 class RFID(QThread):
     tagScan = pyqtSignal(int, str, int, str, name='tagScan', arguments=['tag', 'hash', 'time', 'debugText'])
@@ -84,7 +84,7 @@ class RFID(QThread):
 
         self.quit = False
 
-        self.outQueue = Queue()
+        self.outQueue = queue.Queue()
 
     def serialOut(self, msg):
         self.mutex.lock()
@@ -178,7 +178,7 @@ class RFID(QThread):
 
             if self.serial.isWritable() and writeItem is not None:
                 self.logger.debug('writing msg to serial: %s' % writeItem)
-                self.serial.writeData(writeItem)
+                self.serial.writeData(writeItem.encode("utf-8"))
 
             # look for incoming data from RFID module, read and process it
             if self.serial.waitForReadyRead(self.waitTimeout):
