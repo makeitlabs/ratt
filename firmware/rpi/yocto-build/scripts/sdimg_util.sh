@@ -102,7 +102,7 @@ umount_sdparts()
 dd_image_to_sd()
 {
     echo "Copying ${SDIMG} to ${SDCARD}... This will take a while, please wait."
-    sudo dd if=${SDIMG} of=${SDCARD} bs=8M status=progress
+    /usr/bin/time -f "\tcopy took %E" sudo dd if=${SDIMG} of=${SDCARD} bs=8M status=progress
 }
 
 if [ "$1" = "mount" ]; then
