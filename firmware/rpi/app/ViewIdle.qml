@@ -303,7 +303,7 @@ View {
         }
         Label {
             Layout.fillWidth: true
-            text: acl.numActiveRecords + " / " + acl.numRecords + " total"
+            text: acl.numActiveRecords + " / " + acl.numRecords + " (unique)"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 11
             font.weight: Font.Normal
