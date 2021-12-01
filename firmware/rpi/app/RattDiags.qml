@@ -38,6 +38,7 @@ import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 import RATT 1.0
+import QtQuick.Controls.Styles 1.4
 
 Item {
     property bool simShutdown: false
@@ -47,6 +48,26 @@ Item {
     property bool simOUT1: false
     property bool simOUT2: false
     property bool simOUT3: false
+
+    Component {
+      id: bwSwitchStyle
+      SwitchStyle {
+          groove: Rectangle {
+                  implicitWidth: 40
+                  implicitHeight: 15
+                  radius: 4
+                  color: "gray"
+                  border.width: 2
+          }
+          handle: Rectangle {
+                  implicitWidth: 20
+                  implicitHeight: 15
+                  radius: 4
+                  color: control.checked ? "white" : "black"
+                  border.width: 2
+          }
+      }
+    }
 
     function updateSimGPIO(pinName, value) {
       switch (pinName) {
@@ -83,7 +104,6 @@ Item {
       personality.slotSimGPIOChangePin('IN1', checkIn1.checked);
       personality.slotSimGPIOChangePin('IN2', checkIn2.checked);
       personality.slotSimGPIOChangePin('IN3', checkIn3.checked);
-
     }
 
     ColumnLayout {
@@ -104,7 +124,7 @@ Item {
         Rectangle {
             id: personalityRect
             color: "#444499"
-            width: 600
+            width: 1000
             height: 50
             border.width: 4
             border.color: "#000000"
@@ -138,7 +158,7 @@ Item {
           id: simGPIORect
           visible: personality.simGPIO
           color: "#777777"
-          width: 600
+          width: 1000
           height: personality.simGPIO ? 80 : 0
           border.width: 4
           border.color: "#000000"
@@ -158,7 +178,7 @@ Item {
                 Layout.fillWidth: true
 
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simShutdown ? "orange" : "black"
                     Label {
@@ -166,14 +186,14 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
-                        text: "SHDN"
+                        text: "SHUTDOWN"
                         font.pixelSize: 12
                         font.bold: true
                     }
                 }
 
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simLED1 ? "#00FF00" : "#005500"
                     Label {
@@ -187,7 +207,7 @@ Item {
                     }
                 }
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simLED2 ? "#FF0000" : "#550000"
                     Label {
@@ -202,7 +222,7 @@ Item {
                 }
 
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simOUT0 ? "blue" : "black"
                     Label {
@@ -210,13 +230,13 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
-                        text: "OUT0"
+                        text: config.GPIO_OutputNames[0] ? config.GPIO_OutputNames[0] : 'OUT0'
                         font.pixelSize: 12
                         font.bold: true
                     }
                 }
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simOUT1 ? "blue" : "black"
                     Label {
@@ -224,13 +244,13 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
-                        text: "OUT1"
+                        text: config.GPIO_OutputNames[1] ? config.GPIO_OutputNames[1] : 'OUT1'
                         font.pixelSize: 12
                         font.bold: true
                     }
                 }
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simOUT2 ? "blue" : "black"
                     Label {
@@ -238,13 +258,13 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
-                        text: "OUT2"
+                        text: config.GPIO_OutputNames[2] ? config.GPIO_OutputNames[2] : 'OUT2'
                         font.pixelSize: 12
                         font.bold: true
                     }
                 }
                 Rectangle {
-                    width: 40
+                    width: 80
                     height: 20
                     color: simOUT3 ? "blue" : "black"
                     Label {
@@ -252,7 +272,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
-                        text: "OUT3"
+                        text: config.GPIO_OutputNames[3] ? config.GPIO_OutputNames[3] : 'OUT3'
                         font.pixelSize: 12
                         font.bold: true
                     }
@@ -261,58 +281,97 @@ Item {
             RowLayout {
                 Layout.fillWidth: true
 
-                CheckBox {
-                  id: checkPowerPresent
+                Label {
                   text: 'POWER_PRESENT'
+                }
+                Switch {
+                  id: checkPowerPresent
+
                   height: 20
                   checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('POWER_PRESENT', checked);
                   }
+                  style: bwSwitchStyle
                 }
-                CheckBox {
-                  id: checkChargeState
+                Rectangle {
+                  color: "transparent"
+                  width: 10
+                }
+                Label {
                   text: 'CHARGE_STATE'
+                }
+                Switch {
+                  id: checkChargeState
                   height: 20
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('CHARGE_STATE', checked);
                   }
+                  style: bwSwitchStyle
                 }
-                CheckBox {
+                Rectangle {
+                  color: "transparent"
+                  width: 10
+                }
+                Label {
+                  text: config.GPIO_InputNames[0] ? config.GPIO_InputNames[0] : 'IN0'
+                }
+                Switch {
                   id: checkIn0
-                  text: 'IN0'
                   height: 20
                   checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN0', checked);
                   }
+                  style: bwSwitchStyle
                 }
-                CheckBox {
+                Rectangle {
+                  color: "transparent"
+                  width: 10
+                }
+                Label {
+                  text: config.GPIO_InputNames[1] ? config.GPIO_InputNames[1] : 'IN1'
+                }
+                Switch {
                   id: checkIn1
-                  text: 'IN1'
                   height: 20
                   checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN1', checked);
                   }
+                  style: bwSwitchStyle
                 }
-                CheckBox {
+                Rectangle {
+                  color: "transparent"
+                  width: 10
+                }
+                Label {
+                  text: config.GPIO_InputNames[2] ? config.GPIO_InputNames[2] : 'IN2'
+                }
+                Switch {
                   id: checkIn2
-                  text: 'IN2'
                   height: 20
                   checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN2', checked);
                   }
+                  style: bwSwitchStyle
                 }
-                CheckBox {
+                Rectangle {
+                  color: "transparent"
+                  width: 10
+                }
+                Label {
+                  text: config.GPIO_InputNames[3] ? config.GPIO_InputNames[3] : 'IN3'
+                }
+                Switch {
                   id: checkIn3
-                  text: 'IN3'
                   height: 20
                   checked: true
                   onCheckedChanged: {
                     personality.slotSimGPIOChangePin('IN3', checked);
                   }
+                  style: bwSwitchStyle
                 }
             }
           }
@@ -321,7 +380,7 @@ Item {
         Rectangle {
             id: aclRect
             color: "#444444"
-            width: 600
+            width: 1000
             height: 100
             border.width: 4
             border.color: "#000000"
@@ -349,12 +408,12 @@ Item {
                 Label {
                     color: "#999999"
                     font.pixelSize: 12
-                    text: "Total Records: " + acl.numRecords
+                    text: "Total Unique Member Records: " + acl.numRecords
                 }
                 Label {
                     color: "#00f000"
                     font.pixelSize: 12
-                    text: "Active Records: " + acl.numActiveRecords
+                    text: "Active Member Records: " + acl.numActiveRecords
                 }
                 Label {
                     id: aclHash
@@ -368,7 +427,7 @@ Item {
         Rectangle {
             id: rfidRect
             color: "#222222"
-            width: 600
+            width: 1000
             height: 130
             border.width: 4
             border.color: "#000000"
@@ -475,7 +534,7 @@ Item {
         Rectangle {
             id: lookupRect
             color: "#222222"
-            width: 600
+            width: 1000
             height: 150
             border.width: 4
             border.color: "#000000"
