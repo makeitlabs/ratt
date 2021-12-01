@@ -184,9 +184,35 @@ ApplicationWindow {
                 initialItem: viewSplash
 
                 onCurrentItemChanged: {
-                    currentItem.show();
+                    if (currentItem)
+                      currentItem.show();
                 }
                 focus: true
+
+                delegate: StackViewDelegate {
+
+                    replaceTransition: StackViewTransition {
+                        SequentialAnimation {
+                            ScriptAction {
+                                script: enterItem.scale = 1
+                            }
+                            PropertyAnimation {
+                                target: enterItem
+                                property: "scale"
+                                from: 0
+                                to: 1
+                                duration: 350
+                            }
+                        }
+                        PropertyAnimation {
+                            target: exitItem
+                            property: "scale"
+                            from: 1
+                            to: 0
+                            duration: 100
+                        }
+                    }
+                }
 
                 ViewSplash {
                     id: viewSplash
@@ -237,11 +263,10 @@ ApplicationWindow {
                     id: viewPowerLoss
                     visible: false
                 }
-		ViewLockedOut {
-		    id: viewLockedOut
-		    visible: false
-		}
-
+            		ViewLockedOut {
+            		    id: viewLockedOut
+            		    visible: false
+            		}
             }
         }
     }
