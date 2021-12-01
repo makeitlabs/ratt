@@ -41,7 +41,7 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from PyQt5.QtNetwork import QNetworkInterface, QNetworkAddressEntry, QHostAddress, QAbstractSocket
 from Logger import Logger
 import logging
-import simplejson as json
+import json
 import hashlib
 import subprocess
 import re
@@ -88,7 +88,7 @@ class NetWorker(QObject):
     @pyqtProperty(int, notify=wifiStatusChanged)
     def currentRxRate(self):
         return self.rxrate
-    
+
     def __init__(self, loglevel='WARNING', ifcName='wlan0', ifcMacAddressOverride=None, mqtt=None):
         QObject.__init__(self)
 
@@ -169,7 +169,7 @@ class NetWorker(QObject):
                 res['rxrate'] = '1.0 MBit/s'
                 return True
 
-            
+
             level = int(re.search('signal: .*? dBm', iw).group(0).split(': ')[1].split(' ')[0])
             res['level'] = level
 
@@ -178,7 +178,7 @@ class NetWorker(QObject):
                 q = 0
             elif (q > 100):
                 q = 100
-    
+
             res['quality'] = q
             res['freq'] = re.search('freq: [0-9]{1,10}', iw).group(0).split(': ')[1]
             res['ap'] = re.search('Connected to ([0-9A-Fa-f]{2}[:]{0,1}){6}', iw).group(0).split(' ')[2]
@@ -188,7 +188,7 @@ class NetWorker(QObject):
 
             res['txrate'] = re.search('tx bitrate:.*', iw).group(0).split('\\t')[1].split('\\n')[0]
             res['rxrate'] = re.search('rx bitrate:.*', iw).group(0).split('\\t')[1].split('\\n')[0]
-            
+
         except:
             return False
 
