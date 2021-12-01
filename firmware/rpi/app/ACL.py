@@ -42,7 +42,6 @@ from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from Logger import Logger
 import logging
 import hashlib
-import simplejson as json
 import time
 from CachedRemoteFile import CachedRemoteFile
 
@@ -78,7 +77,6 @@ class ACL(CachedRemoteFile):
 
         self.setup(logger=self.logger, netWorker=netWorker, url=url, cacheFile=cacheFile)
 
-
         self.mqtt = mqtt
         self.mqtt.broadcastEvent.connect(self.__slotBroadcastMQTTEvent)
         self.mqtt.targetedEvent.connect(self.__slotTargetedMQTTEvent)
@@ -97,19 +95,33 @@ class ACL(CachedRemoteFile):
         self.mutex.unlock()
         return found_record
 
-    def countActive(self, j):
+    def countTotalUnique(self, j):
         active = 0
+        unique_members = []
+        for record in j:
+            member_id = record['member']
+            if not member_id in unique_members:
+                unique_members.append(member_id)
+
+        return len(unique_members)
+
+    def countActiveUnique(self, j):
+        active = 0
+        unique_members = []
         for record in j:
             if record['allowed'] == 'allowed':
-                active = active + 1
-        return active
+                member_id = record['member']
+                if not member_id in unique_members:
+                    unique_members.append(member_id)
+
+        return len(unique_members)
 
     # this hook is called just after parsing but before hashes are checked
     # the mutex is not held at this point
     def parseJSON__hook_unlocked(self, parsed):
         o = {}
-        o['count'] = len(parsed)
-        o['active'] = self.countActive(parsed)
+        o['count'] = self.countTotalUnique(parsed)
+        o['active'] = self.countActiveUnique(parsed)
         return o
 
     # this hook is called if the hashes differ, and the mutex IS held
