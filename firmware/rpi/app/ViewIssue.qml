@@ -105,6 +105,7 @@ View {
 
     function _show() {
         focusTimer.start();
+        issueTable.model = config.Issues
         issueTable.selection.clear();
         issueTable.selection.select(0, 0);
         issueTable.currentRow = 0;
@@ -179,8 +180,6 @@ View {
             Layout.fillWidth: true
             Layout.fillHeight: true
             visible: root.state == "list"
-
-            model: config.Issues
 
             style: TableViewStyle { }
             headerVisible: false
