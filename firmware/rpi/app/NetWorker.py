@@ -50,7 +50,7 @@ class NetWorker(QObject):
     ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
     currentIfcAddrChanged = pyqtSignal()
     currentIfcHwAddrChanged = pyqtSignal()
-    wifiStatus = pyqtSignal(str, str, str, int, int, name='wifiStatus', arguments=['essid', 'ap', 'freq', 'quality', 'level'])
+    wifiStatus = pyqtSignal(str, str, str, int, int, str, str, name='wifiStatus', arguments=['essid', 'ap', 'freq', 'quality', 'level', 'rxrate', 'txrate'])
     wifiStatusChanged = pyqtSignal()
 
     @pyqtProperty(str, notify=currentIfcAddrChanged)
@@ -81,6 +81,14 @@ class NetWorker(QObject):
     def currentWifiLevel(self):
         return self.level
 
+    @pyqtProperty(int, notify=wifiStatusChanged)
+    def currentTxRate(self):
+        return self.txrate
+
+    @pyqtProperty(int, notify=wifiStatusChanged)
+    def currentRxRate(self):
+        return self.rxrate
+    
     def __init__(self, loglevel='WARNING', ifcName='wlan0', ifcMacAddressOverride=None, mqtt=None):
         QObject.__init__(self)
 
@@ -118,6 +126,8 @@ class NetWorker(QObject):
         self.freq = ''
         self.quality = 0
         self.level = 0
+        self.rxrate = ''
+        self.txrate = ''
 
         self.ifcAddrChanged.connect(self.slotIfcAddrChanged)
         self.wifiStatus.connect(self.slotWifiStatus)
@@ -138,31 +148,47 @@ class NetWorker(QObject):
             self.freq = results['freq']
             self.quality = results['quality']
             self.level = results['level']
-            self.wifiStatus.emit(self.essid, self.ap, self.freq, self.quality, self.level)
+            self.rxrate = results['rxrate']
+            self.txrate = results['txrate']
+            self.wifiStatus.emit(self.essid, self.ap, self.freq, self.quality, self.level, self.rxrate, self.txrate)
             self.wifiStatusChanged.emit()
             self._mqtt.publish(subtopic='wifi/status', msg=json.dumps(results))
 
     def getWifiStatus(self, res):
         try:
-            iw = subprocess.check_output(['/sbin/iwconfig', self.ifcName])
+            # note, scraping iw output is not recommended but we do what we must.
+            iw = str(subprocess.check_output(['/usr/sbin/iw', self.ifcName, 'link']))
 
-            if ('No such device' in iw) or ('no wireless extensions' in iw):
+            if ('Usage:' in iw):
                 res['quality'] = 75
                 res['level'] = -57
-                res['freq'] = '2.447'
+                res['freq'] = '2447'
                 res['ap'] = '00:01:02:03:04:05'
                 res['essid'] = 'Simulator'
+                res['txrate'] = '1.0 MBit/s'
+                res['rxrate'] = '1.0 MBit/s'
                 return True
 
-            qualityFrac = re.search('Link Quality=[0-9]{0,3}/[0-9]{0,3}', iw).group(0).split('=')[1]
-            (n, d) = qualityFrac.split('/')
-            res['quality'] = int(n) * 100 / int(d)
-            level = re.search('Signal level=[-]{0,1}[0-9]{0,3}', iw).group(0).split('=')[1]
-            res['level'] = int(level)
-            res['freq'] = re.search('Frequency:.*?Hz', iw).group(0).split(':')[1].split(' ')[0]
-            res['ap'] = re.search('Access Point: ([0-9A-Fa-f]{2}[:]{0,1}){6}', iw).group(0).split('Access Point: ')[1]
-            res['essid'] = re.search('ESSID:\".[^"]*\"', iw).group(0).split(':')[1].replace('"', '')
+            
+            level = int(re.search('signal: .*? dBm', iw).group(0).split(': ')[1].split(' ')[0])
+            res['level'] = level
 
+            q = 110 + level
+            if (q < 0):
+                q = 0
+            elif (q > 100):
+                q = 100
+    
+            res['quality'] = q
+            res['freq'] = re.search('freq: [0-9]{1,10}', iw).group(0).split(': ')[1]
+            res['ap'] = re.search('Connected to ([0-9A-Fa-f]{2}[:]{0,1}){6}', iw).group(0).split(' ')[2]
+            res['essid'] = re.search('SSID: .*', iw).group(0).split('\\n')[0].split(': ')[1]
+
+            iw = str(subprocess.check_output(['/usr/sbin/iw', self.ifcName, 'station', 'dump']))
+
+            res['txrate'] = re.search('tx bitrate:.*', iw).group(0).split('\\t')[1].split('\\n')[0]
+            res['rxrate'] = re.search('rx bitrate:.*', iw).group(0).split('\\t')[1].split('\\n')[0]
+            
         except:
             return False
 
@@ -291,8 +317,8 @@ class NetWorker(QObject):
         caCertList.append(caCert)
         self.sslConfig.setCaCertificates(caCertList)
 
-    def slotWifiStatus(self, essid, ap, freq, quality, level):
-        self.logger.debug("WIFI STATUS %s %s %s quality=%d%% level=%ddBm" % (essid, ap, freq, quality, level))
+    def slotWifiStatus(self, essid, ap, freq, quality, level, rxrate, txrate):
+        self.logger.debug("WIFI STATUS %s %s %s quality=%d%% level=%ddBm rxrate=%s txrate=%s" % (essid, ap, freq, quality, level, rxrate, txrate))
 
     def slotIfcAddrChanged(self, ipStr):
         self.logger.debug("IP CHANGED %s" % ipStr)
