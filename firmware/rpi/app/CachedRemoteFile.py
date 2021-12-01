@@ -40,7 +40,7 @@ from PyQt5.QtCore import QObject, QMutex, QIODevice, pyqtSlot, pyqtSignal, pyqtP
 from PyQt5.QtCore import QFile, QFileInfo
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from Logger import Logger
-import simplejson as json
+import json
 import hashlib
 import time
 
@@ -139,9 +139,8 @@ class CachedRemoteFile(QObject):
             self.logger.info('downloading from ' + self.url)
             self.reply = self.netWorker.get(url=QUrl(self.url))
             self.reply.finished.connect(self.slotDownloadFinished)
-            #self.reply.error.connect(self.slotDownloadError)
 
-            self.logger.info('self.reply.error=' + str(self.reply.error()))
+            self.logger.debug('self.reply.error=' + str(self.reply.error()))
 
             if self.reply.error() != QNetworkReply.NoError:
                 self.downloadError(self.reply.error())
@@ -167,7 +166,7 @@ class CachedRemoteFile(QObject):
         if error == QNetworkReply.NoError:
             self.logger.debug('parsing download response')
             self._source = self.url
-            self.parseJSON(doc=str(self.reply.readAll()), save=True, status='downloaded')
+            self.parseJSON(doc=str(self.reply.readAll(), encoding='utf-8'), save=True, status='downloaded')
         else:
             self.downloadError(self.reply.error(), self.reply.errorString())
 
@@ -187,7 +186,7 @@ class CachedRemoteFile(QObject):
                 self.logger.error('error opening cache file %s for write' % filename)
                 return False
 
-            if f.write(str(doc)) == -1:
+            if f.write(doc.encode()) == -1:
                 f.close()
                 self.logger.error('unabled to write to cache file %s' % filename)
                 return False
@@ -219,7 +218,7 @@ class CachedRemoteFile(QObject):
             modified = int(info.lastModified().toMSecsSinceEpoch() / 1000)
 
             self._source = 'file://' + filename
-            return self.parseJSON(doc=str(bytes), save=False, date=modified, status='loaded')
+            return self.parseJSON(doc=str(bytes, encoding='utf-8'), save=False, date=modified, status='loaded')
 
         return False
 
