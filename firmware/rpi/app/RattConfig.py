@@ -42,7 +42,7 @@ from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from PyQt5.QtQml import QQmlListProperty, qmlRegisterType
 import configparser
 from Logger import Logger
-import simplejson as json
+import json
 from CachedRemoteFile import CachedRemoteFile
 
 class Issue(QObject):
@@ -112,12 +112,16 @@ class RattConfig(QObject):
         obj = self.remoteConfig.getObj()
         if obj['status'] == 'success':
             p = obj['params']
-            for section, params in p.iteritems():
-                for key, value in params.iteritems():
-                    if type(value) is dict:
-                        self.logger.warning('cannot parse dict values in remote config section=%s key=%s -> %s' % (section, key, value))
-                    else:
-                        self.config['%s.%s' % (section, key)] = value
+            for section, params in p.items():
+                if type(params) is dict:
+                    for key, value in params.items():
+                        if type(value) is dict:
+                            self.logger.warning('cannot parse dict values in remote config section=%s key=%s -> %s' % (section, key, value))
+                        else:
+                            self.config['%s.%s' % (section, key)] = value
+                else:
+                    self.logger.warning('cannot parse remote option %s (Key Name must be in form of Section.KeyName)' % (section))
+
 
         if self.remoteConfig.status != 'same_hash':
             self.configChanged.emit()
