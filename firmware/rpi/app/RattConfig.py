@@ -374,6 +374,11 @@ class RattConfig(QObject):
         except configparser.NoOptionError:
             self.config['%s.%s' % (section, key)] = default
 
+    def addSection(self, section):
+        if not section in self.parser.sections():
+            self.parser.add_section(section)
+
+
     def loadBootstrapConfig(self):
         self.parser = configparser.ConfigParser()
 
@@ -381,24 +386,28 @@ class RattConfig(QObject):
 
         self.config = { }
 
-        self.addConfigBool('General', 'Diags')
-        self.addConfig('General', 'ToolDesc')
+        self.addSection('General')
+        self.addConfigBool('General', 'Diags', True)
+        self.addConfig('General', 'ToolDesc', 'Tool')
         self.addConfig('General', 'NetworkInterfaceName', 'wlan0')
         self.addConfig('General', 'MacAddressOverride', None)
 
+        self.addSection('GPIO')
         self.addConfigBool('GPIO', 'Simulated', False)
 
+        self.addSection('Log')
         self.addConfig('Log', 'File')
-        self.addConfigBool('Log', 'Console')
-        self.addConfigBool('Log', 'Qt')
-        self.addConfigBool('Log', 'QtVerbose')
-        self.addConfig('Log', 'LogLevel')
+        self.addConfigBool('Log', 'Console', True)
+        self.addConfigBool('Log', 'Qt', True)
+        self.addConfigBool('Log', 'QtVerbose', False)
+        self.addConfig('Log', 'LogLevel', 'INFO')
 
-        self.addConfig('Personality', 'Class')
+        self.addSection('Personality')
+        self.addConfig('Personality', 'Class', 'Simple')
         self.addConfig('Personality', 'LogLevel', 'INFO')
-        self.addConfigInt('Personality', 'TimeoutSeconds')
-        self.addConfigInt('Personality', 'AdminTimeoutSeconds')
-        self.addConfigInt('Personality', 'TimeoutWarningSeconds')
+        self.addConfigInt('Personality', 'TimeoutSeconds', 300)
+        self.addConfigInt('Personality', 'AdminTimeoutSeconds', 600)
+        self.addConfigInt('Personality', 'TimeoutWarningSeconds', 30)
         self.addConfigBool('Personality', 'SafetyCheckEnabled', False)
         self.addConfigBool('Personality', 'MonitorToolPowerEnabled', False)
         self.addConfigBool('Personality', 'HomingManualOverrideEnabled', False)
@@ -414,36 +423,37 @@ class RattConfig(QObject):
         self.addConfig('Personality', 'AdvancedDescription', 'ADVANCED')
         self.addConfig('Personality', 'NonAdvancedDescription', 'BASIC')
 
+        self.addSection('Auth')
         self.addConfig('Auth', 'LogLevel', 'INFO')
-        self.addConfig('Auth', 'ResourceId')
-        self.addConfig('Auth', 'HttpAuthUser')
-        self.addConfig('Auth', 'HttpAuthPassword')
+        self.addConfig('Auth', 'ResourceId', 'frontdoor')
+        self.addConfig('Auth', 'HttpAuthUser', 'user')
+        self.addConfig('Auth', 'HttpAuthPassword', 'password')
         self.addConfig('Auth', 'AclUrl')
-        self.addConfig('Auth', 'AclCacheFile')
+        self.addConfig('Auth', 'AclCacheFile', '/data/ratt/ratt.acl')
         self.addConfig('Auth', 'ConfigUrl')
-        self.addConfig('Auth', 'ConfigCacheFile')
+        self.addConfig('Auth', 'ConfigCacheFile', '/data/ratt/ratt-remote.conf')
 
-        self.addConfig('MQTT', 'SSL', False)
+        self.addSection('MQTT')
         self.addConfig('MQTT', 'LogLevel', 'INFO')
+        self.addConfig('MQTT', 'SSL', False)
         self.addConfig('MQTT', 'BrokerHost')
-        self.addConfigInt('MQTT', 'BrokerPort')
-        self.addConfigInt('MQTT', 'ReconnectTime')
-        self.addConfig('MQTT', 'BaseTopic')
+        self.addConfigInt('MQTT', 'BrokerPort', 1883)
+        self.addConfigInt('MQTT', 'ReconnectTime', 2000)
+        self.addConfig('MQTT', 'BaseTopic', 'ratt')
         self.addConfig('MQTT', 'NodeId', None)
 
-        self.addConfig('Telemetry', 'LogLevel', 'INFO')
-        self.addConfig('Telemetry', 'EventUrl')
-        self.addConfig('Telemetry', 'EventCacheFile')
+        self.addSection('SSL')
+        self.addConfigBool('SSL', 'Enabled', False)
+        self.addConfig('SSL', 'CaCertFile', '/data/certs/ca.crt')
+        self.addConfig('SSL', 'ClientCertFile', '/data/certs/client.crt')
+        self.addConfig('SSL', 'ClientKeyFile', '/data/certs/client.key')
 
-        self.addConfigBool('SSL', 'Enabled')
-        self.addConfig('SSL', 'CaCertFile')
-        self.addConfig('SSL', 'ClientCertFile')
-        self.addConfig('SSL', 'ClientKeyFile')
-
-        self.addConfig('RFID', 'LogLevel')
-        self.addConfig('RFID', 'SerialPort')
+        self.addSection('RFID')
+        self.addConfig('RFID', 'LogLevel', 'INFO')
+        self.addConfig('RFID', 'SerialPort', '/dev/ttyS0')
         self.addConfigInt('RFID', 'SimulatedTag', 0)
 
+        self.addSection('Sound')
         self.addConfigBool('Sound', 'EnableSilenceLoop', True)
         self.addConfig('Sound', 'Silence', '')
         self.addConfig('Sound', 'KeyPress', '')
@@ -463,6 +473,7 @@ class RattConfig(QObject):
         self.addConfig('Sound', 'HomingWarning', '')
         self.addConfig('Sound', 'HomingOverride', '')
 
+        self.addSection('Issues')
         for i in self.parser.items('Issues'):
             (n, v) = i
             self.addConfig('Issues', n)

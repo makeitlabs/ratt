@@ -43,7 +43,6 @@ from PyQt5.QtGui import QKeyEvent
 from RattConfig import RattConfig
 from NetWorker import NetWorker
 from ACL import ACL
-from Telemetry import Telemetry
 from MqttClient import MqttClient
 from RFID import RFID
 from Logger import Logger
@@ -173,13 +172,6 @@ class RattAppEngine(QQmlApplicationEngine):
                         url=self.config.value('Auth.AclUrl'),
                         cacheFile=self.config.value('Auth.AclCacheFile'))
 
-        # telemetry module, for collecting and posting events back to the auth server
-        self._telemetry = Telemetry(loglevel=self.config.value('Telemetry.LogLevel'),
-                                    netWorker=self._netWorker,
-                                    mqtt=self._mqtt,
-                                    url=self.config.value('Telemetry.EventUrl'),
-                                    cacheFile=self.config.value('Telemetry.EventCacheFile'))
-
         # RFID reader
         self._rfid = RFID(portName=self.config.value('RFID.SerialPort'),
                           loglevel=self.config.value('RFID.LogLevel'))
@@ -225,10 +217,6 @@ class RattAppEngine(QQmlApplicationEngine):
     @property
     def acl(self):
         return self._acl
-
-    @property
-    def telemetry(self):
-        return self._telemetry
 
     @property
     def mqtt(self):
