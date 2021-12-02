@@ -1,3 +1,4 @@
 *.log
 cache
 sanity_info
+buildhistory
