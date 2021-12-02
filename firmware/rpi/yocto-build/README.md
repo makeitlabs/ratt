@@ -3,11 +3,36 @@
 Based on http://www.jumpnowtek.com/rpi/Raspberry-Pi-Systems-with-Yocto.html
 Mender info at https://docs.mender.io/
 
+Updated November 2021 for Ubuntu 20.04 build host & Yocto Poky Dunfell
+
 ## Pre-requisites
 
-Start with Ubuntu 18.04.1 LTS image running in a virtual machine.  Make sure you have enough disk space (at LEAST 50GB, preferably more).  If you are
-doing a lot of building, you will want this on fast disk (SSD).  You will also want to give the Virtual Machine a lot of RAM and CPU cores if you can.
-I run with 16GB and 12 cores dedicated to the VM for faster builds.
+Set up an [Ubuntu 20.04 LTS](https://ubuntu.com/download/desktop) virtual machine.  Make sure you allocate at least 100GB for disk storage.  If you are  doing a lot of building, you will want this located on an SSD on your VM host.  You will also want to give the Virtual Machine as much RAM (16GB+) and CPU cores (4+) as you can spare.  I run with 16GB RAM and 12 cores dedicated to the VM for faster builds.
+
+### Install some pre-requisites for building:
+
+    sudo apt install build-essential chrpath diffstat gawk libncurses5-dev python3-distutils texinfo git
+
+### Ensure 'dash' shell is disabled on Ubuntu:
+    sudo dpkg-reconfigure dash
+
+Choose "No" to dash when prompted.
+
+
+### Clone the RATT repo from github
+
+Some directories have fixed paths with `${HOME}` references for the Yocto build, so it is necessary to clone it into your home directory, i.e. `~/ratt` - do not place it inside of other directories or in other locations.
+
+Start out in your home directory.
+
+    cd ~
+
+You can clone using the GitHub URL if you aren't planning on committing changes back to the repository.
+    git clone --recurse-submodules -j8 https://github.com/makeitlabs/ratt.git
+
+If you use SSH for GitHub authentication and plan to commit changes back to the repository, clone using the following command line:
+    git clone --recurse-submodules -j8 git@github.com:makeitlabs/ratt
+
 
 ### Set up a work directory in `/u` (with `/tmp`-like permissions)
 
@@ -15,50 +40,15 @@ I run with 16GB and 12 cores dedicated to the VM for faster builds.
     sudo chmod 777 /u
     sudo chmod o+t /u
 
-### Install some pre-requisites for building:
+### Set up Poky
 
-    sudo apt install python rename build-essential chrpath diffstat gawk libncurses5-dev texinfo python2.7 git python3-setuptools
+[Poky](https://www.yoctoproject.org/software-item/poky/) is the name of the reference distribution of the Yocto Project.  Dunfell is the long term support branch that RATT is based on as of late 2021, and was released in April of 2020.  See https://wiki.yoctoproject.org/wiki/Releases for info on Yocto releases.
 
-### Ensure python2.7 has links (18.04.1 did not until 'python' package installed):
-
-    steve@ubuntu:~$ ls -al /usr/bin/python
-    lrwxrwxrwx 1 root root 9 Feb  8 05:47 /usr/bin/python -> python2.7
-    steve@ubuntu:~$ ls -al /usr/bin/python2
-    lrwxrwxrwx 1 root root 9 Feb  8 05:47 /usr/bin/python2 -> python2.7
-
-### Ensure 'dash' is disabled on Ubuntu:
-    sudo dpkg-reconfigure dash
-
-Choose No to dash when prompted.
-
-### Clone the RATT repo from github
-
-Some directories have fixed paths with `${HOME}` references for the Yocto build, so it is necessary to clone it into your home directory, i.e. `~/ratt` - do not place it inside of other directories or in other locations.
-
-    cd ~
-    git clone https://github.com/makeitlabs/ratt.git
-
-### Check that the `meta-ratt` submodule was initialized
-
-Some versions of git will not automatically initialize submodules.  If `~/ratt/firmware/rpi/meta-ratt` is empty after your initial git clone, do this:
-
-    cd ~/ratt/firmware/rpi
-    git submodule update --init --recursive
-
-_The `meta-ratt` is included as a submodule because it's forked from the `meta-rpi` project and for ease of maintainance I want to keep it
-separate from the rest of RATT._  `meta-ratt` is essentially the layer that defines how to build Yocto exactly for our RATT platform.  It
-stands on the shoulders of a lot of work from others for Raspberry Pi compatibility, and makes only specific tweaks where necessary to adjust
-the build to our needs.
-
-### Make a local clone of the Yocto poky-sumo branch from github
-
-Poky is the name of the reference build of Yocto Project.  Sumo is the branch that RATT is based on, and was released in April of 2018.
-See https://www.yoctoproject.org/software-overview/downloads/ for more info about the release.
-
-I've included a script to do the dirty work of cloning Poky-Sumo.  This script will also set up a couple of directories in
-/u/rpi that the build process will use for the downloaded sources cache as well as the temporary build directory.
+I've included a script to do the dirty work of cloning Yocto.  This script will also set up a couple of directories in `/u/rpi` that the build process will use for the downloaded sources cache as well as the temporary build directory.
 
     ~/ratt/firmware/rpi/yocto-build/scripts/setup-poky-build.sh
+
+This script will take a while to run, it fetches a lot of data from GitHub.
 
 **TODO: Maybe adjust the script to tie to specific SHAs for poky-sumo and its dependencies so we're not chasing updates.**
    
@@ -67,114 +57,92 @@ I've included a script to do the dirty work of cloning Poky-Sumo.  This script w
 
 ### Source the yocto environment before running bitbake
 
-    source /u/rpi/poky-sumo/oe-init-build-env ~/ratt/firmware/rpi/yocto-build
+    source ~/ratt/firmware/rpi/yocto-build/scripts/build-env.sh
 
-_Ignore the common suggested build target text that is spit out here - we don't build those targets for RATT._
+_Ignore the common suggested build target text that is displayed here, as we don't build those targets for RATT._
 
 ### Start a build of the RATT image
 
     bitbake ratt-image
 
-_Wait a long time..._  2-3 hours typically.  More RAM, faster disk, and more/faster cores will help but it's building a lot of stuff.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
+_Wait a long time..._  2-3 hours typically.  More RAM, faster disk, and more/faster cores will help but it builds a lot of stuff.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
 
-## Copying to SD Card
+## Mounting Image on Loop Filesystem
 
-(Note: this section needs to be updated to reflect changes in the image now that Mender is integrated -- the following info is out of date)
+The Linux loop filesystem can be used to mount the four partitions of a RATT SD image (boot, rootfs1, rootfs2, and data).  This allows exploration and modification of the contents of the SD image, which will be saved back to the monolithic SD image once unmounted.  When the image is later copied to a physical SD card, those changes will persist.  Generally speaking, only changes to the data partition should be made.  This partition is intended to persist across Mender system updates, and is used to contain configuration information specific to that node.  If you find you need to make changes to the contents of the data or boot partitions, it's generally more appropriately done as a Yocto recipe.  The only exception might be provisioning (e.g. copying certificates), but, again, these should generally be placed on the data partition as it will persist across future updates.
 
-### Configuration
+To make this process easier, I created the `sdimg_util.sh` script.  It makes mounting and unmounting loop filesystems easier.
 
-If you want WLAN to come up and automatically connect to your access point, you must set up a the `wpa_supplicant.conf`
-file before you deploy the image to the SD card.  There is template config included.  Copy this file to `wpa_supplicant.conf` in the
-same `scripts` directory, and edit it to set up your access point.  A pre-configured file is not provided in the repository
-for obvious security reasons.  If you do not edit this file, the WLAN will not come up automatically.
+To get started, you first must create the mount points.  Note, change `user:user` to reflect your unix username.
 
-This is the template in `~/ratt/firmware/rpi/meta-ratt/scripts/wpa_supplicant.conf-example`.  Note that the critical
-sections are commented out.
+   sudo mkdir /mnt/sdimg
+   sudo chown user:user /mnt/sdimg
+   mkdir /mnt/sdimg/bootfs
+   mkdir /mnt/sdimg/rootfs1
+   mkdir /mnt/sdimg/rootfs2
+   mkdir /mnt/sdimg/datafs
+   
+Once created, you may mount a previously created SD image using the following command:
 
-    ctrl_interface=/var/run/wpa_supplicant
-    ap_scan=1
-    
-    #network={
-    #    key_mgmt=WPA-PSK
-    #    ssid="<ssid>"
-    #    psk="<pass>"
-    #}
+     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh mount
 
-    # open network
-    #network={
-    #    key_mgmt=NONE
-    #    ssid="<ssid>"
-    #}
+You can then browse and manipulate the files contained in the image via the mount points in `/mnt/sdimg`.  Once done, you must unmount the SD image using the command:
 
-    ctrl_interface=/var/run/wpa_supplicant
-    ap_scan=1
+     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh umount
 
-Example config for a WPA-PSK network, saved to `~/ratt/firmware/rpi/meta-ratt/scripts/wpa_supplicant.conf`:
+In particular, make sure you remember to unmount before doing another `bitbake` build.
 
-    network={
-        key_mgmt=WPA-PSK
-        ssid="MyNetwork"
-        psk="2secure4u"
-    }
+### Image Configuration
 
+The most critical thing to configure in a RATT SD image is the wireless network configuration.  As long as a RATT node can get onto the network, you can later SSH into it to provision it with node-specific configuration, certificates, etc.  All other forms of login are disabled in the image by default, so that's why it's critical to perform this step.  Wireless network config is done via the `wpa_supplicant.conf` file, which lives in the `/data/etc` directory on the RATT image.  This allows the configuration to persist across Mender updates, which would normally overwrite/swap the root filesystems that contain `/etc`.
 
+A template for this file is included in `~/ratt/firmware/rpi/yocto-build/scripts/templates/etc/wpa_supplicant.conf-example`.  Copy this file to `wpa_supplicant.conf` in the same directory, and edit it to set your SSID and PSK for your wireless network.  You can configure multiple networks if you want.  Note that there is a `.gitignore` file in this directory which will ignore the copied file, so you don't accidentally commit it with passwords visible.
 
-# open network
-    #network={
-    #    key_mgmt=NONE
-    #    ssid="<ssid>"
-    #}
+Check through the `templates` directory to see what other files may be configured for an image.  Anything that is provided as an `-example` can be copied to the same filename, sans `-example` and it will be copied to the data filesystem in the next step.
 
+The `sdimg_util.sh` script has a function to copy the template files to the mounted SD image.  First mount the SD image, per instructions in the last section.  Then run the following commmand:
 
-### Find the SD card device with `lsblk`
+    ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh template
 
-Insert the SD card into your USB reader, and make sure the USB device is attached to the Virtual Machine.  You can usually see
-the device via kernel messages in `dmesg` but the `lsblk` program will also list out all block devices and partition sizes.
+The script will check that the SD image is mounted before it copies.  It will copy all files from the templates directory tree that aren't ending in `-example` and aren't `.gitignore`, so be careful what files you leave around in there.
+
+## Copy Image to SD Card
+
+If you had the SD image mounted with the loop filesystem, be sure to first unmount, following the directions above.
+
+### Find the SD Card Device
+
+Insert the SD card into your USB reader, and make sure the USB device is attached to the Virtual Machine.  If you're using VirtualBox be sure to install the extensions and configure your VM for xHCI USB so you can get the fastest copy possible.
+
+Run the following:
+
+    ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh findsd
+
+Example output is as follows:
+
+    Here are your disk devices...
 
     NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-    sdf      8:80   1  3.7G  0 disk
-    ├─sdf1   8:81   1   64M  0 part 
-    └─sdf2   8:82   1  3.6G  0 part 
-    sr0     11:0    1 1024M  0 rom  
     sda      8:0    0  100G  0 disk 
+    ├─sda1   8:1    0  512M  0 part /boot/efi
     ├─sda2   8:2    0    1K  0 part 
-    ├─sda5   8:5    0    8G  0 part [SWAP]
-    └─sda1   8:1    0   92G  0 part /
+    └─sda5   8:5    0 99.5G  0 part /
+    sdc      8:32   1 14.9G  0 disk 
+    └─sdc1   8:33   1  3.7G  0 part /media/steve/rootfs
+    
+    Your SD card may be:
+    /dev/sdc  14.9G disk
 
-_SD device is `/dev/sdf` in the above example, but it will likely appear as a different device on your machine!_
+In the above example, `/dev/sdc` is the SD card device.  Be sure you have the correct device if you're at all unsure, and note that it may change if your system configuration changes!  You can potentially lose data by overwriting your hard disk image if you specify the wrong device for the next step!
 
-### Make Partitions
+### Write Image
 
-Use the meta-rpi script to make the two necessary partitions on the SD card (need to know device above).
+Run the following command (substituting your actual SD card device for `/dev/sdX`):
 
-    cd ~/ratt/firmware/rpi/meta-ratt/scripts
+    ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh write /dev/sdX
+    
+Note: This can be pretty slow to finish (5-10 minutes depending on speed of your card and reader/writer).  Wait for the activity LED to stop blinking on your card reader before you remove the card, even if the script says it has completed.
 
-sudo ./mk2parts.sh sdf
-
-### Make a temporary mount point
-
-Some of the utility scripts have this mount point hard coded, so make sure it exists.
-
-    sudo mkdir /media/card
-
-### Copy boot partition:
-
-_Note, replace `sdf` with your actual SD card device, and be careful!_
-
-    source ./ratt_card_env.sh
-    ./copy_boot.sh sdf
-
-### Copy root filesystem:
-
-_Note, replace `sdf` with your actual SD card device, and be careful!_
-
-    ./copy_rootfs.sh sdf ratt ratt-test
-
-This script takes several args:
-    copy_rootfs.sh [SD device] [image name minus the -image] [hostname]
-
-
-Note: This can be pretty slow to finish (minutes to potentially tens of minutes depending on quality of card and speed of your card reader/writer).
 
 # Yocto / OpenEmbedded References
 
