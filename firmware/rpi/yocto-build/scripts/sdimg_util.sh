@@ -12,15 +12,35 @@ PART_ROOT1FS=2
 PART_ROOT2FS=3
 PART_DATAFS=4
 
-MOUNT_BOOTFS="/mnt/sdimg/bootfs"
-MOUNT_ROOT1FS="/mnt/sdimg/rootfs1"
-MOUNT_ROOT2FS="/mnt/sdimg/rootfs2"
-MOUNT_DATAFS="/mnt/sdimg/datafs"
+MOUNT_PT="/mnt/sdimg"
+MOUNT_BOOTFS="${MOUNT_PT}/bootfs"
+MOUNT_ROOT1FS="${MOUNT_PT}/rootfs1"
+MOUNT_ROOT2FS="${MOUNT_PT}/rootfs2"
+MOUNT_DATAFS="${MOUNT_PT}/datafs"
 
 LOOP_BOOTFS="/dev/loop1"
 LOOP_ROOT1="/dev/loop2"
 LOOP_ROOT2="/dev/loop3"
 LOOP_DATAFS="/dev/loop4"
+
+create_mountpoints()
+{
+    
+    if [ ! -d ${MOUNT_PT} ]; then
+	U=${USER}
+	sudo mkdir ${MOUNT_PT}
+	sudo chown ${U}:${U} ${MOUNT_PT}
+	mkdir ${MOUNT_BOOTFS}
+	mkdir ${MOUNT_ROOT1FS}
+	mkdir ${MOUNT_ROOT2FS}
+	mkdir ${MOUNT_DATAFS}
+
+	echo "Created mount points in ${MOUNT_PT}:"
+	ls -al ${MOUNT_PT}
+    else
+	echo "${MOUNT_PT} already exists, exiting."
+    fi
+}
 
 show_parts()
 {
@@ -130,7 +150,9 @@ dd_image_to_sd()
     /usr/bin/time -f "\tcopy took %E" sudo dd if=${SDIMG} of=${SDCARD} bs=8M status=progress
 }
 
-if [ "$1" = "mount" ]; then
+if [ "$1" = "create" ]; then
+    create_mountpoints
+elif [ "$1" = "mount" ]; then
     if [ "X$2" != "X" ]; then
 	SDIMG=$2
     fi
@@ -174,11 +196,14 @@ elif [ "$1" = "write" ]; then
     
 else
     echo $0
-    echo "      mount [path/to/file.sdimg, default=${SDIMG}]"
-    echo "      umount"
-    echo "      template"
-    echo "      findsd"
-    echo "      write [/dev/sdX, where X is letter of SD card drive]"
+    echo
+    echo "Usage:"
+    echo "      create -- create mount point directories in ${MOUNT_PT}"
+    echo "      mount [ path/to/file.sdimg, default=${SDIMG} ] -- mount SD image to ${MOUNT_PT} using loop filesystem"
+    echo "      umount -- unmount SD image from ${MOUNT_PT}"
+    echo "      template -- copy config templates to ${MOUNT_DATAFS}"
+    echo "      findsd -- try to locate SD card device"
+    echo "      write [ /dev/sdX ] -- write SD image to SD card"
 
 fi
 
