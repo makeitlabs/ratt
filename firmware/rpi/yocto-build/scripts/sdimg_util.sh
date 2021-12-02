@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Yocto+Mender sd image mounting/unmounting utility using loop filesystems
 # Steve Richardson (steve.richardson@makeitlabs.com)
@@ -91,6 +91,31 @@ umount_parts()
     umount_part ${MOUNT_DATAFS}
 }
 
+copy_template_data()
+{
+    if /usr/bin/mountpoint -q ${MOUNT_DATAFS} ; then
+	SCRIPT_RELATIVE_DIR=$(dirname "${BASH_SOURCE[0]}")
+	cd $SCRIPT_RELATIVE_DIR/templates
+	if [ $? -ne 0 ]; then
+	    echo "Aborted."
+	    exit 1
+	fi
+	find . \( ! -name "*-example" \) \( ! -name ".gitignore" \) -type f | sudo cpio -vdump ${MOUNT_DATAFS}
+    else
+	echo "please first run '$0 mount' to mount the SD image partitions before copying template data"
+    fi
+}
+
+find_sd()
+{
+    echo "Here are your disk devices..."
+    echo
+    lsblk --include 8
+    echo
+    echo "Your SD card may be:"
+    lsblk --include 8 --fs --output RM,HOTPLUG,PATH,SIZE,TYPE|grep disk|grep "1       1"|cut -c 12-
+}
+
 umount_sdparts()
 {
     umount_part ${SDCARD}${PART_BOOTFS}
@@ -119,6 +144,10 @@ if [ "$1" = "mount" ]; then
     fi
 elif [ "$1" = "umount" ]; then
     umount_parts
+elif [ "$1" = "template" ]; then
+    copy_template_data
+elif [ "$1" = "findsd" ]; then
+    find_sd
 elif [ "$1" = "write" ]; then
 
     if [ "X$2" != "X" ]; then
@@ -147,6 +176,8 @@ else
     echo $0
     echo "      mount [path/to/file.sdimg, default=${SDIMG}]"
     echo "      umount"
+    echo "      template"
+    echo "      findsd"
     echo "      write [/dev/sdX, where X is letter of SD card drive]"
 
 fi
