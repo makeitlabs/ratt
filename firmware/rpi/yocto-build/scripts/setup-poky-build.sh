@@ -1,9 +1,29 @@
 #!/bin/sh
 DEST_DIR="/u/rpi"
 RELEASE="dunfell"
+
+HASH_POKY="0839888394a6e42e96f9f0d201376eb38bc79b24"
+HASH_META_OPENEMBEDDED="7889158dcd187546fc5e99fd81d0779cad3e8d17"
+HASH_META_QT5="b4d24d70aca75791902df5cd59a4f4a54aa4a125"
+HASH_META_SECURITY="b76698c788cb8ca632077a972031899ef15025d6"
+HASH_META_RASPBERRYPI="934064a01903b2ba9a82be93b3f0efdb4543a0e8"
+
 POKY="poky-${RELEASE}"
 SOURCES_DIR="oe-sources"
 TMP_DIR="tmp"
+
+clone_hash()
+{
+    GIT=$1
+    DEST=$2
+    REV=$3
+
+    git clone -b ${RELEASE} --single-branch ${GIT} ${DEST}
+    pushd .
+    cd ${DEST}
+    git -c advice.detachedHead=false checkout ${REV}
+    popd
+}
 
 if [ ! -d "${DEST_DIR}/${SOURCES_DIR}" ]; then
     mkdir -p ${DEST_DIR}/${SOURCES_DIR}
@@ -26,12 +46,13 @@ else
     echo "Cloning ${POKY} into ${DEST_DIR}/${POKY}..."
     mkdir -p ${DEST_DIR}
     cd ${DEST_DIR}
-    git clone -b ${RELEASE} git://git.yoctoproject.org/poky.git ${POKY}
+    clone_hash "git://git.yoctoproject.org/poky.git" ${POKY} ${HASH_POKY}
+    
     cd ${POKY}
     echo "Cloning dependency directories..."
-    git clone -b ${RELEASE} git://git.openembedded.org/meta-openembedded
-    git clone -b ${RELEASE} https://github.com/meta-qt5/meta-qt5
-    git clone -b ${RELEASE} git://git.yoctoproject.org/meta-security
-    git clone -b ${RELEASE} git://git.yoctoproject.org/meta-raspberrypi
+    clone_hash "git://git.openembedded.org/meta-openembedded" meta-openembedded ${HASH_META_OPENEMBEDDED}
+    clone_hash "https://github.com/meta-qt5/meta-qt5" meta-qt5 ${HASH_META_QT5}
+    clone_hash "git://git.yoctoproject.org/meta-security" meta-security ${HASH_META_SECURITY}
+    clone_hash "git://git.yoctoproject.org/meta-raspberrypi" meta-raspberrypi ${HASH_META_RASPBERRYPI}
 fi
  
