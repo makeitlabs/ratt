@@ -19,7 +19,7 @@ Set up an [Ubuntu 20.04 LTS](https://ubuntu.com/download/desktop) virtual machin
 Choose "No" to dash when prompted.
 
 
-### Clone the RATT repo from github
+### Clone the RATT repo from GitHub
 
 Some directories have fixed paths with `${HOME}` references for the Yocto build, so it is necessary to clone it into your home directory, i.e. `~/ratt` - do not place it inside of other directories or in other locations.
 
@@ -28,9 +28,11 @@ Start out in your home directory.
     cd ~
 
 You can clone using the GitHub URL if you aren't planning on committing changes back to the repository.
+
     git clone --recurse-submodules -j8 https://github.com/makeitlabs/ratt.git
 
 If you use SSH for GitHub authentication and plan to commit changes back to the repository, clone using the following command line:
+
     git clone --recurse-submodules -j8 git@github.com:makeitlabs/ratt
 
 
@@ -40,17 +42,15 @@ If you use SSH for GitHub authentication and plan to commit changes back to the 
     sudo chmod 777 /u
     sudo chmod o+t /u
 
-### Set up Poky
+### Set up Yocto Poky
 
 [Poky](https://www.yoctoproject.org/software-item/poky/) is the name of the reference distribution of the Yocto Project.  Dunfell is the long term support branch that RATT is based on as of late 2021, and was released in April of 2020.  See https://wiki.yoctoproject.org/wiki/Releases for info on Yocto releases.
 
-I've included a script to do the dirty work of cloning Yocto.  This script will also set up a couple of directories in `/u/rpi` that the build process will use for the downloaded sources cache as well as the temporary build directory.
+I've included a script to do the dirty work of cloning Yocto, using specific pinned versions so that anyone building a RATT image in the future will get the same end result.  The script will also set up a couple of directories in `/u/rpi` that the build process will use for the downloaded sources cache as well as the temporary build directory where the image will be built.
 
     ~/ratt/firmware/rpi/yocto-build/scripts/setup-poky-build.sh
 
-This script will take a while to run, it fetches a lot of data from GitHub.
-
-**TODO: Maybe adjust the script to tie to specific SHAs for poky-sumo and its dependencies so we're not chasing updates.**
+This script will take a couple minutes to run, as it fetches a lot of data.
    
 
 ## Building
@@ -65,7 +65,7 @@ _Ignore the common suggested build target text that is displayed here, as we don
 
     bitbake ratt-image
 
-_Wait a long time..._  2-3 hours typically.  More RAM, faster disk, and more/faster cores will help but it builds a lot of stuff.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
+_Wait a long time..._  3+ hours typically.  More RAM, faster disk, and faster cores will help, but it builds a lot of stuff so it simply takes a while.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
 
 ## Mounting Image on Loop Filesystem
 
@@ -73,14 +73,9 @@ The Linux loop filesystem can be used to mount the four partitions of a RATT SD 
 
 To make this process easier, I created the `sdimg_util.sh` script.  It makes mounting and unmounting loop filesystems easier.
 
-To get started, you first must create the mount points.  Note, change `user:user` to reflect your unix username.
+To get started, you first must create the mount points.
 
-   sudo mkdir /mnt/sdimg
-   sudo chown user:user /mnt/sdimg
-   mkdir /mnt/sdimg/bootfs
-   mkdir /mnt/sdimg/rootfs1
-   mkdir /mnt/sdimg/rootfs2
-   mkdir /mnt/sdimg/datafs
+     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh create
    
 Once created, you may mount a previously created SD image using the following command:
 
@@ -135,13 +130,27 @@ Example output is as follows:
 
 In the above example, `/dev/sdc` is the SD card device.  Be sure you have the correct device if you're at all unsure, and note that it may change if your system configuration changes!  You can potentially lose data by overwriting your hard disk image if you specify the wrong device for the next step!
 
-### Write Image
+### Write the Image
 
 Run the following command (substituting your actual SD card device for `/dev/sdX`):
 
     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh write /dev/sdX
     
 Note: This can be pretty slow to finish (5-10 minutes depending on speed of your card and reader/writer).  Wait for the activity LED to stop blinking on your card reader before you remove the card, even if the script says it has completed.
+
+
+### Test the Image
+
+  * Place the SD card into the Raspberry Pi 0W on the RATT.
+  * You may wish to connect an HDMI monitor (via mini-HDMI cable) to see the diagnostics display.
+  * Apply 5V power to the RATT board.
+  * HDMI Display should show some U-Boot messages, and then proceed to load the kernel.
+  * Several seconds later, the RATT LCD will power up and show white at first, then a boot splash progress screen with a RATT logo.
+  * First boot on a fresh card is slower than normal boot, since some things are initialized during this step.
+  * Eventually a message that the RATT app is loading will be shown, and then the RATT app GUI will be displayed.
+  * Hold down the BLUE button for a few seconds.  This will cause some info to be displayed, such as current WiFi AP and IP address.
+  * Assuming it is on the network, you can SSH in for configuration or testing.  The default login is `root` password `raspberry`.  Provisioning scripts should disable this and install SSH keys instead.  Note that SSH tends to be slow when connecting, especially the first time.
+  
 
 
 # Yocto / OpenEmbedded References
