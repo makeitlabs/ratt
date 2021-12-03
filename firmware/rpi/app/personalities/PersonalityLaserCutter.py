@@ -38,7 +38,7 @@
 
 from QtGPIO import LOW, HIGH
 from PersonalitySimple import Personality as PersonalitySimple
-import simplejson as json
+import json
 
 class Personality(PersonalitySimple):
     #############################################

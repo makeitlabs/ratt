@@ -39,7 +39,7 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from QtGPIO import LOW, HIGH
 from PersonalityBase import PersonalityBase
-import simplejson as json
+import json
 
 class Personality(PersonalityBase):
     #############################################

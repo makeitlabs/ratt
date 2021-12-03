@@ -43,7 +43,7 @@ from Logger import Logger
 from RFID import RFID
 from MemberRecord import MemberRecord
 import copy
-import simplejson as json
+import json
 
 import QtGPIO as GPIO
 import QtSimGPIO as SimGPIO

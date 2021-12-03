@@ -39,7 +39,7 @@
 from PyQt5.QtCore import QThread, QMutex, QWaitCondition, QTimer
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, pyqtProperty, QVariant
 from Logger import Logger
-import simplejson as json
+import json
 
 class PersonalityStateMachine(QThread):
     # state phases
