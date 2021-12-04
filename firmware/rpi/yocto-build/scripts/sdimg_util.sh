@@ -121,7 +121,8 @@ copy_template_data()
 	    exit 1
 	fi
 	find . \( ! -name "*-example" \) \( ! -name ".gitignore" \) -type f | sudo cpio -vdump ${MOUNT_DATAFS}
-	sudo chown -r root:root ${MOUNT_DATAFS}/home/root
+	sudo chown --quiet --recursive root:root ${MOUNT_DATAFS}/home/root
+	sudo chmod --quiet --recursive og-rwx ${MOUNT_DATAFS}/home/root/.ssh
     else
 	echo "please first run '$0 mount' to mount the SD image partitions before copying template data"
     fi

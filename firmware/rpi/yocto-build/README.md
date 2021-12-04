@@ -87,7 +87,7 @@ You can then browse and manipulate the files contained in the image via the moun
 
 In particular, make sure you remember to unmount before doing another `bitbake` build.
 
-## Image Configuration
+## Image Configuration (Templating)
 
 ### Configure `wpa_supplicant`
 
@@ -111,11 +111,7 @@ You may specify a passphrase for added security if you wish, though I generally 
 
 Now you need to create a template for `/data/home/root/.ssh/authorized_keys`.
 
-You can link it:
-
-    ln -s ~/.ssh/id_ratt ~/ratt/firmware/rpi/yocto-build/scripts/templates/home/root/.ssh/authorized_keys
-
-or copy it:
+You must copy it, as the templating process won't copy links:
 
     cp ~/.ssh/id_ratt ~/ratt/firmware/rpi/yocto-build/scripts/templates/home/root/.ssh/authorized_keys
 
@@ -144,6 +140,8 @@ The `sdimg_util.sh` script has a function to copy the template files to the moun
 The script will check that the SD image is mounted before it copies.  It will copy all files from the templates directory tree that aren't ending in `-example` and aren't `.gitignore`, so be careful what files you leave around in there.
 
 The `.gitignore` file in the templates directory which will ignore non-example files, so you don't accidentally commit those and expose sensitive data.  However it means you might lose critical config data if you delete your repository, so pay attention!
+
+_TODO: Possibly move this to a `ROOTFS_POSTPROCESS_COMMAND` in the image so it happens as part of the `bitbake` process instead of requiring these separate steps._
 
 ## Copy Image to SD Card
 
