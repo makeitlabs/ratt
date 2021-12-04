@@ -51,7 +51,7 @@ I've included a script to do the dirty work of cloning Yocto, using specific pin
     ~/ratt/firmware/rpi/yocto-build/scripts/setup-poky-build.sh
 
 This script will take a couple minutes to run, as it fetches a lot of data.
-   
+
 
 ## Building
 
@@ -76,7 +76,7 @@ To make this process easier, I created the `sdimg_util.sh` script.  It makes mou
 To get started, you first must create the mount points.
 
      ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh create
-   
+
 Once created, you may mount a previously created SD image using the following command:
 
      ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh mount
@@ -87,19 +87,63 @@ You can then browse and manipulate the files contained in the image via the moun
 
 In particular, make sure you remember to unmount before doing another `bitbake` build.
 
-### Image Configuration
+## Image Configuration
 
-The most critical thing to configure in a RATT SD image is the wireless network configuration.  As long as a RATT node can get onto the network, you can later SSH into it to provision it with node-specific configuration, certificates, etc.  All other forms of login are disabled in the image by default, so that's why it's critical to perform this step.  Wireless network config is done via the `wpa_supplicant.conf` file, which lives in the `/data/etc` directory on the RATT image.  This allows the configuration to persist across Mender updates, which would normally overwrite/swap the root filesystems that contain `/etc`.
+### Configure `wpa_supplicant`
 
-A template for this file is included in `~/ratt/firmware/rpi/yocto-build/scripts/templates/etc/wpa_supplicant.conf-example`.  Copy this file to `wpa_supplicant.conf` in the same directory, and edit it to set your SSID and PSK for your wireless network.  You can configure multiple networks if you want.  Note that there is a `.gitignore` file in this directory which will ignore the copied file, so you don't accidentally commit it with passwords visible.
+The most critical thing to configure is the wireless network configuration.  As long as a RATT node can get onto the network, you can later SSH into it to provision it with node-specific configuration, certificates, etc.  All other forms of login are disabled in the image by default, so that's why it's critical to perform this step.
+
+Wireless network config is done via the `wpa_supplicant.conf` file, which lives in the `/data/etc` directory on the RATT image.  This allows the configuration to persist across Mender updates, which would normally overwrite the root filesystems that contain `/etc`, during an update.
+
+A template for this file is included in `~/ratt/firmware/rpi/yocto-build/scripts/templates/etc/wpa_supplicant.conf-example`.  Copy this file to `wpa_supplicant.conf` in the same directory, and edit it to set your SSID and PSK for your wireless network.  You can configure multiple networks if you want.
+
+### Configure SSH Key
+
+The default RATT image does not enable a password for the `root` account (it is locked via `usermod`).  Thus, to SSH into the unit, you will need to set up an SSH key as a template.
+
+You _can_ use your public SSH key from your personal user account, but it's generally better to create a key specifically for accessing the device.  This step will create a single key that will allow you to log into all devices running this image.  Later provisioning steps will use this key, and may optionally replace it with a key unique for the node, rather than having all devices share a common key.
+
+To create a key, run (replace `id_ratt` with a more sensible name if you like):
+
+    ssh-keygen -f ~/.ssh/id_ratt
+
+You may specify a passphrase for added security if you wish, though I generally don't bother.  Once completed, this will create `~/.ssh/id_ratt` and `~/.ssh/id_ratt.pub` files.
+
+Now you need to create a template for `/data/home/root/.ssh/authorized_keys`.
+
+You can link it:
+
+    ln -s ~/.ssh/id_ratt ~/ratt/firmware/rpi/yocto-build/scripts/templates/home/root/.ssh/authorized_keys
+
+or copy it:
+
+    cp ~/.ssh/id_ratt ~/ratt/firmware/rpi/yocto-build/scripts/templates/home/root/.ssh/authorized_keys
+
+Lastly, set up your `~/.ssh/config` file to include an entry for ratt.  You may not yet know the IP address of the RATT, so you may need to revisit this to edit it in a later step.  If you have several RATTs, you'll make entries for each of them.
+
+    Host ratt
+	    HostName 192.168.0.154
+    	User root
+    	IdentityFile id_ratt
+
+
+### Configure Other Items
 
 Check through the `templates` directory to see what other files may be configured for an image.  Anything that is provided as an `-example` can be copied to the same filename, sans `-example` and it will be copied to the data filesystem in the next step.
+
+Including, but not limited to:
+* `templates/etc/ntp.conf-example`
+* `templates/etc/hosts-example`
+
+### Apply the Templates to the SD Image
 
 The `sdimg_util.sh` script has a function to copy the template files to the mounted SD image.  First mount the SD image, per instructions in the last section.  Then run the following commmand:
 
     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh template
 
 The script will check that the SD image is mounted before it copies.  It will copy all files from the templates directory tree that aren't ending in `-example` and aren't `.gitignore`, so be careful what files you leave around in there.
+
+The `.gitignore` file in the templates directory which will ignore non-example files, so you don't accidentally commit those and expose sensitive data.  However it means you might lose critical config data if you delete your repository, so pay attention!
 
 ## Copy Image to SD Card
 
@@ -118,13 +162,13 @@ Example output is as follows:
     Here are your disk devices...
 
     NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-    sda      8:0    0  100G  0 disk 
+    sda      8:0    0  100G  0 disk
     ├─sda1   8:1    0  512M  0 part /boot/efi
-    ├─sda2   8:2    0    1K  0 part 
+    ├─sda2   8:2    0    1K  0 part
     └─sda5   8:5    0 99.5G  0 part /
-    sdc      8:32   1 14.9G  0 disk 
+    sdc      8:32   1 14.9G  0 disk
     └─sdc1   8:33   1  3.7G  0 part /media/steve/rootfs
-    
+
     Your SD card may be:
     /dev/sdc  14.9G disk
 
@@ -135,7 +179,7 @@ In the above example, `/dev/sdc` is the SD card device.  Be sure you have the co
 Run the following command (substituting your actual SD card device for `/dev/sdX`):
 
     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh write /dev/sdX
-    
+
 Note: This can be pretty slow to finish (5-10 minutes depending on speed of your card and reader/writer).  Wait for the activity LED to stop blinking on your card reader before you remove the card, even if the script says it has completed.
 
 
@@ -145,22 +189,16 @@ Note: This can be pretty slow to finish (5-10 minutes depending on speed of your
   * You may wish to connect an HDMI monitor (via mini-HDMI cable) to see the diagnostics display.
   * Apply 5V power to the RATT board.
   * HDMI Display should show some U-Boot messages, and then proceed to load the kernel.
-  * Several seconds later, the RATT LCD will power up and show white at first, then a boot splash progress screen with a RATT logo.
+  * Shortly after powerup, the RATT LCD will show white at first, then a boot splash progress screen with a RATT logo.
   * First boot on a fresh card is slower than normal boot, since some things are initialized during this step.
   * Eventually a message that the RATT app is loading will be shown, and then the RATT app GUI will be displayed.
   * Hold down the BLUE button for a few seconds.  This will cause some info to be displayed, such as current WiFi AP and IP address.
-  * Assuming it is on the network, you can SSH in for configuration or testing.  The default login is `root` password `raspberry`.  Provisioning scripts should disable this and install SSH keys instead.  Note that SSH tends to be slow when connecting, especially the first time.
-  
-
+  * Assuming it is on the network, you can SSH in for configuration or testing.  You will use the name you configured in your `~/.ssh/config` file earlier.  Make sure the correct IP address is in the config, and that it's pointing to the correct key.  Note that SSH tends to be slow on the single-core Pi 0W when connecting, especially the first time.
 
 # Yocto / OpenEmbedded References
-
-## Writing Recipes
 
   * http://www.yoctoproject.org/docs/current/dev-manual/dev-manual.html#new-recipe-writing-a-new-recipe
   * https://wiki.yoctoproject.org/wiki/Building_your_own_recipes_from_first_principles
   * http://www.embeddedlinux.org.cn/OEManual/directories_installation.html
   * http://www.embeddedlinux.org.cn/OEManual/recipes_directories.html
   * https://elinux.org/Bitbake_Cheat_Sheet
-  
-  
