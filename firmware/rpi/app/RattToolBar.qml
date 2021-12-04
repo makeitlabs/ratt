@@ -53,6 +53,7 @@ ToolBar {
         text: time
     }
 
+
     Connections {
         target: netWorker
 
@@ -60,8 +61,10 @@ ToolBar {
             // 'essid', 'freq', 'quality', 'level'
 
             if (essid == "") {
-                wifiSignal.source = "";
+                wifiSignal.source = "images/wifi_0.png"
+                wifiSignal.opacity = 0.2;
             } else {
+                wifiSignal.opacity = 1;
                 if (quality < 10) {
                     wifiSignal.source = "images/wifi_0.png";
                 } else if (quality < 30) {
@@ -79,9 +82,26 @@ ToolBar {
         }
     }
 
+
     Image {
         id: wifiSignal
-        anchors.right: parent.right
+        anchors.right: dlIndicator.left
+        anchors.rightMargin: 5
+        source: "images/wifi_0.png"
+        opacity: 0.2
+    }
+
+    Label {
+      id: dlIndicator
+      height: 12
+      anchors.right: parent.right
+      anchors.top: parent.top
+      anchors.topMargin: acl.downloadActive ? -2 : acl.errorDescription == "" ? -2 : -2
+      anchors.rightMargin: 1
+      font.pixelSize: acl.downloadActive ? 16 : acl.errorDescription == "" ? 16 : 14
+      font.weight: Font.DemiBold
+      text: acl.downloadActive ? "\u21c4" : acl.errorDescription == "" ? "\u2611" : "\u0021"
+      color: acl.downloadActive ? "#000000" : acl.errorDescription == "" ? "#33AA33" : "#AA0000"
     }
 
     Timer {

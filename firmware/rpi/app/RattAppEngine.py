@@ -61,6 +61,9 @@ class RattAppEngine(QQmlApplicationEngine):
 
         args = parser.parse_args()
 
+        # Name of the Mender artifact
+        self.mender_artifact = 'unknown'
+
         # load the config
         self.config = RattConfig(inifile=args.inifile, loglevel='DEBUG')
 
@@ -87,6 +90,7 @@ class RattAppEngine(QQmlApplicationEngine):
             self.rootContext().setContextProperty("acl", self._acl)
             self.rootContext().setContextProperty("rfid", self._rfid)
             self.rootContext().setContextProperty("mqtt", self.mqtt)
+            self.rootContext().setContextProperty("menderArtifact", self.mender_artifact)
 
         self.rootContext().setContextProperty("personality", self.personality)
 
@@ -164,6 +168,15 @@ class RattAppEngine(QQmlApplicationEngine):
 
 
     def __initSystem__(self):
+
+        try:
+            with open('/etc/mender/artifact_info') as f:
+                for line in f:
+                    (k,v) = line.split('=')
+                    if k == 'artifact_name':
+                        self.mender_artifact = v
+        except:
+            pass
 
         # Access Control List module, for maintaining the database of allowed users for this resource
         self._acl = ACL(loglevel=self.config.value('Auth.LogLevel'),

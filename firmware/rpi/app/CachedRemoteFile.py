@@ -47,6 +47,7 @@ import time
 class CachedRemoteFile(QObject):
     update = pyqtSignal()
     updateError = pyqtSignal(name='updateError')
+    updateErrorDesc = pyqtSignal()
     downloadActiveUpdate = pyqtSignal()
 
     @pyqtProperty(str, notify=update)
@@ -69,6 +70,14 @@ class CachedRemoteFile(QObject):
         s = self._status
         self.mutex.unlock()
         return s
+
+    @pyqtProperty(str, notify=updateErrorDesc)
+    def errorDescription(self):
+        self.mutex.lock()
+        s = self._error
+        self.mutex.unlock()
+        return s
+
 
     @pyqtProperty(str, notify=update)
     def source(self):
@@ -99,6 +108,7 @@ class CachedRemoteFile(QObject):
         self._downloadActive = False
         self._date = int(time.time())
         self._status = 'initialized'
+        self._error = ''
         self._source = ''
         self._doc = None
         self._obj = json.loads('[]')
@@ -140,13 +150,15 @@ class CachedRemoteFile(QObject):
             self.reply = self.netWorker.get(url=QUrl(self.url))
             self.reply.finished.connect(self.slotDownloadFinished)
 
-            self.logger.debug('self.reply.error=' + str(self.reply.error()))
+            self.logger.warning('self.reply.error=' + str(self.reply.error()))
 
             if self.reply.error() != QNetworkReply.NoError:
                 self.downloadError(self.reply.error())
                 self.reply.deleteLater()
                 return False
 
+            self._error = ''
+            self.updateErrorDesc.emit()
             return True
         else:
             self.logger.warning('already busy downloading ' + self.url)
@@ -156,11 +168,14 @@ class CachedRemoteFile(QObject):
         self.logger.error('DOWNLOAD ERROR: %s (%s) %s' % (error, errorString, self.url))
         self.updateError.emit()
 
+        self._error = errorString
+        self.updateErrorDesc.emit()
+
         self.downloadActive = False
 
     @pyqtSlot()
     def slotDownloadFinished(self):
-        self.logger.error('remote download finished from ' + self.url)
+        self.logger.info('remote download finished from ' + self.url)
         error = self.reply.error()
 
         if error == QNetworkReply.NoError:

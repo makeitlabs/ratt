@@ -42,6 +42,7 @@ View {
     id: root
     name: "Idle"
 
+    property bool forcedDownloadACL: false
     property bool isToolPowered: false
 
     function keyEscape(pressed) {
@@ -54,10 +55,13 @@ View {
     }
 
     function keyDown(pressed) {
-        if (pressed)
+
+        if (pressed) {
+          nextAnim();
           dlTimer.start();
-        else
+        } else {
           dlTimer.stop();
+        }
 
         return true;
     }
@@ -89,17 +93,19 @@ View {
         onTriggered: {
             stop();
             animTimer.restart();
+            forcedDownloadACL = true
             acl.download();
         }
     }
     Timer {
         id: diagTimer
-        interval: 2000
+        interval: 1000
         running: false
         repeat: false
         onTriggered: {
             stop();
             root.state = "diags";
+            animTimer.interval=10000;
             animTimer.restart();
         }
     }
@@ -121,6 +127,12 @@ View {
         },
         State {
             name: "diags"
+        },
+        State {
+            name: "version"
+        },
+        State {
+            name: "update_error"
         }
 
     ]
@@ -137,8 +149,17 @@ View {
     Connections {
         target: acl
         onUpdate: {
+          if (forcedDownloadACL || acl.status != "same_hash") {
+            forcedDownloadACL = false
             root.state = "stats";
             animTimer.restart();
+          }
+        }
+        onUpdateError: {
+            sound.generalAlertAudio.play();
+            root.state = "update_error";
+            animTimer.restart();
+            animTimer.interval = 5000;
         }
     }
 
@@ -166,26 +187,36 @@ View {
         }
     }
 
+    function nextAnim() {
+      if (root.state == "logo") {
+          root.state = "login";
+      } else if (root.state == "login") {
+          if (isToolPowered)
+            root.state = "issue";
+          else
+            root.state = "logo";
+      } else if (root.state == "issue") {
+          root.state = "logo";
+      } else if (root.state == "diags") {
+          animTimer.interval = 5000;
+          root.state = "version";
+      } else if (root.state == "version") {
+          root.state = "stats";
+      } else if (root.state == "update_error") {
+          root.state = "stats";
+      } else {
+          animTimer.interval = 2500;
+          root.state = "logo";
+      }
+    }
+
     Timer {
         id: animTimer
         interval: 2500
         running: true
         repeat: true
         onTriggered: {
-            if (root.state == "logo") {
-                root.state = "login";
-            } else if (root.state == "login") {
-                if (isToolPowered)
-                  root.state = "issue";
-                else
-                  root.state = "logo";
-            } else if (root.state == "issue") {
-                root.state = "logo"
-            } else if (root.state == "diags") {
-                root.state = "stats"
-            } else {
-                root.state = "logo";
-            }
+          nextAnim();
         }
     }
 
@@ -333,6 +364,9 @@ View {
             font.weight: Font.Normal
             color: "#000099"
         }
+        Item {
+            Layout.fillHeight: true
+        }
     }
 
     ColumnLayout {
@@ -405,37 +439,108 @@ View {
 
         Label {
             Layout.fillWidth: true
-            text: "ESSID: " + netWorker.currentWifiESSID
+            text: "IP & MAC ADDRESS"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 10
+            font.pixelSize: 9
             font.weight: Font.DemiBold
             color: "#444444"
         }
         Label {
             Layout.fillWidth: true
-            text: "AP: " + netWorker.currentWifiAP
+            text: netWorker.currentIfcAddr
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 10
-            font.weight: Font.DemiBold
-            color: "#444444"
+            font.pixelSize: 11
+            font.weight: Font.Normal
+            color: "#000099"
         }
         Label {
             Layout.fillWidth: true
-            text: "IP: " + netWorker.currentIfcAddr
+            text: netWorker.currentHwAddr
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 10
-            font.weight: Font.DemiBold
-            color: "#444444"
-        }
-        Label {
-            Layout.fillWidth: true
-            text: "MAC: " + netWorker.currentHwAddr
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 10
-            font.weight: Font.DemiBold
-            color: "#444444"
+            font.pixelSize: 11
+            font.weight: Font.Normal
+            color: "#000099"
         }
 
+
+        Label {
+            Layout.fillWidth: true
+            text: "WIFI SSID"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 9
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: netWorker.currentWifiESSID
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 11
+            font.weight: Font.Normal
+            color: "#000099"
+        }
+        Item {
+            Layout.fillHeight: true
+        }
     }
+
+    ColumnLayout {
+        visible: root.state == "version"
+        anchors.fill: parent
+        anchors.margins: 4
+
+        Label {
+            Layout.fillWidth: true
+            text: "BASE IMAGE"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 9
+            font.weight: Font.DemiBold
+            color: "#444444"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: menderArtifact
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 11
+            font.weight: Font.Normal
+            color: "#000099"
+        }
+
+
+        Item {
+            Layout.fillHeight: true
+        }
+    }
+
+
+    ColumnLayout {
+        visible: root.state == "update_error"
+        anchors.fill: parent
+        anchors.margins: 4
+
+        Label {
+            Layout.fillWidth: true
+            text: "ACL UPDATE ERROR"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 12
+            font.weight: Font.Bold
+            color: "#994444"
+        }
+        Label {
+            Layout.fillWidth: true
+            text: acl.errorDescription ? acl.errorDescription : "Unknown Error."
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+            font.pixelSize: 10
+            font.weight: Font.Normal
+            color: "#000000"
+        }
+
+
+        Item {
+            Layout.fillHeight: true
+        }
+    }
+
 
 }
