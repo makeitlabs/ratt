@@ -1,2 +1,6 @@
-wpa_supplicant.conf
-ratt.ini
+# ignore everything
+*
+# except directories
+!*/
+# and -example files
+!*-example
