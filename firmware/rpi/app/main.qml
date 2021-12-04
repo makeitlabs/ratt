@@ -49,6 +49,8 @@ ApplicationWindow {
     signal uiEvent(string evt)
     signal mqttPublishSubtopicEvent(string subtopic, string msg)
 
+    property string idleBusyView: ""
+
     Component.onCompleted: {
         appWindow.uiEvent.connect(personality.slotUIEvent)
         appWindow.mqttPublishSubtopicEvent.connect(mqtt.slotPublishSubtopic)
@@ -78,6 +80,15 @@ ApplicationWindow {
                 case "Idle":
                 case "NotPowered":
                     switchTo(viewIdle);
+                    break;
+                case "IdleBusy":
+                    switch (idleBusyView) {
+                    case "memberList":
+                      switchTo(viewMemberList);
+                      break;
+                    default:
+                      switchTo(viewIdle);
+                    }
                     break;
                 case "NotPoweredDenied":
                     switchTo(viewAccess);
@@ -220,6 +231,10 @@ ApplicationWindow {
                 }
                 ViewIdle {
                     id: viewIdle
+                    visible: false
+                }
+                ViewMemberList {
+                    id: viewMemberList
                     visible: false
                 }
                 ViewAccess {

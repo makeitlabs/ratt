@@ -57,7 +57,6 @@ View {
     function keyDown(pressed) {
 
         if (pressed) {
-          nextAnim();
           dlTimer.start();
         } else {
           dlTimer.stop();
@@ -67,10 +66,17 @@ View {
     }
 
     function keyReturn(pressed) {
-        if (pressed)
+        if (pressed) {
+          if (root.state == "stats") {
+              appWindow.idleBusyView = 'memberList';
+              appWindow.uiEvent('IdleBusy')
+          } else {
+            nextAnim();
+          }
           diagTimer.start();
-        else
+        } else {
           diagTimer.stop();
+        }
 
         return true;
     }
@@ -326,7 +332,7 @@ View {
 
         Label {
             Layout.fillWidth: true
-            text: "TAGS ALLOWED"
+            text: "MEMBERS ALLOWED"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 9
             font.weight: Font.DemiBold

@@ -73,6 +73,7 @@ class Personality(PersonalityBase):
     STATE_TOOL_TIMEOUT_WARNING = 'ToolTimeoutWarning'
     STATE_TOOL_TIMEOUT = 'ToolTimeout'
     STATE_TOOL_DISABLED = 'ToolDisabled'
+    STATE_IDLE_BUSY = 'IdleBusy'
     STATE_REPORT_ISSUE = 'ReportIssue'
 
     toolActiveFlagChanged = pyqtSignal()
@@ -112,6 +113,7 @@ class Personality(PersonalityBase):
                        self.STATE_TOOL_TIMEOUT : self.stateToolTimeout,
                        self.STATE_TOOL_ENABLED_NOT_POWERED : self.stateToolEnabledNotPowered,
                        self.STATE_TOOL_DISABLED : self.stateToolDisabled,
+                       self.STATE_IDLE_BUSY : self.stateIdleBusy,
                        self.STATE_REPORT_ISSUE : self.stateReportIssue,
                        self.STATE_POWER_LOSS : self.statePowerLoss,
                        self.STATE_SHUT_DOWN : self.stateShutDown,
@@ -231,6 +233,8 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_ACCESS_DENIED)
             elif self.wakereason == self.REASON_RFID_ERROR:
                 return self.exitAndGoto(self.STATE_RFID_ERROR)
+            elif self.wakereason == self.REASON_UI and self.uievent == 'IdleBusy':
+                return self.exitAndGoto(self.STATE_IDLE_BUSY)
             elif self.wakereason == self.REASON_UI and self.uievent == 'ReportIssue':
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
@@ -271,7 +275,8 @@ class Personality(PersonalityBase):
                 return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED_DENIED)
             elif self.wakereason == self.REASON_RFID_ERROR:
                 return self.exitAndGoto(self.STATE_TOOL_NOT_POWERED_DENIED)
-
+            elif self.wakereason == self.REASON_UI and self.uievent == 'IdleBusy':
+                return self.exitAndGoto(self.STATE_IDLE_BUSY)
             elif self.wakereason == self.REASON_UI and self.uievent == 'ReportIssue':
                 return self.exitAndGoto(self.STATE_REPORT_ISSUE)
 
@@ -529,6 +534,24 @@ class Personality(PersonalityBase):
     def stateToolDisabled(self):
         self.disableTool()
         return self.goto(self.STATE_IDLE)
+
+    #############################################
+    ## STATE_IDLE_BUSY
+    #############################################
+    def stateIdleBusy(self):
+        if self.phENTER:
+            self.pin_led1.set(HIGH)
+            self.pin_led2.set(HIGH)
+            return self.goActive()
+
+        elif self.phACTIVE:
+            if self.wakereason == self.REASON_UI and self.uievent == 'IdleBusyDone':
+                return self.exitAndGoto(self.STATE_IDLE)
+            return False
+
+        elif self.phEXIT:
+            return self.goNextState()
+
 
     #############################################
     ## STATE_REPORT_ISSUE

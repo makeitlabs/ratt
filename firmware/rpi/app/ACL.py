@@ -62,6 +62,14 @@ class ACL(CachedRemoteFile):
         self.mutex.unlock()
         return n
 
+    @pyqtProperty(list, notify=recordUpdate)
+    def activeMemberList(self):
+        self.mutex.lock()
+        n = self._activeMemberList
+        self.mutex.unlock()
+        return n
+
+
     @pyqtSlot()
     def slotUpdate(self):
         self.recordUpdate.emit()
@@ -74,6 +82,7 @@ class ACL(CachedRemoteFile):
 
         self._numRecords = 0
         self._numActiveRecords = 0
+        self._activeMemberList = []
 
         self.setup(logger=self.logger, netWorker=netWorker, url=url, cacheFile=cacheFile)
 
@@ -95,8 +104,16 @@ class ACL(CachedRemoteFile):
         self.mutex.unlock()
         return found_record
 
+    def getActiveMembersList(self, j):
+        unique_members = []
+        for record in j:
+            if record['allowed'] == 'allowed':
+                member_id = record['member']
+                if not member_id in unique_members:
+                    unique_members.append(member_id)
+        return sorted(unique_members)
+
     def countTotalUnique(self, j):
-        active = 0
         unique_members = []
         for record in j:
             member_id = record['member']
@@ -106,7 +123,6 @@ class ACL(CachedRemoteFile):
         return len(unique_members)
 
     def countActiveUnique(self, j):
-        active = 0
         unique_members = []
         for record in j:
             if record['allowed'] == 'allowed':
@@ -122,12 +138,14 @@ class ACL(CachedRemoteFile):
         o = {}
         o['count'] = self.countTotalUnique(parsed)
         o['active'] = self.countActiveUnique(parsed)
+        o['activeMemberList'] = self.getActiveMembersList(parsed)
         return o
 
     # this hook is called if the hashes differ, and the mutex IS held
     def parseJSON__hook_locked(self, o):
         self._numRecords = o['count']
         self._numActiveRecords = o['active']
+        self._activeMemberList = o['activeMemberList']
         self.logger.info('updated ACL with %d entries, %d active, hash=%s' % (self._numRecords, self._numActiveRecords, self._hash))
 
     # MQTT targeted event
