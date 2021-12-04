@@ -121,6 +121,7 @@ copy_template_data()
 	    exit 1
 	fi
 	find . \( ! -name "*-example" \) \( ! -name ".gitignore" \) -type f | sudo cpio -vdump ${MOUNT_DATAFS}
+	sudo chown -r root:root ${MOUNT_DATAFS}/home/root
     else
 	echo "please first run '$0 mount' to mount the SD image partitions before copying template data"
     fi
@@ -180,8 +181,12 @@ elif [ "$1" = "write" ]; then
 	echo "${SDCARD} is not a block device.  Exiting."
 	exit 1
     fi
+
+    lsblk ${SDCARD}
+    echo
     
-    read -p "Are you sure you want to write to ${SDCARD}?  All contents will be destroyed!  (y/n)? " -n 1 -r
+    echo -ne "\e[1;31mAre you sure you want to write to ${SDCARD}?  \e[5;7mAll contents will be destroyed!\e[0m "
+    read -p " (y/n)? " -r
     echo    
     if [[ ! $REPLY =~ ^[Yy]$ ]]
     then
