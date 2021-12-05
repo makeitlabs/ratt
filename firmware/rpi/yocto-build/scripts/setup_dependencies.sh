@@ -1,5 +1,5 @@
 #!/bin/sh
-DEST_DIR="/u/rpi"
+DEST_DIR="${HOME}/yocto-ratt"
 RELEASE="dunfell"
 
 HASH_POKY="0839888394a6e42e96f9f0d201376eb38bc79b24"
@@ -7,6 +7,8 @@ HASH_META_OPENEMBEDDED="7889158dcd187546fc5e99fd81d0779cad3e8d17"
 HASH_META_QT5="b4d24d70aca75791902df5cd59a4f4a54aa4a125"
 HASH_META_SECURITY="b76698c788cb8ca632077a972031899ef15025d6"
 HASH_META_RASPBERRYPI="934064a01903b2ba9a82be93b3f0efdb4543a0e8"
+HASH_META_JUMPNOW="b3995636741be0d219a50035c98ded8b48590888"
+HASH_META_MENDER="045cfcfc3649b0505cee0b56af8946ef692cd67d"
 
 POKY="poky-${RELEASE}"
 SOURCES_DIR="oe-sources"
@@ -54,5 +56,7 @@ else
     clone_hash "https://github.com/meta-qt5/meta-qt5" meta-qt5 ${HASH_META_QT5}
     clone_hash "git://git.yoctoproject.org/meta-security" meta-security ${HASH_META_SECURITY}
     clone_hash "git://git.yoctoproject.org/meta-raspberrypi" meta-raspberrypi ${HASH_META_RASPBERRYPI}
+    clone_hash "https://github.com/jumpnow/meta-jumpnow" meta-jumpnow ${HASH_META_JUMPNOW}
+    clone_hash "https://github.com/mendersoftware/meta-mender" meta-mender ${HASH_META_MENDER}
 fi
  

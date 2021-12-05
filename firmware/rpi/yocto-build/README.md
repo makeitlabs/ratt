@@ -35,22 +35,15 @@ If you use SSH for GitHub authentication and plan to commit changes back to the 
 
     git clone --recurse-submodules -j8 git@github.com:makeitlabs/ratt
 
-
-### Set up a work directory in `/u` (with `/tmp`-like permissions)
-
-    sudo mkdir /u
-    sudo chmod 777 /u
-    sudo chmod o+t /u
-
-### Set up Yocto Poky
+### Set up Dependencies
 
 [Poky](https://www.yoctoproject.org/software-item/poky/) is the name of the reference distribution of the Yocto Project.  Dunfell is the long term support branch that RATT is based on as of late 2021, and was released in April of 2020.  See https://wiki.yoctoproject.org/wiki/Releases for info on Yocto releases.
 
-I've included a script to do the dirty work of cloning Yocto, using specific pinned versions so that anyone building a RATT image in the future will get the same end result.  The script will also set up a couple of directories in `/u/rpi` that the build process will use for the downloaded sources cache as well as the temporary build directory where the image will be built.
+I've included a script to do the dirty work of cloning Yocto and other required layers, using specific pinned versions so that anyone building a RATT image in the future will get the same end result.  The script will create `~/yocto-ratt/` and set up a couple of directories that the build process will use for the downloaded sources cache as well as the temporary build directory where the image will be built.
 
-    ~/ratt/firmware/rpi/yocto-build/scripts/setup-poky-build.sh
+    ~/ratt/firmware/rpi/yocto-build/scripts/setup_dependencies.sh
 
-This script will take a couple minutes to run, as it fetches a lot of data.
+This script will take a little bit to run, as it fetches a lot of data.  When it's finished, you should have all the required dependencies in `~/yocto-ratt/poky-dunfell/`
 
 
 ## Building
