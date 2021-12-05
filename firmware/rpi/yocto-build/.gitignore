@@ -1,4 +1,7 @@
 *.log
+*.sock
+*.lock
 cache
 sanity_info
 buildhistory
+
