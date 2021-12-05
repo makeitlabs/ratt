@@ -5,7 +5,7 @@
 # December 2018
 #
 
-SDIMG="/u/rpi/tmp/deploy/images/raspberrypi0-wifi/ratt-image-raspberrypi0-wifi.sdimg"
+SDIMG="${HOME}/yocto-ratt/tmp/deploy/images/raspberrypi0-wifi/ratt-image-raspberrypi0-wifi.sdimg"
 
 PART_BOOTFS=1
 PART_ROOT1FS=2
