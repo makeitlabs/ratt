@@ -43,6 +43,7 @@ from Logger import Logger
 import logging
 import hashlib
 import time
+import json
 from CachedRemoteFile import CachedRemoteFile
 
 class ACL(CachedRemoteFile):
@@ -62,6 +63,21 @@ class ACL(CachedRemoteFile):
         self.mutex.unlock()
         return n
 
+    @pyqtProperty(int, notify=recordUpdate)
+    def numMembers(self):
+        self.mutex.lock()
+        n = self._numMembers
+        self.mutex.unlock()
+        return n
+
+    @pyqtProperty(int, notify=recordUpdate)
+    def numActiveMembers(self):
+        self.mutex.lock()
+        n = self._numActiveMembers
+        self.mutex.unlock()
+        return n
+
+
     @pyqtProperty(list, notify=recordUpdate)
     def activeMemberList(self):
         self.mutex.lock()
@@ -69,10 +85,17 @@ class ACL(CachedRemoteFile):
         self.mutex.unlock()
         return n
 
-
     @pyqtSlot()
     def slotUpdate(self):
+        if self.mqtt:
+            o = { 'why': self._why, 'status': self.status, 'source': self.source, 'hash': self.hash, 'totalRecords': self._numRecords, 'activeRecords': self._numActiveRecords, 'totalMembers': self._numMembers, 'activeMembers': self.numActiveMembers}
+            self.mqtt.slotPublishSubtopic('acl/update', json.dumps(o))
+
         self.recordUpdate.emit()
+
+    @pyqtSlot(str)
+    def setWhy(self, why):
+        self._why = why
 
     def __init__(self, loglevel='WARNING', netWorker = None, mqtt = None, url = '', cacheFile = None):
         CachedRemoteFile.__init__(self)
@@ -82,7 +105,11 @@ class ACL(CachedRemoteFile):
 
         self._numRecords = 0
         self._numActiveRecords = 0
+        self._numMembers = 0
+        self._numActiveMembers = 0
         self._activeMemberList = []
+
+        self._why = 'restart'
 
         self.setup(logger=self.logger, netWorker=netWorker, url=url, cacheFile=cacheFile)
 
@@ -104,51 +131,44 @@ class ACL(CachedRemoteFile):
         self.mutex.unlock()
         return found_record
 
-    def getActiveMembersList(self, j):
-        unique_members = []
-        for record in j:
-            if record['allowed'] == 'allowed':
-                member_id = record['member']
-                if not member_id in unique_members:
-                    unique_members.append(member_id)
-        return sorted(unique_members)
-
-    def countTotalUnique(self, j):
-        unique_members = []
-        for record in j:
-            member_id = record['member']
-            if not member_id in unique_members:
-                unique_members.append(member_id)
-
-        return len(unique_members)
-
-    def countActiveUnique(self, j):
-        unique_members = []
-        for record in j:
-            if record['allowed'] == 'allowed':
-                member_id = record['member']
-                if not member_id in unique_members:
-                    unique_members.append(member_id)
-
-        return len(unique_members)
 
     # this hook is called just after parsing but before hashes are checked
     # the mutex is not held at this point
     def parseJSON__hook_unlocked(self, parsed):
+        unique_members = []
+        active_members = []
+        num_records = 0
+        active_records = 0
+        for record in parsed:
+            num_records = num_records + 1
+            member_id = record['member']
+            allowed = record['allowed']
+
+            if not member_id in unique_members:
+                unique_members.append(member_id)
+
+            if allowed == 'allowed':
+                active_records = active_records + 1
+                if not member_id in active_members:
+                    active_members.append(member_id)
+
         o = {}
-        o['count'] = self.countTotalUnique(parsed)
-        o['active'] = self.countActiveUnique(parsed)
-        o['activeMemberList'] = self.getActiveMembersList(parsed)
+        o['totalRecords'] = num_records
+        o['activeRecords'] = active_records
+        o['totalMembers'] = len(unique_members)
+        o['activeMembers'] = len(active_members)
+        o['activeMemberList'] = sorted(active_members)
         return o
 
     # this hook is called if the hashes differ, and the mutex IS held
     def parseJSON__hook_locked(self, o):
-        self._numRecords = o['count']
-        self._numActiveRecords = o['active']
+        self._numRecords = o['totalRecords']
+        self._numActiveRecords = o['activeRecords']
+        self._numMembers = o['totalMembers']
+        self._numActiveMembers = o['activeMembers']
         self._activeMemberList = o['activeMemberList']
-        self.logger.info('updated ACL with %d entries, %d active, hash=%s' % (self._numRecords, self._numActiveRecords, self._hash))
+        self.logger.info('updated ACL with %d records, %d active, hash=%s (why=%s)' % (self._numRecords, self._numActiveRecords, self._hash, self._why))
 
-    # MQTT targeted event
     @pyqtSlot(str, str)
     def __slotTargetedMQTTEvent(self, subtopic, message):
         tsplit = subtopic.split('/')
@@ -157,6 +177,7 @@ class ACL(CachedRemoteFile):
             cmd = tsplit[1]
 
             if cmd == 'update':
+                self._why = 'mqttTargeted'
                 self.download()
 
     # MQTT broadcast event
@@ -168,4 +189,5 @@ class ACL(CachedRemoteFile):
             cmd = tsplit[1]
 
             if cmd == 'update':
+                self._why = 'mqttBroadcast'
                 self.download()

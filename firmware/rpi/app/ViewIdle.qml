@@ -100,6 +100,7 @@ View {
             stop();
             animTimer.restart();
             forcedDownloadACL = true
+            acl.setWhy('ui')
             acl.download();
         }
     }
@@ -340,7 +341,7 @@ View {
         }
         Label {
             Layout.fillWidth: true
-            text: acl.numActiveRecords + " / " + acl.numRecords + " (unique)"
+            text: acl.numActiveMembers + " / " + acl.numMembers
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 11
             font.weight: Font.Normal

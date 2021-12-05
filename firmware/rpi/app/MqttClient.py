@@ -39,6 +39,7 @@
 from PyQt5.QtCore import Qt, QThread, QWaitCondition, QMutex, QTimer, pyqtSignal, pyqtSlot, pyqtProperty
 import paho.mqtt.client as mqtt
 from Logger import Logger
+import traceback
 
 class MqttClient(QThread):
     TOPIC_BROADCAST_CONTROL = 'control/broadcast'
@@ -268,10 +269,13 @@ class MqttClient(QThread):
             topic_broadcast = self._base_topic + '/' + MqttClient.TOPIC_BROADCAST_CONTROL + '/'
             topic_targeted = self._base_topic + '/' + MqttClient.TOPIC_TARGETED_CONTROL + '/' + self._node_id + '/'
 
-            self.logger.info('on_message: ' + message.topic + ' -> ' + message.payload)
+            topic = str(message.topic)
+            payload = str(message.payload)
+
+            self.logger.info('on_message: ' + topic + ' -> ' + payload)
             if message.topic.startswith(topic_broadcast):
-                subtopic = message.topic.replace(topic_broadcast, '')
-                self.broadcastEvent.emit(subtopic, message.payload)
+                subtopic = topic.replace(topic_broadcast, '')
+                self.broadcastEvent.emit(subtopic, payload)
             elif message.topic.startswith(topic_targeted):
-                subtopic = message.topic.replace(topic_targeted, '')
-                self.targetedEvent.emit(subtopic, message.payload)
+                subtopic = topic.replace(topic_targeted, '')
+                self.targetedEvent.emit(subtopic, payload)
