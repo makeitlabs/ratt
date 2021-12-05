@@ -9,9 +9,7 @@ The core RATT application that controls access to the equipment as well as provi
 | [app/](app/) |RATT application, primarily written in Python3 and QML via PyQt5 |
 | [yocto-build/](yocto-build/) |Yocto build directory for RATT |
 | [meta-ratt/](meta-ratt/)   |Layer to build the RATT platform (submodule) |
-| [meta-mender/](meta-mender/) |Layer to build and integrate the Mender OTA update mechanism (submodule) |
-| [meta-jumpnow/](meta-jumpnow/) |Layer from jumpnowtek to help with Pi platform (submodule)|
-| [config/](config/) |contains configuration R&D for the Pi platform (not used for Yocto build) |
+| [raspbian/](raspbian/) |initial R&D for the platform on Raspbian (not used for Yocto build) |
 
 **See [yocto-build/README.md](yocto-build/README.md) for step-by-step documentation on how to set up the build environment, build an image from scratch, and deploy it to an SD card.**
 
