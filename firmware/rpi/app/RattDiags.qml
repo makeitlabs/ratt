@@ -104,6 +104,8 @@ Item {
       personality.slotSimGPIOChangePin('IN1', checkIn1.checked);
       personality.slotSimGPIOChangePin('IN2', checkIn2.checked);
       personality.slotSimGPIOChangePin('IN3', checkIn3.checked);
+
+//      logConnections.target = logger.signalStreamHandler
     }
 
     ColumnLayout {
@@ -124,7 +126,7 @@ Item {
         Rectangle {
             id: personalityRect
             color: "#444499"
-            width: 1000
+            width: 1015
             height: 50
             border.width: 4
             border.color: "#000000"
@@ -158,7 +160,7 @@ Item {
           id: simGPIORect
           visible: personality.simGPIO
           color: "#777777"
-          width: 1000
+          width: 1015
           height: personality.simGPIO ? 80 : 0
           border.width: 4
           border.color: "#000000"
@@ -377,249 +379,307 @@ Item {
           }
         }
 
-        Rectangle {
-            id: aclRect
-            color: "#444444"
-            width: 1000
-            height: 100
-            border.width: 4
-            border.color: "#000000"
+        RowLayout {
+          width: 1015
+          height: 150
 
-            Connections {
-                target: acl
-                onUpdate: {
-                    aclRect.border.color = "#009900"
-                }
+          Rectangle {
+              id: aclRect
+              color: "#222222"
+              Layout.fillWidth: true
+              Layout.fillHeight: true
+              border.width: 4
+              border.color: "#000000"
 
-                onUpdateError: {
-                    aclRect.border.color = "#990000"
-                }
-            }
+              Connections {
+                  target: acl
+                  onUpdate: {
+                      aclRect.border.color = "#009900"
+                  }
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 6
-                Label {
-                    text: "ACL"
-                    color: "white"
-                    font.pixelSize: 12
-                    font.bold: true
-                }
-                Label {
-                    color: "#999999"
-                    font.pixelSize: 12
-                    text: "Total Unique Member Records: " + acl.numRecords
-                }
-                Label {
-                    color: "#00f000"
-                    font.pixelSize: 12
-                    text: "Active Member Records: " + acl.numActiveRecords
-                }
-                Label {
-                    id: aclHash
-                    color: "#777777"
-                    font.pixelSize: 10
-                    text: "Hash: " + acl.hash
-                }
-            }
+                  onUpdateError: {
+                      aclRect.border.color = "#990000"
+                  }
+              }
+
+              ColumnLayout {
+                  anchors.fill: parent
+                  anchors.margins: 6
+                  Label {
+                      text: "ACL"
+                      color: "white"
+                      font.pixelSize: 12
+                      font.bold: true
+                  }
+                  Label {
+                      color: "#999999"
+                      font.pixelSize: 12
+                      text: "Total Unique Member Records: " + acl.numRecords
+                  }
+                  Label {
+                      color: "#00f000"
+                      font.pixelSize: 12
+                      text: "Active Member Records: " + acl.numActiveRecords
+                  }
+                  Label {
+                      color: "#00ffff"
+                      font.pixelSize: 12
+                      text: "Last status: " + acl.status + " (" + acl.why + ")"
+                  }
+                  Label {
+                      color: "#009999"
+                      font.pixelSize: 10
+                      text: "Time: " + acl.date
+                  }
+                  Label {
+                      color: "#ff0000"
+                      font.pixelSize: 10
+                      visible: acl.errorDescription != ""
+                      text: "Last error: " + acl.errorDescription
+                  }
+                  Label {
+                      id: aclHash
+                      color: "#777777"
+                      font.pixelSize: 8
+                      text: "Hash: " + acl.hash
+                  }
+                  Button {
+                      text: "Download"
+                      onClicked: {
+                        acl.setWhy('diag')
+                        acl.download()
+                      }
+                  }
+
+                  Item { Layout.fillHeight: true }
+              }
+          }
+
+          Rectangle {
+              id: rfidRect
+              color: "#222222"
+              Layout.fillWidth: true
+              Layout.fillHeight: true
+              border.width: 4
+              border.color: "#000000"
+
+              Connections {
+                  target: rfid
+                  onTagScan: {
+                      var prettyTime = new Date(time * 1000);
+                      tagTimeText.text = "Time: " + prettyTime;
+                      tagTimeText.color = "cyan";
+
+                      tagIDText.text = "Tag: " + tag
+                      tagIDText.color = "#00FF00";
+
+                      tagHashText.text = "Hash: " + hash
+                      tagHashText.color = "gray";
+
+                      tagDebugText.text = "Debug: " + debugText;
+                      tagDebugText.color = "gray";
+
+                      rfidRect.border.color = "#002266";
+                  }
+
+                  onTagScanError: {
+                      var prettyTime = new Date(time * 1000);
+                      tagTimeText.text = "Time: " + prettyTime;
+                      tagTimeText.color = "yellow";
+
+                      var errText = "Unknown error";
+
+                      if (error === rfid.errPacket)
+                          errText = "Packet structure error";
+                      else if (error === rfid.errChecksum)
+                          errText = "Checksum error";
+
+                      tagIDText.text = "RFID Read Error: " + errText;
+                      tagIDText.color = "#ff0000";
+
+                      tagHashText.text = ""
+
+                      tagDebugText.text = debugText;
+                      tagDebugText.color = "white";
+                      rfidRect.border.color = "#660000"
+                  }
+              }
+
+
+              ColumnLayout {
+                  anchors.fill: parent
+                  anchors.margins: 6
+                  Label {
+                      color: "white"
+                      text: "Last RFID Read"
+                      font.pixelSize: 12
+                      font.bold: true
+                  }
+                  Label {
+                      id: tagTimeText
+                      font.pixelSize: 12
+                  }
+                  Label {
+                      id: tagIDText
+                      font.pixelSize: 10
+                  }
+                  Label {
+                      id: tagHashText
+                      font.pixelSize: 8
+                  }
+                  Label {
+                      id: tagDebugText
+                      font.pixelSize: 10
+                  }
+
+                  Item { Layout.fillHeight: true }
+
+                  RowLayout {
+                      Layout.preferredHeight: 25
+                      Layout.fillWidth: true
+                      Rectangle {
+                          height: 20
+                          width: 100
+                          color: "gray"
+                          TextInput {
+                              id: rfidText
+                              anchors.fill: parent
+                              text: config.RFID_SimulatedTag
+                          }
+                      }
+                      Button {
+                          text: "Sim. Scan"
+                          onClicked: {
+                              rfid.simulateTagScan(rfidText.text)
+                          }
+                      }
+                      Button {
+                          text: "Sim. Scan Error"
+                          onClicked: {
+                              rfid.simulateScanError(rfidText)
+                          }
+                      }
+
+                  }
+              }
+          }
+
+          Rectangle {
+              id: lookupRect
+              color: "#222222"
+              Layout.fillWidth: true
+              Layout.fillHeight: true
+              border.width: 4
+              border.color: "#000000"
+
+              Connections {
+                  target: personality
+                  onInvalidScan: {
+                      lookupRect.border.color = "#999900"
+                      invalidReason.text = reason;
+                  }
+              }
+
+              Connections {
+                  target: activeMemberRecord
+
+                  onRecordChanged: {
+                      if (!activeMemberRecord.valid) {
+                          lookupRect.border.color = "#000000"
+                      } else {
+                          lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
+                      }
+                  }
+              }
+              ColumnLayout {
+                  anchors.fill: parent
+                  anchors.margins: 6
+                  Label {
+                      color: "white"
+                      text: "Active Member Record"
+                      font.pixelSize: 12
+                      font.bold: true
+                  }
+                  Label {
+                      id: invalidReason
+                      font.pixelSize: 12
+                      color: "#777777"
+                      visible: !activeMemberRecord.valid
+                  }
+
+                  Label {
+                      font.pixelSize: 10
+                      color: "white"
+                      text: "logged in: " + activeMemberRecord.loggedIn
+                      visible: activeMemberRecord.valid
+                  }
+                  Label {
+                      font.pixelSize: 14
+                      color: "yellow"
+                      text: activeMemberRecord.name + " (" + activeMemberRecord.plan + ")"
+                      visible: activeMemberRecord.valid
+                      font.weight: Font.Bold
+                  }
+                  Label {
+                      font.pixelSize: 10
+                      color: "white"
+                      text: "endorsements: " + activeMemberRecord.endorsements
+                      visible: activeMemberRecord.valid
+                  }
+                  Label {
+                      font.pixelSize: 8
+                      color: "gray"
+                      text: activeMemberRecord.tag
+                      visible: activeMemberRecord.valid
+                  }
+                  Label {
+                      font.pixelSize: 10
+                      color: activeMemberRecord.allowed ? "green" : "red"
+                      text: activeMemberRecord.allowed ? "Allowed" : "Denied"
+                      visible: activeMemberRecord.valid
+                  }
+                  Label {
+                      font.pixelSize: 10
+                      color: "cyan"
+                      text: activeMemberRecord.warningText
+                      visible: activeMemberRecord.valid
+                  }
+                  Item { Layout.fillHeight: true }
+              }
+          }
         }
 
-        Rectangle {
-            id: rfidRect
-            color: "#222222"
-            width: 1000
-            height: 130
-            border.width: 4
-            border.color: "#000000"
+        Connections {
+          id: logConnections
+          target: logger.signalStreamHandler
 
-            Connections {
-                target: rfid
-                onTagScan: {
-                    var prettyTime = new Date(time * 1000);
-                    tagTimeText.text = "Time: " + prettyTime;
-                    tagTimeText.color = "cyan";
-
-                    tagIDText.text = "Tag: " + tag
-                    tagIDText.color = "#00FF00";
-
-                    tagHashText.text = "Hash: " + hash
-                    tagHashText.color = "gray";
-
-                    tagDebugText.text = "Debug: " + debugText;
-                    tagDebugText.color = "gray";
-
-                    rfidRect.border.color = "#002266";
-                }
-
-                onTagScanError: {
-                    var prettyTime = new Date(time * 1000);
-                    tagTimeText.text = "Time: " + prettyTime;
-                    tagTimeText.color = "yellow";
-
-                    var errText = "Unknown error";
-
-                    if (error === rfid.errPacket)
-                        errText = "Packet structure error";
-                    else if (error === rfid.errChecksum)
-                        errText = "Checksum error";
-
-                    tagIDText.text = "RFID Read Error: " + errText;
-                    tagIDText.color = "#ff0000";
-
-                    tagHashText.text = ""
-
-                    tagDebugText.text = debugText;
-                    tagDebugText.color = "white";
-                    rfidRect.border.color = "#660000"
-                }
-            }
-
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 6
-                Label {
-                    color: "white"
-                    text: "Last RFID Read"
-                    font.pixelSize: 12
-                    font.bold: true
-                }
-                Label {
-                    id: tagTimeText
-                    font.pixelSize: 12
-                }
-                Label {
-                    id: tagIDText
-                    font.pixelSize: 12
-                }
-                Label {
-                    id: tagHashText
-                    font.pixelSize: 10
-                }
-                Label {
-                    id: tagDebugText
-                    font.pixelSize: 10
-                }
-
-                RowLayout {
-                    Layout.preferredHeight: 25
-                    Layout.fillWidth: true
-                    Rectangle {
-                        height: 20
-                        width: 100
-                        color: "gray"
-                        TextInput {
-                            id: rfidText
-                            anchors.fill: parent
-                            text: config.RFID_SimulatedTag
-                        }
-                    }
-                    Button {
-                        text: "Sim. Scan"
-                        onClicked: {
-                            rfid.simulateTagScan(rfidText.text)
-                        }
-                    }
-                    Button {
-                        text: "Sim. Scan Error"
-                        onClicked: {
-                            rfid.simulateScanError(rfidText)
-                        }
-                    }
-
-                }
-            }
+          onLogEvent: {
+            log.text = log.text + text + "\n"
+            log.cursorPosition = log.length
+          }
         }
 
-        Rectangle {
-            id: lookupRect
-            color: "#222222"
-            width: 1000
-            height: 150
-            border.width: 4
-            border.color: "#000000"
+        RowLayout {
+          width: 1015
+          height: 280
 
-            Connections {
-                target: personality
-                onInvalidScan: {
-                    lookupRect.border.color = "#999900"
-                    invalidReason.text = reason;
-                }
-            }
-
-            Connections {
-                target: activeMemberRecord
-
-                onRecordChanged: {
-                    if (!activeMemberRecord.valid) {
-                        lookupRect.border.color = "#000000"
-                    } else {
-                        lookupRect.border.color = activeMemberRecord.allowed ? "#009900" : "#990000"
-                    }
-                }
-            }
-            ColumnLayout {
+          Rectangle {
+              id: logRect
+              color: "#222222"
+              Layout.fillWidth: true
+              Layout.fillHeight: true
+              border.width: 4
+              border.color: "#000000"
+              TextArea {
+                id: log
                 anchors.fill: parent
-                anchors.margins: 6
-                Label {
-                    color: "white"
-                    text: "Active Member Record"
-                    font.pixelSize: 12
-                    font.bold: true
-                }
-                Label {
-                    id: invalidReason
-                    font.pixelSize: 12
-                    color: "#777777"
-                    visible: !activeMemberRecord.valid
-                }
-
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: "logged in: " + activeMemberRecord.loggedIn
-                    visible: activeMemberRecord.valid
-                }
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: activeMemberRecord.name
-                    visible: activeMemberRecord.valid
-                }
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: activeMemberRecord.plan
-                    visible: activeMemberRecord.valid
-                }
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: "endorsements: " + activeMemberRecord.endorsements
-                    visible: activeMemberRecord.valid
-                }
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: activeMemberRecord.tag
-                    visible: activeMemberRecord.valid
-                }
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: activeMemberRecord.allowed ? "Allowed" : "Denied"
-                    visible: activeMemberRecord.valid
-                }
-                Label {
-                    font.pixelSize: 10
-                    color: "white"
-                    text: activeMemberRecord.warningText
-                    visible: activeMemberRecord.valid
-                }
-
-            }
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                font.pixelSize: 12
+                readOnly: true
+              }
+          }
         }
-
     }
 
 }

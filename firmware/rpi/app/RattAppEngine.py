@@ -85,6 +85,7 @@ class RattAppEngine(QQmlApplicationEngine):
         # create context properties so certain objects can be accessed from QML
         if not reinit:
             self.rootContext().setContextProperty("appEngine", self)
+            self.rootContext().setContextProperty("logger", self.logger)
             self.rootContext().setContextProperty("config", self.config)
             self.rootContext().setContextProperty("netWorker", self._netWorker)
             self.rootContext().setContextProperty("acl", self._acl)

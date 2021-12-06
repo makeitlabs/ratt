@@ -93,9 +93,18 @@ class ACL(CachedRemoteFile):
 
         self.recordUpdate.emit()
 
+    @pyqtProperty(str, notify=recordUpdate)
+    def why(self):
+        self.mutex.lock()
+        n = self._why
+        self.mutex.unlock()
+        return n
+
     @pyqtSlot(str)
     def setWhy(self, why):
+        self.mutex.lock()
         self._why = why
+        self.mutex.unlock()
 
     def __init__(self, loglevel='WARNING', netWorker = None, mqtt = None, url = '', cacheFile = None):
         CachedRemoteFile.__init__(self)

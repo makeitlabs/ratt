@@ -38,13 +38,39 @@
 
 from PyQt5.QtCore import qInstallMessageHandler
 from PyQt5.QtCore import qDebug, QtInfoMsg, QtWarningMsg, QtCriticalMsg, QtFatalMsg
+from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty
 import logging
 
-class Logger():
+class SignalStreamHandler(QObject, logging.StreamHandler):
+    logEvent = pyqtSignal(str, name='logEvent', arguments=['text'])
+
+    def __init__(self):
+        QObject.__init__(self)
+        logging.StreamHandler.__init__(self)
+
+        fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
+        self.setFormatter(fmt)
+
+    def emit(self, record):
+        self.logEvent.emit(self.format(record))
+
+
+class Logger(QObject):
+
+    @pyqtProperty(QObject)
+    def signalStreamHandler(self):
+        if self.sig:
+            print("***")
+            print(self.sig)
+            return self.sig
+
+        return None
+
     def __init__(self, name, filename='', stream=False,
                  flevel=logging.INFO, slevel=logging.DEBUG, mlevel=logging.NOTSET,
                  qt=False, qtlevel=logging.INFO, qtVerbose=False):
 
+        QObject.__init__(self)
         self.log = logging.getLogger(name)
         self.log.setLevel(mlevel)
 
@@ -65,6 +91,10 @@ class Logger():
             fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
             self.console.setFormatter(fmt)
             logging.getLogger('').addHandler(self.console)
+
+            self.sig = SignalStreamHandler()
+            self.sig.setLevel(slevel)
+            logging.getLogger('').addHandler(self.sig)
 
         # install Qt handler if enabled
         if qt:
