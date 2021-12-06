@@ -143,7 +143,7 @@ class Pin(QObject):
 
 class Controller(QThread):
     # A class to provide access to SysFS GPIO pins
-    def __init__(self, loglevel='DEBUG'):
+    def __init__(self, loglevel='INFO'):
         QThread.__init__(self)
         self.logger = Logger(name='ratt.qsimgpio')
         self.logger.setLogLevelStr(loglevel)
