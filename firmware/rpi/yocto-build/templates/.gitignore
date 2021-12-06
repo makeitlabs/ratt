@@ -1,0 +1,6 @@
+# ignore everything
+*
+# except directories
+!*/
+# and -example files
+!*-example
