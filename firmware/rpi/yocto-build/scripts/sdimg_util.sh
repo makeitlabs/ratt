@@ -115,7 +115,7 @@ copy_template_data()
 {
     if /usr/bin/mountpoint -q ${MOUNT_DATAFS} ; then
 	SCRIPT_RELATIVE_DIR=$(dirname "${BASH_SOURCE[0]}")
-	cd $SCRIPT_RELATIVE_DIR/templates
+	cd $SCRIPT_RELATIVE_DIR/../templates
 	if [ $? -ne 0 ]; then
 	    echo "Aborted."
 	    exit 1
