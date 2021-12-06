@@ -7,3 +7,9 @@ ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 127.0.1.1 raspberrypi0-wifi
+
+# 10.0.0.1 auth
+# 10.0.0.1 mqtt
+# 10.0.0.1 devel
+# 10.0.0.1 docker.mender.io
+# 10.0.0.1 s3.docker.mender.io
