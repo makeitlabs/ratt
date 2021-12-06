@@ -175,7 +175,15 @@ class PersonalityBase(PersonalityStateMachine):
 
         self.pins_in = []
         self.pins_out = []
-        self._init_gpio_pins()
+
+        try:
+            self._init_gpio_pins()
+        except:
+            self.logger.error('Error initializing GPIO pins.')
+            self.logger.warning('Falling back to simulated GPIO.')
+            self.gpio = SimGPIO.Controller()
+            self._simGPIO = True
+            self._init_gpio_pins()
 
         if self._simGPIO:
             # simulated GPIO output pins connect to a handler to generate
