@@ -6,29 +6,30 @@
 
 ; ToolDesc=<text> - default=Tool
 ; short description of tool, e.g. "Auto Lift"
-ToolDesc=Simulated Tool
+ToolDesc=Example Tool
 
 ; NetworkInterfaceName=<ifc> - default=wlan0
-; name of network device
-NetworkInterfaceName=enp0s3
+; Name of primary network device.  If not found, it will find a likely one from the list (but might be wrong)
+; NetworkInterfaceName=enp0s3
 
-; MacAddressOverride=<mac> - default=None
-; manually set mac addr, lowercase and no colons
-MacAddressOverride=aabbccddeeff
+; NodeId=<id> - default=None
+; Node ID override for this node. If unset it will set it based on the MAC addr for the configured network interface
+; specified as 12 hex digits, all lowercase and no colons.
+; NodeId=001122aabbcc
 
 ;;;;;;;;;;;;
 [GPIO]
 ; Simulated=[True|False] - default=False
 ; provide simulated GPIO mode for devhost use
-Simulated=True
+; Simulated=True
 
 ; InputNames=<label1,label2,label3,label4> - default=IN1,IN2,IN3,IN4
 ; Labels shown on diagnostic GUI for simulated GPIO inputs
-InputNames=Active,Power,HomeSwitch,HomingOverride
+; InputNames=Active,Power,UnusedIn3,UnusedIn4
 
 ; OutputNames=<label1,label2,label3,label4> - default=OUT1,OUT2,OUT3,OUT4
 ; Labels shown on diagnostic GUI for simulated GPIO outputs
-OutputNames=Enable,UnusedOut2,UnusedOut3,UnusedOut4
+; OutputNames=Enable,UnusedOut2,UnusedOut3,UnusedOut4
 
 ;;;;;;;;;;;;
 [Log]
@@ -46,21 +47,21 @@ File=/tmp/ratt.log
 
 ; QtVerbose=[True|False] - default=False
 ; Controls verbose Qt logging
-QtVerbose=True
+; QtVerbose=True
 
 ; LogLevel=[DEBUG|INFO|WARNING|ERROR| - default=INFO
 ; Controls overall logging level
-LogLevel=DEBUG
+; LogLevel=DEBUG
 
 ;;;;;;;;;;;;
 [Personality]
-; Class=[Simple|LaserCutter|AutoLift|ProtoTrak] - default=Simple
-; Personality type (other types may be added)
-Class=LaserCutter
-
 ; LogLevel=[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Controls log level of personality
-LogLevel=INFO
+; LogLevel=DEBUG
+
+; Class=[Simple|LaserCutter|AutoLift|ProtoTrak] - default=Simple
+; Personality type (other types may be added)
+; Class=LaserCutter
 
 ; TimeoutSeconds=<seconds> - default=300
 ; Auto-logout of user after timeout with no activity
@@ -76,11 +77,11 @@ TimeoutWarningSeconds=15
 
 ; SafetyCheckEnabled=[True|False] - default=False
 ; Check for tool activity immediately after activating tool, and warn user if detected
-SafetyCheckEnabled=True
+; SafetyCheckEnabled=True
 
 ; MonitorToolPowerEnabled=[True|False] - default=False
 ; Separately check for tool power for cases where RATT stays powered but tool turns on and off
-MonitorToolPowerEnabled=True
+; MonitorToolPowerEnabled=True
 
 ; HomingManualOverrideEnabled=[True|False] - default=False
 ; LaserCutter only: Allow manual override of homing requirement
@@ -88,7 +89,7 @@ MonitorToolPowerEnabled=True
 
 ; HomingExternalOverrideEnabled=[True|False] - default=False
 ; LaserCutter only: Allow external override input of homing requirement, e.g. for rotary attachment
-HomingExternalOverrideEnabled=True
+; HomingExternalOverrideEnabled=True
 
 ; PasswordEnabled=[True|False] - default=False
 ; Allow 4-letter password to use tool if RFID not allowed.  This was used to transition members
@@ -148,12 +149,12 @@ Issue5=Sample Issue 5
 [Auth]
 ; LogLevel=[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Controls log level of authentication module
-LogLevel=DEBUG
+; LogLevel=DEBUG
 
 ; ResourceId=<id> - default=frontdoor (also Interpolation value)
 ; Resource name, configured per resource in the Auth Backend
 ; Configured under Pages->Resource Groups
-ResourceId=laser-rabbit-users
+ResourceId=fake-resource-users
 
 ; HttpAuthUser=<user> - default=user
 ; Username of API account in the Auth Backend
@@ -167,20 +168,20 @@ HttpAuthPassword=secret
 
 ; (Interpolation value) ServerHost=<hostname>
 ; Hostname of Auth Backend server (may be internal or external address)
-ServerHost=staging.makeitlabs.com
+ServerHost=auth
 
 ; (Interpolation value) ServerPort=<port>
 ; Port for Auth Backend server
 ServerPort=443
 
-; (Interpolation value) NodeName=<node>
-; Node name (short friendly name, not mac address) from Auth Backend
-; configured in Pages->Node Configuration
-NodeName=ratt-laser-rabbit
+; (Interpolation value) NodeName=<nodename>
+; Node name configured in Auth Backend, in Pages->Node Configuration
+; NOT the MAC address style node ID!
+NodeName=fake-node
 
 ; (Interpolation value) UrlBase=<path with trailing slash>
 ; The path where the Auth Backend can be found on the server
-UrlBase=authit/
+UrlBase=auth/
 
 ; AclUrl=<url>
 ; Full URL where the ACL file is downloaded
@@ -189,7 +190,7 @@ AclUrl=https://%(ServerHost)s:%(ServerPort)s/%(UrlBase)sapi/v1/resources/%(Resou
 
 ; AclCacheFile=<filename> - default=/data/ratt/ratt.acl
 ; Preferably non-volatile location of the cached ACL file that is downloaded from the Auth Backend
-AclCacheFile=/tmp/ratt.acl
+; AclCacheFile=/tmp/ratt.acl
 
 ; ConfigUrl=<url>
 ; Full URL where the config overlay is downloaded
@@ -199,21 +200,33 @@ ConfigUrl=https://%(ServerHost)s:%(ServerPort)s/%(UrlBase)sapi/v1/node/%(NodeNam
 
 ; ConfigCacheFile=<filename> - default=/data/ratt/ratt-remote.conf
 ; Preferably non-volatile location of the cached config file that is downloaded from the Auth Backend
-ConfigCacheFile=/tmp/ratt-remote.conf
+; ConfigCacheFile=/tmp/ratt-remote.conf
 
 ;;;;;;;;;;;;
 [MQTT]
 ; Loglevel[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Control log level of MQTT module
-LogLevel=INFO
+; LogLevel=DEBUG
 
-; SSL=[True|False] - default=False
+; SSLEnabled=[True|False] - default=False
 ; Use SSL when connecting to MQTT broker
-SSL=True
+; SSLEnabled=True
+
+; CACertFile=<file> - default=/data/certs/ca.crt
+; SSL CA certificate file path, usually self-signed and specific to MQTT
+; CACertFile=/data/certs/mqtt_ca.crt
+
+; ClientCertFile=<file> - default=/data/certs/client.crt
+; SSL Client certificate file path, usually self-signed and specific to MQTT
+; ClientCertFile=/data/certs/mqtt_client.crt
+
+; ClientKeyFile=<file> - default=/data/certs/client.key
+; SSL Client private key file path, usually self-signed and specific to MQTT
+; ClientKeyFile=/data/certs/mqtt_client.key
 
 ; BrokerHost=<hostname>
 ; Host name of the MQTT broker
-BrokerHost=devel
+BrokerHost=mqtt
 
 ; BrokerPort=<port> - default=1883
 ; Port of the MQTT broker
@@ -227,34 +240,30 @@ BrokerHost=devel
 ; Base topic name for all MQTT messages sent and received
 ; BaseTopic=ratt-test
 
-; NodeId=<id> - default=None
-; Node ID (mac address without colons, all lowercase) for this node
-; Used when sending/receiving MQTT messages
-NodeId=aabbccddeeff
 
 ;;;;;;;;;;;;
-[SSL]
-; Enabled=[True|False] - default=False
-; Enable custom SSL CA/client certs for HTTPS transactions (advanced config)
-; Enabled=False
+[HTTPS]
+; ClientCertsEnabled=[True|False] - default=False
+; Enable SSL client certificates for HTTPS transactions
+; ClientCertsEnabled=True
 
 ; CaCertFile=<file> - default=/data/certs/ca.crt
 ; CA certificate file path
-CaCertFile=../../../deployment/certs/mqtt/ssl/certs/ca.crt
+; CaCertFile=/data/certs/https_ca.crt
 
 ; ClientCertFile=<file> - default=/data/certs/client.crt
 ; Client certificate file path
-ClientCertFile=../../../deployment/certs/mqtt/ssl/certs/client_ubuntu.crt
+; ClientCertFile=/data/certs/https_client.crt
 
 ; ClientKeyFile=<file> - default=/data/certs/client.key
 ; Client private key file path
-ClientKeyFile=../../../deployment/certs/mqtt/ssl/private/client_ubuntu.key
+; ClientKeyFile=/data/certs/https_client.key
 
 ;;;;;;;;;;;;
 [RFID]
 ; Loglevel[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Control log level of RFID module
-LogLevel=INFO
+; LogLevel=DEBUG
 
 ; SerialPort=<path to device> - default=/dev/ttyS0
 ; Path to device node for RFID reader serial port
@@ -262,7 +271,7 @@ LogLevel=INFO
 
 ; SimulatedTag=<tag ID> - default=0
 ; Default value of simulated RFID tag for DevHost use only
-SimulatedTag=4242
+; SimulatedTag=4242
 
 ;;;;;;;;;;;;
 [Sound]

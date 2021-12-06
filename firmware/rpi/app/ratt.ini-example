@@ -2,19 +2,20 @@
 [General]
 ; Diags=[True|False] - default=True
 ; show diagnostics display on HDMI output
-;Diags=False
+; Diags=False
 
 ; ToolDesc=<text> - default=Tool
 ; short description of tool, e.g. "Auto Lift"
-ToolDesc=Test Tool
+ToolDesc=Example Tool
 
 ; NetworkInterfaceName=<ifc> - default=wlan0
-; name of network device
-; NetworkInterfaceName=wlan0
+; Name of primary network device.  If not found, it will find a likely one from the list (but might be wrong)
+; NetworkInterfaceName=enp0s3
 
-; MacAddressOverride=<mac> - default=None
-; manually set mac addr, lowercase and no colons
-; MacAddressOverride=aabbccddeeff
+; NodeId=<id> - default=None
+; Node ID override for this node. If unset it will set it based on the MAC addr for the configured network interface
+; specified as 12 hex digits, all lowercase and no colons.
+; NodeId=001122aabbcc
 
 ;;;;;;;;;;;;
 [GPIO]
@@ -50,17 +51,17 @@ File=/tmp/ratt.log
 
 ; LogLevel=[DEBUG|INFO|WARNING|ERROR| - default=INFO
 ; Controls overall logging level
-LogLevel=DEBUG
+; LogLevel=DEBUG
 
 ;;;;;;;;;;;;
 [Personality]
-; Class=[Simple|LaserCutter|AutoLift|ProtoTrak] - default=Simple
-; Personality type (other types may be added)
-; Class=LaserCutter
-
 ; LogLevel=[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Controls log level of personality
 ; LogLevel=DEBUG
+
+; Class=[Simple|LaserCutter|AutoLift|ProtoTrak] - default=Simple
+; Personality type (other types may be added)
+; Class=LaserCutter
 
 ; TimeoutSeconds=<seconds> - default=300
 ; Auto-logout of user after timeout with no activity
@@ -148,7 +149,7 @@ Issue5=Sample Issue 5
 [Auth]
 ; LogLevel=[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Controls log level of authentication module
-LogLevel=DEBUG
+; LogLevel=DEBUG
 
 ; ResourceId=<id> - default=frontdoor (also Interpolation value)
 ; Resource name, configured per resource in the Auth Backend
@@ -167,16 +168,16 @@ HttpAuthPassword=secret
 
 ; (Interpolation value) ServerHost=<hostname>
 ; Hostname of Auth Backend server (may be internal or external address)
-ServerHost=devel
+ServerHost=auth
 
 ; (Interpolation value) ServerPort=<port>
 ; Port for Auth Backend server
-ServerPort=2080
+ServerPort=443
 
-; (Interpolation value) NodeName=<node>
-; Node name (short friendly name, not mac address) from Auth Backend
-; configured in Pages->Node Configuration
-NodeName=ratt-autolift
+; (Interpolation value) NodeName=<nodename>
+; Node name configured in Auth Backend, in Pages->Node Configuration
+; NOT the MAC address style node ID!
+NodeName=fake-node
 
 ; (Interpolation value) UrlBase=<path with trailing slash>
 ; The path where the Auth Backend can be found on the server
@@ -205,15 +206,27 @@ ConfigUrl=https://%(ServerHost)s:%(ServerPort)s/%(UrlBase)sapi/v1/node/%(NodeNam
 [MQTT]
 ; Loglevel[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Control log level of MQTT module
-LogLevel=DEBUG
+; LogLevel=DEBUG
 
-; SSL=[True|False] - default=False
+; SSLEnabled=[True|False] - default=False
 ; Use SSL when connecting to MQTT broker
-SSL=True
+; SSLEnabled=True
+
+; CACertFile=<file> - default=/data/certs/ca.crt
+; SSL CA certificate file path, usually self-signed and specific to MQTT
+; CACertFile=/data/certs/mqtt_ca.crt
+
+; ClientCertFile=<file> - default=/data/certs/client.crt
+; SSL Client certificate file path, usually self-signed and specific to MQTT
+; ClientCertFile=/data/certs/mqtt_client.crt
+
+; ClientKeyFile=<file> - default=/data/certs/client.key
+; SSL Client private key file path, usually self-signed and specific to MQTT
+; ClientKeyFile=/data/certs/mqtt_client.key
 
 ; BrokerHost=<hostname>
 ; Host name of the MQTT broker
-BrokerHost=devel
+BrokerHost=mqtt
 
 ; BrokerPort=<port> - default=1883
 ; Port of the MQTT broker
@@ -227,34 +240,30 @@ BrokerHost=devel
 ; Base topic name for all MQTT messages sent and received
 ; BaseTopic=ratt-test
 
-; NodeId=<id> - default=None
-; Node ID (mac address without colons, all lowercase) for this node
-; Used when sending/receiving MQTT messages
-NodeId=aabbccddeeff
 
 ;;;;;;;;;;;;
-[SSL]
-; Enabled=[True|False] - default=False
-; Enable custom SSL CA/client certs for HTTPS transactions (advanced config)
-; Enabled=True
+[HTTPS]
+; ClientCertsEnabled=[True|False] - default=False
+; Enable SSL client certificates for HTTPS transactions
+; ClientCertsEnabled=True
 
 ; CaCertFile=<file> - default=/data/certs/ca.crt
 ; CA certificate file path
-; CaCertFile=/tmp/certs/ca.crt
+; CaCertFile=/data/certs/https_ca.crt
 
 ; ClientCertFile=<file> - default=/data/certs/client.crt
 ; Client certificate file path
-; ClientCertFile=/tmp/certs/client.crt
+; ClientCertFile=/data/certs/https_client.crt
 
 ; ClientKeyFile=<file> - default=/data/certs/client.key
 ; Client private key file path
-; ClientKeyFile=/tmp/client.key
+; ClientKeyFile=/data/certs/https_client.key
 
 ;;;;;;;;;;;;
 [RFID]
 ; Loglevel[DEBUG|INFO|WARNING|ERROR] - default=INFO
 ; Control log level of RFID module
-LogLevel=DEBUG
+; LogLevel=DEBUG
 
 ; SerialPort=<path to device> - default=/dev/ttyS0
 ; Path to device node for RFID reader serial port

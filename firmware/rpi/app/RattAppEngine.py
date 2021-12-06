@@ -146,16 +146,16 @@ class RattAppEngine(QQmlApplicationEngine):
         self._mqtt = MqttClient(loglevel=self.config.value('MQTT.LogLevel'),
                                 baseTopic=self.config.value('MQTT.BaseTopic'))
 
-        # NetWorker handles fetching and maintaining ACLs, logging, and other network functions
+        # NetWorker handles fetching and maintaining ACLs, configs, and other network functions
         self._netWorker = NetWorker(loglevel=self.config.value('Auth.LogLevel'),
                                     ifcName=self.config.value('General.NetworkInterfaceName'),
-                                    ifcMacAddressOverride=self.config.value('General.MacAddressOverride'),
+                                    nodeId=self.config.value('General.NodeId'),
                                     mqtt=self._mqtt)
 
-        self._netWorker.setSSLCertConfig(enabled=self.config.value('SSL.Enabled'),
-                                         caCertFile=self.config.value('SSL.CaCertFile'),
-                                         clientCertFile=self.config.value('SSL.ClientCertFile'),
-                                         clientKeyFile=self.config.value('SSL.ClientKeyFile'))
+        self._netWorker.setSSLClientCertConfig(enabled=self.config.value('HTTPS.ClientCertsEnabled'),
+                                               caCertFile=self.config.value('HTTPS.CaCertFile'),
+                                               clientCertFile=self.config.value('HTTPS.ClientCertFile'),
+                                               clientKeyFile=self.config.value('HTTPS.ClientKeyFile'))
 
         self._netWorker.setAuth(user=self.config.value('Auth.HttpAuthUser'),
                                 password=self.config.value('Auth.HttpAuthPassword'))
@@ -168,7 +168,7 @@ class RattAppEngine(QQmlApplicationEngine):
 
 
     def __initSystem__(self):
-
+        # try to read mender artifact name from filesystem.  this is the version of the base system that is running.
         try:
             with open('/etc/mender/artifact_info') as f:
                 for line in f:
@@ -191,18 +191,18 @@ class RattAppEngine(QQmlApplicationEngine):
         self._rfid.monitor()
 
         # Initialize and connect MQTT client
-        nid = self.config.value('MQTT.NodeId')
+        nid = self.config.value('General.NodeId')
         if nid is None:
-            nid = self._netWorker.currentHwAddr.lower().replace(':', '')
+            nid = self._netWorker.currentNodeId
 
         self._mqtt.init_client(hostname=self.config.value('MQTT.BrokerHost'),
                                port=self.config.value('MQTT.BrokerPort'),
                                reconnectTime=self.config.value('MQTT.ReconnectTime'),
                                nodeId=nid,
-                               sslEnabled=self.config.value('MQTT.SSL'),
-                               caCertFile=self.config.value('SSL.CaCertFile'),
-                               clientCertFile=self.config.value('SSL.ClientCertFile'),
-                               clientKeyFile=self.config.value('SSL.ClientKeyFile'))
+                               sslEnabled=self.config.value('MQTT.SSLEnabled'),
+                               caCertFile=self.config.value('MQTT.CACertFile'),
+                               clientCertFile=self.config.value('MQTT.ClientCertFile'),
+                               clientKeyFile=self.config.value('MQTT.ClientKeyFile'))
 
 
     def shutdown(self):

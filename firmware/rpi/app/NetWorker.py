@@ -45,6 +45,7 @@ import json
 import hashlib
 import subprocess
 import re
+import string
 
 class NetWorker(QObject):
     ifcAddrChanged = pyqtSignal(str, name='ifcAddrChanged', arguments=['ip'])
@@ -60,6 +61,10 @@ class NetWorker(QObject):
     @pyqtProperty(str, notify=currentIfcHwAddrChanged)
     def currentHwAddr(self):
         return self.hwAddr
+
+    @pyqtProperty(str, notify=currentIfcHwAddrChanged)
+    def currentNodeId(self):
+        return self.hwAddr.replace(':', '').lower()
 
     @pyqtProperty(str, notify=wifiStatusChanged)
     def currentWifiESSID(self):
@@ -89,7 +94,7 @@ class NetWorker(QObject):
     def currentRxRate(self):
         return self.rxrate
 
-    def __init__(self, loglevel='WARNING', ifcName='wlan0', ifcMacAddressOverride=None, mqtt=None):
+    def __init__(self, loglevel='WARNING', ifcName='wlan0', nodeId=None, mqtt=None):
         QObject.__init__(self)
 
         self.logger = Logger(name='ratt.networker')
@@ -103,18 +108,37 @@ class NetWorker(QObject):
         self.sslSupported = QSslSocket.supportsSsl()
 
         self.setAuth()
-        self.setSSLCertConfig()
+        self.setSSLClientCertConfig()
 
         self.mgr.authenticationRequired.connect(self.handleAuthenticationRequired)
         self.authAttempts = 0
 
-        self.ifcName = ifcName
         self.ifcAddr = QHostAddress()
 
-        if ifcMacAddressOverride is not None:
-            self.hwAddr = ifcMacAddressOverride
+        if QNetworkInterface.interfaceFromName(ifcName).isValid():
+            self.ifcName = ifcName
         else:
-            self.hwAddr = self.getHwAddress(ifc=ifcName)
+            self.logger.error('Could not find network interface %s' % ifcName)
+            self.ifcName = 'invalid'
+            for ifc in QNetworkInterface.allInterfaces():
+                if ifc.type() != QNetworkInterface.Loopback and ifc.isValid():
+                    self.logger.warning('Using network interface %s instead' % ifc.name())
+                    self.ifcName = ifc.name()
+
+        self.logger.info('My network interface is %s' % self.ifcName)
+
+        if nodeId is not None:
+            try:
+                self.hwAddr = self.formatMAC(nodeId)
+            except:
+                self.logger.error('Invalid nodeId override "%s", must be 12 hex digits only' % nodeId)
+                self.logger.warning('Using MAC address from %s instead' % self.ifcName)
+                self.hwAddr = self.getHwAddress(ifc=self.ifcName)
+        else:
+            self.hwAddr = self.getHwAddress(ifc=self.ifcName)
+
+        self.logger.info('My MAC address is %s' % self.currentHwAddr)
+        self.logger.info('My Node ID is %s' % self.currentNodeId)
 
         self.statusTimer = QTimer()
         self.statusTimer.setSingleShot(False)
@@ -205,17 +229,31 @@ class NetWorker(QObject):
 
         return QHostAddress()
 
+    # from https://stackoverflow.com/questions/11006702/elegant-format-for-a-mac-address-in-python-3-2
+    # with a slight improvement to hex assert
+    def formatMAC(self, mac: str) -> str:
+        mac = re.sub('[.:-]', '', mac).lower()  # remove delimiters and convert to lower case
+        mac = ''.join(mac.split())              # remove whitespaces
+        assert len(mac) == 12                   # length should be now exactly 12 (eg. 008041aefd7e)
+        assert set(mac).issubset(set(string.hexdigits)) # only hex digits
+        # convert mac in canonical form (eg. 00:80:41:ae:fd:7e)
+        mac = ":".join(["%s" % (mac[i:i+2]) for i in range(0, 12, 2)])
+        return mac
+
     def getHwAddress(self, ifc):
-        myIfc = QNetworkInterface.interfaceFromName(ifc)
-
-        return myIfc.hardwareAddress()
-
+        hwaddr = '00:00:00:00:00:00'
+        try:
+            myIfc = QNetworkInterface.interfaceFromName(ifc)
+            hwaddr = self.formatMAC(myIfc.hardwareAddress())
+        except:
+            pass
+        return hwaddr
 
     def setAuth(self, user = '', password = ''):
         self.user = user
         self.password = password
 
-    def setSSLCertConfig(self, enabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
+    def setSSLClientCertConfig(self, enabled = False, caCertFile = '', clientCertFile = '', clientKeyFile = ''):
         self.sslEnabled = enabled
 
         if self.sslSupported and self.sslEnabled:
