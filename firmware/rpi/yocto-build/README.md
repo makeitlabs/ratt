@@ -9,6 +9,8 @@ Updated November 2021 for Ubuntu 20.04 build host & Yocto Poky Dunfell
 
 Set up an [Ubuntu 20.04 LTS](https://ubuntu.com/download/desktop) virtual machine.  Make sure you allocate at least 100GB for disk storage.  If you are  doing a lot of building, you will want this located on an SSD on your VM host.  You will also want to give the Virtual Machine as much RAM (16GB+) and CPU cores (4+) as you can spare.  I run with 16GB RAM and 12 cores dedicated to the VM for faster builds.
 
+You can, of course, do this on an Ubuntu install on bare metal as well.  This may be more performant, depending on your hardware.
+
 ### Install some pre-requisites for building:
 
     sudo apt install build-essential chrpath diffstat gawk libncurses5-dev python3-distutils texinfo git
@@ -19,9 +21,9 @@ Set up an [Ubuntu 20.04 LTS](https://ubuntu.com/download/desktop) virtual machin
 Choose "No" to dash when prompted.
 
 
-### Clone the RATT repo from GitHub
+### Clone the RATT Repository from GitHub
 
-Some directories have fixed paths with `${HOME}` references for the Yocto build, so it is necessary to clone it into your home directory, i.e. `~/ratt` - do not place it inside of other directories or in other locations.
+Some directories have fixed paths with `${HOME}` references for the Yocto build, so it is necessary to clone it into your home directory, i.e. `~/ratt` - do not place it inside of other directories or in other locations. (N.B. this has hopefully been fixed - but for the sake of consistency this document refers to `~/ratt`)
 
 Start out in your home directory.
 
@@ -43,54 +45,27 @@ I've included a script to do the dirty work of cloning Yocto and other required 
 
     ~/ratt/firmware/rpi/yocto-build/scripts/setup_dependencies.sh
 
-This script will take a little bit to run, as it fetches a lot of data.  When it's finished, you should have all the required dependencies in `~/yocto-ratt/poky-dunfell/`
-
-
-## Building
-
-### Source the yocto environment before running bitbake
-
-    source ~/ratt/firmware/rpi/yocto-build/scripts/build-env.sh
-
-_Ignore the common suggested build target text that is displayed here, as we don't build those targets for RATT._
-
-### Start a build of the RATT image
-
-    bitbake ratt-image
-
-_Wait a long time..._  3+ hours typically.  More RAM, faster disk, and faster cores will help, but it builds a lot of stuff so it simply takes a while.  Yocto Project does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
-
-## Mounting Image on Loop Filesystem
-
-The Linux loop filesystem can be used to mount the four partitions of a RATT SD image (boot, rootfs1, rootfs2, and data).  This allows exploration and modification of the contents of the SD image, which will be saved back to the monolithic SD image once unmounted.  When the image is later copied to a physical SD card, those changes will persist.  Generally speaking, only changes to the data partition should be made.  This partition is intended to persist across Mender system updates, and is used to contain configuration information specific to that node.  If you find you need to make changes to the contents of the data or boot partitions, it's generally more appropriately done as a Yocto recipe.  The only exception might be provisioning (e.g. copying certificates), but, again, these should generally be placed on the data partition as it will persist across future updates.
-
-To make this process easier, I created the `sdimg_util.sh` script.  It makes mounting and unmounting loop filesystems easier.
-
-To get started, you first must create the mount points.
-
-     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh create
-
-Once created, you may mount a previously created SD image using the following command:
-
-     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh mount
-
-You can then browse and manipulate the files contained in the image via the mount points in `/mnt/sdimg`.  Once done, you must unmount the SD image using the command:
-
-     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh umount
-
-In particular, make sure you remember to unmount before doing another `bitbake` build.
+This script will take a little bit to run, as it fetches a lot of data.  When it's finished, you should have all the required dependencies in `~/yocto-ratt/poky-dunfell/`.  At the present time, there is no (easy, flexible) way to change this path.
 
 ## Image Configuration (Templating)
 
-### Configure `wpa_supplicant`
+_Templating_ is the name I made up for a process that overlays config files over the completed root filesystem image, to allow default configuration of a node for a specific environment.  Not every system setting can be changed this way, but RATT is built in such a way that the most critical ones can.
 
-The most critical thing to configure is the wireless network configuration.  As long as a RATT node can get onto the network, you can later SSH into it to provision it with node-specific configuration, certificates, etc.  All other forms of login are disabled in the image by default, so that's why it's critical to perform this step.
+Persistent configs live in the `/data/etc` directory on the RATT target.  This allows the configuration to persist across Mender updates, which would normally overwrite the root filesystems that contain `/etc` (and others), during an update.
 
-Wireless network config is done via the `wpa_supplicant.conf` file, which lives in the `/data/etc` directory on the RATT image.  This allows the configuration to persist across Mender updates, which would normally overwrite the root filesystems that contain `/etc`, during an update.
+The templates tree lives in `~ratt/firmware/rpi/yocto-build/templates` and is a duplication of the structure of the target's `/data` directory.
 
-A template for this file is included in `~/ratt/firmware/rpi/yocto-build/scripts/templates/etc/wpa_supplicant.conf-example`.  Copy this file to `wpa_supplicant.conf` in the same directory, and edit it to set your SSID and PSK for your wireless network.  You can configure multiple networks if you want.
+A bitbake step that runs after the root filesystem has been created is responsible for the templating.  It will copy all files from the templates directory tree that aren't ending in `-example` and aren't `.gitignore`, so be careful what extra files you leave around in the templates directory, as they will end up on the target image.
 
-### Configure SSH Key
+The `.gitignore` file in the templates directory which will ignore non-example files, so you don't accidentally commit those and expose sensitive data.  However it means you might lose critical config data if you delete your repository, so be careful!
+
+### Configure Wireless (Required!)
+
+The most important thing to configure is the wireless network configuration.  As long as a RATT node can get onto the network, you can later SSH into it to provision it with node-specific configuration, certificates, etc.  All other forms of login are disabled in the image by default, so that's why it's critical to perform this step.
+
+A template for this file is included in `~/ratt/firmware/rpi/yocto-build/templates/etc/wpa_supplicant.conf-example`.  Copy this file to `wpa_supplicant.conf` in the same directory, and edit it to set your SSID and PSK for your wireless network.  You can configure multiple networks if you want.
+
+### Configure SSH Key (Required!)
 
 The default RATT image does not enable a password for the `root` account (it is locked via `usermod`).  Thus, to SSH into the unit, you will need to set up an SSH key as a template.
 
@@ -106,43 +81,50 @@ Now you need to create a template for `/data/home/root/.ssh/authorized_keys`.
 
 You must copy it, as the templating process won't copy links:
 
-    cp ~/.ssh/id_ratt ~/ratt/firmware/rpi/yocto-build/scripts/templates/home/root/.ssh/authorized_keys
+    cp ~/.ssh/id_ratt ~/ratt/firmware/rpi/yocto-build/templates/home/root/.ssh/authorized_keys
 
-Lastly, set up your `~/.ssh/config` file to include an entry for ratt.  You may not yet know the IP address of the RATT, so you may need to revisit this to edit it in a later step.  If you have several RATTs, you'll make entries for each of them.
+Lastly, set up your `~/.ssh/config` file to include an entry for ratt.  You probably do not yet know the IP address of the RATT, so you may need to revisit this to edit later.  If you have several RATTs, you'll make entries for each of them.
 
     Host ratt
 	    HostName 192.168.0.154
     	User root
     	IdentityFile id_ratt
 
-
 ### Configure Other Items
 
-Check through the `templates` directory to see what other files may be configured for an image.  Anything that is provided as an `-example` can be copied to the same filename, sans `-example` and it will be copied to the data filesystem in the next step.
+To see all of the example files that you can potentially configure, you can run the following command from inside of the `templates` directory.
+
+    find . -name "*-example"
+
+Anything that is provided as an `-example` can be copied to the same filename, sans `-example` and it will be copied to the data filesystem in the next step.
 
 Including, but not limited to:
 * `templates/etc/ntp.conf-example`
 * `templates/etc/hosts-example`
 
-### Apply the Templates to the SD Image
+## Building
 
-The `sdimg_util.sh` script has a function to copy the template files to the mounted SD image.  First mount the SD image, per instructions in the last section.  Then run the following commmand:
+Now we're ready to start the build process.  Hope your CPU cores and RAM are ready for a workout!
 
-    ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh template
+### Source the yocto environment before running bitbake
 
-The script will check that the SD image is mounted before it copies.  It will copy all files from the templates directory tree that aren't ending in `-example` and aren't `.gitignore`, so be careful what files you leave around in there.
+    source ~/ratt/firmware/rpi/yocto-build/scripts/build-env.sh
 
-The `.gitignore` file in the templates directory which will ignore non-example files, so you don't accidentally commit those and expose sensitive data.  However it means you might lose critical config data if you delete your repository, so pay attention!
+_Ignore the common suggested build target text that is displayed here, as we don't build those targets for RATT._
 
-_TODO: Possibly move this to a `ROOTFS_POSTPROCESS_COMMAND` in the image so it happens as part of the `bitbake` process instead of requiring these separate steps._
+### Start a build of the RATT image
+
+    bitbake ratt-image
+
+_Wait a long time..._  3+ hours typically.  More RAM, faster disk, and faster cores will help, but it builds a lot of stuff so it simply takes a while.  Bitbake does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
 
 ## Copy Image to SD Card
 
-If you had the SD image mounted with the loop filesystem, be sure to first unmount, following the directions above.
+Once the build is finished, you're ready to write to a physical SD card for use in the RATT.
 
 ### Find the SD Card Device
 
-Insert the SD card into your USB reader, and make sure the USB device is attached to the Virtual Machine.  If you're using VirtualBox be sure to install the extensions and configure your VM for xHCI USB so you can get the fastest copy possible.
+Insert the SD card into your USB reader, and make sure the USB device is attached to the Virtual Machine, or plugged into your physical machine.  If you're using VirtualBox be sure to install the extensions and configure your VM for xHCI USB so you can get the fastest copy possible.
 
 Run the following:
 
@@ -171,8 +153,7 @@ Run the following command (substituting your actual SD card device for `/dev/sdX
 
     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh write /dev/sdX
 
-Note: This can be pretty slow to finish (5-10 minutes depending on speed of your card and reader/writer).  Wait for the activity LED to stop blinking on your card reader before you remove the card, even if the script says it has completed.
-
+The script will prompt you to be sure you want to write to the device.  Answer 'y' and press enter to continue.  This can be pretty slow to finish (5-10 minutes depending on speed of your card and reader/writer).  Wait for the activity LED to stop blinking on your card reader before you remove the card, even if the script says it has completed.
 
 ### Test the Image
 
@@ -183,8 +164,36 @@ Note: This can be pretty slow to finish (5-10 minutes depending on speed of your
   * Shortly after powerup, the RATT LCD will show white at first, then a boot splash progress screen with a RATT logo.
   * First boot on a fresh card is slower than normal boot, since some things are initialized during this step.
   * Eventually a message that the RATT app is loading will be shown, and then the RATT app GUI will be displayed.
-  * Hold down the BLUE button for a few seconds.  This will cause some info to be displayed, such as current WiFi AP and IP address.
-  * Assuming it is on the network, you can SSH in for configuration or testing.  You will use the name you configured in your `~/.ssh/config` file earlier.  Make sure the correct IP address is in the config, and that it's pointing to the correct key.  Note that SSH tends to be slow on the single-core Pi 0W when connecting, especially the first time.
+  * Hold down the BLUE button for a few seconds.  This will cause some info to be displayed, including current IP address.
+  * Assuming it is on the network, you can SSH in for configuration or testing.  You will use the name that you configured in your `~/.ssh/config` file as the host to connect to.  Make sure the correct IP address is in the config, and that it's pointing to the correct SSH key.  Note that SSH tends to be slow on the single-core Pi 0W when connecting, especially the first time.
+
+## Mounting Image on Loop Filesystem
+
+The Linux loop filesystem can be used to mount the four partitions of a RATT SD image (boot, rootfs1, rootfs2, and data).  This allows exploration and modification of the contents of the SD image, which will be saved back to the monolithic SD image once unmounted.  When the image is later copied to a physical SD card, those changes will persist.  Generally speaking, only changes to the data partition should be made.  This partition is intended to persist across Mender system updates, and is used to contain configuration information specific to that node.  If you find you need to make changes to the contents of the root or boot partitions, it's generally more appropriately done as a recipe.  And if you want to consistently apply changes to the data partition, it's most easily done as a template (see previous section).
+
+To make this process easier, I added some features to the `sdimg_util.sh` script.  It makes mounting and unmounting loop filesystems easier.
+
+To get started, you first must create the mount points.
+
+     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh create
+
+Once created, you may mount a previously created SD image using the following command:
+
+     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh mount
+
+You can then browse and manipulate the files contained in the image via the mount points in `/mnt/sdimg`.  Once done, you must unmount the SD image using the command:
+
+     ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh umount
+
+In particular, make sure you remember to unmount before doing another `bitbake` build.
+
+### Re-apply the Templates to the SD Image
+
+The `sdimg_util.sh` script has a function to copy the template files to the mounted SD image, similar to how it happens in the bitbake process.  This is useful for quickly updating the template files on an already-built SD image, without running the slower bitbake process.  First mount the SD image, per instructions in the loop filesystem section.  Then run the following commmand:
+
+    ~/ratt/firmware/rpi/yocto-build/scripts/sdimg_util.sh template
+
+The script will check that the SD image is mounted before it copies.
 
 # Yocto / OpenEmbedded References
 
