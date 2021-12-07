@@ -150,7 +150,7 @@ class CachedRemoteFile(QObject):
             self.reply = self.netWorker.get(url=QUrl(self.url))
             self.reply.finished.connect(self.slotDownloadFinished)
 
-            self.logger.warning('self.reply.error=' + str(self.reply.error()))
+            self.logger.debug('self.reply.error=' + str(self.reply.error()))
 
             if self.reply.error() != QNetworkReply.NoError:
                 self.downloadError(self.reply.error())
