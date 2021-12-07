@@ -6,9 +6,9 @@ The core RATT application that controls access to the equipment as well as provi
 
 | Directory | Description |
 | --------- | ----------- |
-| [app/](app/) |RATT application, primarily written in Python3 and QML via PyQt5 |
 | [yocto/](yocto/) |Yocto build and config directory for RATT |
 | [raspbian/](raspbian/) |initial R&D for the platform on standard Raspbian (not used for Yocto build) |
+| app |RATT application (has been moved to its own repo `ratt-app`) |
 
 **See [yocto/README.md](yocto/README.md) for step-by-step documentation on how to set up the build environment, build an image from scratch, and deploy it to an SD card.**
 
