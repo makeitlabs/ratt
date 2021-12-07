@@ -42,17 +42,14 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, pyqtProperty
 import logging
 
 class SignalStreamHandler(QObject, logging.StreamHandler):
-    logEvent = pyqtSignal(str, name='logEvent', arguments=['text'])
+    logEvent = pyqtSignal(str, str, str, str, name='logEvent', arguments=['time', 'name', 'level', 'message'])
 
     def __init__(self):
         QObject.__init__(self)
         logging.StreamHandler.__init__(self)
 
-        fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
-        self.setFormatter(fmt)
-
     def emit(self, record):
-        self.logEvent.emit(self.format(record))
+        self.logEvent.emit(record.asctime, record.name, record.levelname, record.message)
 
 
 class Logger(QObject):
@@ -60,8 +57,6 @@ class Logger(QObject):
     @pyqtProperty(QObject)
     def signalStreamHandler(self):
         if self.sig:
-            print("***")
-            print(self.sig)
             return self.sig
 
         return None

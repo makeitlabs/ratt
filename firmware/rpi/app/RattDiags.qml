@@ -654,8 +654,40 @@ Item {
           target: logger.signalStreamHandler
 
           onLogEvent: {
-            log.text = log.text + text + "\n"
-            log.cursorPosition = log.length
+            var t= time.substr(time.search(' '));
+            t = t.substr(0, t.search(','));
+
+            var body = t + ' ' + name.replace('ratt.', '').toUpperCase() + '-' + level + ' ' + message;
+            if (level == 'ERROR') {
+              body = '<font color="#ff0000">' + body + '</font>';
+            } else if (level == 'WARNING') {
+              body = '<font color="#ffff00">' + body + '</font>';
+            } else if (level == 'DEBUG') {
+              body = '<font color="#00ffff">' + body + '</font>';
+            }
+
+            if (name == 'ratt.personality') {
+              body = '<b>' + body + '</b>';
+            } else if (name == 'ratt.qt') {
+              body = '<i><b>' + body + '</b></i>';
+            }
+
+            log.append(body);
+
+            const maxlen = 8192
+            const removelen = 1024
+
+            if (log.length > maxlen) {
+              // remove a bunch of old log
+              log.remove(0, log.length - (maxlen-removelen));
+              // clean up to the newline
+              var nl = log.text.search("\n");
+              if (nl != -1) {
+                log.remove(0, nl + 1);
+              }
+            }
+
+            log.cursorPosition = log.length;
           }
         }
 
@@ -676,7 +708,12 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 font.pixelSize: 12
+                font.family: 'mono'
+
+                textFormat: TextEdit.RichText
                 readOnly: true
+                backgroundVisible: false
+                textColor: "#ffffff"
               }
           }
         }
