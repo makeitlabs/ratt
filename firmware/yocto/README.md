@@ -108,16 +108,32 @@ Now we're ready to start the build process.  Hope your CPU cores and RAM are rea
 
 ### Source the yocto environment before running bitbake
 
-    source ~/ratt/firmware/yocto/scripts/build-env.sh
+    . ~/ratt/firmware/yocto/scripts/build-env.sh
 
-_Ignore the common suggested build target text that is displayed here, as we don't build those targets for RATT._
+This will set up your environment for Yocto, as well as put `~/ratt/firmware/yocto/scripts/` into your path, which contains a number of useful scripts to ease the build and deployment process.
 
 ### Start a build of the RATT image
 
+#### RATT build wrapper script
+
+For standard everyday builds, I wrote a build wrapper script called `baker`, that performs some necessary steps like creating a unique Mender artifact name before each build.  I recommend using this script for most builds.
+
+    baker build
+
+This will start a standard build with a uniquely named Mender artifact based on the date and time.
+
+_Wait a long time..._  3+ hours for a typical full build, on a decently-equipped VM.  Running the host OS natively on a fast SSD can significantly improve times, as VM's tend not to have the best I/O performance.  Bitbake does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
+
+#### Using standard Yocto tools
+
+Standard Yocto/OE build tools like `bitbake` can also be used directly.  These tools will mostly be used during development to perform various lower-level tasks.  e.g.:
+
     bitbake ratt-image
 
-_Wait a long time..._  3+ hours typically.  More RAM, faster disk, and faster cores will help, but it builds a lot of stuff so it simply takes a while.  Bitbake does a good job at determining deltas and dependencies, so subsequent builds of small changes are comparably much quicker.
+or:
 
+    bitbake -c cleansstate ratt-app
+    
 ## Copy Image to SD Card
 
 Once the build is finished, you're ready to write to a physical SD card for use in the RATT.
@@ -126,9 +142,9 @@ Once the build is finished, you're ready to write to a physical SD card for use 
 
 Insert the SD card into your USB reader, and make sure the USB device is attached to the Virtual Machine, or plugged into your physical machine.  If you're using VirtualBox be sure to install the extensions and configure your VM for xHCI USB so you can get the fastest copy possible.
 
-Run the following:
+I created a helper script called `imgfeast` that helps perform various tasks associated with SD card images.  Run the following to find the SD card device:
 
-    ~/ratt/firmware/yocto/scripts/sdimg_util.sh findsd
+    imgfeast findsd
 
 Example output is as follows:
 
@@ -151,7 +167,7 @@ In the above example, `/dev/sdc` is the SD card device.  Be sure you have the co
 
 Run the following command (substituting your actual SD card device for `/dev/sdX`):
 
-    ~/ratt/firmware/yocto/scripts/sdimg_util.sh write /dev/sdX
+    imgfeast write /dev/sdX
 
 The script will prompt you to be sure you want to write to the device.  Answer 'y' and press enter to continue.  This can be pretty slow to finish (5-10 minutes depending on speed of your card and reader/writer).  Wait for the activity LED to stop blinking on your card reader before you remove the card, even if the script says it has completed.
 
@@ -171,27 +187,25 @@ The script will prompt you to be sure you want to write to the device.  Answer '
 
 The Linux loop filesystem can be used to mount the four partitions of a RATT SD image (boot, rootfs1, rootfs2, and data).  This allows exploration and modification of the contents of the SD image, which will be saved back to the monolithic SD image once unmounted.  When the image is later copied to a physical SD card, those changes will persist.  Generally speaking, only changes to the data partition should be made.  This partition is intended to persist across Mender system updates, and is used to contain configuration information specific to that node.  If you find you need to make changes to the contents of the root or boot partitions, it's generally more appropriately done as a recipe.  And if you want to consistently apply changes to the data partition, it's most easily done as a template (see previous section).
 
-To make this process easier, I added some features to the `sdimg_util.sh` script.  It makes mounting and unmounting loop filesystems easier.
-
 To get started, you first must create the mount points.
 
-     ~/ratt/firmware/yocto/scripts/sdimg_util.sh create
+     imgfeast create
 
 Once created, you may mount a previously created SD image using the following command:
 
-     ~/ratt/firmware/yocto/scripts/sdimg_util.sh mount
+     imgfeast mount
 
 You can then browse and manipulate the files contained in the image via the mount points in `/mnt/sdimg`.  Once done, you must unmount the SD image using the command:
 
-     ~/ratt/firmware/yocto/scripts/sdimg_util.sh umount
+     imgfeast umount
 
 In particular, make sure you remember to unmount before doing another `bitbake` build.
 
 ### Re-apply the Templates to the SD Image
 
-The `sdimg_util.sh` script has a function to copy the template files to the mounted SD image, similar to how it happens in the bitbake process.  This is useful for quickly updating the template files on an already-built SD image, without running the slower bitbake process.  First mount the SD image, per instructions in the loop filesystem section.  Then run the following commmand:
+The `imgfeast` script has a function to copy the template files to the mounted SD image, similar to how it happens in the bitbake process.  This is useful for quickly updating the template files on an already-built SD image, without running the slower bitbake process (~5 minutes).  First mount the SD image, per instructions in the loop filesystem section.  Then run the following commmand:
 
-    ~/ratt/firmware/yocto/scripts/sdimg_util.sh template
+    imgfeast template
 
 The script will check that the SD image is mounted before it copies.
 

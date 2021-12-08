@@ -1,0 +1,28 @@
+#!/bin/bash
+SCRIPT_DIR="$(dirname "$(realpath "$BASH_SOURCE")")"
+
+
+
+build() {
+    cd ${BUILDDIR} || exit 1
+    clear
+
+    if [ -z "${RATT_BUILD_ENV}" ]; then
+	echo "Build environment not configured, sourcing for this subshell only."
+	. ${SCRIPT_DIR}/build-env.sh > /dev/null
+    fi
+
+    AF="ratt-image-`TZ='America/New_York' date +'%Y%m%d-%H%M'`"
+    echo "MENDER_ARTIFACT_NAME=\"${AF}\"" > ${BUILDDIR}/postread.conf
+    echo "${AF}  `date`"
+    export BBPOSTCONF=${BUILDDIR}/postread.conf
+    /usr/bin/time -f "\t build took %E" bitbake ratt-image
+    echo
+    echo "Mender Artifact Name: ${AF}"
+    rm -f ${BUILDDIR}/postread.conf
+}
+
+
+if [ "$1" = "build" ]; then
+   build
+fi
