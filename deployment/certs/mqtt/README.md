@@ -5,13 +5,11 @@ Some rough utilities to generate and deploy self-signed certificates for MQTT in
 
 ## Generating CA and server certs (self-signed)
 
-`./gen_ca_and_server_certs.sh`
+Create a file `.capassword` with your CA password in it.
 
-This script will prompt for a PEM password for the CA cert.  Remember it, it will be required later to generate client certs.
+`./init_ca_and_server_certs.sh`
 
 All certs will be created in the `ssl` directory.  Private keys and csr's will go into the `private` directory, and certs will go ino the `certs` directory.
-
-**Note, this creates the server cert with the CN 'devel' -- it's a TODO to make this more flexible for real deployment**
 
 ## Deploying the CA and server certs to mosquitto broker
 
@@ -21,7 +19,7 @@ This script will copy the certs and key files to the appropriate place in `/etc/
 
 This script also copies a config include into `/etc/mosquitto/conf.d` to enable SSL.
 
-**This script will restart the mosquitto broker service!**
+**This script will stop and start the mosquitto broker service!**
 
 ## Generating a client cert
 
@@ -29,9 +27,13 @@ This script also copies a config include into `/etc/mosquitto/conf.d` to enable 
 
 To generate a client cert, you must supply the CN for the client on the command line.  For RATT, we intend to use the MAC address of the node for the CN (all lowercase, no colons).
 
-This script will ask you for that CA password you should have remembered earlier.
+## Regenerating client certs from a list
 
-## Deploying certificates to the authbackend
+The file `ssl/clients` is populated with the CN of each created client.  You can pre-populate this file and run `./regen-client-certs.sh` to rebuild all certs.  This is useful if you need to redeploy all certs.  Note that it will not overwrite certs that have already been made.
+
+## Deploying MQTT certificates to the auth backend (deprecated)
+
+_This is now deprecated as the auth backend runs in a separate container._
 
 The authbackend needs valid client certificates so it can connect to the MQTT broker.  Generate the client cert named `authbackend` using the script, and then deploy it with the included script:
 
@@ -39,9 +41,9 @@ The authbackend needs valid client certificates so it can connect to the MQTT br
 
 This will deploy the certs to both the production and staging servers, and, importantly, it will restart the Apache webserver, so be aware before you do this.
 
-## Deploying certificates to Node-RED
+## Deploying MQTT certificates to Node-RED
 
-Node-RED is used for automation glue and "smarts" for the RATT system (e.g. Slack integration).  Generate client certs with the name `node-red` and manually configure Node-RED TLS to point to the certificates on the local filesystem.  You may also choose to upload the certs into Node-RED instead.
+Node-RED is used for automation glue and "smarts" for the RATT system (e.g. Slack integration).  Generate client certs with the name `nodered' and upload the certs into Node-RED TLS config for MQTT.
 
 ## Deploying certificates to a RATT node
 
