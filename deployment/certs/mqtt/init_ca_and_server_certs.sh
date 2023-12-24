@@ -34,9 +34,11 @@ openssl genrsa -out private/server.key 2048
 
 echo -e ${GREEN}generate certificate signing request to send to the CA 
 echo -e ${GRAY}
-openssl req -out private/server.csr -key private/server.key -new -config openssl.cnf -subj '/C=US/ST=New Hampshire/CN=mqtt' -passin file:../.capassword -verbose
+# openssl req -out private/server.csr -key private/server.key -new -config openssl.cnf -subj '/C=US/ST=New Hampshire/CN=mqtt' -passin file:../.capassword -verbose
+openssl req -out private/server.csr -key private/server.key -new -config openssl.cnf -subj '/C=US/ST=New Hampshire/CN=mqtt' -passin file:../.capassword -reqexts SAN -config <(cat openssl.cnf <(printf "\n[SAN]\nsubjectAltName=DNS:mqtt.lab.makeitlabs.com,DNS:mqtt")) -verbose
 
 echo -e ${GREEN}sign the CSR with the CA key
 echo -e ${GRAY}
-openssl x509 -req -in private/server.csr -CA certs/ca.crt -CAkey private/ca.key -CAcreateserial -out certs/server.crt -days 36525 -passin file:../.capassword 
+# openssl x509 -req -in private/server.csr -CA certs/ca.crt -CAkey private/ca.key -CAcreateserial -out certs/server.crt -days 36525 -passin file:../.capassword 
+openssl x509 -req -in private/server.csr -CA certs/ca.crt -CAkey private/ca.key -CAcreateserial -out certs/server.crt -days 36525 -passin file:../.capassword -copy_extensions=copyall
 
